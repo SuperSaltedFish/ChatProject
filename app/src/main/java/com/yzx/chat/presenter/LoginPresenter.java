@@ -192,7 +192,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             String strData = new String(mManager.rsaDecryptByPrivateKey(data));
             try {
                 Gson gson = new GsonBuilder().create();
-                return gson.fromJson(httpResponse, genericType);
+                return gson.fromJson(strData, genericType);
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }
