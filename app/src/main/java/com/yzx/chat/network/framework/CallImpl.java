@@ -13,6 +13,7 @@ public class CallImpl<T> implements Call<T> {
     private boolean isCancel;
     private boolean isCallbackRunOnMainThread;
     private HttpDataFormatAdapter mAdapter;
+    private Type mGenericType;
 
     public CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter) {
         mHttpRequest = httpRequest;
@@ -24,8 +25,8 @@ public class CallImpl<T> implements Call<T> {
     public boolean complete(HttpResponse response) {
         boolean isComplete = false;
         if (isCancel || mCallbackWeakReference == null) {
-            isComplete=false;
-        }else {
+            isComplete = false;
+        } else {
             HttpCallback<T> callback = mCallbackWeakReference.get();
             if (callback != null) {
                 if (response.isSuccess()) {
@@ -33,7 +34,7 @@ public class CallImpl<T> implements Call<T> {
                 } else {
                     callback.onError(response.getError());
                 }
-                isComplete= callback.isComplete();
+                isComplete = callback.isComplete();
             }
         }
         destroy();
@@ -93,26 +94,22 @@ public class CallImpl<T> implements Call<T> {
         return mAdapter;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    public void setGenericType(Type type) {
+        mGenericType = type;
+    }
 
     @Override
     public Type getGenericType() {
-        if (mCallbackWeakReference != null) {
-            HttpCallback<T> callback = mCallbackWeakReference.get();
-            if (callback != null) {
-                ParameterizedType pType = (ParameterizedType) callback.getClass().getGenericInterfaces()[0];
-                return pType.getActualTypeArguments()[0];
-            }
-        }
-        return null;
+        return mGenericType;
     }
 
-    private void destroy(){
-        if(mCallbackWeakReference!=null) {
+    private void destroy() {
+        if (mCallbackWeakReference != null) {
             mCallbackWeakReference.clear();
-            mCallbackWeakReference=null;
+            mCallbackWeakReference = null;
         }
-        mAdapter=null;
+        mAdapter = null;
     }
 
 }

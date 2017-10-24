@@ -1,7 +1,6 @@
 package com.yzx.chat.presenter;
 
 import android.support.annotation.Nullable;
-import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,6 +16,7 @@ import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.tool.AuthenticationManager;
 import com.yzx.chat.tool.ApiManager;
+import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.RSAUtil;
 
 import java.lang.reflect.Type;
@@ -179,17 +179,20 @@ public class LoginPresenter implements LoginContract.Presenter {
             Gson gson = new GsonBuilder().create();
             String json = gson.toJson(params);
             byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), mSecretKey.getBytes());
-            return Base64.encodeToString(encryptData, Base64.DEFAULT);
+            return Base64Util.encodeToString(encryptData);
         }
 
         @Nullable
         @Override
         public Object responseToObject(String url, String httpResponse, Type genericType) {
-            byte[] data = Base64.decode(httpResponse, Base64.DEFAULT);
+            byte[] data = Base64Util.decode(httpResponse);
+            if(data==null){
+                return null;
+            }
             String strData = new String(mManager.rsaDecryptByPrivateKey(data));
             try {
                 Gson gson = new GsonBuilder().create();
-                return gson.fromJson(strData, genericType);
+                return gson.fromJson(httpResponse, genericType);
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }

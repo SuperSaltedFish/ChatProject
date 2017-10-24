@@ -13,7 +13,6 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
-import com.yzx.chat.tool.AuthenticationManager;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -38,7 +37,7 @@ public class ApiManager {
         public String requestToString(String url, Map<String, Object> params, String requestMethod) {
             JsonRequest request = new JsonRequest();
             request.setParam(params);
-            request.setState(200);
+            request.setStatus(200);
             request.setToken(AuthenticationManager.getInstance().getToken());
             String json = sGson.toJson(request);
             if (json != null) {

@@ -22,6 +22,13 @@ public class Http {
     @NonNull
     public static Result doGet(String remoteUrl, String params) {
         Result result = new Result();
+        if(remoteUrl.contains("getSecretKey")){
+            result.isSuccess=true;
+            result.response = "{ \"status\": 200, \"data\": { \"secretKey\": \"-----BEGIN PUBLIC KEY-----\\r\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXfH0eMqhpOxaDNyWZ1yjjv15f\\r\\n7qm0hnllBDLwI7O1ANYSStEQaqC3JS3dbx76OI2rhukFu2+f38jY4uJWc1FA3PuB\\r\\n1Ko1rtDIpmz2e0Gb2Qlx/h4qUkLuNdZGn8oa+xAvP4r7LrLQXgBj6KOwRfSvRYfU\\r\\ny4o9otafl9Dg6WmwRwIDAQAB\\r\\n-----END PUBLIC KEY-----\" }, \"message\": \"asd\" }";
+        return result;
+        }
+
+
         do {
             HttpURLConnection conn = null;
             try {
@@ -64,6 +71,12 @@ public class Http {
     @NonNull
     public static Result doPost(String remoteUrl, String params) {
         Result result = new Result();
+        if(remoteUrl.contains("obtainSMSCode")){
+            result.isSuccess=true;
+            result.response = "{ \"status\": 200, \"data\": { \"verifyCode\": \"12345\", \"isSkipVerify\": false }, \"message\": \"Gettelephonevalidatecodesuccess\" }";
+            return result;
+        }
+
         do {
             HttpURLConnection conn = null;
             try {

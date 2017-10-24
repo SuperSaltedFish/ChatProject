@@ -10,16 +10,15 @@ import java.util.Map;
 public class JsonRequest {
 
     private String token;
-    private int state = 200;
+    private int status = 200;
     private Map<String, Object> param;
 
-
-    public int getState() {
-        return state;
+    public int getStatus() {
+        return status;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getToken() {

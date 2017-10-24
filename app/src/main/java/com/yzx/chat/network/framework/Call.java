@@ -27,6 +27,7 @@ public interface Call<T> {
 
     HttpDataFormatAdapter getHttpDataFormatAdapter();
 
+    void setGenericType(Type type);
 
     Type getGenericType();
 }

@@ -7,16 +7,16 @@ package com.yzx.chat.network.api;
 
 public class JsonResponse<T> {
 
-    private int state;
+    private int status;
     private String message;
     private T data;
 
-    public int getState() {
-        return state;
+    public int getStatus() {
+        return status;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getMessage() {

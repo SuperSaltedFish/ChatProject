@@ -67,26 +67,26 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     }
 
     private void init() {
-        mVfPageSwitch = findViewById(R.id.LoginActivity_mVfPageSwitch);
+        mVfPageSwitch = (ViewFlipper) findViewById(R.id.LoginActivity_mVfPageSwitch);
 //        mIvBackRegister = (ImageView) findViewById(R.id.FlipperRegister_mIvBackRegister);
 //        mIvBackRegisterVerify = (ImageView) findViewById(R.id.FlipperRegister_mIvBackRegisterVerify);
 //        mTvRequestRegister = (TextView) findViewById(R.id.FlipperLogin_mTvRequestRegister);
 //        mTvBackHomeRegister = (TextView) findViewById(R.id.FlipperRegister_mIvBackHomeRegister);
 //        mTvBackHomeRegisterVerify = (TextView) findViewById(R.id.FlipperRegister_mIvBackHomeRegisterVerify);
-        mBtnLogin = findViewById(R.id.FlipperLogin_mTvLogin);
-        mBtnRegister = findViewById(R.id.FlipperRegister_mBtnRegister);
-        mBtVerify = findViewById(R.id.FlipperVerify_mBtVerify);
-        mPbLoginProgress = findViewById(R.id.FlipperLogin_mPbLoginProgress);
-        mPbRegisterProgress = findViewById(R.id.FlipperRegister_mPbRegisterProgress);
-        mPbVerifyProgress = findViewById(R.id.FlipperVerify_mPbVerifyProgress);
-        mEtLoginUsername = findViewById(R.id.FlipperLogin_mEtUsername);
-        mEtLoginPassword = findViewById(R.id.FlipperLogin_mEtPassword);
-        mEtVerifyCode = findViewById(R.id.FlipperVerify_mEtVerifyCode);
-        mEtRegisterUsername = findViewById(R.id.FlipperRegister_mEtUsername);
-        mEtRegisterNickname = findViewById(R.id.FlipperRegister_mEtNickname);
-        mEtRegisterPassword = findViewById(R.id.FlipperRegister_mEtPassword);
-        mEtRegisterConfirm = findViewById(R.id.FlipperRegister_mEtConfirm);
-        mTvLoginHint = findViewById(R.id.FlipperLogin_mTvLoginHint);
+        mBtnLogin = (Button) findViewById(R.id.FlipperLogin_mTvLogin);
+        mBtnRegister = (Button) findViewById(R.id.FlipperRegister_mBtnRegister);
+        mBtVerify = (Button) findViewById(R.id.FlipperVerify_mBtVerify);
+        mPbLoginProgress = (ProgressBar) findViewById(R.id.FlipperLogin_mPbLoginProgress);
+        mPbRegisterProgress = (ProgressBar) findViewById(R.id.FlipperRegister_mPbRegisterProgress);
+        mPbVerifyProgress = (ProgressBar) findViewById(R.id.FlipperVerify_mPbVerifyProgress);
+        mEtLoginUsername = (EditText) findViewById(R.id.FlipperLogin_mEtUsername);
+        mEtLoginPassword = (EditText) findViewById(R.id.FlipperLogin_mEtPassword);
+        mEtVerifyCode = (EditText) findViewById(R.id.FlipperVerify_mEtVerifyCode);
+        mEtRegisterUsername = (EditText) findViewById(R.id.FlipperRegister_mEtUsername);
+        mEtRegisterNickname = (EditText) findViewById(R.id.FlipperRegister_mEtNickname);
+        mEtRegisterPassword = (EditText) findViewById(R.id.FlipperRegister_mEtPassword);
+        mEtRegisterConfirm = (EditText) findViewById(R.id.FlipperRegister_mEtConfirm);
+        mTvLoginHint = (TextView) findViewById(R.id.FlipperLogin_mTvLoginHint);
     }
 
     private void setView() {

@@ -56,7 +56,7 @@ public class ApiProxy {
                 }
             }
             if (httpRequest == null) {
-                throw new RuntimeException("The @HttpApi annotation was not found by the \"" + method.getName() + "\" method");
+                throw new RuntimeException("Method \"" + method.getName() + "\" must explicitly declare \"@HttpApi\" annotation");
             }
             if (method.getReturnType() != Call.class) {
                 throw new RuntimeException("The return value type of the \"" + method.getName() + "\" method must be " + CallImpl.class);
@@ -65,10 +65,14 @@ public class ApiProxy {
             if (genericReturnType instanceof ParameterizedType) {
                 Type type = ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
                 if (type instanceof WildcardType) {
-                    throw new RuntimeException("The return value of \"" + method.getName() + "\" method must explicitly write generic types");
+                    throw new RuntimeException("The \"" + method.getName() + "\" method must explicitly declare the generic parameters of the returned value");
                 }
+                CallImpl call = new CallImpl(httpRequest, mDefaultHttpDataFormatAdapter);
+                call.setGenericType(type);
+                return call;
+            } else {
+                throw new RuntimeException("The return value of \"" + method.getName() + "\" must explicitly declare generic parameters");
             }
-            return new CallImpl(httpRequest,mDefaultHttpDataFormatAdapter);
         }
 
 

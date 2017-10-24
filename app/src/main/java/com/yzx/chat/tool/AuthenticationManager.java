@@ -3,9 +3,9 @@ package com.yzx.chat.tool;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Base64;
 
 import com.yzx.chat.util.AESUtil;
+import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.RSAUtil;
 
 import java.security.KeyPair;
@@ -75,7 +75,7 @@ public class AuthenticationManager {
     }
 
     public String getBase64RSAPublicKey() {
-        return Base64.encodeToString(mRSAKeyPair.getPublic().getEncoded(), Base64.DEFAULT);
+        return Base64Util.encodeToString(mRSAKeyPair.getPublic().getEncoded());
     }
 
     public synchronized boolean saveAESKey(byte[] key) {
@@ -84,7 +84,7 @@ public class AuthenticationManager {
             return false;
         }
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(mAESKeyAlias, Base64.encodeToString(rsaEncrypt, Base64.DEFAULT));
+        editor.putString(mAESKeyAlias, Base64Util.encodeToString(rsaEncrypt));
         return editor.commit();
     }
 
@@ -108,7 +108,7 @@ public class AuthenticationManager {
         if (encryptData == null) {
             return null;
         }
-        return Base64.encodeToString(encryptData, Base64.DEFAULT);
+        return Base64Util.encodeToString(encryptData);
     }
 
 
@@ -120,7 +120,7 @@ public class AuthenticationManager {
     }
 
     public byte[] aesDecryptFromBase64String(String base64String) {
-        byte[] encryptData = Base64.decode(base64String, Base64.DEFAULT);
+        byte[] encryptData = Base64Util.decode(base64String);
         if (encryptData == null) {
             return null;
         }
@@ -133,7 +133,7 @@ public class AuthenticationManager {
             if (aesKeyStr == null) {
                 return false;
             }
-            mAESKey = rsaDecryptByPrivateKey(Base64.decode(aesKeyStr, Base64.DEFAULT));
+            mAESKey = rsaDecryptByPrivateKey(Base64Util.decode(aesKeyStr));
         }
         return mAESKey != null;
     }
@@ -142,9 +142,9 @@ public class AuthenticationManager {
         if (mToken == null) {
             String tokenStr = mPreferences.getString(mTokenAlias, null);
             if (tokenStr != null) {
-                byte[] tokenBytes = rsaDecryptByPrivateKey(Base64.decode(tokenStr, Base64.DEFAULT));
+                byte[] tokenBytes = rsaDecryptByPrivateKey(Base64Util.decode(tokenStr));
                 if (tokenBytes != null) {
-                    mToken = new String(rsaDecryptByPrivateKey(Base64.decode(tokenStr, Base64.DEFAULT)));
+                    mToken = new String(rsaDecryptByPrivateKey(Base64Util.decode(tokenStr)));
                 }
             }
         }
@@ -154,7 +154,7 @@ public class AuthenticationManager {
     private synchronized void createDeviceID() {
         mDeviceID = mPreferences.getString(mDeviceIDAlias, null);
         if (mDeviceID != null) {
-            byte[] data = rsaDecryptByPrivateKey(Base64.decode(mDeviceID, Base64.DEFAULT));
+            byte[] data = rsaDecryptByPrivateKey(Base64Util.decode(mDeviceID));
             if (data != null) {
                 mDeviceID = new String(data);
             }else {
@@ -167,7 +167,7 @@ public class AuthenticationManager {
                     Build.VERSION.SDK_INT,
                     Build.BRAND,
                     Build.MODEL);
-            String base64DeviceID = Base64.encodeToString(rsaEncryptByPublicKey(mDeviceID.getBytes()), Base64.DEFAULT);
+            String base64DeviceID = Base64Util.encodeToString(rsaEncryptByPublicKey(mDeviceID.getBytes()));
             mPreferences.edit().putString(mDeviceIDAlias, base64DeviceID).apply();
         }
     }

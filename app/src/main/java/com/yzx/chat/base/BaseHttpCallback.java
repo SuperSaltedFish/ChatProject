@@ -23,7 +23,7 @@ public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T
     public void onResponse(@Nullable JsonResponse<T> response) {
         if (response == null) {
             onFailure(null);
-        } else if (response.getState() != 200) {
+        } else if (response.getStatus() != 200) {
             onFailure(response.getMessage());
         } else if (response.getData() == null) {
             ParameterizedType pType = (ParameterizedType) response.getClass().getGenericInterfaces()[0];
