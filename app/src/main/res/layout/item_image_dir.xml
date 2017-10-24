@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="88dp"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
+
+    <ImageView
+        android:layout_marginStart="16dp"
+        android:id="@+id/ImageDirAdapter_mIvLowSource"
+        android:layout_width="88dp"
+        android:layout_height="88dp"/>
+
+    <TextView
+        android:layout_marginStart="16dp"
+        android:textSize="18sp"
+        android:textColor="@color/text_color_alpha_black"
+        android:id="@+id/ImageDirAdapter_mTvDirPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"/>
+
+</LinearLayout>

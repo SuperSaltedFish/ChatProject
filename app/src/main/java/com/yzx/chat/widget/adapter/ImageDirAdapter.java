@@ -1,0 +1,80 @@
+package com.yzx.chat.widget.adapter;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.yzx.chat.R;
+import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.util.GlideUtil;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * Created by YZX on 2017年08月19日.
+ * 生命太短暂,不要去做一些根本没有人想要的东西
+ */
+
+public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.ItemView> {
+
+    private List<String> mImageDirPath;
+    private Map<String, List<String>> mGroupingMap;
+
+    public ImageDirAdapter(List<String> imageDirPath, Map<String, List<String>> groupingMap) {
+        mImageDirPath = imageDirPath;
+        mGroupingMap = groupingMap;
+    }
+
+    @Override
+    public ItemView getViewHolder(ViewGroup parent, int viewType) {
+        return new ItemView(LayoutInflater.from(mContext).inflate(R.layout.item_image_dir, parent, false));
+    }
+
+    @Override
+    public void bindDataToViewHolder(ItemView holder, int position) {
+        if(position==0){
+            holder.mTvDirPath.setText("所有图片");
+            String fileDirPath = mImageDirPath.get(position);
+            List<String> imagePathList = mGroupingMap.get(fileDirPath);
+            if(imagePathList!=null&&imagePathList.size()!=0) {
+                GlideUtil.loadFromUrl(mContext, holder.mIvLowSource, imagePathList.get(0));
+            }
+        }else {
+            position--;
+            String fileDirPath = mImageDirPath.get(position);
+            List<String> imagePathList = mGroupingMap.get(fileDirPath);
+            if(imagePathList!=null&&imagePathList.size()!=0) {
+                GlideUtil.loadFromUrl(mContext, holder.mIvLowSource, imagePathList.get(0));
+                holder.mTvDirPath.setText(String.format(Locale.getDefault(), "%s(%d)", fileDirPath.substring(fileDirPath.lastIndexOf("/")+1), imagePathList.size()));
+            }
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mImageDirPath == null ? 0 : mImageDirPath.size()+1;
+    }
+
+    final static class ItemView extends RecyclerView.ViewHolder {
+
+        TextView mTvDirPath;
+        ImageView mIvLowSource;
+
+        ItemView(View itemView) {
+            super(itemView);
+            initView();
+
+        }
+
+        private void initView() {
+            mTvDirPath = (TextView) itemView.findViewById(R.id.ImageDirAdapter_mTvDirPath);
+            mIvLowSource = (ImageView) itemView.findViewById(R.id.ImageDirAdapter_mIvLowSource);
+        }
+
+    }
+}

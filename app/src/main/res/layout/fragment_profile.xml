@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="#ffffff"
+        android:elevation="4dp">
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/temp_share_image"/>
+
+        <com.yzx.chat.widget.view.CircleImageView
+            android:id="@+id/ProfileFragment_mIvHeadImage"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="56dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/temp_head_image"/>
+
+        <TextView
+            android:id="@+id/ProfileFragment_mTvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ProfileFragment_mIvHeadImage"
+            android:layout_centerHorizontal="true"
+            android:text="我就是一个名字"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/temp1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/ProfileFragment_mTvName"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_moments"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignTop="@+id/temp1"
+            android:layout_toEndOf="@+id/temp1"
+            android:gravity="center_vertical"
+            android:text="Email"
+            android:textColor="@color/theme_main_color"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_alignBottom="@+id/temp1"
+            android:layout_toEndOf="@+id/temp1"
+            android:gravity="center_vertical"
+            android:text="244546875@qq.com"
+            android:textColor="@color/text_color_alpha_black"
+            android:textSize="15sp"/>
+
+
+        <ImageView
+            android:id="@+id/temp2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/temp1"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_moments"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignTop="@+id/temp2"
+            android:layout_toEndOf="@+id/temp2"
+            android:gravity="center_vertical"
+            android:text="Email"
+            android:textColor="@color/theme_main_color"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_alignBottom="@+id/temp2"
+            android:layout_toEndOf="@+id/temp1"
+            android:gravity="center_vertical"
+            android:text="244546875@qq.com"
+            android:textColor="@color/text_color_alpha_black"
+            android:textSize="15sp"/>
+
+
+        <ImageView
+            android:id="@+id/temp3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/temp2"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_moments"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignTop="@+id/temp3"
+            android:layout_toEndOf="@+id/temp3"
+            android:gravity="center_vertical"
+            android:text="Email"
+            android:textColor="@color/theme_main_color"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_alignBottom="@+id/temp3"
+            android:layout_toEndOf="@+id/temp3"
+            android:gravity="center_vertical"
+            android:text="244546875@qq.com"
+            android:textColor="@color/text_color_alpha_black"
+            android:textSize="15sp"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

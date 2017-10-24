@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_gravity="center">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignParentBottom="true"
+        android:background="@color/parting_line_color_alpha_black"/>
+
+    <com.yzx.chat.widget.view.HeadPortraitImageView
+        android:id="@+id/ConversationAdapter_mIvSingleHeadImage"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/temp_head_image"/>
+
+    <TextView
+        android:id="@+id/ConversationAdapter_mTvSingleTime"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/ConversationAdapter_mTvName"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:textSize="12sp"/>
+
+
+    <TextView
+        android:id="@+id/ConversationAdapter_mTvName"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_alignTop="@+id/ConversationAdapter_mIvSingleHeadImage"
+        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleHeadImage"
+        android:layout_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textColor="@color/text_color_alpha_black"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/ConversationAdapter_mTvSingleLastRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_below="@+id/ConversationAdapter_mTvName"
+        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleHeadImage"
+        android:layout_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="12sp"/>
+
+
+</RelativeLayout>

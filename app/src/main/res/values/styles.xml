@@ -1,0 +1,55 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="BaseLightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/theme_main_color</item>
+        <item name="colorPrimaryDark">@color/theme_main_color</item>
+        <item name="colorAccent">@color/theme_main_color</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowBackground">@color/theme_background_color</item>
+    </style>
+
+    <style name="BaseDarkTheme" parent="Theme.AppCompat.NoActionBar">
+        <!--<item name="colorPrimary">@color/theme_main_color</item>-->
+        <!--<item name="colorPrimaryDark">@color/theme_main_color</item>-->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="colorAccent">@color/theme_main_color</item>
+    </style>
+
+    <style name="TransparentStatusBarLightTheme" parent="BaseLightTheme">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="NoBackgroundLightTheme" parent="BaseLightTheme">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="NoBackgroundDarkTheme" parent="BaseDarkTheme">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="LoginTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_register</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="colorPrimary">@color/theme_main_color</item>
+        <item name="colorPrimaryDark">@color/theme_main_color</item>
+        <item name="colorAccent">@color/theme_main_color</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="HomePopupMenuStyle" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:overlapAnchor">false</item>
+        <item name="android:radius">4dp</item>
+        <item name="android:dropDownHorizontalOffset">-16dp</item>
+        <item name="android:popupBackground">@color/theme_main_color</item>
+        <item name="android:textColor">@color/text_main_color_white_alpha</item>
+
+    </style>
+
+</resources>

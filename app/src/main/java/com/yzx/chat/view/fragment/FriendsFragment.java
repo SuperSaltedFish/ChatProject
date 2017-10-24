@@ -1,0 +1,170 @@
+package com.yzx.chat.view.fragment;
+
+import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toolbar;
+
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.yzx.chat.R;
+import com.yzx.chat.view.activity.FriendProfileActivity;
+import com.yzx.chat.widget.adapter.FriendsAdapter;
+import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.bean.FriendBean;
+import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
+import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
+import com.yzx.chat.test.FriendsTestData;
+import com.yzx.chat.util.AnimationUtil;
+import com.yzx.chat.util.DensityUtil;
+import com.yzx.chat.widget.view.IndexBarView;
+import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
+import com.yzx.chat.widget.view.SegmentedControlView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by YZX on 2017年06月28日.
+ * 生命太短暂,不要去做一些根本没有人想要的东西
+ */
+
+public class FriendsFragment extends BaseFragment {
+
+    private RecyclerView mFriendsRecyclerView;
+    private FriendsAdapter mAdapter;
+    private IndexBarView mIndexBarView;
+    private TextView mTvIndexBarHint;
+    private Toolbar mToolbar;
+    private SmartRefreshLayout mSmartRefreshLayout;
+    private SegmentedControlView mSegmentedControlView;
+    private FloatingActionButton mFBtnAdd;
+    private LinearLayoutManager mLinearLayoutManager;
+    private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
+    private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
+    private List<FriendBean> mFriendList = new ArrayList<>();
+
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.fragment_friends;
+    }
+
+    @Override
+    protected void init(View parentView) {
+        mToolbar = (Toolbar) parentView.findViewById(R.id.FriendsFragment_mToolbar);
+        mFriendsRecyclerView = (RecyclerView) parentView.findViewById(R.id.FriendsFragment_mFriendsRecyclerView);
+        mIndexBarView = (IndexBarView) parentView.findViewById(R.id.FriendsFragment_mIndexBarView);
+        mTvIndexBarHint = (TextView) parentView.findViewById(R.id.FriendsFragment_mTvIndexBarHint);
+        mFBtnAdd = (FloatingActionButton) parentView.findViewById(R.id.FriendsFragment_mFBtnAdd);
+        mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.FriendsFragment_mSegmentedControlView);
+        mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.FriendsFragment_mSmartRefreshLayout);
+        mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
+        mAdapter = new FriendsAdapter(mFriendList);
+    }
+
+    @Override
+    protected void setView() {
+        mToolbar.setTitle("微信");
+        mToolbar.setTitleTextColor(Color.WHITE);
+
+        mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
+        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.parting_line_color_alpha_black));
+        mLetterSegmentationItemDecoration.setLineWidth(1);
+        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.parting_line_color_alpha_black));
+        mLetterSegmentationItemDecoration.setTextSize(DensityUtil.sp2px(16));
+
+        mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mFriendsRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mFriendsRecyclerView.setAdapter(mAdapter);
+        mFriendsRecyclerView.setHasFixedSize(true);
+        mFriendsRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
+        mFriendsRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
+        mFriendsRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
+
+        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_alpha_black));
+        mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
+
+        mSegmentedControlView
+                .setColors(Color.WHITE, ContextCompat.getColor(mContext, R.color.theme_main_color))
+                .setItems(new String[]{"好友", "群组"})
+                .setDefaultSelectedPosition(0)
+                .setStretch(true)
+                .update();
+
+        loadData();
+    }
+
+    private void loadData() {
+        mFriendList.addAll(FriendsTestData.getTestData());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {
+
+        @Override
+        public void onItemClick(int position, View itemView) {
+            mContext.startActivity(new Intent(mContext, FriendProfileActivity.class));
+        }
+
+        @Override
+        public void onItemLongClick(int position, View itemView) {
+
+        }
+    };
+
+
+    private final IndexBarView.OnTouchSelectedListener mIndexBarSelectedListener = new IndexBarView.OnTouchSelectedListener() {
+        @Override
+        public void onSelected(int position, String text) {
+            final int scrollPosition = mAdapter.findPositionByLetter(text);
+            if (scrollPosition >= 0) {
+                mFriendsRecyclerView.scrollToPosition(scrollPosition);
+                mFriendsRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+                        if (scrollPosition > firstPosition) {
+                            View childView = mFriendsRecyclerView.getChildAt(scrollPosition - firstPosition);
+                            int scrollY = childView.getTop() - mLetterSegmentationItemDecoration.getSpace();
+                            mFriendsRecyclerView.scrollBy(0, scrollY);
+                        }
+                    }
+                });
+            }
+            if (mFBtnAdd.getTag() == null) {
+                AnimationUtil.scaleAnim(mFBtnAdd, mFBtnAdd.getScaleX(), mFBtnAdd.getScaleY(), 0, 0, 300);
+                AnimationUtil.scaleAnim(mTvIndexBarHint, mTvIndexBarHint.getScaleX(), mTvIndexBarHint.getScaleY(), 1f, 1f, 300);
+                mFBtnAdd.setTag(true);
+            }
+            mTvIndexBarHint.setText(text);
+            mAutoEnableOverScrollListener.setEnableOverScroll(false);
+
+        }
+
+        @Override
+        public void onCancelSelected() {
+            mFBtnAdd.setTag(null);
+            AnimationUtil.scaleAnim(mTvIndexBarHint, mTvIndexBarHint.getScaleX(), mTvIndexBarHint.getScaleY(), 0, 0, 250);
+            AnimationUtil.scaleAnim(mFBtnAdd, mFBtnAdd.getScaleX(), mFBtnAdd.getScaleY(), 1f, 1f, 250);
+            mAutoEnableOverScrollListener.setEnableOverScroll(true);
+        }
+
+        @Override
+        public void onMove(int offsetPixelsY) {
+            int startOffset = mTvIndexBarHint.getHeight() / 2;
+            if (startOffset > offsetPixelsY) {
+                mTvIndexBarHint.setTranslationY(0);
+            } else if (offsetPixelsY > mIndexBarView.getHeight() - startOffset) {
+                mTvIndexBarHint.setTranslationY(mIndexBarView.getHeight() - startOffset * 2);
+            } else {
+                mTvIndexBarHint.setTranslationY(offsetPixelsY - startOffset);
+            }
+        }
+    };
+
+}

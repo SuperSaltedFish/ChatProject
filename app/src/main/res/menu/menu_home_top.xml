@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/HomeMenu_more"
+        android:icon="@drawable/ic_more"
+        app:showAsAction="always"
+        android:title="更多"
+        tools:ignore="AppCompatResource"/>
+
+
+
+</menu>
