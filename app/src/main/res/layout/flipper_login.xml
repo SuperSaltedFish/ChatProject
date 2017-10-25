@@ -72,17 +72,17 @@
         android:background="@color/parting_line_color_alpha_white" />
 
     <TextView
-        android:layout_marginTop="8dp"
         android:id="@+id/FlipperLogin_mTvLoginHint"
         android:layout_width="wrap_content"
-        android:textColor="@color/text_main_color_white"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/text_main_color_white" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginTop="24dp">
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp">
 
         <ProgressBar
             android:id="@+id/FlipperLogin_mPbLoginProgress"
@@ -92,7 +92,7 @@
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/FlipperLogin_mTvLogin"
+            android:id="@+id/FlipperLogin_mBtnLogin"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center"
@@ -108,7 +108,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -117,12 +116,15 @@
             android:layout_height="wrap_content"
             android:text="Dont't have an account?" />
 
-        <TextView
-            android:id="@+id/FlipperLogin_mTvRequestRegister"
+        <Button
+            android:id="@+id/FlipperLogin_mTvJumpToRegister"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:background="@null"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
             android:text=" Sign Up"
-            android:textColor="@android:color/white" />
+            android:textAllCaps="false" />
 
     </LinearLayout>
 

@@ -30,14 +30,18 @@ import java.util.Map;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
+    public final static int VERIFY_TYPE_NONE = 0;
+    public final static int VERIFY_TYPE_LOGIN = 1;
+    public final static int VERIFY_TYPE_REGISTER = 2;
+
     private LoginContract.View mLoginView;
     private AuthApi mAuthApi;
     private Call<JsonResponse<GetSecretKeyBean>> mGetSecretKeyCall;
     private Call<JsonResponse<LoginRegisterBean>> mLoginCall;
     private Call<JsonResponse<LoginRegisterBean>> mRegisterCall;
     private Call<JsonResponse<ObtainSMSCode>> mObtainSMSCodeCall;
-    private String mSecretKey;
-    private String mCurrVerifyType;
+    private String mServerSecretKey;
+    private int mCurrVerifyType;
 
     private AuthenticationManager mManager;
 
@@ -85,7 +89,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
         data.put("password", password);
-        mCurrVerifyType = AuthApi.SMS_CODE_TYPE_LOGIN;
+        mCurrVerifyType = VERIFY_TYPE_LOGIN;
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_LOGIN, data);
         startVerify(mObtainSMSCodeCall);
     }
@@ -94,7 +98,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     public void registerVerify(String username) {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
-        mCurrVerifyType = AuthApi.SMS_CODE_TYPE_REGISTER;
+        mCurrVerifyType = VERIFY_TYPE_REGISTER;
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_REGISTER, data);
         startVerify(mObtainSMSCodeCall);
     }
@@ -102,12 +106,13 @@ public class LoginPresenter implements LoginContract.Presenter {
     private final BaseHttpCallback<GetSecretKeyBean> mGetSecretKeyCallback = new BaseHttpCallback<GetSecretKeyBean>() {
         @Override
         protected void onSuccess(GetSecretKeyBean response) {
-            mSecretKey = response.getSecretKey();
+            mServerSecretKey = response.getSecretKey();
+
         }
 
         @Override
         protected void onFailure(String message) {
-            if(AuthApi.SMS_CODE_TYPE_LOGIN.equals(mCurrVerifyType)){
+            if(mCurrVerifyType==VERIFY_TYPE_LOGIN){
                 mLoginView.loginFailure(message);
             }else {
                 mLoginView.registerFailure(message);
@@ -116,26 +121,26 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Override
         public boolean isComplete() {
-            return mSecretKey != null;
+            return mServerSecretKey != null;
         }
     };
 
     private final BaseHttpCallback<ObtainSMSCode> mObtainSMSCodeCallback = new BaseHttpCallback<ObtainSMSCode>() {
         @Override
         protected void onSuccess(ObtainSMSCode response) {
-            if(AuthApi.SMS_CODE_TYPE_LOGIN.equals(mCurrVerifyType)){
+            if(mCurrVerifyType==VERIFY_TYPE_LOGIN){
                 if(response.isSkipVerify()){
-                    mCurrVerifyType=null;
+                    mCurrVerifyType=VERIFY_TYPE_NONE;
                 }
-                mLoginView.startLogin(response.isSkipVerify());
+                mLoginView.inputLoginVerifyCode(response.isSkipVerify());
             }else {
-                mLoginView.startRegister();
+                mLoginView.inputRegisterVerifyCode();
             }
         }
 
         @Override
         protected void onFailure(String message) {
-            if(AuthApi.SMS_CODE_TYPE_LOGIN.equals(mCurrVerifyType)){
+            if(mCurrVerifyType==VERIFY_TYPE_LOGIN){
                 mLoginView.loginFailure(message);
             }else {
                 mLoginView.registerFailure(message);
@@ -151,7 +156,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Override
         protected void onFailure(String message) {
-            if(AuthApi.SMS_CODE_TYPE_LOGIN.equals(mCurrVerifyType)){
+            if(mCurrVerifyType==VERIFY_TYPE_LOGIN){
                 mLoginView.verifyFailure(message);
             }else {
                 mLoginView.loginFailure(message);
@@ -178,7 +183,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         public String requestToString(String url, Map<String, Object> params, String requestMethod) {
             Gson gson = new GsonBuilder().create();
             String json = gson.toJson(params);
-            byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), mSecretKey.getBytes());
+            byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), Base64Util.decode(mServerSecretKey.getBytes()));
             return Base64Util.encodeToString(encryptData);
         }
 
@@ -189,7 +194,11 @@ public class LoginPresenter implements LoginContract.Presenter {
             if(data==null){
                 return null;
             }
-            String strData = new String(mManager.rsaDecryptByPrivateKey(data));
+            data = mManager.rsaDecryptByPrivateKey(data);
+            if(data==null){
+                return null;
+            }
+            String strData = new String(data);
             try {
                 Gson gson = new GsonBuilder().create();
                 return gson.fromJson(strData, genericType);
@@ -270,7 +279,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void startVerify(Call<?> afterCall) {
-        if (mSecretKey == null) {
+        if (mServerSecretKey == null) {
             initSecretKeyCall();
             sHttpExecutor.submit(mGetSecretKeyCall, afterCall);
         } else {

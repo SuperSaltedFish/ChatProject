@@ -2,16 +2,20 @@ package com.yzx.chat.view.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -22,23 +26,20 @@ import com.yzx.chat.contract.LoginContract;
 import com.yzx.chat.presenter.LoginPresenter;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.RegexUtil;
-import com.yzx.chat.util.ToastUtil;
+
+import java.util.Locale;
 
 public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> implements LoginContract.View {
 
     private final static int MIN_PASSWORD_LENGTH = 8;
-    private final static int VERIFY_TYPE_LOGIN = 1;
-    private final static int VERIFY_TYPE_REGISTER = 2;
 
     private ViewFlipper mVfPageSwitch;
     private Button mBtnLogin;
     private Button mBtnRegister;
-    private Button mBtVerify;
-    //    private ImageView mIvBackRegister;
-//    private ImageView mIvBackRegisterVerify;
-//    private TextView mTvRequestRegister;
-    //    private TextView mTvBackHomeRegister;
-//    private TextView mTvBackHomeRegisterVerify;
+    private Button mBtnVerify;
+    private Button mBtnResend;
+    private Button mBtnJumpToRegister;
+    private Button mBtnJumpToLogin;
     private ProgressBar mPbLoginProgress;
     private ProgressBar mPbRegisterProgress;
     private ProgressBar mPbVerifyProgress;
@@ -50,7 +51,13 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     private EditText mEtRegisterConfirm;
     private EditText mEtRegisterNickname;
     private TextView mTvLoginHint;
+    private TextView mTvRegisterHint;
+    private TextView mTvVerifyHint;
+    private ImageView mIvRegisterBack;
+    private ImageView mIvVerifyBack;
+
     private boolean isDisableInput;
+    private boolean isCountDownFinish;
     private int mVerifyType;
 
 
@@ -68,14 +75,12 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     private void init() {
         mVfPageSwitch = (ViewFlipper) findViewById(R.id.LoginActivity_mVfPageSwitch);
-//        mIvBackRegister = (ImageView) findViewById(R.id.FlipperRegister_mIvBackRegister);
-//        mIvBackRegisterVerify = (ImageView) findViewById(R.id.FlipperRegister_mIvBackRegisterVerify);
-//        mTvRequestRegister = (TextView) findViewById(R.id.FlipperLogin_mTvRequestRegister);
-//        mTvBackHomeRegister = (TextView) findViewById(R.id.FlipperRegister_mIvBackHomeRegister);
-//        mTvBackHomeRegisterVerify = (TextView) findViewById(R.id.FlipperRegister_mIvBackHomeRegisterVerify);
-        mBtnLogin = (Button) findViewById(R.id.FlipperLogin_mTvLogin);
+        mBtnLogin = (Button) findViewById(R.id.FlipperLogin_mBtnLogin);
         mBtnRegister = (Button) findViewById(R.id.FlipperRegister_mBtnRegister);
-        mBtVerify = (Button) findViewById(R.id.FlipperVerify_mBtVerify);
+        mBtnVerify = (Button) findViewById(R.id.FlipperVerify_mBtnVerify);
+        mBtnResend = (Button) findViewById(R.id.FlipperVerify_mBtnResend);
+        mBtnJumpToRegister = (Button) findViewById(R.id.FlipperLogin_mTvJumpToRegister);
+        mBtnJumpToLogin = (Button) findViewById(R.id.FlipperRegister_mBtnJumpToLogin);
         mPbLoginProgress = (ProgressBar) findViewById(R.id.FlipperLogin_mPbLoginProgress);
         mPbRegisterProgress = (ProgressBar) findViewById(R.id.FlipperRegister_mPbRegisterProgress);
         mPbVerifyProgress = (ProgressBar) findViewById(R.id.FlipperVerify_mPbVerifyProgress);
@@ -87,19 +92,37 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mEtRegisterPassword = (EditText) findViewById(R.id.FlipperRegister_mEtPassword);
         mEtRegisterConfirm = (EditText) findViewById(R.id.FlipperRegister_mEtConfirm);
         mTvLoginHint = (TextView) findViewById(R.id.FlipperLogin_mTvLoginHint);
+        mTvRegisterHint = (TextView) findViewById(R.id.FlipperRegister_mTvRegisterHint);
+        mTvVerifyHint = (TextView) findViewById(R.id.FlipperVerify_mTvVerifyHint);
+        mIvRegisterBack = (ImageView) findViewById(R.id.FlipperRegister_mIvRegisterBack);
+        mIvVerifyBack = (ImageView) findViewById(R.id.FlipperVerify_mIvVerifyBack);
     }
 
     private void setView() {
-//        mTvRequestRegister.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
         mBtnLogin.setOnClickListener(mOnBtnLoginClick);
         mBtnRegister.setOnClickListener(mOnBtnRegisterClick);
-        mBtVerify.setOnClickListener(mOnBtnVerifyClick);
-//        mTvRequestRegister.setOnClickListener(mOnRequestRegisterClick);
-//        mBtnNext.setOnClickListener(mOnRequestRegisterClick);
-//        mIvBackRegister.setOnClickListener(mOnPagePreviousClick);
-//        mIvBackRegisterVerify.setOnClickListener(mOnPagePreviousClick);
-//        mTvBackHomeRegister.setOnClickListener(mOnBackHomeClick);
-//        mTvBackHomeRegisterVerify.setOnClickListener(mOnBackHomeClick);
+        mBtnVerify.setOnClickListener(mOnBtnVerifyClick);
+        mBtnResend.setOnClickListener(mOnBtnResendClick);
+        mIvRegisterBack.setOnClickListener(mOnIBtnBackClick);
+        mIvVerifyBack.setOnClickListener(mOnIBtnBackClick);
+        mBtnJumpToRegister.setOnClickListener(mOnBtnJumpToRegisterClick);
+        mBtnJumpToRegister.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+        mBtnJumpToLogin.setOnClickListener(mOnBtnJumpToLoginClick);
+        mBtnJumpToLogin.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+        mEtLoginUsername.addTextChangedListener(mTextWatcher);
+        mEtLoginPassword.addTextChangedListener(mTextWatcher);
+        mEtRegisterUsername.addTextChangedListener(mTextWatcher);
+        mEtRegisterPassword.addTextChangedListener(mTextWatcher);
+        mEtRegisterConfirm.addTextChangedListener(mTextWatcher);
+        mEtRegisterNickname.addTextChangedListener(mTextWatcher);
+        mEtVerifyCode.addTextChangedListener(mTextWatcher);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mVerifyCountDown.cancel();
     }
 
     private final View.OnClickListener mOnBtnLoginClick = new View.OnClickListener() {
@@ -124,7 +147,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         @Override
         public void onClick(View v) {
             if (!isDisableInput) {
-                if (mVerifyType == VERIFY_TYPE_LOGIN) {
+                if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
                     login(false);
                 } else {
                     register();
@@ -133,47 +156,77 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         }
     };
 
-//    private final View.OnClickListener mOnRequestRegisterClick = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            if (mState != CURRENT_STATE_INPUTTING) {
-//                return;
-//            }
-//            mVfPageSwitch.setDisplayedChild(1);
-//        }
-//    };
+    private final View.OnClickListener mOnBtnResendClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!isDisableInput) {
+                resendVerifyCode();
+            }
+        }
+    };
 
-    //    private final View.OnClickListener mOnPagePreviousClick = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            mVfPageSwitch.showPrevious();
-//        }
-//    };
-//
-//    private final View.OnClickListener mOnBackHomeClick = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            mVfPageSwitch.setDisplayedChild(0);
-//        }
-//    };
-//
+    private final View.OnClickListener mOnBtnJumpToRegisterClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!isDisableInput) {
+                jumpToRegisterPager();
+            }
+        }
+    };
+
+    private final View.OnClickListener mOnBtnJumpToLoginClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!isDisableInput) {
+                jumpToLoginPager();
+            }
+        }
+    };
+
+    private final View.OnClickListener mOnIBtnBackClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!isDisableInput) {
+                backPager();
+            }
+        }
+    };
 
 
-    private void switchToLoginPager() {
-        mVfPageSwitch.setDisplayedChild(0);
-    }
+    private final TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-    private void switchToRegisterPager() {
-        mVfPageSwitch.setDisplayedChild(1);
-    }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-    private void switchToVerifyPager() {
-        mVfPageSwitch.setDisplayedChild(2);
-    }
+        @Override
+        public void afterTextChanged(Editable s) {
+            mTvLoginHint.setVisibility(View.INVISIBLE);
+            mTvRegisterHint.setVisibility(View.INVISIBLE);
+            mTvVerifyHint.setVisibility(View.INVISIBLE);
+        }
+    };
 
-    private void setDisableInputState(boolean isDisable) {
-        isDisableInput = isDisable;
-    }
+    private final CountDownTimer mVerifyCountDown = new CountDownTimer(6000, 1000) {
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            int endTime = (int) (millisUntilFinished / 1000);
+            mBtnResend.setText(String.format(Locale.getDefault(), "Resend(%ds)", endTime));
+        }
+
+        @Override
+        public void onFinish() {
+            isCountDownFinish = true;
+            if (!isDisableInput) {
+                mBtnResend.setEnabled(true);
+            }
+            mBtnResend.setText("Resend");
+        }
+    };
 
 
     private void loginVerify() {
@@ -181,17 +234,18 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         final String password = mEtLoginPassword.getText().toString();
 
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-            showError(getString(R.string.LoginActivity_Error_NoneInput));
+            showError(mTvLoginHint, getString(R.string.LoginActivity_Error_NoneInput));
             return;
         }
         if (!RegexUtil.isMobile(username)) {
-            showError(getString(R.string.LoginActivity_Error_PhoneNumber));
+            showError(mTvLoginHint, getString(R.string.LoginActivity_Error_PhoneNumber));
             return;
         }
         if (password.length() < MIN_PASSWORD_LENGTH) {
-            showError(getString(R.string.LoginActivity_Error_PasswordLength) + MIN_PASSWORD_LENGTH);
+            showError(mTvLoginHint, getString(R.string.LoginActivity_Error_PasswordLength) + MIN_PASSWORD_LENGTH);
             return;
         }
+        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
         startProgressAnim(mBtnLogin, mPbLoginProgress, true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -205,10 +259,10 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         final String password = mEtLoginPassword.getText().toString();
         final String verifyCode = mEtVerifyCode.getText().toString();
         if (!isSkipVerify && TextUtils.isEmpty(verifyCode)) {
-            showError(getString(R.string.LoginActivity_Error_NoneVerify));
+            showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
             return;
         }
-        startProgressAnim(mBtVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
+        startProgressAnim(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mPresenter.login(username, password, verifyCode);
@@ -223,17 +277,22 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         final String confirm = mEtRegisterConfirm.getText().toString();
 
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirm)) {
-            showError(getString(R.string.LoginActivity_Error_NoneInput));
+            showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_NoneInput));
+            return;
+        }
+        if (!RegexUtil.isMobile(username)) {
+            showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_PhoneNumber));
             return;
         }
         if (!RegexUtil.isLegalNickname(nickname)) {
-            showError(getString(R.string.LoginActivity_Error_IllegalNickname));
+            showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_IllegalNickname));
             return;
         }
         if (!RegexUtil.isLegalPassword(password)) {
-            showError(getString(R.string.LoginActivity_Error_IllegalPassword));
+            showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_IllegalPassword));
             return;
         }
+        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
         startProgressAnim(mBtnRegister, mPbRegisterProgress, true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -249,10 +308,10 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         final String verifyCode = mEtVerifyCode.getText().toString();
 
         if (TextUtils.isEmpty(verifyCode)) {
-            showError(getString(R.string.LoginActivity_Error_NoneVerify));
+            showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
             return;
         }
-        startProgressAnim(mBtVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
+        startProgressAnim(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mPresenter.register(username, password, nickname, verifyCode);
@@ -260,13 +319,19 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         });
     }
 
-    private void showError(String errorMessage) {
-        TranslateAnimation animation = new TranslateAnimation(-8, 8, 0, 0);
-        animation.setDuration(20);
-        animation.setRepeatCount(4);
-        animation.setRepeatMode(Animation.REVERSE);
-        mTvLoginHint.setText(errorMessage);
-        mTvLoginHint.startAnimation(animation);
+    private void resendVerifyCode() {
+        if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
+            loginVerify();
+        } else {
+            registerVerify();
+        }
+    }
+
+    private void startVerifyCountDownTimer() {
+        isCountDownFinish = false;
+        mBtnResend.setEnabled(false);
+        mVerifyCountDown.cancel();
+        mVerifyCountDown.start();
     }
 
     private void startProgressAnim(final Button btn, final ProgressBar bar, final boolean isCloseAnim, Animator.AnimatorListener listener) {
@@ -301,25 +366,83 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         }
     }
 
+    private void jumpToLoginPager() {
+        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
+        if (mVfPageSwitch.getDisplayedChild() != 0) {
+            mVfPageSwitch.setDisplayedChild(0);
+        }
+    }
+
+    private void jumpToRegisterPager() {
+        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
+        if (mVfPageSwitch.getDisplayedChild() != 1) {
+            mVfPageSwitch.setDisplayedChild(1);
+        }
+    }
+
+    private void jumpToVerifyPager() {
+        if (mVfPageSwitch.getDisplayedChild() != 2) {
+            mVfPageSwitch.setDisplayedChild(2);
+        }
+        startVerifyCountDownTimer();
+    }
+
+    private void backPager() {
+        if(mVfPageSwitch.getDisplayedChild()==1){
+            jumpToLoginPager();
+        }else if(mVerifyType==LoginPresenter.VERIFY_TYPE_LOGIN){
+            jumpToLoginPager();
+        }else {
+            jumpToRegisterPager();
+        }
+
+    }
+
+    private void setDisableInputState(boolean isDisable) {
+        isDisableInput = isDisable;
+        mEtLoginUsername.setEnabled(!isDisable);
+        mEtLoginPassword.setEnabled(!isDisable);
+        mEtRegisterUsername.setEnabled(!isDisable);
+        mEtRegisterPassword.setEnabled(!isDisable);
+        mEtRegisterConfirm.setEnabled(!isDisable);
+        mEtRegisterNickname.setEnabled(!isDisable);
+        mEtVerifyCode.setEnabled(!isDisable);
+        mBtnJumpToRegister.setEnabled(!isDisable);
+        mBtnJumpToLogin.setEnabled(!isDisable);
+        mBtnResend.setEnabled((!isDisable) && isCountDownFinish);
+    }
+
+    private void showError(TextView hintView, String errorMessage) {
+        TranslateAnimation animation = new TranslateAnimation(-8, 8, 0, 0);
+        animation.setDuration(20);
+        animation.setRepeatCount(4);
+        animation.setRepeatMode(Animation.REVERSE);
+        hintView.setVisibility(View.VISIBLE);
+        hintView.setText(errorMessage);
+        hintView.startAnimation(animation);
+    }
+
     @Override
     public LoginContract.Presenter getPresenter() {
         return new LoginPresenter();
     }
 
     @Override
-    public void startLogin(boolean isSkipVerify) {
+    public void inputLoginVerifyCode(boolean isSkipVerify) {
         if (isSkipVerify) {
             login(true);
         } else {
-            switchToVerifyPager();
-            mVerifyType = VERIFY_TYPE_LOGIN;
+            jumpToVerifyPager();
+            startProgressAnim(mBtnRegister, mPbLoginProgress, false, null);
+            mVerifyType = LoginPresenter.VERIFY_TYPE_LOGIN;
         }
     }
 
     @Override
-    public void startRegister() {
-        switchToVerifyPager();
-        mVerifyType = VERIFY_TYPE_REGISTER;
+    public void inputRegisterVerifyCode() {
+        jumpToVerifyPager();
+        startProgressAnim(mBtnRegister, mPbRegisterProgress, false, null);
+        mVerifyType = LoginPresenter.VERIFY_TYPE_REGISTER;
     }
 
     @Override
@@ -336,19 +459,27 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     @Override
     public void loginFailure(String reason) {
-        startProgressAnim(mBtnLogin, mPbLoginProgress, false, null);
-        showError(reason);
+        if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
+            verifyFailure(reason);
+        } else {
+            startProgressAnim(mBtnLogin, mPbLoginProgress, false, null);
+            showError(mTvLoginHint, reason);
+        }
     }
 
     @Override
     public void registerFailure(String reason) {
-        startProgressAnim(mBtnRegister, mPbRegisterProgress, false, null);
-        showError(reason);
+        if (mVerifyType == LoginPresenter.VERIFY_TYPE_REGISTER) {
+            verifyFailure(reason);
+        } else {
+            startProgressAnim(mBtnRegister, mPbRegisterProgress, false, null);
+            showError(mTvRegisterHint, reason);
+        }
     }
 
     @Override
     public void verifyFailure(String reason) {
-        startProgressAnim(mBtVerify, mPbVerifyProgress, false, null);
-        showError(reason);
+        startProgressAnim(mBtnVerify, mPbVerifyProgress, false, null);
+        showError(mTvVerifyHint, reason);
     }
 }

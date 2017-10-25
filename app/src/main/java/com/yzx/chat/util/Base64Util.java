@@ -44,7 +44,7 @@ public class Base64Util {
         return Base64.encodeToString(data,Base64.DEFAULT);
     }
 
-    public static String encodeTooString(String data){
+    public static String encodeToString(String data){
         if(data==null){
             return null;
         }

@@ -1,26 +1,20 @@
 package com.yzx.chat.view.activity;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
-import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.AuthenticationManager;
+import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Locale;
-import java.util.UUID;
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -34,11 +28,10 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String s = AuthenticationManager.getInstance().getDeviceID();
+        String s = "{ \"status\": 200, \"data\": { \"verifyCode\": \"12345\", \"isSkipVerify\": false }, \"message\": \"Gettelephonevalidatecodesuccess\" }";
+       byte[] data =  AuthenticationManager.getInstance().rsaEncryptByPublicKey(s.getBytes());
+       s = Base64Util.encodeToString(data);
         LogUtil.e(s);
-        s = AuthenticationManager.getInstance().getDeviceID();
-        LogUtil.e(s);
-        // testRSA();
     }
 
     public void onClick(View v) {

@@ -48,7 +48,7 @@ public class RSAUtil {
     private final static String RSA = "RSA";
     private final static String PROVIDER = "AndroidKeyStore";
     private final static String ECB_PKCS1_PADDING = "RSA/ECB/PKCS1Padding";
-    private final static int DEFAULT_KEY_SIZE = 512;
+    private final static int DEFAULT_KEY_SIZE = 1024;
     private final static String CERTIFICATE_SUBJECT = "CN=YeZhiXing";
 
     private static KeyStore sKeyStore;

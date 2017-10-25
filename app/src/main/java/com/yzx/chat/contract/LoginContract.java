@@ -11,9 +11,9 @@ import com.yzx.chat.base.BaseView;
 public class LoginContract {
 
     public interface View extends BaseView<Presenter> {
-        void startLogin(boolean isSkipVerify);
+        void inputLoginVerifyCode(boolean isSkipVerify);
 
-        void startRegister();
+        void inputRegisterVerifyCode();
 
         void verifySuccess();
 
