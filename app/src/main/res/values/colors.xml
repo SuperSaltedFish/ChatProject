@@ -302,6 +302,6 @@
 
     <color name="parting_line_color_alpha_black">#38000000</color>
 
-    <color name="parting_line_color_alpha_white">#42ffffff</color>
+    <color name="parting_line_color_alpha_white">#45ffffff</color>
 
 </resources>

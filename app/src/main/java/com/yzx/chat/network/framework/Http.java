@@ -23,7 +23,7 @@ public class Http {
     public static Result doGet(String remoteUrl, String params) {
         Result result = new Result();
         try {
-            Thread.sleep(2000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -79,17 +79,17 @@ public class Http {
     public static Result doPost(String remoteUrl, String params) {
         Result result = new Result();
         try {
-            Thread.sleep(2000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         if(remoteUrl.contains("obtainSMSCode")){
             result.isSuccess=true;
-            result.response = "rweBQ+0gy8p1Ccq9U8J9vU9icYDK/lizkrB48p4v1odbnQNefEvtqdlctitI1jZ2uXiWtlKcsMhM\n" +
-                    "z8o3+NmqAwXDyFYlGNOoQXVU6tT0cIG1ZDUnRHmXD5mBqwOBFqtiWyhyzAxbPz46q94BDVqSJ7+c\n" +
-                    "MNLwFkDv8tmQLuhtjXdiwakVc6Vu1CR7j+t0X1pAqc0+qUrzvj7bs+GsPWtOwgEtv9ypWde4KFj/\n" +
-                    "JRUV7pepumytjmgIOQ1kth0Tz9vfRNUmnBrxfHYjhCaKu+vjffjh8QoCT9kQecx1p6V5IBzTf1G1\n" +
-                    "wb2jiYo21NcG2MJ6HjfH9eqTSvoEHsbIEDPvgQ==\n";
+            result.response = "fN2CLN8S+6NMFD2P7T4W3apX9dHYfbKWoPZ8zp6GVC1ahhOxZ5GLLOUYPt6Fkh//8Mh9ec5FMrpd\n" +
+                    "8YPZGP9ZQVRTTXoCYEt/QK5F26Q69ix4BtlZDvl7t+4c8w8y9/UDwcqTiHiqy1nxEwe2LcwPY/K8\n" +
+                    "a7uoyZdT4nZK4mVReVJnikSs7dTgAzn+xWCBLPuFU07KvyW25z8O0XDXAObuwLv+UeeAjBzwjsnc\n" +
+                    "I+FiyXzmuvBh6oOS4G9XA635u3M2xxtaaJEsDuVzyJySsgziwmF0lYKT0x98uqsZ1V6vv7ixXkuG\n" +
+                    "z5ydy4p6qjO8OTou78r5VFwRTuHn8mD5YGielw==\n";
         }else if(remoteUrl.contains("login")){
             result.isSuccess=true;
         }

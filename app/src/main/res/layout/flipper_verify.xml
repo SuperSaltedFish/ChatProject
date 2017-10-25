@@ -2,41 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal|bottom"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/FlipperVerify_mIvVerifyBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="start"
-        android:paddingLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/ic_back" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1">
 
-    <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:src="@drawable/logo_register" />
+        <ImageButton
+            android:id="@+id/FlipperVerify_mIBtnVerifyBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:src="@drawable/ic_back" />
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:src="@drawable/logo_register" />
+
+    </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="48dp"
         android:text="Awesome.Thanks!"
         android:textColor="@android:color/white"
-        android:textSize="24dp" />
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:textSize="26dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Please Enter Code"
+        android:text="@string/LoginActivity_Layout_InputVerifyCode"
         android:textSize="14sp" />
 
     <EditText
@@ -64,32 +67,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:maxLines="2"
-        android:text="We've sent the confirmation code toyour email.\nplease check your inbox"
+        android:text="@string/LoginActivity_Layout_VerifyCodeHint"
         android:textSize="13sp" />
 
     <TextView
         android:id="@+id/FlipperVerify_mTvVerifyHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:textColor="@color/text_main_color_white" />
 
     <Button
         android:id="@+id/FlipperVerify_mBtnResend"
         android:layout_width="112dp"
-        android:layout_height="56dp"
+        android:layout_height="48dp"
         android:layout_marginBottom="24dp"
         android:background="@null"
-        android:text="Resend"
+        android:text="@string/LoginActivity_Layout_Resend"
         android:textSize="14sp" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginTop="24dp">
+        android:layout_marginBottom="8dp">
 
         <ProgressBar
             android:id="@+id/FlipperVerify_mPbVerifyProgress"
@@ -105,8 +107,7 @@
             android:layout_marginBottom="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
-            android:background="@drawable/radius_login_bt"
-            android:text="Sign Up"
+            android:background="@drawable/radius_login_btn"
             android:textSize="13dp" />
 
     </FrameLayout>
@@ -114,10 +115,9 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_height="56dp"
         android:gravity="center"
-        android:text="Copyright © 2017-2018 咸鱼科技 版权所有"
+        android:text="@string/LoginActivity_Layout_CopyrightHint"
         android:textSize="13sp" />
 
 

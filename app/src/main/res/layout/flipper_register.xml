@@ -5,33 +5,35 @@
     android:gravity="center_horizontal|bottom"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/FlipperRegister_mIvRegisterBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="start"
-        android:paddingStart="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@null"
-        android:src="@drawable/ic_back" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Sign Up"
-        android:textColor="@android:color/white"
-        android:textSize="24sp" />
-
-    <Space
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/FlipperRegister_mIBtnRegisterBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Sign Up"
+            android:textColor="@android:color/white"
+            android:textSize="24sp" />
+
+    </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username"
+        android:text="@string/LoginActivity_Layout_Username"
         android:textSize="14sp" />
 
     <EditText
@@ -59,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Email Address"
+        android:text="@string/LoginActivity_Layout_InputNick"
         android:textSize="14sp" />
 
     <EditText
@@ -87,7 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Password"
+        android:text="@string/LoginActivity_Layout_InputPassword"
         android:textSize="14sp" />
 
     <EditText
@@ -115,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Confirm Password"
+        android:text="@string/LoginActivity_Layout_Confirm"
         android:textSize="14sp" />
 
     <EditText
@@ -149,7 +151,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp">
 
         <ProgressBar
@@ -166,8 +168,8 @@
             android:layout_gravity="center"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
-            android:background="@drawable/radius_login_bt"
-            android:text="Sign In"
+            android:background="@drawable/radius_login_btn"
+            android:text="@string/LoginActivity_Layout_Register"
             android:textSize="13dp" />
 
     </FrameLayout>
@@ -182,7 +184,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already have an account?" />
+            android:layout_marginEnd="4dp"
+            android:text="@string/LoginActivity_Layout_HaveUsernameHint" />
 
         <Button
             android:id="@+id/FlipperRegister_mBtnJumpToLogin"
@@ -190,7 +193,7 @@
             android:layout_height="56dp"
             android:background="@null"
             android:minWidth="0dp"
-            android:text=" Sign In"
+            android:text="@string/LoginActivity_Layout_Login"
             android:textAllCaps="false" />
 
     </LinearLayout>

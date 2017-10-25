@@ -12,7 +12,7 @@
         android:src="@drawable/logo_login" />
 
     <Space
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username"
+        android:text="@string/LoginActivity_Layout_Username"
         android:textSize="14sp" />
 
     <EditText
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Password"
+        android:text="@string/LoginActivity_Layout_InputPassword"
         android:textSize="14sp" />
 
     <EditText
@@ -81,7 +81,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp">
 
         <ProgressBar
@@ -98,8 +98,8 @@
             android:layout_gravity="center"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
-            android:background="@drawable/radius_login_bt"
-            android:text="Sign In"
+            android:background="@drawable/radius_login_btn"
+            android:text="@string/LoginActivity_Layout_Login"
             android:textSize="13dp" />
 
     </FrameLayout>
@@ -107,23 +107,24 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dont't have an account?" />
+            android:layout_marginEnd="4dp"
+            android:text="@string/LoginActivity_Layout_NonUsernameHint" />
 
         <Button
             android:id="@+id/FlipperLogin_mTvJumpToRegister"
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
+            android:layout_height="match_parent"
             android:background="@null"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:text=" Sign Up"
+            android:text="@string/LoginActivity_Layout_Register"
             android:textAllCaps="false" />
 
     </LinearLayout>
