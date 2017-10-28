@@ -2,20 +2,11 @@ package com.yzx.chat.network.framework;
 
 import android.support.annotation.Nullable;
 
-public interface HttpResponse {
+public interface HttpResponse<T> {
 
-    boolean isSuccess();
-
-    void setSuccess(boolean isSuccess);
-
-    void setResponse(Object response);
-
-    void setError(String response);
+    int getResponseCode();
 
     @Nullable
-    Object getResponse();
-
-    @Nullable
-    String getError();
+    T getResponse();
 
 }

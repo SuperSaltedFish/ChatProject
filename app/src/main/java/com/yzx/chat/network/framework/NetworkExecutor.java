@@ -3,6 +3,9 @@ package com.yzx.chat.network.framework;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.yzx.chat.util.LogUtil;
+
+import java.lang.reflect.Type;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -82,15 +85,16 @@ public class NetworkExecutor {
                 result = Http.doGet(request.url(), resultParams);
             }
 
-            if (!call.isHasCallback()) {
-                return;
+            if (call.isCancel()||call.getCallback()==null) {
+                return ;
             }
             final HttpResponseImpl response = new HttpResponseImpl();
-            if(result.isSuccess){
+            if(result.responseCode==200){
                 Object toObject = adapter.responseToObject(request.url(), result.response, call.getGenericType());
                 response.setSuccess(true);
                 response.setResponse(toObject);
             }else {
+                LogUtil.e(request.url()+ " HTTP ResponseCode " + result.responseCode);
                 response.setError(result.errorMessage);
             }
             if (call.isCallbackRunOnMainThread()) {

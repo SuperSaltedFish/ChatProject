@@ -7,27 +7,23 @@ import java.lang.reflect.Type;
 
 public interface Call<T> {
 
-    boolean complete(HttpResponse response);
-
     void cancel();
 
     boolean isCallbackRunOnMainThread();
 
     boolean isCancel();
 
-    boolean isHasCallback();
-
     void setCallback(@Nullable HttpCallback<T> callback);
 
     void setCallback(@Nullable HttpCallback<T> callback, boolean runOnMainThread);
+
+    HttpCallback<T> getCallback();
 
     HttpRequest getHttpRequest();
 
     void setHttpDataFormatAdapter(HttpDataFormatAdapter adapter);
 
     HttpDataFormatAdapter getHttpDataFormatAdapter();
-
-    void setGenericType(Type type);
 
     Type getGenericType();
 }

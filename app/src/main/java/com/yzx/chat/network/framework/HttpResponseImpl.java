@@ -1,6 +1,8 @@
 package com.yzx.chat.network.framework;
 
 
+import android.support.annotation.Nullable;
+
 /**
  * Created by YZX on 2017年10月14日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
@@ -8,36 +10,25 @@ package com.yzx.chat.network.framework;
 
 public class HttpResponseImpl implements HttpResponse {
 
-    private boolean isSuccess;
+    private int  mResponseCode;
     private Object mResponse;
-    private String mError;
 
-    @Override
-    public boolean isSuccess() {
-        return isSuccess;
+    public void setResponseCode(int responseCode) {
+        mResponseCode = responseCode;
     }
 
-    @Override
-    public void setSuccess(boolean success) {
-        isSuccess = success;
-    }
-
-    @Override
-    public Object getResponse() {
-        return mResponse;
-    }
-
-    @Override
     public void setResponse(Object response) {
         mResponse = response;
     }
 
     @Override
-    public String getError() {
-        return mError;
+    public int getResponseCode() {
+        return 0;
     }
 
-    public void setError(String error) {
-        mError = error;
+    @Nullable
+    @Override
+    public Object getResponse() {
+        return null;
     }
 }

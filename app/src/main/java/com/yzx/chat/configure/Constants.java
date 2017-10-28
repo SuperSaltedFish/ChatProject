@@ -6,7 +6,7 @@ package com.yzx.chat.configure;
  */
 public class Constants {
 
-    public final static String URL_API_BASE = "https://api.douban.com/v2/";
+    public final static String URL_API_BASE = "http://192.168.16.143:3000/v1/api/";
 
     public final static String RSA_KEY_ALIAS = "RSA_SecretKey";
     public final static String AES_KEY_ALIAS = "AES_SecretKey";

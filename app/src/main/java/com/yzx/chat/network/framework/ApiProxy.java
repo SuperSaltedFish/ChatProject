@@ -67,8 +67,7 @@ public class ApiProxy {
                 if (type instanceof WildcardType) {
                     throw new RuntimeException("The \"" + method.getName() + "\" method must explicitly declare the generic parameters of the returned value");
                 }
-                CallImpl call = new CallImpl(httpRequest, mDefaultHttpDataFormatAdapter);
-                call.setGenericType(type);
+                CallImpl call = new CallImpl(httpRequest, mDefaultHttpDataFormatAdapter,type);
                 return call;
             } else {
                 throw new RuntimeException("The return value of \"" + method.getName() + "\" must explicitly declare generic parameters");

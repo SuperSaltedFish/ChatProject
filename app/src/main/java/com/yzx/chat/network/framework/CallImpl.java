@@ -2,43 +2,21 @@ package com.yzx.chat.network.framework;
 
 import android.support.annotation.Nullable;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class CallImpl<T> implements Call<T> {
 
-    private WeakReference<HttpCallback<T>> mCallbackWeakReference;
+    private HttpCallback<T> mCallback;
     private HttpRequest mHttpRequest;
     private boolean isCancel;
     private boolean isCallbackRunOnMainThread;
     private HttpDataFormatAdapter mAdapter;
     private Type mGenericType;
 
-    public CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter) {
+    public CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter,Type genericType) {
         mHttpRequest = httpRequest;
         mAdapter = adapter;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean complete(HttpResponse response) {
-        boolean isComplete = false;
-        if (isCancel || mCallbackWeakReference == null) {
-            isComplete = false;
-        } else {
-            HttpCallback<T> callback = mCallbackWeakReference.get();
-            if (callback != null) {
-                if (response.isSuccess()) {
-                    callback.onResponse((T) response.getResponse());
-                } else {
-                    callback.onError(response.getError());
-                }
-                isComplete = callback.isComplete();
-            }
-        }
-        destroy();
-        return isComplete;
+        mGenericType = genericType;
     }
 
     @Override
@@ -58,24 +36,13 @@ public class CallImpl<T> implements Call<T> {
     }
 
     @Override
-    public boolean isHasCallback() {
-        return mCallbackWeakReference != null && mCallbackWeakReference.get() != null;
-    }
-
-    @Override
     public void setCallback(@Nullable HttpCallback<T> callback) {
         setCallback(callback, true);
     }
 
     @Override
     public void setCallback(@Nullable HttpCallback<T> callback, boolean runOnMainThread) {
-        if (mCallbackWeakReference != null) {
-            mCallbackWeakReference.clear();
-            mCallbackWeakReference = null;
-        }
-        if (callback != null) {
-            mCallbackWeakReference = new WeakReference<>(callback);
-        }
+        mCallback = callback;
         isCallbackRunOnMainThread = runOnMainThread;
     }
 
@@ -105,11 +72,9 @@ public class CallImpl<T> implements Call<T> {
     }
 
     private void destroy() {
-        if (mCallbackWeakReference != null) {
-            mCallbackWeakReference.clear();
-            mCallbackWeakReference = null;
-        }
+        mCallback =null;
         mAdapter = null;
+        mHttpRequest =null;
     }
 
 }
