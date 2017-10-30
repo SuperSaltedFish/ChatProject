@@ -28,15 +28,14 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      testRSA();
+
     }
 
     public void onClick(View v) {
-
     }
 
     private void testRSA() {
-        byte[] data = "3aofhaihfiaehfajdfnenfkalsfnkasnflekddddddddddddddddddddddddddddddddddddddddddddddddddddddddddjfnklaenfakelnfakmefnlkamefnkmldsnvlkmasnlkesfnelkmfnakemfaefaefadsfef||".getBytes();
+        byte[] data = "ddddddddddd||".getBytes();
         KeyPair pair = RSAUtil.generateRSAKeyPairInAndroidKeyStore("nSDanmadkiD");
         PublicKey publicKey = pair.getPublic();
         PrivateKey privateKey = pair.getPrivate();
