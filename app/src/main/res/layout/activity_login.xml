@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/LoginActivity_mVfPageSwitch"
-    android:inAnimation="@android:anim/slide_in_left"
-    android:outAnimation="@android:anim/slide_out_right"
+    android:inAnimation="@anim/view_flipper_in_right"
+    android:outAnimation="@anim/view_flipper_out_left"
     tools:context=".view.activity.LoginActivity">
 
     <include layout="@layout/flipper_login"/>

@@ -23,12 +23,12 @@ public class HttpResponseImpl implements HttpResponse {
 
     @Override
     public int getResponseCode() {
-        return 0;
+        return mResponseCode;
     }
 
     @Nullable
     @Override
     public Object getResponse() {
-        return null;
+        return mResponse;
     }
 }

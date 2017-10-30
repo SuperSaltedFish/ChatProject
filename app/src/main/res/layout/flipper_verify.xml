@@ -49,7 +49,7 @@
         android:background="@null"
         android:gravity="center"
         android:inputType="textPassword"
-        android:maxLength="30"
+        android:maxLength="5"
         android:maxLines="1"
         android:paddingBottom="16dp"
         android:paddingLeft="40dp"

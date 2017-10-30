@@ -47,6 +47,11 @@ public class CallImpl<T> implements Call<T> {
     }
 
     @Override
+    public HttpCallback<T> getCallback() {
+        return mCallback;
+    }
+
+    @Override
     public HttpRequest getHttpRequest() {
         return mHttpRequest;
     }
@@ -59,11 +64,6 @@ public class CallImpl<T> implements Call<T> {
     @Override
     public HttpDataFormatAdapter getHttpDataFormatAdapter() {
         return mAdapter;
-    }
-
-    @Override
-    public void setGenericType(Type type) {
-        mGenericType = type;
     }
 
     @Override

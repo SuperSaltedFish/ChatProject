@@ -1,9 +1,12 @@
 package com.yzx.chat.base;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.HttpCallback;
+import com.yzx.chat.network.framework.HttpResponse;
+import com.yzx.chat.util.LogUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -20,13 +23,18 @@ public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T
     protected abstract void onFailure(String message);
 
     @Override
-    public void onResponse(@Nullable JsonResponse<T> response) {
-        if (response == null) {
-            onFailure(null);
-          //  onSuccess(null);
-        } else if (response.getStatus() != 200) {
-            onFailure(response.getMessage());
-        } else if (response.getData() == null) {
+    public void onResponse(HttpResponse<JsonResponse<T>> response) {
+        if(response.getResponseCode()!=200){
+            LogUtil.e("ResponseCode:"+response.getResponseCode());
+            onFailure("数据解析失败，请稍后再试！");
+            return;
+        }
+        JsonResponse<T> jsonResponse = response.getResponse();
+        if (jsonResponse == null) {
+            onFailure("数据解析失败，请稍后再试！");
+        } else if (jsonResponse.getStatus() != 200) {
+            onFailure(jsonResponse.getMessage());
+        } else if (jsonResponse.getData() == null) {
             ParameterizedType pType = (ParameterizedType) response.getClass().getGenericInterfaces()[0];
             Type type = pType.getActualTypeArguments()[0];
             if (type != Void.class) {
@@ -35,17 +43,18 @@ public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T
                 onSuccess(null);
             }
         } else {
-            onSuccess(response.getData());
+            onSuccess(jsonResponse.getData());
         }
     }
 
     @Override
-    public void onError(@Nullable String error) {
-        onFailure(error);
+    public void onError(@NonNull Throwable e) {
+        e.printStackTrace();
+        onFailure("数据解析失败，请稍后再试！");
     }
 
     @Override
-    public boolean isComplete() {
-        return true;
+    public boolean isExecuteNextTask() {
+        return false;
     }
 }

@@ -26,13 +26,16 @@ public class LoginContract {
 
 
     public interface Presenter extends BasePresenter<View> {
+
+        void reset();
+
         void login(String username, String password, String verifyCode);
 
         void register(String username, String password, String nickname, String verifyCode);
 
-        void loginVerify(String username, String password);
+        void verifyLogin(String username, String password);
 
-        void registerVerify(String username);
+        void verifyRegister(String username);
     }
 
 

@@ -36,7 +36,7 @@ public class ApiManager {
         @Override
         public String requestToString(String url, Map<String, Object> params, String requestMethod) {
             JsonRequest request = new JsonRequest();
-            request.setParam(params);
+            request.setParams(params);
             request.setStatus(200);
             request.setToken(AuthenticationManager.getInstance().getToken());
             String json = sGson.toJson(request);

@@ -1,5 +1,6 @@
 package com.yzx.chat.util;
 
+import android.text.TextUtils;
 import android.util.Base64;
 
 /**
@@ -17,7 +18,7 @@ public class Base64Util {
     }
 
     public static byte[] decode(String data){
-        if(data==null){
+        if(TextUtils.isEmpty(data)){
             return null;
         }
         return Base64.decode(data,Base64.DEFAULT);
@@ -31,7 +32,7 @@ public class Base64Util {
     }
 
     public static byte[] encode(String data){
-        if(data==null){
+        if(TextUtils.isEmpty(data)){
             return null;
         }
         return encode(data.getBytes());
@@ -45,7 +46,7 @@ public class Base64Util {
     }
 
     public static String encodeToString(String data){
-        if(data==null){
+        if(TextUtils.isEmpty(data)){
             return null;
         }
         return encodeToString(data.getBytes());

@@ -23,29 +23,16 @@ public class Http {
 
     @NonNull
     public static Result doGet(String remoteUrl, String params) {
+        LogUtil.e("开始访问："+remoteUrl);
         Result result = new Result();
-//        try {
-//            Thread.sleep(100);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        if(remoteUrl.contains("getSecretKey")){
-//            result.isSuccess=true;
-//            result.response = "{ \"status\": 200, \"data\": { \"secretKey\": \"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgXeud2ZEneOpJ1gy67F4YmI7E\n" +
-//                    "IZtZ927zuU29v1J5OyG8QqI09UDo7izh78qMMRV36pIGM0hbt4lKKsw3oB1migKf\n" +
-//                    "wG2vPvzhkcj+hdwtBB7XkCPBTHpsKkiTG4yyqQs2gZcFLn/K2m9DuqvgZ+XgQf98\n" +
-//                    "inykJaFkaltJCEwkawIDAQAB\n\" }, \"message\": \"asd\" }";
-//        }
-
-
         do {
             HttpURLConnection conn = null;
             try {
                 URL url;
-                if(!TextUtils.isEmpty(params)){
-                     url = new URL(remoteUrl + "?" + params);
-                }else {
-                     url = new URL(remoteUrl);
+                if (!TextUtils.isEmpty(params)) {
+                    url = new URL(remoteUrl + "?" + params);
+                } else {
+                    url = new URL(remoteUrl);
                 }
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setUseCaches(true);
@@ -56,7 +43,6 @@ public class Http {
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 conn.setReadTimeout(READ_TIMEOUT);
             } catch (IOException e) {
-                e.printStackTrace();
                 if (conn != null) {
                     conn.disconnect();
                 }
@@ -73,7 +59,6 @@ public class Http {
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 result.throwable = e;
             }
         } while (false);
@@ -83,23 +68,8 @@ public class Http {
 
     @NonNull
     public static Result doPost(String remoteUrl, String params) {
+        LogUtil.e("开始访问："+remoteUrl);
         Result result = new Result();
-//        try {
-//            Thread.sleep(100);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        if(remoteUrl.contains("obtainSMSCode")){
-//            result.isSuccess=true;
-//            result.response = "fN2CLN8S+6NMFD2P7T4W3apX9dHYfbKWoPZ8zp6GVC1ahhOxZ5GLLOUYPt6Fkh//8Mh9ec5FMrpd\n" +
-//                    "8YPZGP9ZQVRTTXoCYEt/QK5F26Q69ix4BtlZDvl7t+4c8w8y9/UDwcqTiHiqy1nxEwe2LcwPY/K8\n" +
-//                    "a7uoyZdT4nZK4mVReVJnikSs7dTgAzn+xWCBLPuFU07KvyW25z8O0XDXAObuwLv+UeeAjBzwjsnc\n" +
-//                    "I+FiyXzmuvBh6oOS4G9XA635u3M2xxtaaJEsDuVzyJySsgziwmF0lYKT0x98uqsZ1V6vv7ixXkuG\n" +
-//                    "z5ydy4p6qjO8OTou78r5VFwRTuHn8mD5YGielw==\n";
-//        }else if(remoteUrl.contains("login")){
-//            result.isSuccess=true;
-//        }
-
         do {
             HttpURLConnection conn = null;
             try {
@@ -115,7 +85,6 @@ public class Http {
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 conn.setReadTimeout(READ_TIMEOUT);
             } catch (IOException e) {
-                e.printStackTrace();
                 if (conn != null) {
                     conn.disconnect();
                 }
@@ -132,7 +101,6 @@ public class Http {
                     bufferedWriter.write(params);
                     bufferedWriter.flush();
                 } catch (IOException e) {
-                    e.printStackTrace();
                     conn.disconnect();
                     result.throwable = e;
                     break;
@@ -142,7 +110,6 @@ public class Http {
                             bufferedWriter.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                            result.throwable = e;
                         }
                     }
                 }
@@ -156,7 +123,6 @@ public class Http {
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 result.throwable = e;
             }
         } while (false);
@@ -164,7 +130,10 @@ public class Http {
         return result;
     }
 
-    private static void readDataFromInputStreamByString(InputStream in, int dataLength, Result result) {
+    private static void readDataFromInputStreamByString(InputStream in, int dataLength, Result result) throws IOException {
+        if(dataLength<1){
+            dataLength=16;
+        }
         BufferedReader responseReader = null;
         try {
             char[] buff = new char[1024];
@@ -175,24 +144,45 @@ public class Http {
                 content.append(buff, 0, readLen);
             }
             result.responseContent = content.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            result.throwable= e;
         } finally {
             if (responseReader != null) {
                 try {
                     responseReader.close();
                 } catch (IOException e) {
-                    result.throwable=e;
+                    e.printStackTrace();
                 }
             }
         }
     }
 
     public static class Result {
-        public int responseCode;
-        public String responseContent;
-        public Throwable throwable;
+        private int responseCode;
+        private String responseContent;
+        private Throwable throwable;
+
+        public int getResponseCode() {
+            return responseCode;
+        }
+
+        public String getResponseContent() {
+            return responseContent;
+        }
+
+        public Throwable getThrowable() {
+            return throwable;
+        }
+
+        public void setResponseCode(int responseCode) {
+            this.responseCode = responseCode;
+        }
+
+        public void setResponseContent(String responseContent) {
+            this.responseContent = responseContent;
+        }
+
+        public void setThrowable(Throwable throwable) {
+            this.throwable = throwable;
+        }
     }
 
 }

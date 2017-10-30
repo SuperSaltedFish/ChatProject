@@ -254,14 +254,16 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             showError(mTvLoginHint, getString(R.string.LoginActivity_Error_PasswordLength) + MIN_PASSWORD_LENGTH);
             return;
         }
-        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
+        if(!isReVerify){
+            mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
+        }
         if (isReVerify) {
-            mPresenter.loginVerify(username, password);
+            mPresenter.verifyLogin(username, password);
         } else {
             startProgressAnim(mBtnLogin, mPbLoginProgress, true, new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mPresenter.loginVerify(username, password);
+                    mPresenter.verifyLogin(username, password);
                 }
             });
         }
@@ -270,15 +272,20 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     private void login(boolean isSkipVerify) {
         final String username = mEtLoginUsername.getText().toString();
         final String password = mEtLoginPassword.getText().toString();
-        final String verifyCode = mEtVerifyCode.getText().toString();
-        if (!isSkipVerify && TextUtils.isEmpty(verifyCode)) {
-            showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
-            return;
+         String verifyCode = mEtVerifyCode.getText().toString();
+        if (!isSkipVerify ) {
+            if( TextUtils.isEmpty(verifyCode)) {
+                showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
+                return;
+            }
+        }else {
+            verifyCode = "";
         }
+        final String finalVerifyCode = verifyCode;
         startProgressAnim(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mPresenter.login(username, password, verifyCode);
+                mPresenter.login(username, password, finalVerifyCode);
             }
         });
     }
@@ -305,14 +312,16 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_IllegalPassword));
             return;
         }
-        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
+        if(!isReVerify){
+            mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
+        }
         if (isReVerify) {
-            mPresenter.registerVerify(username);
+            mPresenter.verifyRegister(username);
         } else {
             startProgressAnim(mBtnRegister, mPbRegisterProgress, true, new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mPresenter.registerVerify(username);
+                    mPresenter.verifyRegister(username);
                 }
             });
         }
@@ -414,6 +423,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
                 jumpToLoginPager();
                 break;
             case 2:
+                mPresenter.reset();
                 if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
                     jumpToLoginPager();
                 } else {
@@ -482,7 +492,11 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     @Override
     public void verifySuccess() {
-        AnimationUtil.circularRevealShowByFullActivityAnim(LoginActivity.this, mPbVerifyProgress, R.color.theme_main_color, new AnimatorListenerAdapter() {
+        ProgressBar bar = mPbVerifyProgress;
+        if(mVfPageSwitch.getDisplayedChild()==0){
+            bar = mPbLoginProgress;
+        }
+        AnimationUtil.circularRevealShowByFullActivityAnim(LoginActivity.this, bar, R.color.theme_main_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();

@@ -17,7 +17,7 @@ public interface AuthApi {
     Call<JsonResponse<LoginRegisterBean>> login(@HttpParam("telephone") String username,
                                                 @HttpParam("password") String password,
                                                 @HttpParam("deviceID") String deviceID,
-                                                @HttpParam("publicKey") String publicKey,
+                                                @HttpParam("clientPublicKey") String publicKey,
                                                 @HttpParam("verifyCode") String verifyCode);
 
     @HttpApi(RequestMethod = "POST", Path = "auth/register")
@@ -25,13 +25,13 @@ public interface AuthApi {
                                                    @HttpParam("password") String password,
                                                    @HttpParam("nickname") String nickname,
                                                    @HttpParam("deviceID") String deviceID,
-                                                   @HttpParam("publicKey") String publicKey,
+                                                   @HttpParam("clientPublicKey") String publicKey,
                                                    @HttpParam("verifyCode") String verifyCode);
 
     @HttpApi(RequestMethod = "POST", Path = "auth/obtainSMSCode")
     Call<JsonResponse<ObtainSMSCode>> obtainSMSCode(@HttpParam("telephone") String username,
-                                                    @HttpParam("type") String type,
-                                                    @HttpParam("publicKey") String publicKey,
+                                                    @HttpParam("codeType") String type,
+                                                    @HttpParam("clientPublicKey") String publicKey,
                                                     @HttpParam("data") Object data);
 
 }

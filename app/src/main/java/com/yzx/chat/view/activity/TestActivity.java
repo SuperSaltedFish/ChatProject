@@ -28,10 +28,7 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String s = "{ \"status\": 200, \"data\": { \"verifyCode\": \"12345\", \"isSkipVerify\": false }, \"message\": \"Gettelephonevalidatecodesuccess\" }";
-       byte[] data =  AuthenticationManager.getInstance().rsaEncryptByPublicKey(s.getBytes());
-       s = Base64Util.encodeToString(data);
-        LogUtil.e(s);
+      testRSA();
     }
 
     public void onClick(View v) {
@@ -39,8 +36,8 @@ public class TestActivity extends BaseCompatActivity {
     }
 
     private void testRSA() {
-        byte[] data = "3||".getBytes();
-        KeyPair pair = RSAUtil.generateRSAKeyPair();
+        byte[] data = "3aofhaihfiaehfajdfnenfkalsfnkasnflekddddddddddddddddddddddddddddddddddddddddddddddddddddddddddjfnklaenfakelnfakmefnlkamefnkmldsnvlkmasnlkesfnelkmfnakemfaefaefadsfef||".getBytes();
+        KeyPair pair = RSAUtil.generateRSAKeyPairInAndroidKeyStore("nSDanmadkiD");
         PublicKey publicKey = pair.getPublic();
         PrivateKey privateKey = pair.getPrivate();
         try {
@@ -48,9 +45,9 @@ public class TestActivity extends BaseCompatActivity {
             data = RSAUtil.encryptByPublicKey(data, publicKey);
             data = RSAUtil.decryptByPrivateKey(data, privateKey);
             Log.e("dawd", new String(data));
-            data = RSAUtil.encryptByPrivateKey(data, privateKey);
-            data = RSAUtil.decryptByPublicKey(data, publicKey);
-            Log.e("dawd", new String(data));
+//            data = RSAUtil.encryptByPrivateKey(data, privateKey);
+//            data = RSAUtil.decryptByPublicKey(data, publicKey);
+//            Log.e("dawd", new String(data));
         } catch (Exception e) {
             e.printStackTrace();
 

@@ -41,18 +41,18 @@ public class NetworkExecutor {
                 new ArrayBlockingQueue<Runnable>(32));
     }
 
-    public void submit(Call<?> ...mCalls) {
-        if (mCalls == null||mCalls.length==0) {
+    public void submit(Call<?>... mCalls) {
+        if (mCalls == null || mCalls.length == 0) {
             return;
         }
-        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, 0, mCalls.length,this));
+        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, 0, mCalls.length, this));
     }
 
     public void submit(Call<?>[] mCalls, int startIndex, int length) {
-        if (mCalls == null||length==0||startIndex==length) {
+        if (mCalls == null || length == 0 || startIndex == length) {
             return;
         }
-        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, startIndex, length,this));
+        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, startIndex, length, this));
     }
 
 
@@ -62,7 +62,7 @@ public class NetworkExecutor {
         private int mLength;
         private NetworkExecutor mExecutor;
 
-        public NetworkRunnable(Call<?>[] call, int startIndex, int length,NetworkExecutor executor) {
+        public NetworkRunnable(Call<?>[] call, int startIndex, int length, NetworkExecutor executor) {
             mCalls = call;
             mStartIndex = startIndex;
             mLength = length;
@@ -71,7 +71,7 @@ public class NetworkExecutor {
 
         @Override
         public void run() {
-            final Call<?> call = mCalls[mStartIndex++];
+            final Call call = mCalls[mStartIndex++];
             if (call.isCancel()) {
                 return;
             }
@@ -84,42 +84,83 @@ public class NetworkExecutor {
             } else {
                 result = Http.doGet(request.url(), resultParams);
             }
+            Throwable throwable = result.getThrowable();
+            if (throwable != null) {
+                error(call, throwable);
+            } else {
+                HttpResponseImpl response = new HttpResponseImpl();
+                int responseCode = result.getResponseCode();
+                response.setResponseCode(responseCode);
+                if (responseCode == 200) {
+                    try {
+                        Object toObject = adapter.responseToObject(request.url(), result.getResponseContent(), call.getGenericType());
+                        response.setResponse(toObject);
+                        success(call, response);
+                    } catch (Exception e) {
+                        error(call, e);
+                    }
+                }else {
+                    success(call, response);
+                }
+            }
+        }
 
-            if (call.isCancel()||call.getCallback()==null) {
-                return ;
-            }
-            final HttpResponseImpl response = new HttpResponseImpl();
-            if(result.responseCode==200){
-                Object toObject = adapter.responseToObject(request.url(), result.response, call.getGenericType());
-                response.setSuccess(true);
-                response.setResponse(toObject);
-            }else {
-                LogUtil.e(request.url()+ " HTTP ResponseCode " + result.responseCode);
-                response.setError(result.errorMessage);
-            }
+
+        @SuppressWarnings("unchecked")
+        private void success(final Call call, final HttpResponse httpResponse) {
             if (call.isCallbackRunOnMainThread()) {
                 sUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (!call.isCancel()) {
-                            if (call.complete(response) && mStartIndex < mLength){
-                                mExecutor.submit(mCalls,mStartIndex,mLength);
+                        HttpCallback callback = call.getCallback();
+                        if (!call.isCancel() && callback != null) {
+                            callback.onResponse(httpResponse);
+                            if(isExecuteNextTask(call)){
+                                mExecutor.submit(mCalls[mStartIndex]);
                             }
                         }
                     }
                 });
             } else {
-                if (!call.isCancel()) {
-                    if (call.complete(response) && mStartIndex < mLength){
-                        mExecutor.submit(mCalls,mStartIndex,mLength);
+                HttpCallback callback = call.getCallback();
+                if (!call.isCancel() && callback != null) {
+                    callback.onResponse(httpResponse);
+                    if(isExecuteNextTask(call)){
+                        mExecutor.submit(mCalls[mStartIndex]);
                     }
                 }
             }
-
-
         }
 
+        private void error(final Call call, final Throwable e) {
+            if (call.isCallbackRunOnMainThread()) {
+                sUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        HttpCallback callback = call.getCallback();
+                        if (!call.isCancel() && callback != null) {
+                            callback.onError(e);
+                            if(isExecuteNextTask(call)){
+                                mExecutor.submit(mCalls[mStartIndex]);
+                            }
+                        }
+                    }
+                });
+            } else {
+                HttpCallback callback = call.getCallback();
+                if (!call.isCancel() && callback != null) {
+                    callback.onError(e);
+                    if(isExecuteNextTask(call)){
+                        mExecutor.submit(mCalls[mStartIndex]);
+                    }
+                }
+            }
+        }
 
+        private boolean isExecuteNextTask(final Call call) {
+            HttpCallback callback = call.getCallback();
+            return mStartIndex<mLength&&!call.isCancel() && callback != null && callback.isExecuteNextTask();
+        }
     }
 
 

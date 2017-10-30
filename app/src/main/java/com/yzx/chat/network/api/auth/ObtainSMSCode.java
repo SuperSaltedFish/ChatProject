@@ -7,16 +7,16 @@ package com.yzx.chat.network.api.auth;
 
 public class ObtainSMSCode {
 
-   private boolean isSkipVerify;
+   private boolean skipVerify;
 
    private String verifyCode;
 
     public boolean isSkipVerify() {
-        return isSkipVerify;
+        return skipVerify;
     }
 
     public void setSkipVerify(boolean skipVerify) {
-        isSkipVerify = skipVerify;
+        this.skipVerify = skipVerify;
     }
 
     public String getVerifyCode() {

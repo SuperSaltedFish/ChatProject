@@ -2,6 +2,8 @@ package com.yzx.chat.network.framework;
 
 import android.support.annotation.Nullable;
 
+import org.json.JSONException;
+
 import java.lang.reflect.Type;
 import java.util.Map;
 

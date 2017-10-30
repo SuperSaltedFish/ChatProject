@@ -11,7 +11,7 @@ public class JsonRequest {
 
     private String token;
     private int status = 200;
-    private Map<String, Object> param;
+    private Map<String, Object> params;
 
     public int getStatus() {
         return status;
@@ -29,11 +29,11 @@ public class JsonRequest {
         this.token = token;
     }
 
-    public Map<String, Object> getParam() {
-        return param;
+    public Map<String, Object> getParams() {
+        return params;
     }
 
-    public void setParam(Map<String, Object> param) {
-        this.param = param;
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 }

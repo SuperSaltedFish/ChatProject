@@ -1,13 +1,14 @@
 package com.yzx.chat.network.framework;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
+
 
 public interface HttpCallback<T> {
 
-    void onResponse(@Nullable T response);
+    void onResponse(HttpResponse<T> response);
 
-    void onError(@Nullable String error);
+    void onError(@NonNull Throwable e);
 
-    boolean isComplete();
+    boolean isExecuteNextTask();
 
 }
