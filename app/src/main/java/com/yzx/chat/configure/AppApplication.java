@@ -2,9 +2,11 @@ package com.yzx.chat.configure;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
+import com.yzx.chat.broadcast.NetworkStateReceive;
 import com.yzx.chat.tool.AuthenticationManager;
 
 import java.util.List;
@@ -21,20 +23,19 @@ public class AppApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        AuthenticationManager.init(this,
-                Constants.PREFERENCES_AUTHENTICATION,
-                Constants.RSA_KEY_ALIAS,
-                Constants.AES_KEY_ALIAS,
-                Constants.TOKEN_ALIAS,
-                Constants.DEVICE_ID_ALIAS);
+        String processAppName = getProcessName(this,android.os.Process.myPid());
+        if(processAppName!=null&&processAppName.equalsIgnoreCase(getPackageName())){
+            AuthenticationManager.init(this,
+                    Constants.PREFERENCES_AUTHENTICATION,
+                    Constants.RSA_KEY_ALIAS,
+                    Constants.AES_KEY_ALIAS,
+                    Constants.TOKEN_ALIAS,
+                    Constants.DEVICE_ID_ALIAS);
 
-        int pid = android.os.Process.myPid();
-        String processAppName = getAppName(pid);
-        if (processAppName == null || !processAppName.equalsIgnoreCase(getPackageName())) {
+            NetworkStateReceive.init(this);
 
-        } else {
-         //   initChat();
         }
+
     }
 
     private void initChat() {
@@ -48,19 +49,21 @@ public class AppApplication extends Application {
         EMClient.getInstance().setDebugMode(true);
     }
 
-    private String getAppName(int pID) {
-        ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        List l = am.getRunningAppProcesses();
-        for (Object aL : l) {
-            ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (aL);
-            try {
-                if (info.pid == pID) {
-                    return info.processName;
-                }
-            } catch (Exception e) {
-                // Log.d("Process", "Error>> :"+ e.toString());
+    public static String getProcessName(Context cxt, int pid) {
+        ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
+        if(am==null){
+            return null;
+        }
+        List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
+        if (runningApps == null) {
+            return null;
+        }
+        for (ActivityManager.RunningAppProcessInfo info : runningApps) {
+            if (info.pid == pid) {
+                return info.processName;
             }
         }
         return null;
     }
+
 }

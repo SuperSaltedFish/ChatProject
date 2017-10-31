@@ -1,18 +1,17 @@
 package com.yzx.chat.broadcast;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.IntDef;
 
 import com.yzx.chat.util.LogUtil;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -21,75 +20,78 @@ import java.util.WeakHashMap;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class NetworkStateReceive extends BroadcastReceiver{
+public class NetworkStateReceive extends BroadcastReceiver {
 
     private static final String RECEIVE_INTENT_TYPE = ConnectivityManager.CONNECTIVITY_ACTION;
 
+    private static int sCurrentNetworkType = -1;
 
-    private static Map<Context,NetworkStateReceive> sReceiveMap = new WeakHashMap<>();
+    private static boolean sIsNetworkAvailable;
 
-    public static void register(Context context,OnStateChangeListener listener){
-        if(context==null||listener==null||sReceiveMap.get(context)!=null){
-            return;
-        }
+    private static List<NetworkChangeListener> sListenerList = new LinkedList<>();
 
+    public static void init(Application context) {
         IntentFilter filter = new IntentFilter(RECEIVE_INTENT_TYPE);
-        NetworkStateReceive receive = new NetworkStateReceive(listener);
-        context.registerReceiver(receive,filter);
-        sReceiveMap.put(context,receive);
+        NetworkStateReceive receive = new NetworkStateReceive();
+        context.registerReceiver(receive, filter);
     }
 
-    public static void unregister(Context context){
-        if(context==null){
-            return;
-        }
-        NetworkStateReceive receive = sReceiveMap.get(context);
-        if(receive!=null){
-            context.unregisterReceiver(receive);
-            receive.destroy();
-            sReceiveMap.remove(context);
+    public static synchronized void registerNetworkChangeListener(NetworkChangeListener listener) {
+        if (!sListenerList.contains(listener)) {
+            sListenerList.add(listener);
         }
     }
 
+    public static synchronized void unregisterNetworkChangeListener(NetworkChangeListener listener) {
+        sListenerList.remove(listener);
+    }
 
-    private OnStateChangeListener mChangeListener;
 
-    public NetworkStateReceive(OnStateChangeListener changeListener) {
-        mChangeListener = changeListener;
+    private NetworkStateReceive() {
+
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (RECEIVE_INTENT_TYPE.equals(intent.getAction())) {
-            if(mChangeListener==null){
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (manager == null) {
                 return;
             }
-            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if(manager==null){
-                return ;
-            }
             NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
-            if (activeNetwork != null && activeNetwork.isConnected()) {
-                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                    LogUtil.e("当前WiFi连接可用 ");
-                } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                    LogUtil.e("当前移动网络连接可用 ");
+            synchronized (NetworkStateReceive.class) {
+                if (activeNetwork != null && activeNetwork.isConnected()) {
+                    int type = activeNetwork.getType();
+                    if (type != sCurrentNetworkType || !sIsNetworkAvailable) {
+                        for (NetworkChangeListener l : sListenerList) {
+                            if (type != sCurrentNetworkType) {
+                                l.onNetworkTypeChange(type);
+                            }
+                            if (!sIsNetworkAvailable) {
+                                l.onConnectionStateChange(true);
+                            }
+                        }
+                    }
+                    sCurrentNetworkType = type;
+                    sIsNetworkAvailable = true;
+                } else {
+                    if (sIsNetworkAvailable) {
+                        for (NetworkChangeListener l : sListenerList) {
+                            l.onConnectionStateChange(false);
+                        }
+                    }
+                    sIsNetworkAvailable = false;
                 }
-                mChangeListener.onConnectionStatechange(true,activeNetwork.getType());
-            } else {
-                mChangeListener.onConnectionStatechange(false,-1);
-                LogUtil.e("当前没有网络，请确保你已经打开网络连接");
             }
         }
     }
 
-    public void destroy(){
-        mChangeListener=null;
-    }
 
-    public interface OnStateChangeListener {
+    public interface NetworkChangeListener {
 
-       void onConnectionStatechange(boolean isNetworkAvailable,int type);
+        void onNetworkTypeChange(int type);
+
+        void onConnectionStateChange(boolean isNetworkAvailable);
 
     }
 }
