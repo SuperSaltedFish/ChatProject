@@ -8,4 +8,22 @@ package com.yzx.chat.network.api.auth;
  */
 
 public class LoginRegisterBean {
+    private String token;
+    private String secretKey;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
 }

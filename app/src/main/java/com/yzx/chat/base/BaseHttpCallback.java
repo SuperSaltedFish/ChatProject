@@ -3,9 +3,11 @@ package com.yzx.chat.base;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.yzx.chat.R;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpResponse;
+import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.util.LogUtil;
 
 import java.lang.reflect.ParameterizedType;
@@ -26,12 +28,12 @@ public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T
     public void onResponse(HttpResponse<JsonResponse<T>> response) {
         if(response.getResponseCode()!=200){
             LogUtil.e("ResponseCode:"+response.getResponseCode());
-            onFailure("数据解析失败，请稍后再试！");
+            onFailure(AndroidTool.getString(R.string.Server_Error));
             return;
         }
         JsonResponse<T> jsonResponse = response.getResponse();
         if (jsonResponse == null) {
-            onFailure("数据解析失败，请稍后再试！");
+            onFailure(AndroidTool.getString(R.string.Server_Error));
         } else if (jsonResponse.getStatus() != 200) {
             onFailure(jsonResponse.getMessage());
         } else if (jsonResponse.getData() == null) {

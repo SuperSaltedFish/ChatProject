@@ -60,6 +60,20 @@ public class AuthenticationManager {
         mPreferences.edit().clear().apply();
     }
 
+    public boolean saveToken(String token){
+        byte[] encodeData = rsaEncryptByPublicKey(token.getBytes());
+        if(encodeData==null){
+            return false;
+        }
+        String base64Data = Base64Util.encodeToString(encodeData);
+        if(base64Data==null){
+            return false;
+        }
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(mTokenAlias,base64Data);
+        return editor.commit();
+    }
+
     public String getToken() {
         if (mToken == null && !checkHasToken()) {
             return null;
@@ -71,20 +85,24 @@ public class AuthenticationManager {
         if (mDeviceID == null) {
             createDeviceID();
         }
-        return mDeviceID;
+        return mDeviceID+"1";
     }
 
     public String getBase64RSAPublicKey() {
         return Base64Util.encodeToString(mRSAKeyPair.getPublic().getEncoded());
     }
 
-    public synchronized boolean saveAESKey(byte[] key) {
-        byte[] rsaEncrypt = rsaEncryptByPublicKey(key);
+    public synchronized boolean saveAESKey(String key) {
+        byte[] rsaEncrypt = rsaEncryptByPublicKey(key.getBytes());
         if (rsaEncrypt == null) {
             return false;
         }
+        String base64Data = Base64Util.encodeToString(rsaEncrypt);
+        if(base64Data==null){
+            return false;
+        }
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(mAESKeyAlias, Base64Util.encodeToString(rsaEncrypt));
+        editor.putString(mAESKeyAlias, base64Data);
         return editor.commit();
     }
 

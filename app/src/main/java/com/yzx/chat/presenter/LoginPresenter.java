@@ -1,10 +1,13 @@
 package com.yzx.chat.presenter;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
+import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.contract.LoginContract;
 import com.yzx.chat.network.api.JsonRequest;
@@ -15,6 +18,7 @@ import com.yzx.chat.network.api.auth.LoginRegisterBean;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
+import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.AuthenticationManager;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.util.Base64Util;
@@ -50,11 +54,13 @@ public class LoginPresenter implements LoginContract.Presenter {
     private int mCurrVerifyType;
 
     private AuthenticationManager mManager;
+    private Handler mHandler;
 
     public LoginPresenter() {
         mAuthApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
         mManager = AuthenticationManager.getInstance();
         mGson = new GsonBuilder().serializeNulls().create();
+        mHandler = new Handler(Looper.myLooper());
     }
 
     @Override
@@ -77,6 +83,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         if (mObtainSMSCodeCall != null) {
             mObtainSMSCodeCall.cancel();
         }
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -172,7 +179,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 mManager.getDeviceID(),
                 mManager.getBase64RSAPublicKey(),
                 verifyCode);
-        mLoginCall.setCallback(mLoginCallback);
+        mLoginCall.setCallback(mLoginCallback,false);
         mLoginCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
     }
 
@@ -187,7 +194,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 mManager.getDeviceID(),
                 mManager.getBase64RSAPublicKey(),
                 verifyCode);
-        mRegisterCall.setCallback(mRegisterCallback);
+        mRegisterCall.setCallback(mRegisterCallback,false);
         mRegisterCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
     }
 
@@ -200,6 +207,20 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
     }
 
+    private boolean checkVerifyInfo(LoginRegisterBean bean) {
+        String token = bean.getToken();
+        String secretKey = bean.getSecretKey();
+        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey)) {
+            return false;
+        }
+        if (!mManager.saveAESKey(secretKey)) {
+            return false;
+        }
+        if (!mManager.saveToken(token)) {
+            return false;
+        }
+        return true;
+    }
 
 
     private final BaseHttpCallback<GetSecretKeyBean> mGetSecretKeyCallback = new BaseHttpCallback<GetSecretKeyBean>() {
@@ -249,16 +270,30 @@ public class LoginPresenter implements LoginContract.Presenter {
     private final BaseHttpCallback<LoginRegisterBean> mLoginCallback = new BaseHttpCallback<LoginRegisterBean>() {
         @Override
         protected void onSuccess(LoginRegisterBean response) {
-            mLoginView.verifySuccess();
+            if (checkVerifyInfo(response)) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginView.verifySuccess();
+                    }
+                });
+            } else {
+                onFailure(AndroidTool.getString(R.string.Server_Error));
+            }
         }
 
         @Override
-        protected void onFailure(String message) {
-            if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
-                mLoginView.verifyFailure(message);
-            } else {
-                mLoginView.loginFailure(message);
-            }
+        protected void onFailure(final String message) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
+                        mLoginView.verifyFailure(message);
+                    } else {
+                        mLoginView.loginFailure(message);
+                    }
+                }
+            });
         }
     };
 
@@ -266,7 +301,12 @@ public class LoginPresenter implements LoginContract.Presenter {
     private final BaseHttpCallback<LoginRegisterBean> mRegisterCallback = new BaseHttpCallback<LoginRegisterBean>() {
         @Override
         protected void onSuccess(LoginRegisterBean response) {
-            mLoginView.verifySuccess();
+            if (checkVerifyInfo(response)) {
+                mLoginView.verifySuccess();
+            } else {
+                onFailure(AndroidTool.getString(R.string.Server_Error));
+            }
+
         }
 
         @Override

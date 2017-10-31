@@ -53,7 +53,11 @@
         <activity
             android:name=".view.activity.LoginActivity"
             android:theme="@style/LoginTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".view.activity.QrCodeScanActivity"
@@ -64,11 +68,7 @@
             android:theme="@style/BaseDarkTheme">
         </activity>
         <activity android:name=".view.activity.TestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".view.activity.FriendProfileActivity"

@@ -29,17 +29,7 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NetworkStateReceive.registerNetworkChangeListener(new NetworkStateReceive.NetworkChangeListener() {
-            @Override
-            public void onNetworkTypeChange(int type) {
-                LogUtil.e(type+"");
-            }
 
-            @Override
-            public void onConnectionStateChange(boolean isNetworkAvailable) {
-                LogUtil.e(isNetworkAvailable+"");
-            }
-        });
     }
 
     public void onClick(View v) {

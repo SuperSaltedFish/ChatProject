@@ -1,9 +1,6 @@
 package com.yzx.chat.base;
 
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.yzx.chat.network.framework.NetworkExecutor;
 
 /**
@@ -13,7 +10,6 @@ import com.yzx.chat.network.framework.NetworkExecutor;
 
 public interface BasePresenter<V extends BaseView> {
 
-    Handler sUIHnadler = new Handler(Looper.myLooper());
     NetworkExecutor sHttpExecutor = NetworkExecutor.getInstance();
 
     void attachView(V v);
