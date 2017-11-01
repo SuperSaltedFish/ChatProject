@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
@@ -18,7 +19,6 @@ import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.test.ConversationTestData;
-import com.yzx.chat.util.DensityUtil;
 import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
 
 import java.util.Collections;
@@ -132,7 +132,7 @@ public class ConversationFragment extends BaseFragment {
             super.onSelectedChanged(viewHolder, actionState);
             if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
                 viewHolder.itemView.setBackground(new ColorDrawable(Color.WHITE));
-                viewHolder.itemView.setTranslationZ(DensityUtil.dip2px(4));
+                viewHolder.itemView.setTranslationZ(AndroidTool.dip2px(4));
                 mAutoEnableOverScrollListener.setEnableOverScroll(false);
             }
         }

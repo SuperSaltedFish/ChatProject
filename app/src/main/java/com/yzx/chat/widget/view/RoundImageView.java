@@ -4,11 +4,11 @@ import android.content.Context;
 import android.graphics.Outline;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 
-import com.yzx.chat.util.DensityUtil;
 
 /**
  * Created by YZX on 2017年09月10日.
@@ -17,6 +17,7 @@ import com.yzx.chat.util.DensityUtil;
 
 public class RoundImageView extends ImageView {
     private float mRoundRadius;
+    private Context mContext;
 
     public RoundImageView(Context context) {
         this(context, null);
@@ -28,11 +29,13 @@ public class RoundImageView extends ImageView {
 
     public RoundImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         setRound();
     }
 
     private void setRound() {
-        mRoundRadius = DensityUtil.dip2px(4);
+        mRoundRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                4, mContext.getResources().getDisplayMetrics());
         this.setClipToOutline(true);
         this.setOutlineProvider(new RoundOutlineProvider(mRoundRadius));
     }

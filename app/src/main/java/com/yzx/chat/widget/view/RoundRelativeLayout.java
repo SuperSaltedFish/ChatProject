@@ -3,11 +3,11 @@ package com.yzx.chat.widget.view;
 import android.content.Context;
 import android.graphics.Outline;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.RelativeLayout;
 
-import com.yzx.chat.util.DensityUtil;
 
 /**
  * Created by YZX on 2017年09月10日.
@@ -16,6 +16,7 @@ import com.yzx.chat.util.DensityUtil;
 
 public class RoundRelativeLayout extends RelativeLayout {
     private float mRoundRadius;
+    private Context mContext;
 
     public RoundRelativeLayout(Context context) {
         this(context, null);
@@ -27,11 +28,13 @@ public class RoundRelativeLayout extends RelativeLayout {
 
     public RoundRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         setRound();
     }
 
     private void setRound() {
-        mRoundRadius = DensityUtil.dip2px(4);
+        mRoundRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                4, mContext.getResources().getDisplayMetrics());
         this.setClipToOutline(true);
         this.setOutlineProvider(new RoundOutlineProvider(mRoundRadius));
     }

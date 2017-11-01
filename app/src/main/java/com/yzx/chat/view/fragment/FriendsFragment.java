@@ -12,6 +12,7 @@ import android.widget.Toolbar;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.FriendProfileActivity;
 import com.yzx.chat.widget.adapter.FriendsAdapter;
 import com.yzx.chat.base.BaseFragment;
@@ -20,7 +21,6 @@ import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.test.FriendsTestData;
 import com.yzx.chat.util.AnimationUtil;
-import com.yzx.chat.util.DensityUtil;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
 import com.yzx.chat.widget.view.SegmentedControlView;
@@ -76,7 +76,7 @@ public class FriendsFragment extends BaseFragment {
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.parting_line_color_alpha_black));
         mLetterSegmentationItemDecoration.setLineWidth(1);
         mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.parting_line_color_alpha_black));
-        mLetterSegmentationItemDecoration.setTextSize(DensityUtil.sp2px(16));
+        mLetterSegmentationItemDecoration.setTextSize(AndroidTool.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         mFriendsRecyclerView.setLayoutManager(mLinearLayoutManager);

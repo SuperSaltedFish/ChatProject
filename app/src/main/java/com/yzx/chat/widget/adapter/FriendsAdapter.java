@@ -15,13 +15,13 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.FriendBean;
+import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.yzx.chat.util.DensityUtil.dip2px;
 
 /**
  * Created by YZX on 2017年06月29日.
@@ -171,8 +171,8 @@ public class FriendsAdapter extends BaseRecyclerViewAdapter<FriendsAdapter.ItemV
 
         private void setView() {
             Context context = mAutoCompleteTextView.getContext();
-            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) dip2px(40));
-            params.setMargins((int) dip2px(16), (int) dip2px(8), (int) dip2px(16), 0);
+            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) AndroidTool.dip2px(40));
+            params.setMargins((int) AndroidTool.dip2px(16), (int) AndroidTool.dip2px(8), (int) AndroidTool.dip2px(16), 0);
             mAutoCompleteTextView.setLayoutParams(params);
             mAutoCompleteTextView.setAdapter(mSearchAdapter);
             mAutoCompleteTextView.setThreshold(1);
@@ -181,9 +181,9 @@ public class FriendsAdapter extends BaseRecyclerViewAdapter<FriendsAdapter.ItemV
             mAutoCompleteTextView.setTextColor(ContextCompat.getColor(context, R.color.text_color_alpha_black));
             mAutoCompleteTextView.setBackground(null);
             mAutoCompleteTextView.setOnItemClickListener(mOnSearchItemClickListener);
-            mAutoCompleteTextView.setDropDownVerticalOffset((int) dip2px(8));
-            mAutoCompleteTextView.setCompoundDrawablePadding((int) dip2px(8));
-            mAutoCompleteTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context,R.drawable.ic_search),null,null,null);
+            mAutoCompleteTextView.setDropDownVerticalOffset((int) AndroidTool.dip2px(8));
+            mAutoCompleteTextView.setCompoundDrawablePadding((int) AndroidTool.dip2px(8));
+            mAutoCompleteTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, R.drawable.ic_search), null, null, null);
         }
 
         private final AdapterView.OnItemClickListener mOnSearchItemClickListener = new AdapterView.OnItemClickListener() {

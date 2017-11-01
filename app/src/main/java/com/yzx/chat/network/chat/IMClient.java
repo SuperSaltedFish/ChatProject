@@ -6,7 +6,28 @@ package com.yzx.chat.network.chat;
  */
 
 public class IMClient {
-void d(){
 
-}
+    private ChatManager mChatManager;
+
+    private GroupManager mGroupManager;
+
+    private ContactManager mContactManager;
+
+    private static IMClient sClient = new IMClient();
+
+    public static IMClient getInstance() {
+        return sClient;
+    }
+
+    public ChatManager getChatManager() {
+        return mChatManager;
+    }
+
+    public GroupManager getGroupManager() {
+        return mGroupManager;
+    }
+
+    public ContactManager getContactManager() {
+        return mContactManager;
+    }
 }

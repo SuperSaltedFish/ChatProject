@@ -1,12 +1,24 @@
 package com.yzx.chat.view.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.hyphenate.EMCallBack;
+import com.hyphenate.EMMessageListener;
+import com.hyphenate.chat.EMChatManager;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.broadcast.NetworkStateReceive;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.AuthenticationManager;
 import com.yzx.chat.util.Base64Util;
@@ -16,10 +28,10 @@ import com.yzx.chat.util.RSAUtil;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.List;
 
 
 public class TestActivity extends BaseCompatActivity {
-
 
     @Override
     protected int getLayoutID() {
@@ -30,6 +42,14 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+        
+
+            }
+        }).start();
+
     }
 
     public void onClick(View v) {
@@ -37,7 +57,7 @@ public class TestActivity extends BaseCompatActivity {
 
     private void testRSA() {
         byte[] data = "ddddddddddd||".getBytes();
-        KeyPair pair = RSAUtil.generateRSAKeyPairInAndroidKeyStore("nSDanmadkiD");
+        KeyPair pair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(this, "nSDanmadkiD");
         PublicKey publicKey = pair.getPublic();
         PrivateKey privateKey = pair.getPrivate();
         try {

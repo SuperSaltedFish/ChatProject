@@ -7,6 +7,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 /**
  * Created by YZX on 2017年10月31日.
@@ -20,7 +21,7 @@ public class AndroidTool {
     private static Context sApplicationContext;
 
     public synchronized static void init(Application context) {
-        if(sApplicationContext!=null){
+        if (sApplicationContext != null) {
             return;
         }
         sApplicationContext = context;
@@ -43,12 +44,33 @@ public class AndroidTool {
         return sScreenDensity;
     }
 
-    public static String getString(@StringRes int resID){
+    public static String getString(@StringRes int resID) {
         return sApplicationContext.getString(resID);
     }
 
     @ColorInt
-    public static int getColor(@ColorRes int resID){
-        return ContextCompat.getColor(sApplicationContext,resID);
+    public static int getColor(@ColorRes int resID) {
+        return ContextCompat.getColor(sApplicationContext, resID);
+    }
+
+    public static float dip2px(float dpValue) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dpValue, sApplicationContext.getResources().getDisplayMetrics());
+    }
+
+
+    public static float px2dip(float pxValue) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pxValue, sApplicationContext.getResources().getDisplayMetrics());
+    }
+
+    public static float px2sp(float pxValue) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, pxValue, sApplicationContext.getResources().getDisplayMetrics());
+    }
+
+
+    public static int sp2px(float spVal) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                spVal, sApplicationContext.getResources().getDisplayMetrics());
+
     }
 }

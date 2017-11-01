@@ -1,6 +1,7 @@
 package com.yzx.chat.util;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
@@ -73,14 +74,14 @@ public class RSAUtil {
     @Nullable
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static KeyPair generateRSAKeyPairInAndroidKeyStore(String keyAlias) {
-        return generateRSAKeyPairInAndroidKeyStore(keyAlias, DEFAULT_KEY_SIZE);
+    public static KeyPair generateRSAKeyPairInAndroidKeyStore(Context context,String keyAlias) {
+        return generateRSAKeyPairInAndroidKeyStore(context,keyAlias, DEFAULT_KEY_SIZE);
     }
 
     @Nullable
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static KeyPair generateRSAKeyPairInAndroidKeyStore(String keyAlias, int keySize) {
+    public static KeyPair generateRSAKeyPairInAndroidKeyStore(Context context,String keyAlias, int keySize) {
         if (sKeyStore == null && !initKeyStore()) {
             return null;
         }
@@ -96,7 +97,7 @@ public class RSAUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return generateRSAKeyPairInAndroidKeyStoreApi23(keyAlias, keySize);
         } else {
-            return generateRSAKeyPairInAndroidKeyStoreApi18(keyAlias, keySize);
+            return generateRSAKeyPairInAndroidKeyStoreApi18(context,keyAlias, keySize);
         }
     }
 
@@ -104,13 +105,13 @@ public class RSAUtil {
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private static KeyPair generateRSAKeyPairInAndroidKeyStoreApi18(String keyAlias, int keySize) {
+    private static KeyPair generateRSAKeyPairInAndroidKeyStoreApi18(Context context, String keyAlias, int keySize) {
         Calendar startTime = Calendar.getInstance();
         Calendar endTime = Calendar.getInstance();
         endTime.add(Calendar.YEAR, 10);
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(RSA, "AndroidKeyStore");
-            KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(ReflexUtil.getContext())
+            KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(context)
                     .setKeySize(keySize)
                     .setSubject(new X500Principal(CERTIFICATE_SUBJECT))
                     .setAlias(keyAlias)

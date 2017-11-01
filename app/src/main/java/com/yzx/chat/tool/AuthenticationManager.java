@@ -53,7 +53,7 @@ public class AuthenticationManager {
         mTokenAlias = tokenAlias;
         mDeviceIDAlias = deviceIDAlias;
         mPreferences = mAppContext.getSharedPreferences(preferencesFileName, Context.MODE_PRIVATE);
-        mRSAKeyPair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(rsaKeyAlias);
+        mRSAKeyPair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(mAppContext,rsaKeyAlias);
     }
 
     public synchronized void clearAuthenticationData() {

@@ -34,8 +34,8 @@ public class AppApplication extends Application {
 
             NetworkStateReceive.init(this);
 
+            initChat();
         }
-
     }
 
     private void initChat() {

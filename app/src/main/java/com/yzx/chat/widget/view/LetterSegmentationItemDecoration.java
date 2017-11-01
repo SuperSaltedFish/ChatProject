@@ -8,7 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
 import android.view.View;
 
-import com.yzx.chat.util.DensityUtil;
+import com.yzx.chat.tool.AndroidTool;
+
 
 /**
  * Created by YZX on 2017年06月29日.
@@ -60,7 +61,7 @@ public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoratio
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         if (isUninitialized) {
-            mStartDrawX = parent.getPaddingLeft() + DensityUtil.dip2px(24);
+            mStartDrawX = parent.getPaddingLeft() + AndroidTool.dip2px(24);
             mWidth = parent.getWidth() - mStartDrawX - parent.getPaddingRight();
             init();
         }

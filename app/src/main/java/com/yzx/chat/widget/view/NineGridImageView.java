@@ -2,12 +2,12 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.yzx.chat.R;
-import com.yzx.chat.util.DensityUtil;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -39,7 +39,8 @@ public class NineGridImageView extends ViewGroup {
     public NineGridImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        mSpacing = (int) DensityUtil.dip2px(4);
+        mSpacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                4, mContext.getResources().getDisplayMetrics());
     }
 
     public void setImageData(List<String> urlList) {
