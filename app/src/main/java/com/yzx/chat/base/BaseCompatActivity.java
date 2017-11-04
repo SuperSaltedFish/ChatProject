@@ -40,7 +40,10 @@ public abstract class BaseCompatActivity<P extends BasePresenter>
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutID());
+        int layout_id = getLayoutID();
+        if (layout_id != 0) {
+            setContentView(getLayoutID());
+        }
         initPresenter();
     }
 

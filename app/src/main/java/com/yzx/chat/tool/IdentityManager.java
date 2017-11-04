@@ -17,9 +17,9 @@ import java.util.UUID;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class AuthenticationManager {
+public class IdentityManager {
 
-    private static volatile AuthenticationManager sManager;
+    private static volatile IdentityManager sManager;
 
     private Context mAppContext;
     private SharedPreferences mPreferences;
@@ -33,18 +33,18 @@ public class AuthenticationManager {
 
     public synchronized static void init(Context applicationContext, String preferencesFileName,
                                          String rsaKeyAlias, String aesKeyAlias, String tokenAlias, String deviceIDAlias) {
-        sManager = new AuthenticationManager(applicationContext, preferencesFileName, rsaKeyAlias, aesKeyAlias, tokenAlias, deviceIDAlias);
+        sManager = new IdentityManager(applicationContext, preferencesFileName, rsaKeyAlias, aesKeyAlias, tokenAlias, deviceIDAlias);
     }
 
-    public static AuthenticationManager getInstance() {
+    public static IdentityManager getInstance() {
         if (sManager == null) {
             throw new RuntimeException("AuthenticationManager is not initialized");
         }
         return sManager;
     }
 
-    private AuthenticationManager(Context applicationContext, String preferencesFileName,
-                                  String rsaKeyAlias, String aesKeyAlias, String tokenAlias, String deviceIDAlias) {
+    private IdentityManager(Context applicationContext, String preferencesFileName,
+                            String rsaKeyAlias, String aesKeyAlias, String tokenAlias, String deviceIDAlias) {
         if (sManager != null) {
             throw new RuntimeException("Please use the 'getInstance' method to obtain the instance.");
         }
@@ -85,7 +85,11 @@ public class AuthenticationManager {
         if (mDeviceID == null) {
             createDeviceID();
         }
-        return mDeviceID+"1";
+        return mDeviceID;
+    }
+
+    public String getUserID(){
+        return "244546875";
     }
 
     public String getBase64RSAPublicKey() {

@@ -38,10 +38,10 @@ public class ApiManager {
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
-            request.setToken(AuthenticationManager.getInstance().getToken());
+            request.setToken(IdentityManager.getInstance().getToken());
             String json = sGson.toJson(request);
             if (json != null) {
-                return AuthenticationManager.getInstance().aesEncryptToBase64(json.getBytes());
+                return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
             }
             return null;
         }
@@ -49,7 +49,7 @@ public class ApiManager {
         @Nullable
         @Override
         public Object responseToObject(String url, String httpResponse, Type genericType) {
-            byte[] data = AuthenticationManager.getInstance().aesDecryptFromBase64String(httpResponse);
+            byte[] data = IdentityManager.getInstance().aesDecryptFromBase64String(httpResponse);
             if (data != null) {
                 try {
                     return sGson.fromJson(new String(data), genericType);

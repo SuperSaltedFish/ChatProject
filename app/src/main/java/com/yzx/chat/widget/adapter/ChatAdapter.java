@@ -11,6 +11,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.test.ChatTestData;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.List;
 
@@ -23,12 +24,18 @@ import java.util.List;
 public class ChatAdapter extends BaseRecyclerViewAdapter<ChatAdapter.ItemView> {
     private List<ChatTestData.ChatBean> mChatList;
 
+    private static int a = 1;
+
     public ChatAdapter(List<ChatTestData.ChatBean> chatList) {
         mChatList = chatList;
+        mChatList.addAll(chatList);
+        mChatList.addAll(chatList);
+        mChatList.addAll(chatList);
     }
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
+        LogUtil.e(String.valueOf(a++));
         View view = null;
         switch (viewType) {
             case ChatTestData.ChatBean.CHAT_SEND:

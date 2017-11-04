@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -32,7 +33,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
     }
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = Math.min(2,CPU_COUNT);
+    private static final int CORE_POOL_SIZE = Math.min(1,CPU_COUNT);
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
 
     private static final int MESSAGE_POST_RESULT = 0x1;
@@ -64,14 +65,10 @@ public abstract class NetworkAsyncTask<Params, Result> {
     private AtomicBoolean isCancel;
 
     public NetworkAsyncTask(Object lifeCycleDependence) {
-        this(lifeCycleDependence, Looper.getMainLooper());
-    }
-
-    public NetworkAsyncTask(Object lifeCycleDependence, Looper looper) {
         if (lifeCycleDependence != null) {
             mLifeCycleReference = new WeakReference<>(lifeCycleDependence);
         }
-        mHandler = new InternalHandler(looper);
+        mHandler = new InternalHandler( Looper.getMainLooper());
         isCancel = new AtomicBoolean(false);
     }
 
@@ -108,12 +105,17 @@ public abstract class NetworkAsyncTask<Params, Result> {
         return false;
     }
 
+    @Nullable
     public Object getLifeCycleObject() {
         if (mLifeCycleReference == null) {
             return null;
         } else {
             return mLifeCycleReference.get();
         }
+    }
+
+    public void runOnUiThread(Runnable r){
+        mHandler.post(r);
     }
 
     private synchronized void postResult(Result result){

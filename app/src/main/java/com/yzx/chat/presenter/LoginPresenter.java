@@ -19,7 +19,7 @@ import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.tool.AndroidTool;
-import com.yzx.chat.tool.AuthenticationManager;
+import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
@@ -53,12 +53,12 @@ public class LoginPresenter implements LoginContract.Presenter {
     private String mServerSecretKey;
     private int mCurrVerifyType;
 
-    private AuthenticationManager mManager;
+    private IdentityManager mManager;
     private Handler mHandler;
 
     public LoginPresenter() {
         mAuthApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
-        mManager = AuthenticationManager.getInstance();
+        mManager = IdentityManager.getInstance();
         mGson = new GsonBuilder().serializeNulls().create();
         mHandler = new Handler(Looper.myLooper());
     }

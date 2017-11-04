@@ -30,4 +30,6 @@ public class IMClient {
     public ContactManager getContactManager() {
         return mContactManager;
     }
+
+
 }
