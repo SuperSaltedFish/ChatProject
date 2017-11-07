@@ -7,7 +7,8 @@ import android.content.Context;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.yzx.chat.broadcast.NetworkStateReceive;
-import com.yzx.chat.tool.AuthenticationManager;
+import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.tool.IdentityManager;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class AppApplication extends Application {
 
         String processAppName = getProcessName(this,android.os.Process.myPid());
         if(processAppName!=null&&processAppName.equalsIgnoreCase(getPackageName())){
-            AuthenticationManager.init(this,
+            IdentityManager.init(this,
                     Constants.PREFERENCES_AUTHENTICATION,
                     Constants.RSA_KEY_ALIAS,
                     Constants.AES_KEY_ALIAS,
@@ -33,6 +34,8 @@ public class AppApplication extends Application {
                     Constants.DEVICE_ID_ALIAS);
 
             NetworkStateReceive.init(this);
+
+            AndroidTool.init(this);
 
             initChat();
         }

@@ -20,7 +20,8 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.broadcast.NetworkStateReceive;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
-import com.yzx.chat.tool.AuthenticationManager;
+
+import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
@@ -41,14 +42,23 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        new Thread(new Runnable() {
+        EMClient.getInstance().logout(true);
+        EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
             @Override
-            public void run() {
-        
-
+            public void onSuccess() {
+                LogUtil.e("dwadwd");
             }
-        }).start();
+
+            @Override
+            public void onError(int code, String error) {
+                LogUtil.e("dwadwd");
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+                LogUtil.e("dwadwd");
+            }
+        });
 
     }
 
@@ -102,8 +112,8 @@ public class TestActivity extends BaseCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String s, Object mLifeCycleObject) {
-            Log.e("onPostExecute", " adwd " + mLifeCycleObject.toString());
+        protected void onPostExecute(String s, Object lifeCycleObject) {
+            Log.e("onPostExecute", " adwd " + lifeCycleObject.toString());
         }
     }
 

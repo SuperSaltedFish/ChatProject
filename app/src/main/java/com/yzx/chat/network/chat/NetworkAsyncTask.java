@@ -29,7 +29,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
 
     protected abstract Result doInBackground(Params... params);
 
-    protected void onPostExecute(Result result, Object mLifeCycleObject) {
+    protected void onPostExecute(Result result, Object lifeCycleObject) {
     }
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();

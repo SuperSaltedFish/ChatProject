@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.yzx.chat.base.BaseCompatActivity;
@@ -36,7 +37,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     @Override
     public void complete() {
-
+        startActivity(new Intent(this,HomeActivity.class));
     }
 
     @Override

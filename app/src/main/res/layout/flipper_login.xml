@@ -63,7 +63,7 @@
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:paddingTop="16dp"
-        android:text="Password"
+        android:text="12345678"
         android:textSize="14sp" />
 
     <View

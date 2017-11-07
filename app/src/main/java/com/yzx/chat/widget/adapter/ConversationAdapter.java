@@ -1,12 +1,12 @@
 package com.yzx.chat.widget.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.hyphenate.chat.EMConversation;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ConversationBean;
@@ -23,43 +23,46 @@ import static com.yzx.chat.bean.ConversationBean.SINGLE;
  */
 
 public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ItemView> {
-    private Context mContext;
-    private List<ConversationBean> mConversationList;
 
-    public ConversationAdapter(Context context, List<ConversationBean> conversationList) {
+    private static final int CHAT = 1;
+    private static final int GROUPCHAT = 2;
+
+    private List<EMConversation> mConversationList;
+
+    public ConversationAdapter(List<EMConversation> conversationList) {
         mConversationList = conversationList;
-        mContext = context;
     }
 
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
         if (viewType == SINGLE) {
-            return new SingleView(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_single, parent, false));
+            return new SingleView(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_conversation_single, parent, false));
         } else {
-            return new GroupView(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_group, parent, false));
+            return new GroupView(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_conversation_group, parent, false));
         }
     }
 
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
-        ConversationBean conversation = mConversationList.get(position);
-        if (conversation.getConversationMode() == SINGLE) {
-            SingleView singleView = (SingleView) holder;
-            ConversationBean.Single single = (ConversationBean.Single) conversation;
-            singleView.mTvName.setText(single.getName());
-            singleView.mTvLastRecord.setText(single.getLastRecord());
-            singleView.mTvTime.setText(single.getTime());
-            singleView.mHeadPortraitImageView.setStateEnabled(true);
-            singleView.itemView.setTag(single);
-        } else {
-            GroupView groupView = (GroupView) holder;
-            ConversationBean.Group group = (ConversationBean.Group) conversation;
-            groupView.mTvName.setText(group.getName());
-            groupView.mTvLastRecord.setText(group.getLastRecord());
-            groupView.mTvTime.setText(group.getTime());
-            groupView.mHeadPortraitImageView.setStateEnabled(true);
-            groupView.itemView.setTag(group);
+        EMConversation conversation = mConversationList.get(position);
+        switch (conversation.getType()){
+            case Chat:
+                SingleView singleView = (SingleView) holder;
+                singleView.mTvName.setText(single.getName());
+                singleView.mTvLastRecord.setText(single.getLastMessage());
+                singleView.mTvTime.setText(single.getTime());
+                singleView.mHeadPortraitImageView.setStateEnabled(true);
+                singleView.itemView.setTag(single);
+                break;
+            case GroupChat:
+                GroupView groupView = (GroupView) holder;
+                groupView.mTvName.setText(group.getName());
+                groupView.mTvLastRecord.setText(group.getLastMessage());
+                groupView.mTvTime.setText(group.getTime());
+                groupView.mHeadPortraitImageView.setStateEnabled(true);
+                groupView.itemView.setTag(group);
+                break;
         }
     }
 

@@ -9,8 +9,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.hyphenate.chat.EMConversation;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.contract.ConversationContract;
+import com.yzx.chat.presenter.ConversationPresenter;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
@@ -21,6 +24,7 @@ import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.test.ConversationTestData;
 import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +33,7 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ConversationFragment extends BaseFragment {
+public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View{
 
     private RecyclerView mRecyclerView;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -37,7 +41,7 @@ public class ConversationFragment extends BaseFragment {
     private Toolbar mToolbar;
     private HomeOverflowPopupWindow mOverflowPopupWindow;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
-    private List<ConversationBean> mConversationList = ConversationTestData.getTestData();
+    private List<EMConversation> mConversationList ;
 
     @Override
     protected int getLayoutID() {
@@ -50,7 +54,8 @@ public class ConversationFragment extends BaseFragment {
         mToolbar = (Toolbar) parentView.findViewById(R.id.ConversationFragment_mToolbar);
         mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
         mOverflowPopupWindow = new HomeOverflowPopupWindow(mContext, mToolbar, R.menu.menu_home_overflow);
-        mAdapter = new ConversationAdapter(mContext, mConversationList);
+        mConversationList = new ArrayList<>(64);
+        mAdapter = new ConversationAdapter(mConversationList);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
     }
 
@@ -71,6 +76,11 @@ public class ConversationFragment extends BaseFragment {
 
     }
 
+    @Override
+    public void onFirstVisible() {
+
+
+    }
 
     private final Toolbar.OnMenuItemClickListener onOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {
         @Override
@@ -147,4 +157,15 @@ public class ConversationFragment extends BaseFragment {
 
     };
 
+    @Override
+    public ConversationContract.Presenter getPresenter() {
+        return new ConversationPresenter();
+    }
+
+    @Override
+    public void updateListView(List<EMConversation> conversationList) {
+        mConversationList.clear();
+        mConversationList.addAll(conversationList);
+        mAdapter.notifyDataSetChanged();
+    }
 }

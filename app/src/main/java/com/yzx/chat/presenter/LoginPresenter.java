@@ -302,7 +302,12 @@ public class LoginPresenter implements LoginContract.Presenter {
         @Override
         protected void onSuccess(LoginRegisterBean response) {
             if (checkVerifyInfo(response)) {
-                mLoginView.verifySuccess();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginView.verifySuccess();
+                    }
+                });
             } else {
                 onFailure(AndroidTool.getString(R.string.Server_Error));
             }
@@ -310,8 +315,13 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
 
         @Override
-        protected void onFailure(String message) {
-            mLoginView.verifyFailure(message);
+        protected void onFailure(final String message) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mLoginView.verifyFailure(message);
+                }
+            });
         }
     };
 
@@ -323,16 +333,10 @@ public class LoginPresenter implements LoginContract.Presenter {
             request.setParams(params);
             request.setStatus(200);
             String json = mGson.toJson(request);
+            LogUtil.e("request: "+json);
             byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), Base64Util.decode(mServerSecretKey.getBytes()));
             json = Base64Util.encodeToString(encryptData);
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("param", json);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return jsonObject.toString();
+            return json;
         }
 
         @Nullable
@@ -347,7 +351,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 return null;
             }
             String strData = new String(data);
-            LogUtil.e(strData);
+            LogUtil.e("response: "+strData);
             return mGson.fromJson(strData, genericType);
 
         }

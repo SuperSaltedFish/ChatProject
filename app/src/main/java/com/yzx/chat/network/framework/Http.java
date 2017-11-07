@@ -37,7 +37,7 @@ public class Http {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setUseCaches(true);
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("Content-Type", "application/raw");
+                conn.setRequestProperty("Content-Type", "text/plain");
                 //  conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setRequestProperty("Charset", "UTF-8");
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
@@ -79,7 +79,7 @@ public class Http {
                 conn.setDoInput(true);
                 conn.setUseCaches(false);
                 conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestProperty("Charset", "UTF-8");
 //               conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
@@ -93,6 +93,7 @@ public class Http {
             }
 
             if (!TextUtils.isEmpty(params)) {
+                params = "params="+params;
                 conn.setRequestProperty("Content-Length", String.valueOf(params.getBytes().length));
                 BufferedWriter bufferedWriter = null;
                 try {

@@ -21,7 +21,7 @@ public class ConversationBean implements Parcelable {
     private int mConversationMode;
 
     private String mName;
-    private String mLastRecord;
+    private String mLastMessage;
     private String mTime;
 
     public ConversationBean(@ConversationMode int conversationMode) {
@@ -42,12 +42,12 @@ public class ConversationBean implements Parcelable {
         mName = name;
     }
 
-    public String getLastRecord() {
-        return mLastRecord;
+    public String getLastMessage() {
+        return mLastMessage;
     }
 
-    public void setLastRecord(String lastRecord) {
-        mLastRecord = lastRecord;
+    public void setLastMessage(String lastMessage) {
+        mLastMessage = lastMessage;
     }
 
     public String getTime() {
@@ -72,14 +72,14 @@ public class ConversationBean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.mConversationMode);
         dest.writeString(this.mName);
-        dest.writeString(this.mLastRecord);
+        dest.writeString(this.mLastMessage);
         dest.writeString(this.mTime);
     }
 
     protected ConversationBean(Parcel in) {
         this.mConversationMode = in.readInt();
         this.mName = in.readString();
-        this.mLastRecord = in.readString();
+        this.mLastMessage = in.readString();
         this.mTime = in.readString();
     }
 

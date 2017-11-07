@@ -13,6 +13,7 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
+import com.yzx.chat.util.LogUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -40,6 +41,7 @@ public class ApiManager {
             request.setStatus(200);
             request.setToken(IdentityManager.getInstance().getToken());
             String json = sGson.toJson(request);
+            LogUtil.e("request: "+json);
             if (json != null) {
                 return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
             }
@@ -52,7 +54,9 @@ public class ApiManager {
             byte[] data = IdentityManager.getInstance().aesDecryptFromBase64String(httpResponse);
             if (data != null) {
                 try {
-                    return sGson.fromJson(new String(data), genericType);
+                    String strData = new String(data);
+                    LogUtil.e("request: "+strData);
+                    return sGson.fromJson(strData, genericType);
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
                 }

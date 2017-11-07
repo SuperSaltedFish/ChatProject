@@ -10,8 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.listener.onFragmentRequestListener;
 import com.yzx.chat.network.framework.Call;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 
 /**
@@ -19,7 +23,7 @@ import com.yzx.chat.network.framework.Call;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     @LayoutRes
     protected abstract int getLayoutID();
@@ -28,6 +32,7 @@ public abstract class BaseFragment extends Fragment {
 
     protected abstract void setView();
 
+    protected P mPresenter;
 
     public Context mContext;
     private View mParentView;
@@ -50,6 +55,7 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mContext = getActivity();
         if (mParentView == null) {
+            initPresenter();
             mParentView = inflater.inflate(getLayoutID(), container, false);
             init(mParentView);
             setView();
@@ -76,6 +82,10 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mPresenter != null) {
+            mPresenter.detachView();
+            mPresenter = null;
+        }
         mParentView = null;
     }
 
@@ -104,9 +114,31 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    public void onFirstVisible() {}
+    public void onFirstVisible() {
+    }
 
     public View getParentView() {
         return mParentView;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initPresenter() {
+        Type type = this.getClass().getGenericSuperclass();
+        if (this instanceof BaseView) {
+            BaseView view = (BaseView) this;
+            mPresenter = (P) view.getPresenter();
+            if (mPresenter != null && type instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                Type genericType = parameterizedType.getActualTypeArguments()[0];
+                Class<?>[] interfaces = mPresenter.getClass().getInterfaces();
+                for (Class c : interfaces) {
+                    if (c == genericType) {
+                        mPresenter.attachView(view);
+                        return;
+                    }
+                }
+                mPresenter = null;
+            }
+        }
     }
 }
