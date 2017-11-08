@@ -78,8 +78,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void onFirstVisible() {
-
-
+        mPresenter.refreshAllConversation();
     }
 
     private final Toolbar.OnMenuItemClickListener onOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {

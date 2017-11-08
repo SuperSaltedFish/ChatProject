@@ -69,9 +69,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             List<EMConversation> filterConversation = new ArrayList<>(allConversations.size());
             for (EMConversation conversation : allConversations) {
                 if (conversation.getAllMessages().size() != 0) {
-
-
-
                     filterConversation.add(conversation);
                 }
             }

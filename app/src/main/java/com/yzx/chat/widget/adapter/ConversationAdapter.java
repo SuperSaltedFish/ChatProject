@@ -7,10 +7,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ConversationBean;
-import com.yzx.chat.widget.view.HeadPortraitImageView;
+import com.yzx.chat.util.DateUtil;
+import com.yzx.chat.widget.view.AvatarImageView;
 
 import java.util.List;
 
@@ -22,10 +24,8 @@ import static com.yzx.chat.bean.ConversationBean.SINGLE;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ItemView> {
+public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ConversationViewHolder> {
 
-    private static final int CHAT = 1;
-    private static final int GROUPCHAT = 2;
 
     private List<EMConversation> mConversationList;
 
@@ -35,45 +35,41 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
 
     @Override
-    public ItemView getViewHolder(ViewGroup parent, int viewType) {
+    public ConversationViewHolder getViewHolder(ViewGroup parent, int viewType) {
         if (viewType == SINGLE) {
-            return new SingleView(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_conversation_single, parent, false));
+            return new SingleViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_single, parent, false));
         } else {
-            return new GroupView(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_conversation_group, parent, false));
+            return new GroupViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_group, parent, false));
         }
     }
 
     @Override
-    public void bindDataToViewHolder(ItemView holder, int position) {
+    public void bindDataToViewHolder(ConversationViewHolder holder, int position) {
         EMConversation conversation = mConversationList.get(position);
-        switch (conversation.getType()){
+        EMMessage message = conversation.getLastMessage();
+        holder.mTvName.setText(conversation.conversationId());
+        holder.mTvLastRecord.setText((((EMTextMessageBody) message.getBody()).getMessage()));
+        holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(message.getMsgTime()));
+        switch (conversation.getType()) {
             case Chat:
-                SingleView singleView = (SingleView) holder;
-                singleView.mTvName.setText(single.getName());
-                singleView.mTvLastRecord.setText(single.getLastMessage());
-                singleView.mTvTime.setText(single.getTime());
-                singleView.mHeadPortraitImageView.setStateEnabled(true);
-                singleView.itemView.setTag(single);
+                SingleViewHolder singleViewHolder = (SingleViewHolder) holder;
+                singleViewHolder.mAvatarImageView.setStateEnabled(true);
                 break;
             case GroupChat:
-                GroupView groupView = (GroupView) holder;
-                groupView.mTvName.setText(group.getName());
-                groupView.mTvLastRecord.setText(group.getLastMessage());
-                groupView.mTvTime.setText(group.getTime());
-                groupView.mHeadPortraitImageView.setStateEnabled(true);
-                groupView.itemView.setTag(group);
+                GroupViewHolder groupViewHolder = (GroupViewHolder) holder;
+                groupViewHolder.mAvatarImageView.setStateEnabled(true);
                 break;
         }
     }
 
 
     @Override
-    public void onBindViewHolder(ItemView holder, int position, List<Object> payloads) {
+    public void onBindViewHolder(ConversationViewHolder holder, int position, List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
     }
 
     @Override
-    public void onViewRecycled(ItemView holder) {
+    public void onViewRecycled(ConversationViewHolder holder) {
         super.onViewRecycled(holder);
     }
 
@@ -87,15 +83,25 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public int getItemViewType(int position) {
-        ConversationBean conversation = mConversationList.get(position);
-        return conversation.getConversationMode();
+        switch (mConversationList.get(position).getType()) {
+            case Chat:
+                return SINGLE;
+            case GroupChat:
+                return GROUP;
+            default:
+                return SINGLE;
+        }
     }
 
-    static abstract class ItemView extends RecyclerView.ViewHolder {
+    static abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
         private int mConversationMode;
 
-        ItemView(View itemView, int conversationMode) {
+        TextView mTvName;
+        TextView mTvLastRecord;
+        TextView mTvTime;
+
+        ConversationViewHolder(View itemView, int conversationMode) {
             super(itemView);
             mConversationMode = conversationMode;
 
@@ -107,33 +113,29 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     }
 
-    private final static class SingleView extends ItemView {
-        TextView mTvName;
-        TextView mTvLastRecord;
-        TextView mTvTime;
-        HeadPortraitImageView mHeadPortraitImageView;
+    private final static class SingleViewHolder extends ConversationViewHolder {
 
-        SingleView(View itemView) {
+        AvatarImageView mAvatarImageView;
+
+        SingleViewHolder(View itemView) {
             super(itemView, SINGLE);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
-            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastRecord);
+            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastMesssage);
             mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleTime);
-            mHeadPortraitImageView = (HeadPortraitImageView) itemView.findViewById(R.id.ConversationAdapter_mIvSingleHeadImage);
+            mAvatarImageView = (AvatarImageView) itemView.findViewById(R.id.ConversationAdapter_mIvSingleAvatar);
         }
     }
 
-    private final static class GroupView extends ItemView {
-        TextView mTvName;
-        TextView mTvLastRecord;
-        TextView mTvTime;
-        HeadPortraitImageView mHeadPortraitImageView;
+    private final static class GroupViewHolder extends ConversationViewHolder {
 
-        GroupView(View itemView) {
+        AvatarImageView mAvatarImageView;
+
+        GroupViewHolder(View itemView) {
             super(itemView, GROUP);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
-            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastRecord);
+            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastMessage);
             mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupTime);
-            mHeadPortraitImageView = (HeadPortraitImageView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastHeadImage);
+            mAvatarImageView = (AvatarImageView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastHeadImage);
         }
     }
 }

@@ -11,8 +11,8 @@
         android:layout_alignParentBottom="true"
         android:background="@color/parting_line_color_alpha_black"/>
 
-    <com.yzx.chat.widget.view.HeadPortraitImageView
-        android:id="@+id/ConversationAdapter_mIvSingleHeadImage"
+    <com.yzx.chat.widget.view.AvatarImageView
+        android:id="@+id/ConversationAdapter_mIvSingleAvatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_centerVertical="true"
@@ -34,8 +34,8 @@
         android:id="@+id/ConversationAdapter_mTvName"
         android:layout_width="wrap_content"
         android:layout_height="28dp"
-        android:layout_alignTop="@+id/ConversationAdapter_mIvSingleHeadImage"
-        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleHeadImage"
+        android:layout_alignTop="@+id/ConversationAdapter_mIvSingleAvatar"
+        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
         android:layout_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
         android:ellipsize="end"
         android:gravity="center_vertical"
@@ -44,11 +44,11 @@
         android:textSize="16sp"/>
 
     <TextView
-        android:id="@+id/ConversationAdapter_mTvSingleLastRecord"
+        android:id="@+id/ConversationAdapter_mTvSingleLastMesssage"
         android:layout_width="wrap_content"
         android:layout_height="28dp"
         android:layout_below="@+id/ConversationAdapter_mTvName"
-        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleHeadImage"
+        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
         android:layout_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
         android:ellipsize="end"
         android:maxLines="1"

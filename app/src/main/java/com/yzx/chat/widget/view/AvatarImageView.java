@@ -22,7 +22,7 @@ import android.util.AttributeSet;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class HeadPortraitImageView extends android.support.v7.widget.AppCompatImageView {
+public class AvatarImageView extends android.support.v7.widget.AppCompatImageView {
 
     private static final int COLOR_DRAWABLE_DIMENSION = 2;
 
@@ -48,15 +48,15 @@ public class HeadPortraitImageView extends android.support.v7.widget.AppCompatIm
     private boolean isStateEnabled;
 
 
-    public HeadPortraitImageView(Context context) {
+    public AvatarImageView(Context context) {
         this(context, null);
     }
 
-    public HeadPortraitImageView(Context context, @Nullable AttributeSet attrs) {
+    public AvatarImageView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public HeadPortraitImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AvatarImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

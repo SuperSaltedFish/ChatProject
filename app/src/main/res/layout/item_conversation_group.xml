@@ -45,7 +45,7 @@
         android:gravity="center_vertical"
         android:textSize="12sp"/>
 
-    <com.yzx.chat.widget.view.HeadPortraitImageView
+    <com.yzx.chat.widget.view.AvatarImageView
         android:id="@+id/ConversationAdapter_mTvGroupLastHeadImage"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -55,7 +55,7 @@
         android:src="@drawable/temp_head_image"/>
 
     <TextView
-        android:id="@+id/ConversationAdapter_mTvGroupLastRecord"
+        android:id="@+id/ConversationAdapter_mTvGroupLastMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/ConversationAdapter_mTvGroupLastHeadImage"
@@ -80,22 +80,22 @@
         android:layout_toStartOf="@+id/ConversationAdapter_mTvGroupTime"
         android:orientation="horizontal">
 
-        <com.yzx.chat.widget.view.HeadPortraitImageView
+        <com.yzx.chat.widget.view.AvatarImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
 
-        <com.yzx.chat.widget.view.HeadPortraitImageView
+        <com.yzx.chat.widget.view.AvatarImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
 
-        <com.yzx.chat.widget.view.HeadPortraitImageView
+        <com.yzx.chat.widget.view.AvatarImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
 
-        <com.yzx.chat.widget.view.HeadPortraitImageView
+        <com.yzx.chat.widget.view.AvatarImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
