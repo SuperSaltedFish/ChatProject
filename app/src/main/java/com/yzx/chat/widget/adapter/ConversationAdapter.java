@@ -50,14 +50,19 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         holder.mTvName.setText(conversation.conversationId());
         holder.mTvLastRecord.setText((((EMTextMessageBody) message.getBody()).getMessage()));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(message.getMsgTime()));
+        int unreadMsgCount = conversation.getUnreadMsgCount();
         switch (conversation.getType()) {
             case Chat:
                 SingleViewHolder singleViewHolder = (SingleViewHolder) holder;
-                singleViewHolder.mAvatarImageView.setStateEnabled(true);
+                if(unreadMsgCount>0){
+                    singleViewHolder.mAvatarImageView.setDigitalMode(AvatarImageView.MODE_SHOW);
+                    singleViewHolder.mAvatarImageView.setDigital(unreadMsgCount);
+                }else{
+                    singleViewHolder.mAvatarImageView.setDigitalMode(AvatarImageView.MODE_HIDE);
+                }
                 break;
             case GroupChat:
                 GroupViewHolder groupViewHolder = (GroupViewHolder) holder;
-                groupViewHolder.mAvatarImageView.setStateEnabled(true);
                 break;
         }
     }
@@ -120,7 +125,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         SingleViewHolder(View itemView) {
             super(itemView, SINGLE);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
-            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastMesssage);
+            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastMessage);
             mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleTime);
             mAvatarImageView = (AvatarImageView) itemView.findViewById(R.id.ConversationAdapter_mIvSingleAvatar);
         }

@@ -1,20 +1,19 @@
 package com.yzx.chat.widget.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.annotation.DrawableRes;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.support.annotation.ColorInt;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 /**
@@ -24,29 +23,32 @@ import android.util.AttributeSet;
 
 public class AvatarImageView extends android.support.v7.widget.AppCompatImageView {
 
-    private static final int COLOR_DRAWABLE_DIMENSION = 2;
+    public static final int MODE_HIDE = 0;
+    public static final int MODE_SHOW = 1;
+    public static final int MODE_SHOW_ONLY_SMALL_BACKGROUND = 2;
 
+    @IntDef({MODE_HIDE, MODE_SHOW, MODE_SHOW_ONLY_SMALL_BACKGROUND})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DigitalMode {
+    }
 
-    private Paint mStatePaint;
-    private Paint mBitmapPaint;
-    private Paint mStateBorderPaint;
+    private Context mContext;
 
     private int mViewWidth;
     private int mViewHeight;
-    private float mViewRadius;
-    private float mStateImageRadius;
-    private float mStateImageBorderWidth;
-    private float mOffsetX;
-    private float mOffsetY;
-    private float mStateImageCenterX;
-    private float mStateImageCenterY;
 
-    private Bitmap mBitmap;
-    private BitmapShader mShader;
-    private Matrix mMatrix;
+    private RectF mDigitalRectF;
+    private String mDigital;
+    private Paint mDigitalPaint;
+    private Paint mDigitalBackgroundPaint;
+    private float mDigitalTextSize;
+    private int mDigitalPadding;
+    private int mDigitalTextHeight;
+    private int mDigitalMode;
+    private int mDigitalBackgroundColor;
+    private int mDigitalTextColor;
 
-    private boolean isStateEnabled;
-
+    private boolean isReset = true;
 
     public AvatarImageView(Context context) {
         this(context, null);
@@ -58,141 +60,133 @@ public class AvatarImageView extends android.support.v7.widget.AppCompatImageVie
 
     public AvatarImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
+        mContext = context;
 
-    private void init() {
+        mDigitalBackgroundPaint = new Paint();
+        mDigitalBackgroundPaint.setStyle(Paint.Style.FILL);
+        mDigitalBackgroundPaint.setAntiAlias(true);
 
-        mMatrix = new Matrix();
+        mDigitalPaint = new Paint();
+        mDigitalPaint.setStyle(Paint.Style.FILL);
+        mDigitalPaint.setAntiAlias(true);
+        mDigitalPaint.setTextAlign(Paint.Align.CENTER);
 
-        mBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mStateBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mStatePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        mStateBorderPaint.setColor(Color.WHITE);
-
-        mStatePaint.setColor(Color.parseColor("#00cdff"));
-        mStatePaint.setStyle(Paint.Style.FILL);
-
+        setDefault();
 
     }
 
-    private void initSize() {
-        int minSize = Math.min(mViewWidth, mViewHeight);
-        if (mBitmap != null && minSize != 0) {
-            if (isStateEnabled) {
-                mStateImageRadius = minSize / 13;
-                mStateImageBorderWidth = mStateImageRadius / 2;
-                mViewRadius = minSize / 2f - mStateImageRadius - mStateImageBorderWidth;
-                mOffsetX = mViewWidth / 2f - mViewRadius;
-                mOffsetY = (mViewHeight - mViewRadius * 2 - mStateImageRadius - mStateImageBorderWidth) / 2f;
-                mStateImageCenterX = mViewRadius;
-                mStateImageCenterY = mViewRadius * 2 - mStateImageRadius / 3;
-                mMatrix.setScale(mViewRadius * 2 / mBitmap.getWidth(), mViewRadius * 2 / mBitmap.getHeight());
-            } else {
-                mViewRadius = minSize / 2f;
-                mMatrix.setScale(mViewRadius * 2 / mBitmap.getWidth(), mViewRadius * 2 / mBitmap.getHeight());
-            }
-            mShader.setLocalMatrix(mMatrix);
-            mBitmapPaint.setShader(mShader);
-        }
+    private void setDefault() {
+        mDigitalPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                4, mContext.getResources().getDisplayMetrics());
+        mDigitalTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                12, mContext.getResources().getDisplayMetrics());
+        mDigital = String.valueOf(0);
+        mDigitalMode = MODE_SHOW;
+        mDigitalBackgroundColor = Color.RED;
+        mDigitalTextColor = Color.WHITE;
     }
 
-    private void setBitmap(Bitmap bm) {
-        if (bm == mBitmap) {
-            return;
+    private void initDigitalHint() {
+        mDigitalBackgroundPaint.setColor(mDigitalBackgroundColor);
+        mDigitalPaint.setColor(mDigitalTextColor);
+        mDigitalPaint.setTextSize(mDigitalTextSize);
+        mDigitalRectF = new RectF();
+        Rect textRect = new Rect();
+        mDigitalPaint.getTextBounds(mDigital, 0, mDigital.length(), textRect);
+        int textWidth = textRect.width();
+        int textHeight = textRect.height();
+        mDigitalTextHeight = textHeight;
+        mDigitalPaint.getTextBounds("99", 0, 2, textRect);
+        int minSize = Math.max(textRect.width(), textRect.height());
+        if (textWidth < minSize) {
+            textWidth = minSize;
         }
-        if (mBitmap != null) {
-            mBitmap = bm;
-            initSize();
-        } else {
-            mBitmap = bm;
+        if (textHeight < minSize) {
+            textHeight = minSize;
         }
-        mShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        if (textHeight > textWidth) {
+            textWidth = textHeight;
+        }
+        textWidth += mDigitalPadding * 2;
+        textHeight += mDigitalPadding * 2;
+        if (mDigitalMode == MODE_SHOW_ONLY_SMALL_BACKGROUND) {
+            textWidth *= 0.6;
+            textHeight *= 0.6;
+        }
+        mDigitalRectF.set(mViewWidth - textWidth, 0, mViewWidth, textHeight);
     }
 
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(int w, int h, int oldWidth, int oldHeight) {
+        super.onSizeChanged(w, h, oldWidth, oldHeight);
         mViewWidth = w;
         mViewHeight = h;
-        initSize();
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mBitmap != null) {
-            if (isStateEnabled) {
-                canvas.translate(mOffsetX, mOffsetY);
-                canvas.drawCircle(mViewRadius, mViewRadius, mViewRadius, mBitmapPaint);
-                canvas.drawCircle(mStateImageCenterX, mStateImageCenterY, mStateImageRadius + mStateImageBorderWidth, mStateBorderPaint);
-                canvas.drawCircle(mStateImageCenterX, mStateImageCenterY, mStateImageRadius, mStatePaint);
-            } else {
-                canvas.drawCircle(mViewRadius, mViewRadius, mViewRadius, mBitmapPaint);
-            }
+        super.onDraw(canvas);
+        if (mDigitalMode == MODE_HIDE) {
+            return;
+        }
+        if (isReset) {
+            initDigitalHint();
+            isReset = false;
+        }
+        canvas.drawRoundRect(mDigitalRectF, mDigitalRectF.width() / 2f, mDigitalRectF.height() / 2f, mDigitalBackgroundPaint);
+        if (mDigitalMode == MODE_SHOW) {
+            canvas.drawText(mDigital, mDigitalRectF.centerX(), (mDigitalRectF.bottom + mDigitalTextHeight) / 2f, mDigitalPaint);
         }
     }
 
-
-    @Override
-    public void setImageBitmap(Bitmap bm) {
-        super.setImageBitmap(bm);
-        setBitmap(bm);
-    }
-
-    @Override
-    public void setImageDrawable(Drawable drawable) {
-        super.setImageDrawable(drawable);
-        setBitmap(getBitmapFromDrawable(drawable));
-    }
-
-    @Override
-    public void setImageResource(@DrawableRes int resId) {
-        super.setImageResource(resId);
-        setBitmap(getBitmapFromDrawable(getDrawable()));
-    }
-
-    @Override
-    public void setImageURI(Uri uri) {
-        super.setImageURI(uri);
-        setBitmap(getBitmapFromDrawable(getDrawable()));
-    }
-
-    private Bitmap getBitmapFromDrawable(Drawable drawable) {
-        if (drawable == null) {
-            return null;
-        }
-
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        try {
-            Bitmap bitmap;
-
-            if (drawable instanceof ColorDrawable) {
-                bitmap = Bitmap.createBitmap(COLOR_DRAWABLE_DIMENSION, COLOR_DRAWABLE_DIMENSION, Bitmap.Config.ARGB_8888);
-            } else {
-                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            }
-
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-            return bitmap;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    public void setDigitalMode(@DigitalMode int mode) {
+        if (mDigitalMode != mode) {
+            mDigitalMode = mode;
+            reset();
         }
     }
 
-    public boolean isStateEnabled() {
-        return isStateEnabled;
+    public void setDigital(int number) {
+        String strNumber = String.valueOf(number);
+        if (!strNumber.equals(mDigital)) {
+            mDigital = strNumber;
+            reset();
+        }
     }
 
-    public void setStateEnabled(boolean stateEnabled) {
-        isStateEnabled = stateEnabled;
+    public void setDigitalTextSize(float spSize) {
+        int digitalTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                spSize, mContext.getResources().getDisplayMetrics());
+        if (digitalTextSize != mDigitalTextSize) {
+            reset();
+        }
+    }
+
+    public void setDigitalPadding(int digitalPadding) {
+        if (digitalPadding != mDigitalPadding) {
+            mDigitalPadding = digitalPadding;
+            reset();
+        }
+    }
+
+    public void setDigitalTextColor(@ColorInt int color) {
+        if (mDigitalTextColor != color) {
+            mDigitalTextColor = color;
+            reset();
+        }
+    }
+
+    public void setDigitalBackgroundColor(@ColorInt int color) {
+        if (mDigitalBackgroundColor != color) {
+            mDigitalBackgroundColor = color;
+            reset();
+        }
+    }
+
+    private void reset() {
+        isReset = true;
+        invalidate();
     }
 }
 

@@ -1,8 +1,10 @@
 package com.yzx.chat.presenter;
 
 
+import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 
@@ -28,10 +30,12 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void attachView(ConversationContract.View view) {
         mConversationView = view;
+        EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
     }
 
     @Override
     public void detachView() {
+        EMClient.getInstance().chatManager().removeMessageListener(mMessageListener);
         mConversationView = null;
         if (mRefreshTask != null) {
             mRefreshTask.cancel();
@@ -55,6 +59,38 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             }
         });
     }
+
+    private final EMMessageListener mMessageListener = new EMMessageListener() {
+        @Override
+        public void onMessageReceived(List<EMMessage> messages) {
+            refreshAllConversation();
+        }
+
+        @Override
+        public void onCmdMessageReceived(List<EMMessage> messages) {
+
+        }
+
+        @Override
+        public void onMessageRead(List<EMMessage> messages) {
+
+        }
+
+        @Override
+        public void onMessageDelivered(List<EMMessage> messages) {
+
+        }
+
+        @Override
+        public void onMessageRecalled(List<EMMessage> messages) {
+
+        }
+
+        @Override
+        public void onMessageChanged(EMMessage message, Object change) {
+
+        }
+    };
 
     private static class RefreshAllConversationTask extends NetworkAsyncTask<Void, List<EMConversation>> {
 

@@ -63,6 +63,8 @@ public class SplashPresenter implements SplashContract.Presenter {
             if(client.isLoggedInBefore()) {
                 client.chatManager().loadAllConversations();
                 client.groupManager().loadAllGroups();
+            }else {
+                return "错误";
             }
             return null;
         }

@@ -37,6 +37,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     @Override
     public void complete() {
+        finish();
         startActivity(new Intent(this,HomeActivity.class));
     }
 

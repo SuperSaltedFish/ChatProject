@@ -45,17 +45,17 @@ public class TestActivity extends BaseCompatActivity {
         EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
             @Override
             public void onSuccess() {
-                LogUtil.e("dwadwd");
+                LogUtil.e("dwadwad");
             }
 
             @Override
             public void onError(int code, String error) {
-                LogUtil.e("dwadwd");
+                LogUtil.e("dwadwad");
             }
 
             @Override
             public void onProgress(int progress, String status) {
-                LogUtil.e("dwadwd");
+                LogUtil.e("dwadwad");
             }
         });
 
