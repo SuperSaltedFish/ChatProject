@@ -23,7 +23,7 @@ public abstract class OnRecyclerViewClickListener implements OnItemTouchListener
 
     public abstract void onItemClick(int position, View itemView);
 
-    public abstract void onItemLongClick(int position, View itemView);
+    public void onItemLongClick(int position, View itemView){};
 
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {

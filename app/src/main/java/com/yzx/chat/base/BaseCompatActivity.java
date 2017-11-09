@@ -28,9 +28,7 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public abstract class BaseCompatActivity<P extends BasePresenter>
-        extends AppCompatActivity
-        implements onFragmentRequestListener {
+public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCompatActivity {
 
     protected P mPresenter;
 
@@ -56,11 +54,6 @@ public abstract class BaseCompatActivity<P extends BasePresenter>
         }
     }
 
-    @CallSuper
-    @Override
-    public void onFragmentRequest(Fragment fragment, int requestCode, Object arg) {
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

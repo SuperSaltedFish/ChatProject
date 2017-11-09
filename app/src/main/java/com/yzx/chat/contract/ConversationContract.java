@@ -1,8 +1,11 @@
 package com.yzx.chat.contract;
 
-import com.hyphenate.chat.EMConversation;
+
+import android.support.v7.util.DiffUtil;
+
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.ConversationBean;
 
 import java.util.List;
 
@@ -14,12 +17,15 @@ import java.util.List;
 public class ConversationContract {
 
     public interface View extends BaseView<Presenter> {
-        void updateListView(List<EMConversation> conversationList);
+
+        List<ConversationBean> getOldConversationList();
+
+        void updateListView(DiffUtil.DiffResult diffResult,List<ConversationBean> newConversationList);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void refreshAllConversation();
+        void refreshAllConversation(List<ConversationBean> oldConversationList);
 
     }
 }

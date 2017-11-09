@@ -26,8 +26,6 @@ import com.yzx.chat.view.fragment.ProfileFragment;
 
 public class HomeActivity extends BaseCompatActivity {
 
-    public final static int FRAGMENT_REQUEST_START_ACTIVITY = 0x1;
-
     private final static int REQUEST_PERMISSIONS_CAMERA = 0x1;
 
     private BottomNavigationView mBottomNavigationView;
@@ -105,22 +103,22 @@ public class HomeActivity extends BaseCompatActivity {
         }
     }
 
-    public void startActivityToChat(View itemView) {
-        if (isPause) {
-            return;
-        }
-        ConversationBean bean = (ConversationBean) itemView.getTag();
-        if (bean == null) {
-            return;
-        }
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra(ChatActivity.INTENT_ID_INFO, bean);
-        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                HomeActivity.this,
-                new Pair<View, String>(mBottomNavigationView, ChatActivity.SHARED_ELEMENTS_BOTTOM_LAYOUT),
-                new Pair<View, String>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
-        ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
-    }
+//    public void startActivityToChat(View itemView) {
+//        if (isPause) {
+//            return;
+//        }
+//        ConversationBean bean = (ConversationBean) itemView.getTag();
+//        if (bean == null) {
+//            return;
+//        }
+//        Intent intent = new Intent(this, ChatActivity.class);
+//        intent.putExtra(ChatActivity.INTENT_ID_INFO, bean);
+//        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                HomeActivity.this,
+//                new Pair<View, String>(mBottomNavigationView, ChatActivity.SHARED_ELEMENTS_BOTTOM_LAYOUT),
+//                new Pair<View, String>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
+//        ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
+//    }
 
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -129,16 +127,6 @@ public class HomeActivity extends BaseCompatActivity {
             return true;
         }
     };
-
-    @Override
-    public void onFragmentRequest(Fragment fragment, int requestCode, Object arg) {
-        super.onFragmentRequest(fragment, requestCode, arg);
-        switch (requestCode) {
-            case FRAGMENT_REQUEST_START_ACTIVITY:
-                startActivityToChat((View) arg);
-                break;
-        }
-    }
 
     @Override
     public void onBackPressed() {

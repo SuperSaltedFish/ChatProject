@@ -10,9 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.widget.listener.onFragmentRequestListener;
-import com.yzx.chat.network.framework.Call;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -38,15 +35,11 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     private View mParentView;
     private boolean isOnceVisible;
 
-    private onFragmentRequestListener mOnFragmentRequestListener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-        if (mContext instanceof onFragmentRequestListener) {
-            mOnFragmentRequestListener = (onFragmentRequestListener) mContext;
-        }
     }
 
 
@@ -93,7 +86,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     public void onDetach() {
         super.onDetach();
         mContext = null;
-        mOnFragmentRequestListener = null;
     }
 
     @Override
@@ -108,11 +100,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
         }
     }
 
-    public void requestActivity(int requestCode,Object arg){
-        if(mOnFragmentRequestListener!=null){
-            mOnFragmentRequestListener.onFragmentRequest(this,requestCode,arg);
-        }
-    }
+
 
     public void onFirstVisible() {
     }

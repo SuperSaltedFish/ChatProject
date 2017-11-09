@@ -6,18 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMTextMessageBody;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.widget.view.AvatarImageView;
 
 import java.util.List;
 
-import static com.yzx.chat.bean.ConversationBean.GROUP;
 import static com.yzx.chat.bean.ConversationBean.SINGLE;
+import static com.yzx.chat.bean.ConversationBean.GROUP;
 
 /**
  * Created by YZX on 2017年06月12日.
@@ -27,9 +25,9 @@ import static com.yzx.chat.bean.ConversationBean.SINGLE;
 public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ConversationViewHolder> {
 
 
-    private List<EMConversation> mConversationList;
+    private List<ConversationBean> mConversationList;
 
-    public ConversationAdapter(List<EMConversation> conversationList) {
+    public ConversationAdapter(List<ConversationBean> conversationList) {
         mConversationList = conversationList;
     }
 
@@ -45,23 +43,22 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public void bindDataToViewHolder(ConversationViewHolder holder, int position) {
-        EMConversation conversation = mConversationList.get(position);
-        EMMessage message = conversation.getLastMessage();
-        holder.mTvName.setText(conversation.conversationId());
-        holder.mTvLastRecord.setText((((EMTextMessageBody) message.getBody()).getMessage()));
-        holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(message.getMsgTime()));
+        ConversationBean conversation = mConversationList.get(position);
+        holder.mTvName.setText(conversation.getName());
+        holder.mTvLastRecord.setText(conversation.getLastMsgContent());
+        holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getLastMsgTime()));
         int unreadMsgCount = conversation.getUnreadMsgCount();
-        switch (conversation.getType()) {
-            case Chat:
+        switch (conversation.getConversationType()) {
+            case SINGLE:
                 SingleViewHolder singleViewHolder = (SingleViewHolder) holder;
-                if(unreadMsgCount>0){
+                if (unreadMsgCount > 0) {
                     singleViewHolder.mAvatarImageView.setDigitalMode(AvatarImageView.MODE_SHOW);
                     singleViewHolder.mAvatarImageView.setDigital(unreadMsgCount);
-                }else{
+                } else {
                     singleViewHolder.mAvatarImageView.setDigitalMode(AvatarImageView.MODE_HIDE);
                 }
                 break;
-            case GroupChat:
+            case GROUP:
                 GroupViewHolder groupViewHolder = (GroupViewHolder) holder;
                 break;
         }
@@ -88,32 +85,25 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public int getItemViewType(int position) {
-        switch (mConversationList.get(position).getType()) {
-            case Chat:
-                return SINGLE;
-            case GroupChat:
-                return GROUP;
-            default:
-                return SINGLE;
-        }
+        return mConversationList.get(position).getConversationType();
     }
 
     static abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 
-        private int mConversationMode;
+        private int mConversationType;
 
         TextView mTvName;
         TextView mTvLastRecord;
         TextView mTvTime;
 
-        ConversationViewHolder(View itemView, int conversationMode) {
+        ConversationViewHolder(View itemView, int conversationType) {
             super(itemView);
-            mConversationMode = conversationMode;
+            mConversationType = conversationType;
 
         }
 
-        public int getConversationMode() {
-            return mConversationMode;
+        public int getConversationType() {
+            return mConversationType;
         }
 
     }

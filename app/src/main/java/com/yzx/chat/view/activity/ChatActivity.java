@@ -45,10 +45,10 @@ public class ChatActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mConversationBean = getIntent().getParcelableExtra(INTENT_ID_INFO);
-        if (mConversationBean == null) {
-            finish();
-            return;
-        }
+//        if (mConversationBean == null) {
+//            finish();
+//            return;
+//        }
         initView();
         setView();
     }
@@ -66,7 +66,7 @@ public class ChatActivity extends BaseCompatActivity {
     private void setView() {
         mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
 
-        mToolbar.setTitle(mConversationBean.getName());
+        //mToolbar.setTitle(mConversationBean.getName());
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -1,8 +1,13 @@
 package com.yzx.chat.view.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.util.SortedList;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -10,19 +15,18 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.hyphenate.chat.EMConversation;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
 import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
-import com.yzx.chat.test.ConversationTestData;
 import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
 
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View{
+public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View {
 
     private RecyclerView mRecyclerView;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -42,7 +46,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private Toolbar mToolbar;
     private HomeOverflowPopupWindow mOverflowPopupWindow;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
-    private List<EMConversation> mConversationList ;
+    private List<ConversationBean> mConversationList;
 
     @Override
     protected int getLayoutID() {
@@ -79,7 +83,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void onFirstVisible() {
-        mPresenter.refreshAllConversation();
+        mPresenter.refreshAllConversation(mConversationList);
     }
 
     private final Toolbar.OnMenuItemClickListener onOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {
@@ -98,15 +102,19 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {
 
+        @SuppressWarnings("unchecked")
         @Override
         public void onItemClick(int position, View itemView) {
-            requestActivity(HomeActivity.FRAGMENT_REQUEST_START_ACTIVITY, itemView);
+            Intent intent = new Intent(mContext, ChatActivity.class);
+            Activity activity = (Activity) mContext;
+            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    activity,
+                    new Pair<>(activity.findViewById(R.id.HomeActivity_mBottomNavigationView), ChatActivity.SHARED_ELEMENTS_BOTTOM_LAYOUT),
+                    new Pair<>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
+            ActivityCompat.startActivity(mContext, intent, activityOptions.toBundle());
         }
 
-        @Override
-        public void onItemLongClick(int position, View itemView) {
 
-        }
     };
 
     private final ItemTouchHelper.Callback mItemTouchCallback = new ItemTouchHelper.Callback() {
@@ -163,9 +171,14 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    public void updateListView(List<EMConversation> conversationList) {
+    public List<ConversationBean> getOldConversationList() {
+        return mConversationList;
+    }
+
+    @Override
+    public void updateListView(DiffUtil.DiffResult diffResult, List<ConversationBean> newConversationList) {
+        diffResult.dispatchUpdatesTo(mAdapter);
         mConversationList.clear();
-        mConversationList.addAll(conversationList);
-        mAdapter.notifyDataSetChanged();
+        mConversationList.addAll(newConversationList);
     }
 }

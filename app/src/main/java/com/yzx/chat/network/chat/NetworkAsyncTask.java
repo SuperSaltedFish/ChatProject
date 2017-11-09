@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -72,6 +73,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
         isCancel = new AtomicBoolean(false);
     }
 
+    @MainThread
     public synchronized void execute(Params... params) {
         if (isAlreadyExecute) {
             throw new RuntimeException("Cannot execute task: the task has already been executed");
@@ -106,7 +108,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
     }
 
     @Nullable
-    public Object getLifeCycleObject() {
+    private Object getLifeCycleObject() {
         if (mLifeCycleReference == null) {
             return null;
         } else {
@@ -155,7 +157,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
             if (msg.what == MESSAGE_POST_RESULT) {
                 TaskResult<?> result = (TaskResult<?>) msg.obj;
                 NetworkAsyncTask task = result.mTask;
-                if (!task.isCancel()) {
+                if (!task.isCancel()&&task.getLifeCycleObject()!=null) {
                     task.onPostExecute(result.mData, task.getLifeCycleObject());
                 }
             }
