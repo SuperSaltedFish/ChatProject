@@ -22,6 +22,7 @@ import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.util.Base64Util;
+import com.yzx.chat.util.HttpCallUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 
@@ -71,35 +72,16 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void detachView() {
         mLoginView = null;
-        if (mGetSecretKeyCall != null) {
-            mGetSecretKeyCall.cancel();
-        }
-        if (mLoginCall != null) {
-            mLoginCall.cancel();
-        }
-        if (mRegisterCall != null) {
-            mRegisterCall.cancel();
-        }
-        if (mObtainSMSCodeCall != null) {
-            mObtainSMSCodeCall.cancel();
-        }
+        reset();
         mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
     public void reset() {
-        if (mGetSecretKeyCall != null) {
-            mGetSecretKeyCall.cancel();
-        }
-        if (mLoginCall != null) {
-            mLoginCall.cancel();
-        }
-        if (mRegisterCall != null) {
-            mRegisterCall.cancel();
-        }
-        if (mObtainSMSCodeCall != null) {
-            mObtainSMSCodeCall.cancel();
-        }
+        HttpCallUtil.cancel(mGetSecretKeyCall);
+        HttpCallUtil.cancel(mLoginCall);
+        HttpCallUtil.cancel(mRegisterCall);
+        HttpCallUtil.cancel(mObtainSMSCodeCall);
     }
 
     @Override
@@ -135,9 +117,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initSecretKeyCall() {
-        if (mGetSecretKeyCall != null) {
-            mGetSecretKeyCall.cancel();
-        }
+        HttpCallUtil.cancel(mGetSecretKeyCall);
         mGetSecretKeyCall = mAuthApi.getSignature();
         mGetSecretKeyCall.setCallback(mGetSecretKeyCallback);
         mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
@@ -157,9 +137,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initSMSCodeCall(String username, String type, Map<String, Object> data) {
-        if (mObtainSMSCodeCall != null) {
-            mObtainSMSCodeCall.cancel();
-        }
+        HttpCallUtil.cancel(mObtainSMSCodeCall);
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
@@ -170,23 +148,19 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initLoginCall(String username, String password, String verifyCode) {
-        if (mLoginCall != null) {
-            mLoginCall.cancel();
-        }
+        HttpCallUtil.cancel(mLoginCall);
         mLoginCall = mAuthApi.login(
                 username,
                 password,
                 mManager.getDeviceID(),
                 mManager.getBase64RSAPublicKey(),
                 verifyCode);
-        mLoginCall.setCallback(mLoginCallback,false);
+        mLoginCall.setCallback(mLoginCallback, false);
         mLoginCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
     }
 
     private void initRegisterCall(String username, String password, String nickname, String verifyCode) {
-        if (mRegisterCall != null) {
-            mRegisterCall.cancel();
-        }
+        HttpCallUtil.cancel(mRegisterCall);
         mRegisterCall = mAuthApi.register(
                 username,
                 password,
@@ -194,7 +168,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 mManager.getDeviceID(),
                 mManager.getBase64RSAPublicKey(),
                 verifyCode);
-        mRegisterCall.setCallback(mRegisterCallback,false);
+        mRegisterCall.setCallback(mRegisterCallback, false);
         mRegisterCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
     }
 
@@ -333,7 +307,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             request.setParams(params);
             request.setStatus(200);
             String json = mGson.toJson(request);
-            LogUtil.e("request: "+json);
+            LogUtil.e("request: " + json);
             byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), Base64Util.decode(mServerSecretKey.getBytes()));
             json = Base64Util.encodeToString(encryptData);
             return json;
@@ -351,7 +325,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 return null;
             }
             String strData = new String(data);
-            LogUtil.e("response: "+strData);
+            LogUtil.e("response: " + strData);
             return mGson.fromJson(strData, genericType);
 
         }

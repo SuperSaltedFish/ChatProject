@@ -5,6 +5,7 @@ import com.hyphenate.chat.EMClient;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.NetworkUtil;
 
 /**
  * Created by YZX on 2017年11月04日.
@@ -23,17 +24,13 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void detachView() {
-        if (mInitChatAsyncTask != null) {
-            mInitChatAsyncTask.cancel();
-        }
+        NetworkUtil.cancel(mInitChatAsyncTask);
         mSplashView = null;
     }
 
     @Override
     public void initChat() {
-        if (mInitChatAsyncTask != null) {
-            mInitChatAsyncTask.cancel();
-        }
+        NetworkUtil.cancel(mInitChatAsyncTask);
         mInitChatAsyncTask = new InitChatAsyncTask(SplashPresenter.this);
         mInitChatAsyncTask.execute();
     }

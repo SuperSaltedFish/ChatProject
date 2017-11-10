@@ -6,7 +6,7 @@
               android:layout_marginStart="16dp">
 
     <com.yzx.chat.widget.view.CircleImageView
-        android:id="@+id/ChatAdapter_mIvHeadImage"
+        android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"/>
@@ -17,7 +17,7 @@
         android:background="@drawable/bg_chat_item_recv">
 
         <TextView
-            android:id="@+id/ChatAdapter_mTvTextContent"
+            android:id="@+id/ChatMessageAdapter_mTvTextContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -27,7 +27,7 @@
             android:visibility="gone"/>
 
         <ImageView
-            android:id="@+id/ChatAdapter_mIvImageContent"
+            android:id="@+id/ChatMessageAdapter_mIvImageContent"
             android:layout_width="200dp"
             android:layout_height="128dp"
             android:layout_margin="1dp"

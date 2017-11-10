@@ -12,6 +12,7 @@ import com.hyphenate.chat.EMTextMessageBody;
 import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.util.NetworkUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,19 +46,20 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         EMClient.getInstance().chatManager().removeMessageListener(mMessageListener);
         mConversationView = null;
         mConversationList = null;
-        if (mRefreshTask != null) {
-            mRefreshTask.cancel();
-        }
+        NetworkUtil.cancel(mRefreshTask);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void refreshAllConversation(List<ConversationBean> oldConversationList) {
-        if (mRefreshTask != null) {
-            mRefreshTask.cancel();
-        }
+        NetworkUtil.cancel(mRefreshTask);
         mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList, oldConversationList);
+    }
+
+    @Override
+    public void markConversationAsRead(String conversationID) {
+        EMClient.getInstance().chatManager().getConversation(conversationID).markAllMessagesAsRead();
     }
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
@@ -181,7 +183,15 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return mNewData.get(newItemPosition).getLastMsgTime() == mOldData.get(oldItemPosition).getLastMsgTime();
+            ConversationBean oldBean = mOldData.get(oldItemPosition);
+            ConversationBean newBean = mNewData.get(oldItemPosition);
+            if (oldBean.getLastMsgTime() != oldBean.getLastMsgTime()) {
+                return false;
+            }
+            if (oldBean.getUnreadMsgCount() != newBean.getUnreadMsgCount()) {
+                return false;
+            }
+            return true;
         }
     }
 

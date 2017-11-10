@@ -27,5 +27,6 @@ public class ConversationContract {
     public interface Presenter extends BasePresenter<View> {
         void refreshAllConversation(List<ConversationBean> oldConversationList);
 
+        void markConversationAsRead(String conversationID);
     }
 }

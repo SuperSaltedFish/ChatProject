@@ -10,31 +10,31 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
-import com.yzx.chat.widget.adapter.ChatAdapter;
+import com.yzx.chat.contract.ChatContract;
+import com.yzx.chat.presenter.ChatPresenter;
+import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.ConversationBean;
-import com.yzx.chat.test.ChatTestData;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.yzx.chat.test.ChatTestData.getTestData;
 
-
-public class ChatActivity extends BaseCompatActivity {
+public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
     public final static String SHARED_ELEMENTS_BOTTOM_LAYOUT = "BottomLayout";
     public final static String SHARED_ELEMENTS_CONTENT = "Content";
-    public final static String INTENT_ID_INFO = "IdInfo";
+    public final static String INTENT_CONVERSATION_ID = "ConversationID";
 
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
     // private Button mBtnSendMes;
     private EditText mEtContent;
     private RelativeLayout mRlBottomLayout;
-    private ChatAdapter mAdapter;
-    private ConversationBean mConversationBean;
+    private ChatMessageAdapter mAdapter;
+    private String mConversationID;
 
-    private List<ChatTestData.ChatBean> mChatList = getTestData();
+    private List<EMMessage> mMessageList;
 
     @Override
     protected int getLayoutID() {
@@ -44,29 +44,28 @@ public class ChatActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mConversationBean = getIntent().getParcelableExtra(INTENT_ID_INFO);
-//        if (mConversationBean == null) {
-//            finish();
-//            return;
-//        }
-        initView();
+        init();
         setView();
+        setData();
     }
 
-    private void initView() {
+    private void init() {
         mToolbar = (Toolbar) findViewById(R.id.ChatActivity_mToolbar);
         mRvChatView = (RecyclerView) findViewById(R.id.ChatActivity_mRvChatView);
         //  mBtnSendMes = (Button) findViewById(R.id.ChatActivity_mBtnSendMes);
         mEtContent = (EditText) findViewById(R.id.ChatActivity_mEtContent);
         mRlBottomLayout = (RelativeLayout) findViewById(R.id.ChatActivity_mRlBottomLayout);
-        mAdapter = new ChatAdapter(mChatList);
+        mMessageList = new ArrayList<>(64);
+        mAdapter = new ChatMessageAdapter(mMessageList);
+
+        mConversationID = getIntent().getStringExtra(INTENT_CONVERSATION_ID);
     }
 
 
     private void setView() {
         mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
 
-        //mToolbar.setTitle(mConversationBean.getName());
+        mToolbar.setTitle(mConversationID);
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,6 +83,10 @@ public class ChatActivity extends BaseCompatActivity {
         //  mBtnSendMes.setOnClickListener(mSendMesClickListener);
     }
 
+    private void setData() {
+        mPresenter.initMessage(mConversationID);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -98,15 +101,29 @@ public class ChatActivity extends BaseCompatActivity {
     private final View.OnClickListener mSendMesClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ChatTestData.ChatBean chatBean = new ChatTestData.ChatBean(ChatTestData.ChatBean.CHAT_SEND, ChatTestData.ChatBean.TYPE_TEXT, mEtContent.getText().toString());
-            mChatList.add(0, chatBean);
             mAdapter.notifyItemInserted(0);
-            mRvChatView.scrollToPosition(0);
         }
     };
 
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    public ChatContract.Presenter getPresenter() {
+        return new ChatPresenter();
+    }
+
+    @Override
+    public void startShow(List<EMMessage> messageList) {
+        mMessageList.clear();
+        mMessageList.addAll(messageList);
+    }
+
+    @Override
+    public void showMore(List<EMMessage> messageList) {
+        mAdapter.notifyItemRangeInserted(mMessageList.size(),messageList.size());
+        mMessageList.addAll(0,messageList);
     }
 }
