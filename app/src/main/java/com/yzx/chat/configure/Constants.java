@@ -15,4 +15,6 @@ public class Constants {
 
     public final static String PREFERENCES_AUTHENTICATION="Authentication";
 
+    public static final int CHAT_MESSAGE_PAGE_SIZE = 20;
+
 }

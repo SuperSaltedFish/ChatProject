@@ -6,11 +6,11 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.util.NetworkUtil;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +21,6 @@ import java.util.List;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
-    private static final int MIN_LOAD_SIZE = 20;
 
     private ChatContract.View mChatView;
     private Handler mHandler;
@@ -51,8 +50,8 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (count == 0) {
             return;
         }
-        if (count < MIN_LOAD_SIZE) {
-            List<EMMessage> dbMessageList = conversation.loadMoreMsgFromDB(messageList.get(0).getMsgId(), MIN_LOAD_SIZE - count);
+        if (count < Constants.CHAT_MESSAGE_PAGE_SIZE) {
+            List<EMMessage> dbMessageList = conversation.loadMoreMsgFromDB(messageList.get(0).getMsgId(), Constants.CHAT_MESSAGE_PAGE_SIZE - count);
             dbMessageList.addAll(messageList);
             mChatView.showNew(dbMessageList);
         } else {

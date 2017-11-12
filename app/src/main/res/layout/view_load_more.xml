@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="24dp"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1px"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:background="@color/parting_line_color_alpha_black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:textColor="@color/parting_line_color_alpha_black"
+        android:textSize="12sp"
+        android:text="没有更多的消息" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1px"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@color/parting_line_color_alpha_black" />
+
+</LinearLayout>
