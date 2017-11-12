@@ -42,7 +42,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageViewHolder holder, int position) {
-        EMMessage message = mMessageList.get(position);
+        EMMessage message = mMessageList.get(getItemCount()-position-1);
         holder.reset();
 
         switch (message.getType()) {
@@ -52,7 +52,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 break;
         }
 
-        switch (mMessageList.get(position).direct()) {
+        switch (mMessageList.get(getItemCount()-position-1).direct()) {
             case SEND:
                 break;
             case RECEIVE:
@@ -73,7 +73,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public int getItemViewType(int position) {
-        if (mMessageList.get(position).direct() == EMMessage.Direct.RECEIVE) {
+        if (mMessageList.get(getItemCount()-position-1).direct() == EMMessage.Direct.RECEIVE) {
             return MESSAGE_RECEIVE;
         } else {
             return MESSAGE_SEND;

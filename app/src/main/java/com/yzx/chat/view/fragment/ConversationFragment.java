@@ -104,6 +104,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             mPresenter.markConversationAsRead(conversationID);
             mPresenter.refreshAllConversation(mConversationList);
             Intent intent = new Intent(mContext, ChatActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID,conversationID);
 //            Activity activity = (Activity) mContext;
 //            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -169,6 +170,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     public ConversationContract.Presenter getPresenter() {
         return new ConversationPresenter();
     }
+
 
     @Override
     public List<ConversationBean> getOldConversationList() {

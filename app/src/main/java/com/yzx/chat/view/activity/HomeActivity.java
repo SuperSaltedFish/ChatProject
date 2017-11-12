@@ -103,22 +103,6 @@ public class HomeActivity extends BaseCompatActivity {
         }
     }
 
-//    public void startActivityToChat(View itemView) {
-//        if (isPause) {
-//            return;
-//        }
-//        ConversationBean bean = (ConversationBean) itemView.getTag();
-//        if (bean == null) {
-//            return;
-//        }
-//        Intent intent = new Intent(this, ChatActivity.class);
-//        intent.putExtra(ChatActivity.INTENT_ID_INFO, bean);
-//        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                HomeActivity.this,
-//                new Pair<View, String>(mBottomNavigationView, ChatActivity.SHARED_ELEMENTS_BOTTOM_LAYOUT),
-//                new Pair<View, String>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
-//        ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
-//    }
 
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override

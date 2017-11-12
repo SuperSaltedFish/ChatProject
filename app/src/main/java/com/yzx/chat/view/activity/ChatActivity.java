@@ -1,13 +1,16 @@
 package com.yzx.chat.view.activity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.hyphenate.chat.EMMessage;
@@ -28,7 +31,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
-    // private Button mBtnSendMes;
+    private ImageView mIvSendMessage;
     private EditText mEtContent;
     private RelativeLayout mRlBottomLayout;
     private ChatMessageAdapter mAdapter;
@@ -46,26 +49,24 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         super.onCreate(savedInstanceState);
         init();
         setView();
-        setData();
+        setData(getIntent());
+
     }
 
     private void init() {
         mToolbar = (Toolbar) findViewById(R.id.ChatActivity_mToolbar);
         mRvChatView = (RecyclerView) findViewById(R.id.ChatActivity_mRvChatView);
-        //  mBtnSendMes = (Button) findViewById(R.id.ChatActivity_mBtnSendMes);
+        mIvSendMessage = (ImageView) findViewById(R.id.ChatActivity_mIvSendMessage);
         mEtContent = (EditText) findViewById(R.id.ChatActivity_mEtContent);
         mRlBottomLayout = (RelativeLayout) findViewById(R.id.ChatActivity_mRlBottomLayout);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
-
-        mConversationID = getIntent().getStringExtra(INTENT_CONVERSATION_ID);
     }
 
-
     private void setView() {
-        mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
+//        mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
+//        mRvChatView.setTransitionName(SHARED_ELEMENTS_CONTENT);
 
-        mToolbar.setTitle(mConversationID);
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -77,21 +78,38 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setLayoutManager(layoutManager);
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
-        mRvChatView.scrollToPosition(0);
-        mRvChatView.setTransitionName(SHARED_ELEMENTS_CONTENT);
 
-        //  mBtnSendMes.setOnClickListener(mSendMesClickListener);
+        mIvSendMessage.setOnClickListener(mSendMesClickListener);
     }
 
-    private void setData() {
-        mPresenter.initMessage(mConversationID);
+    private void setData(Intent intent) {
+        mMessageList.clear();
+        mConversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
+        mToolbar.setTitle(mConversationID);
+        mPresenter.init(mConversationID);
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
+        mPresenter.reset();
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setData(intent);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -101,14 +119,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private final View.OnClickListener mSendMesClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mAdapter.notifyItemInserted(0);
+            String message = mEtContent.getText().toString();
+            if (TextUtils.isEmpty(message)) {
+                return;
+            }
+            mEtContent.setText(null);
+            mPresenter.sendMessage(message);
         }
     };
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
 
     @Override
     public ChatContract.Presenter getPresenter() {
@@ -116,14 +135,26 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void startShow(List<EMMessage> messageList) {
-        mMessageList.clear();
+    public void showNew(EMMessage message) {
+        List<EMMessage> messageList = new ArrayList<>(1);
+        messageList.add(message);
+        showNew(messageList);
+    }
+
+    @Override
+    public void showNew(List<EMMessage> messageList) {
+        if (mMessageList.size() == 0) {
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mAdapter.notifyItemRangeInserted(0, messageList.size());
+        }
         mMessageList.addAll(messageList);
+        mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void showMore(List<EMMessage> messageList) {
-        mAdapter.notifyItemRangeInserted(mMessageList.size(),messageList.size());
-        mMessageList.addAll(0,messageList);
+        mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
+        mMessageList.addAll(0, messageList);
     }
 }

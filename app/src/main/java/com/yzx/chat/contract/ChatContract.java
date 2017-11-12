@@ -13,15 +13,17 @@ import java.util.List;
 
 public class ChatContract {
     public interface View extends BaseView<Presenter> {
-
-        void startShow(List<EMMessage> messageList);
+        void showNew(EMMessage message);
+        void showNew(List<EMMessage> messageList);
         void showMore(List<EMMessage> messageList);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
 
-        void initMessage(String conversationID);
+        void init(String conversationID);
+        void reset();
+        void sendMessage(String message);
         void loadMoreMessage(String startID,int count);
 
     }

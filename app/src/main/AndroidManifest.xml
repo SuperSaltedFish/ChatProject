@@ -57,7 +57,8 @@
 
         <activity
             android:name=".view.activity.LoginActivity"
-            android:theme="@style/LoginTheme">
+            android:theme="@style/LoginTheme"
+            android:launchMode="singleTask">
 
         </activity>
         <activity

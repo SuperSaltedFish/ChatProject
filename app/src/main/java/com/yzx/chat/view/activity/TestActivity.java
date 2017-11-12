@@ -18,7 +18,7 @@ import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.broadcast.NetworkStateReceive;
-import com.yzx.chat.network.chat.IMClient;
+
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 
 import com.yzx.chat.tool.IdentityManager;

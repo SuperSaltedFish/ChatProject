@@ -1,7 +1,6 @@
 package com.yzx.chat.presenter;
 
 
-import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
 
 import com.hyphenate.EMMessageListener;
@@ -124,6 +123,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             EMMessage lastMessage;
             for (EMConversation conversation : allConversations) {
                 if (conversation.getAllMessages().size() != 0) {
+                    if(conversation.conversationId().equals(ChatPresenter.getConversationID())){
+                        conversation.markAllMessagesAsRead();
+                    }
                     lastMessage = conversation.getLastMessage();
                     switch (conversation.getType()) {
                         case Chat:
@@ -185,7 +187,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             ConversationBean oldBean = mOldData.get(oldItemPosition);
             ConversationBean newBean = mNewData.get(oldItemPosition);
-            if (oldBean.getLastMsgTime() != oldBean.getLastMsgTime()) {
+            if (oldBean.getLastMsgTime() != newBean.getLastMsgTime()) {
                 return false;
             }
             if (oldBean.getUnreadMsgCount() != newBean.getUnreadMsgCount()) {
