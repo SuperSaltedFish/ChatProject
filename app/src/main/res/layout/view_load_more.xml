@@ -13,14 +13,15 @@
         android:background="@color/parting_line_color_alpha_black" />
 
     <TextView
+        android:id="@+id/LoadMoreView_mTvHintContent"
         android:layout_width="wrap_content"
+        android:minWidth="0dp"
         android:layout_height="match_parent"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="center"
         android:textColor="@color/parting_line_color_alpha_black"
-        android:textSize="12sp"
-        android:text="没有更多的消息" />
+        android:textSize="12sp" />
 
     <View
         android:layout_width="0dp"

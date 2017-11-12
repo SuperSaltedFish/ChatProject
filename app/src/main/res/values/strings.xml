@@ -133,5 +133,7 @@
     <string name="LoginActivity_Error_Resending">正在发送</string>
 
     <string name="Server_Error">服务器维护中，请稍候再试！</string>
+    <string name="LoadMoreHint_NoMore">没有更多的消息</string>
+    <string name="LoadMoreHint_Loading">正在加载更多消息</string>
 
 </resources>

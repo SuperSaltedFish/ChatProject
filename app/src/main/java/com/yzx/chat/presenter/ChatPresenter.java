@@ -26,6 +26,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     private Handler mHandler;
     private static String mToChatName;
     private LoadMoreTask mLoadMoreTask;
+    private boolean mIsLoadingMore;
+    private boolean mHasMoreMessage;
 
     @Override
     public void attachView(ChatContract.View view) {
@@ -43,6 +45,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void init(String conversationID) {
         mToChatName = conversationID;
+        mHasMoreMessage = true;
+        mIsLoadingMore = false;
         EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
         List<EMMessage> messageList = conversation.getAllMessages();
@@ -75,14 +79,29 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public void loadMoreMessage(String startID, int count) {
+    public void loadMoreMessage(String lastMessageID) {
+        mIsLoadingMore = true;
         NetworkUtil.cancel(mLoadMoreTask);
-        mLoadMoreTask = new LoadMoreTask(this, mToChatName, startID, count);
+        mLoadMoreTask = new LoadMoreTask(this, mToChatName, lastMessageID, Constants.CHAT_MESSAGE_PAGE_SIZE);
         mLoadMoreTask.execute();
     }
 
+    @Override
+    public boolean isLoadingMore() {
+        return mIsLoadingMore;
+    }
+
+    @Override
+    public boolean hasMoreMessage() {
+        return mHasMoreMessage;
+    }
+
     private void loadMoreComplete(List<EMMessage> messageList) {
-        mChatView.showMore(messageList);
+        mIsLoadingMore = false;
+        if(messageList.size()<Constants.CHAT_MESSAGE_PAGE_SIZE){
+            mHasMoreMessage = false;
+        }
+        mChatView.showMore(messageList,mHasMoreMessage);
     }
 
     private void loadNewComplete(List<EMMessage> messageList) {

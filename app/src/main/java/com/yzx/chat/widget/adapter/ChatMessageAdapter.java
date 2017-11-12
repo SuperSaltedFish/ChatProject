@@ -1,6 +1,7 @@
 package com.yzx.chat.widget.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +10,13 @@ import android.widget.TextView;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.widget.listener.OnScrollToBottomListener;
 
 import java.util.List;
 
@@ -23,12 +27,14 @@ import java.util.List;
  */
 
 public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageViewHolder> {
-    private List<EMMessage> mMessageList;
 
     private static final int TYPE_LOAD_MORE = 0;
-    private static final int TYPE_MESSAGE_SEND = 1;
-    private static final int TYPE_MESSAGE_RECEIVE = 2;
+    private static final int TYPE_SEND_MESSAGE_TEXT = 1;
+    private static final int TYPE_RECEIVE_MESSAGE_TEXT = 2;
 
+    private List<EMMessage> mMessageList;
+    private OnScrollToBottomListener mScrollToBottomListener;
+    private String mLoadMoreHint;
 
     private static boolean isEnableLoadMore;
 
@@ -39,10 +45,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     @Override
     public MessageViewHolder getViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_MESSAGE_RECEIVE:
-                return new ReceiveViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_chat_receive, parent, false));
-            case TYPE_MESSAGE_SEND:
-                return new SendViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_chat_send, parent, false));
+            case TYPE_RECEIVE_MESSAGE_TEXT:
+                return new ReceiveViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
+            case TYPE_SEND_MESSAGE_TEXT:
+                return new SendViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false));
             case TYPE_LOAD_MORE:
                 return new LoadMoreViewHolder(LayoutInflater.from(mContext).inflate(R.layout.view_load_more, parent, false));
             default:
@@ -53,33 +59,33 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageViewHolder holder, int position) {
-        if (isEnableLoadMore) {
-            if (position == getItemCount() - 1) {
-                return;
+        if (isEnableLoadMore && getItemCount() - 1 == position) {
+            if (mScrollToBottomListener != null) {
+                mScrollToBottomListener.OnScrollToBottom();
             }
+            LoadMoreViewHolder loadMoreHolder = (LoadMoreViewHolder) holder;
+            loadMoreHolder.mTvHintContent.setText(mLoadMoreHint);
+            return;
         }
         EMMessage message = mMessageList.get(getPosition(position));
-        //  holder.reset();
-
-        switch (message.getType()) {
-            case TXT:
+        switch (getItemViewType(position)) {
+            case TYPE_SEND_MESSAGE_TEXT:
+                break;
+            case TYPE_RECEIVE_MESSAGE_TEXT:
                 break;
         }
 
-        switch (mMessageList.get(getPosition(position)).direct()) {
+        switch (message.direct()) {
             case SEND:
                 SendViewHolder sendViewHolder = (SendViewHolder) holder;
                 sendViewHolder.mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
-                sendViewHolder.mTvTextContent.setVisibility(View.VISIBLE);
                 break;
             case RECEIVE:
                 ReceiveViewHolder receiveViewHolder = (ReceiveViewHolder) holder;
                 receiveViewHolder.mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
-                receiveViewHolder.mTvTextContent.setVisibility(View.VISIBLE);
                 GlideUtil.loadFromUrl(mContext, receiveViewHolder.mIvAvatar, R.drawable.temp_head_image);
                 break;
         }
-
     }
 
 
@@ -101,11 +107,30 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         if (isEnableLoadMore && position == getItemCount() - 1) {
             return TYPE_LOAD_MORE;
         }
-        if (mMessageList.get(getPosition(position)).direct() == EMMessage.Direct.RECEIVE) {
-            return TYPE_MESSAGE_RECEIVE;
+        EMMessage message = mMessageList.get(getPosition(position));
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
+            switch (message.getType()) {
+                case TXT:
+                    return TYPE_RECEIVE_MESSAGE_TEXT;
+                default:
+                    throw new RuntimeException("unknown type");
+            }
         } else {
-            return TYPE_MESSAGE_SEND;
+            switch (message.getType()) {
+                case TXT:
+                    return TYPE_SEND_MESSAGE_TEXT;
+                default:
+                    throw new RuntimeException("unknown type");
+            }
         }
+    }
+
+    public void setScrollToBottomListener(OnScrollToBottomListener listener) {
+        mScrollToBottomListener = listener;
+    }
+
+    public void setLoadMoreHint(String hint) {
+        mLoadMoreHint = hint;
     }
 
     private int getPosition(int position) {
@@ -122,32 +147,30 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     private static class SendViewHolder extends MessageViewHolder {
         TextView mTvTextContent;
-        ImageView mIvImageContent;
 
         SendViewHolder(View itemView) {
             super(itemView);
             mTvTextContent = (TextView) itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
-            mIvImageContent = (ImageView) itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
         }
     }
 
     private static class ReceiveViewHolder extends MessageViewHolder {
         ImageView mIvAvatar;
         TextView mTvTextContent;
-        ImageView mIvImageContent;
 
         ReceiveViewHolder(View itemView) {
             super(itemView);
             mIvAvatar = (ImageView) itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
             mTvTextContent = (TextView) itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
-            mIvImageContent = (ImageView) itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
         }
     }
 
     private static class LoadMoreViewHolder extends MessageViewHolder {
+        TextView mTvHintContent;
 
-        public LoadMoreViewHolder(View itemView) {
+        LoadMoreViewHolder(View itemView) {
             super(itemView);
+            mTvHintContent = (TextView) itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
         }
     }
 }

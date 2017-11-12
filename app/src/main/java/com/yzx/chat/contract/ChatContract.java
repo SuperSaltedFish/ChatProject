@@ -15,7 +15,7 @@ public class ChatContract {
     public interface View extends BaseView<Presenter> {
         void showNew(EMMessage message);
         void showNew(List<EMMessage> messageList);
-        void showMore(List<EMMessage> messageList);
+        void showMore(List<EMMessage> messageList,boolean isHasMoreMessage);
     }
 
 
@@ -24,7 +24,9 @@ public class ChatContract {
         void init(String conversationID);
         void reset();
         void sendMessage(String message);
-        void loadMoreMessage(String startID,int count);
+        void loadMoreMessage(String lastMessageID);
+        boolean isLoadingMore();
+        boolean hasMoreMessage();
 
     }
 }

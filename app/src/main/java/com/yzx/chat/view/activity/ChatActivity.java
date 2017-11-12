@@ -14,16 +14,22 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.hyphenate.chat.EMMessage;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.yzx.chat.R;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.widget.listener.OnScrollToBottomListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Created by YZX on 2017年06月03日.
+ * 生命太短暂,不要去做一些根本没有人想要的东西
+ */
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
     public final static String SHARED_ELEMENTS_BOTTOM_LAYOUT = "BottomLayout";
     public final static String SHARED_ELEMENTS_CONTENT = "Content";
@@ -79,13 +85,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
 
+        mAdapter.setScrollToBottomListener(mScrollToBottomListener);
+
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
     }
 
     private void setData(Intent intent) {
         mMessageList.clear();
         mConversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
-        mToolbar.setTitle(mConversationID);
+        setTitle(mConversationID);
         mPresenter.init(mConversationID);
     }
 
@@ -128,6 +136,21 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
     };
 
+    private final OnScrollToBottomListener mScrollToBottomListener = new OnScrollToBottomListener() {
+        @Override
+        public void OnScrollToBottom() {
+            if (mPresenter.isLoadingMore()) {
+                return;
+            }
+            if (mPresenter.hasMoreMessage()) {
+                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
+                mPresenter.loadMoreMessage(mMessageList.get(0).getMsgId());
+            } else {
+                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+            }
+        }
+    };
+
 
     @Override
     public ChatContract.Presenter getPresenter() {
@@ -153,8 +176,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void showMore(List<EMMessage> messageList) {
+    public void showMore(List<EMMessage> messageList, boolean isHasMoreMessage) {
         mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
         mMessageList.addAll(0, messageList);
+        if (!isHasMoreMessage) {
+            mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+            mAdapter.notifyItemChanged(mMessageList.size());
+        }
     }
 }
