@@ -7,16 +7,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.yzx.chat.R;
-import com.yzx.chat.widget.listener.onFragmentRequestListener;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -98,10 +95,10 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
 
     private void showMissingPermissionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.Help);
-        builder.setMessage(R.string.miss_Permission_hint);
-        builder.setNegativeButton(R.string.cancel, null);
-        builder.setPositiveButton(R.string.setting, new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.PermissionDialog_Help);
+        builder.setMessage(R.string.PermissionDialog_MissPermissionHint);
+        builder.setNegativeButton(R.string.PermissionDialog_Cancel, null);
+        builder.setPositiveButton(R.string.PermissionDialog_Setting, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startAppSettings();

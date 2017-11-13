@@ -37,7 +37,7 @@ public class Http {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setUseCaches(true);
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("Content-Type", "text/plain");
+//                conn.setRequestProperty("Content-Type", "text/plain");
                 //  conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setRequestProperty("Charset", "UTF-8");
                 conn.setConnectTimeout(CONNECT_TIMEOUT);

@@ -33,7 +33,7 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class FriendsFragment extends BaseFragment {
+public class ContactFragment extends BaseFragment {
 
     private RecyclerView mFriendsRecyclerView;
     private FriendsAdapter mAdapter;
@@ -56,13 +56,13 @@ public class FriendsFragment extends BaseFragment {
 
     @Override
     protected void init(View parentView) {
-        mToolbar = (Toolbar) parentView.findViewById(R.id.FriendsFragment_mToolbar);
-        mFriendsRecyclerView = (RecyclerView) parentView.findViewById(R.id.FriendsFragment_mFriendsRecyclerView);
-        mIndexBarView = (IndexBarView) parentView.findViewById(R.id.FriendsFragment_mIndexBarView);
-        mTvIndexBarHint = (TextView) parentView.findViewById(R.id.FriendsFragment_mTvIndexBarHint);
-        mFBtnAdd = (FloatingActionButton) parentView.findViewById(R.id.FriendsFragment_mFBtnAdd);
-        mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.FriendsFragment_mSegmentedControlView);
-        mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.FriendsFragment_mSmartRefreshLayout);
+        mToolbar = (Toolbar) parentView.findViewById(R.id.ContactFragment_mToolbar);
+        mFriendsRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mFriendsRecyclerView);
+        mIndexBarView = (IndexBarView) parentView.findViewById(R.id.ContactFragment_mIndexBarView);
+        mTvIndexBarHint = (TextView) parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
+        mFBtnAdd = (FloatingActionButton) parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
+        mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
+        mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
         mAdapter = new FriendsAdapter(mFriendList);
     }

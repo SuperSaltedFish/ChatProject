@@ -6,14 +6,14 @@
     android:layout_height="match_parent">
 
     <Toolbar
-        android:id="@+id/FriendsFragment_mToolbar"
+        android:id="@+id/ContactFragment_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:background="@color/theme_main_color"
         android:elevation="4dp">
 
         <com.yzx.chat.widget.view.SegmentedControlView
-            android:id="@+id/FriendsFragment_mSegmentedControlView"
+            android:id="@+id/ContactFragment_mSegmentedControlView"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:layout_gravity="center"/>
@@ -21,27 +21,27 @@
     </Toolbar>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/FriendsFragment_mSmartRefreshLayout"
+        android:id="@+id/ContactFragment_mSmartRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/FriendsFragment_mToolbar"
+        android:layout_below="@+id/ContactFragment_mToolbar"
         app:srlEnablePureScrollMode="true">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/FriendsFragment_mFriendsRecyclerView"
+            android:id="@+id/ContactFragment_mFriendsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
     <TextView
-        android:id="@+id/FriendsFragment_mTvIndexBarHint"
+        android:id="@+id/ContactFragment_mTvIndexBarHint"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_alignTop="@+id/FriendsFragment_mIndexBarView"
+        android:layout_alignTop="@+id/ContactFragment_mIndexBarView"
         android:layout_centerInParent="true"
         android:layout_marginEnd="16dp"
-        android:layout_toStartOf="@+id/FriendsFragment_mIndexBarView"
+        android:layout_toStartOf="@+id/ContactFragment_mIndexBarView"
         android:background="@drawable/bg_index_bar_hint"
         android:gravity="center"
         android:scaleX="0"
@@ -53,9 +53,9 @@
         android:id="@+id/FriendsFragment_mIndexBarView"
         android:layout_width="16dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/FriendsFragment_mFBtnAdd"
+        android:layout_above="@+id/ContactFragment_mFBtnAdd"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/FriendsFragment_mToolbar"
+        android:layout_below="@+id/ContactFragment_mToolbar"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_index_bar"
