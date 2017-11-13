@@ -51,7 +51,7 @@ public class ContactFragment extends BaseFragment {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.fragment_friends;
+        return R.layout.fragment_contact;
     }
 
     @Override
