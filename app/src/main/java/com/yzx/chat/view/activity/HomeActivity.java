@@ -46,13 +46,12 @@ public class HomeActivity extends BaseCompatActivity {
 
     private void setView() {
         mChatBadge = new TextBadgeItem()
-                .setBackgroundColorResource(android.R.color.holo_red_light)
-                .setTextColorResource(android.R.color.white)
-                .hide(false);
+                .setBackgroundColorResource(R.color.red)
+                .setTextColorResource(android.R.color.white);
 
         mBottomNavigationBar
-                .addItem(new BottomNavigationItem(R.drawable.ic_chat, R.string.HomeBottomNavigationTitle_Chat))
-                .addItem(new BottomNavigationItem(R.drawable.ic_friend, R.string.HomeBottomNavigationTitle_Contact).setBadgeItem(mChatBadge))
+                .addItem(new BottomNavigationItem(R.drawable.ic_chat, R.string.HomeBottomNavigationTitle_Chat).setBadgeItem(mChatBadge))
+                .addItem(new BottomNavigationItem(R.drawable.ic_friend, R.string.HomeBottomNavigationTitle_Contact))
                 .addItem(new BottomNavigationItem(R.drawable.ic_moments, R.string.HomeBottomNavigationTitle_Moments))
                 .addItem(new BottomNavigationItem(R.drawable.ic_setting, R.string.HomeBottomNavigationTitle_Profile))
                 .initialise();
@@ -67,6 +66,19 @@ public class HomeActivity extends BaseCompatActivity {
             case REQUEST_PERMISSIONS_CAMERA:
                 startActivity(new Intent(this, QrCodeScanActivity.class));
                 break;
+        }
+    }
+
+    public void updateUnreadMessageCount(int count){
+        if(count==0){
+            mChatBadge.hide(false);
+        }else {
+            if(count>=10){
+                mChatBadge.setText(String.valueOf(10));
+            }else {
+                mChatBadge.setText(" "+count+" ");
+            }
+            mChatBadge.show(false);
         }
     }
 
@@ -112,19 +124,4 @@ public class HomeActivity extends BaseCompatActivity {
         }
     };
 
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 }

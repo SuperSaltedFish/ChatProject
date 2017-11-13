@@ -304,5 +304,5 @@
 
     <color name="parting_line_color_alpha_white">#45ffffff</color>
 
-
+    <color name="red">#FF0000</color>
 </resources>

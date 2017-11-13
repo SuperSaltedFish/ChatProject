@@ -32,11 +32,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<ConversationBean> mConversationList;
+    private int[] mUnreadMessageCount;
 
     @Override
     public void attachView(ConversationContract.View view) {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
+        mUnreadMessageCount = new int[1];
         EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
     }
 
@@ -52,7 +54,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void refreshAllConversation(List<ConversationBean> oldConversationList) {
         NetworkUtil.cancel(mRefreshTask);
-        mRefreshTask = new RefreshAllConversationTask(this);
+        mUnreadMessageCount[0] = 0;
+        mRefreshTask = new RefreshAllConversationTask(this, mUnreadMessageCount);
         mRefreshTask.execute(mConversationList, oldConversationList);
     }
 
@@ -63,6 +66,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
         mConversationView.updateListView(diffResult, mConversationList);
+        mConversationView.updateUnreadBadge(mUnreadMessageCount[0]);
     }
 
     private static void sortConversationByLastChatTime(List<ConversationBean> conversationList) {
@@ -109,8 +113,11 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private static class RefreshAllConversationTask extends NetworkAsyncTask<List<ConversationBean>, DiffUtil.DiffResult> {
 
-        RefreshAllConversationTask(Object lifeCycleDependence) {
+        private int[] mUnreadMessageCount;
+
+        private RefreshAllConversationTask(Object lifeCycleDependence, int[] unreadMessageCount) {
             super(lifeCycleDependence);
+            mUnreadMessageCount = unreadMessageCount;
         }
 
         @Override
@@ -123,7 +130,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             EMMessage lastMessage;
             for (EMConversation conversation : allConversations) {
                 if (conversation.getAllMessages().size() != 0) {
-                    if(conversation.conversationId().equals(ChatPresenter.getConversationID())){
+                    if (conversation.conversationId().equals(ChatPresenter.getConversationID())) {
                         conversation.markAllMessagesAsRead();
                     }
                     lastMessage = conversation.getLastMessage();
@@ -143,6 +150,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     bean.setLastMsgContent((((EMTextMessageBody) lastMessage.getBody()).getMessage()));
                     bean.setLastMsgTime(lastMessage.getMsgTime());
                     filterConversation.add(bean);
+                    mUnreadMessageCount[0] += bean.getUnreadMsgCount();
                 }
             }
             sortConversationByLastChatTime(filterConversation);

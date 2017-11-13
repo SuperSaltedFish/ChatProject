@@ -21,6 +21,7 @@ public class ConversationContract {
         List<ConversationBean> getOldConversationList();
 
         void updateListView(DiffUtil.DiffResult diffResult,List<ConversationBean> newConversationList);
+        void updateUnreadBadge(int count);
     }
 
 

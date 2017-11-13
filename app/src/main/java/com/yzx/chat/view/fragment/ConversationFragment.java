@@ -1,12 +1,8 @@
 package com.yzx.chat.view.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +17,7 @@ import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.ChatActivity;
+import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ConversationBean;
@@ -76,7 +73,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
-        new ItemTouchHelper(mItemTouchCallback).attachToRecyclerView(mRecyclerView);
 
     }
 
@@ -105,11 +101,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         @Override
         public void onItemClick(int position, View itemView) {
             String conversationID = mConversationList.get(position).getConversationID();
-            mPresenter.markConversationAsRead(conversationID);
-            mPresenter.refreshAllConversation(mConversationList);
             Intent intent = new Intent(mContext, ChatActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID,conversationID);
+            intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
 //            Activity activity = (Activity) mContext;
 //            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
 //                    activity,
@@ -117,58 +111,14 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 //                    new Pair<>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
 //            ActivityCompat.startActivity(mContext, intent, activityOptions.toBundle());
             mContext.startActivity(intent);
+            mPresenter.markConversationAsRead(conversationID);
+            mPresenter.refreshAllConversation(mConversationList);
         }
 
 
     };
 
-    private final ItemTouchHelper.Callback mItemTouchCallback = new ItemTouchHelper.Callback() {
-        @Override
-        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
-        }
 
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            int fromPosition = viewHolder.getAdapterPosition();
-            int toPosition = target.getAdapterPosition();
-            if (fromPosition < toPosition) {
-                for (int i = fromPosition; i < toPosition; i++) {
-                    Collections.swap(mConversationList, i, i + 1);
-                }
-            } else {
-                for (int i = fromPosition; i > toPosition; i--) {
-                    Collections.swap(mConversationList, i, i - 1);
-                }
-            }
-            mAdapter.notifyItemMoved(fromPosition, toPosition);
-            return true;
-        }
-
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        }
-
-
-        @Override
-        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-            super.onSelectedChanged(viewHolder, actionState);
-            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                viewHolder.itemView.setBackground(new ColorDrawable(Color.WHITE));
-                viewHolder.itemView.setTranslationZ(AndroidTool.dip2px(4));
-                mAutoEnableOverScrollListener.setEnableOverScroll(false);
-            }
-        }
-
-        @Override
-        public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            super.clearView(recyclerView, viewHolder);
-            viewHolder.itemView.setBackground(null);
-            viewHolder.itemView.setTranslationZ(0);
-            mAutoEnableOverScrollListener.setEnableOverScroll(true);
-        }
-
-    };
 
     @Override
     public ConversationContract.Presenter getPresenter() {
@@ -186,5 +136,12 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         diffResult.dispatchUpdatesTo(mAdapter);
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
+    }
+
+    @Override
+    public void updateUnreadBadge(int count) {
+        if (mContext instanceof HomeActivity) {
+            ((HomeActivity) mContext).updateUnreadMessageCount(count);
+        }
     }
 }
