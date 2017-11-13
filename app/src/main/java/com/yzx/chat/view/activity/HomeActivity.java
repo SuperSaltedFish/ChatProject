@@ -69,6 +69,12 @@ public class HomeActivity extends BaseCompatActivity {
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        overridePendingTransition(R.anim.avtivity_slide_in_left,R.anim.activity_slide_out_right);
+    }
+
     public void updateUnreadMessageCount(int count){
         if(count==0){
             mChatBadge.hide(false);

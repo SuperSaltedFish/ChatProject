@@ -28,7 +28,7 @@
         app:srlEnablePureScrollMode="true">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/ContactFragment_mFriendsRecyclerView"
+            android:id="@+id/ContactFragment_mContactRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
@@ -50,7 +50,7 @@
         android:textSize="44sp"/>
 
     <com.yzx.chat.widget.view.IndexBarView
-        android:id="@+id/FriendsFragment_mIndexBarView"
+        android:id="@+id/ContactFragment_mIndexBarView"
         android:layout_width="16dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ContactFragment_mFBtnAdd"
@@ -63,7 +63,7 @@
         android:paddingTop="4dp"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/FriendsFragment_mFBtnAdd"
+        android:id="@+id/ContactFragment_mFBtnAdd"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"

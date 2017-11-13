@@ -109,6 +109,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        overridePendingTransition(R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
         setData(intent);
     }
 

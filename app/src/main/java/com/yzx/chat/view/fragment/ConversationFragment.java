@@ -1,14 +1,12 @@
 package com.yzx.chat.view.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -16,7 +14,6 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
-import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
@@ -27,14 +24,12 @@ import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by YZX on 2017年06月03日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
-
 public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View {
 
     private RecyclerView mRecyclerView;
@@ -111,7 +106,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 //                    new Pair<>(activity.findViewById(R.id.HomeActivity_mBottomNavigationView), ChatActivity.SHARED_ELEMENTS_BOTTOM_LAYOUT),
 //                    new Pair<>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
 //            ActivityCompat.startActivity(mContext, intent, activityOptions.toBundle());
-            mContext.startActivity(intent);
+            ActivityOptionsCompat compat =  ActivityOptionsCompat.makeCustomAnimation(mContext,R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
+            ActivityCompat.startActivity(mContext, intent, compat.toBundle());
+            getActivity().overridePendingTransition(R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
             mPresenter.markConversationAsRead(conversationID);
             mPresenter.refreshAllConversation(mConversationList);
         }

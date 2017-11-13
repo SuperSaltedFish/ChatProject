@@ -57,7 +57,7 @@ public class ContactFragment extends BaseFragment {
     @Override
     protected void init(View parentView) {
         mToolbar = (Toolbar) parentView.findViewById(R.id.ContactFragment_mToolbar);
-        mFriendsRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mFriendsRecyclerView);
+        mFriendsRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
         mIndexBarView = (IndexBarView) parentView.findViewById(R.id.ContactFragment_mIndexBarView);
         mTvIndexBarHint = (TextView) parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
         mFBtnAdd = (FloatingActionButton) parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
