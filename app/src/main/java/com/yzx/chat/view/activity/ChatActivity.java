@@ -70,8 +70,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setView() {
-//        mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
-//        mRvChatView.setTransitionName(SHARED_ELEMENTS_CONTENT);
+        mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
+        mRvChatView.setTransitionName(SHARED_ELEMENTS_CONTENT);
 
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;

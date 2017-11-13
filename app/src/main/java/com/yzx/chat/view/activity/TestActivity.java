@@ -42,7 +42,7 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EMClient.getInstance().logout(true);
-        EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
+        EMClient.getInstance().loginWithToken("244546875", "YWMtp_IJ0MgWEeeuN-dOZVvOkmsVRwCSshHniUpvRKkAdRfWycmgvxAR56amWZcaQTKdAwMAAAFfsxzJIgBPGgCqgbY_BCbytoQDkYa-jmDg38B_v2QCtD-eF3798To3CQ", new EMCallBack() {
             @Override
             public void onSuccess() {
                 LogUtil.e("dwadwad");
@@ -58,7 +58,6 @@ public class TestActivity extends BaseCompatActivity {
                 LogUtil.e("dwadwad");
             }
         });
-
     }
 
     public void onClick(View v) {

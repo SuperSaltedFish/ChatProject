@@ -80,6 +80,12 @@
 
         </activity>
 
+
+
+
+
+
+
          <!-- 以下为环信-->
          <meta-data android:name="EASEMOB_APPKEY"  android:value="qq244546875#superchat" />
          <!-- 声明SDK所需的service SDK核心功能-->
