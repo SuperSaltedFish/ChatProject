@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -16,7 +15,15 @@
             android:id="@+id/ContactFragment_mSegmentedControlView"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
+
+        <com.yzx.chat.widget.view.BadgeImageView
+            android:id="@+id/ContactFragment_mContactRequestBadge"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:layout_gravity="center_vertical|end"
+            android:src="@drawable/ic_contact_add" />
 
     </Toolbar>
 
@@ -30,7 +37,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ContactFragment_mContactRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
@@ -47,7 +54,7 @@
         android:scaleX="0"
         android:scaleY="0"
         android:textColor="@color/text_main_color_white_alpha"
-        android:textSize="44sp"/>
+        android:textSize="44sp" />
 
     <com.yzx.chat.widget.view.IndexBarView
         android:id="@+id/ContactFragment_mIndexBarView"
@@ -60,7 +67,7 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_index_bar"
         android:paddingBottom="2dp"
-        android:paddingTop="4dp"/>
+        android:paddingTop="4dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/ContactFragment_mFBtnAdd"
@@ -71,6 +78,6 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:clickable="true"
-        android:src="@drawable/ic_more"/>
+        android:src="@drawable/ic_more" />
 
 </RelativeLayout>

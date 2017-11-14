@@ -10,7 +10,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.util.DateUtil;
-import com.yzx.chat.widget.view.AvatarImageView;
+import com.yzx.chat.widget.view.BadgeImageView;
 
 import java.util.List;
 
@@ -52,10 +52,10 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
             case SINGLE:
                 SingleViewHolder singleViewHolder = (SingleViewHolder) holder;
                 if (unreadMsgCount > 0) {
-                    singleViewHolder.mAvatarImageView.setDigitalMode(AvatarImageView.MODE_SHOW);
-                    singleViewHolder.mAvatarImageView.setDigital(unreadMsgCount);
+                    singleViewHolder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
+                    singleViewHolder.mBadgeImageView.setBadgeText(unreadMsgCount);
                 } else {
-                    singleViewHolder.mAvatarImageView.setDigitalMode(AvatarImageView.MODE_HIDE);
+                    singleViewHolder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);
                 }
                 break;
             case GROUP:
@@ -110,27 +110,27 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     private final static class SingleViewHolder extends ConversationViewHolder {
 
-        AvatarImageView mAvatarImageView;
+        BadgeImageView mBadgeImageView;
 
         SingleViewHolder(View itemView) {
             super(itemView, SINGLE);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
             mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastMessage);
             mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleTime);
-            mAvatarImageView = (AvatarImageView) itemView.findViewById(R.id.ConversationAdapter_mIvSingleAvatar);
+            mBadgeImageView = (BadgeImageView) itemView.findViewById(R.id.ConversationAdapter_mIvSingleAvatar);
         }
     }
 
     private final static class GroupViewHolder extends ConversationViewHolder {
 
-        AvatarImageView mAvatarImageView;
+        BadgeImageView mBadgeImageView;
 
         GroupViewHolder(View itemView) {
             super(itemView, GROUP);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
             mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastMessage);
             mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupTime);
-            mAvatarImageView = (AvatarImageView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastHeadImage);
+            mBadgeImageView = (BadgeImageView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastHeadImage);
         }
     }
 }

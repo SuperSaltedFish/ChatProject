@@ -55,8 +55,8 @@ public class SegmentedControlView extends RadioGroup {
         mDefaultSelectedPosition = -1;
         DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         mTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, metrics);
-        mItemPaddingLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, metrics);
-        mItemPaddingRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, metrics);
+        mItemPaddingLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, metrics);
+        mItemPaddingRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, metrics);
         mItemPaddingTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, metrics);
         mItemPaddingBottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, metrics);
         mStrokeWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, metrics);

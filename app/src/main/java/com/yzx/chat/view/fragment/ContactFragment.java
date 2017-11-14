@@ -14,18 +14,18 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.FriendProfileActivity;
-import com.yzx.chat.widget.adapter.FriendsAdapter;
+import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.FriendBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.test.FriendsTestData;
 import com.yzx.chat.util.AnimationUtil;
+import com.yzx.chat.widget.view.BadgeImageView;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
 import com.yzx.chat.widget.view.SegmentedControlView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,18 +35,19 @@ import java.util.List;
 
 public class ContactFragment extends BaseFragment {
 
-    private RecyclerView mFriendsRecyclerView;
-    private FriendsAdapter mAdapter;
+    private RecyclerView mContactRecyclerView;
+    private ContactAdapter mAdapter;
     private IndexBarView mIndexBarView;
     private TextView mTvIndexBarHint;
     private Toolbar mToolbar;
     private SmartRefreshLayout mSmartRefreshLayout;
     private SegmentedControlView mSegmentedControlView;
+    private BadgeImageView mContactRequestBadge;
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
-    private List<FriendBean> mFriendList = new ArrayList<>();
+    private List<FriendBean> mFriendList = FriendsTestData.getTestData();
 
 
     @Override
@@ -57,14 +58,15 @@ public class ContactFragment extends BaseFragment {
     @Override
     protected void init(View parentView) {
         mToolbar = (Toolbar) parentView.findViewById(R.id.ContactFragment_mToolbar);
-        mFriendsRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
+        mContactRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
         mIndexBarView = (IndexBarView) parentView.findViewById(R.id.ContactFragment_mIndexBarView);
         mTvIndexBarHint = (TextView) parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
         mFBtnAdd = (FloatingActionButton) parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
+        mContactRequestBadge = (BadgeImageView) parentView.findViewById(R.id.ContactFragment_mContactRequestBadge);
         mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
         mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
-        mAdapter = new FriendsAdapter(mFriendList);
+        mAdapter = new ContactAdapter(mFriendList);
     }
 
     @Override
@@ -79,12 +81,15 @@ public class ContactFragment extends BaseFragment {
         mLetterSegmentationItemDecoration.setTextSize(AndroidTool.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mFriendsRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mFriendsRecyclerView.setAdapter(mAdapter);
-        mFriendsRecyclerView.setHasFixedSize(true);
-        mFriendsRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
-        mFriendsRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
-        mFriendsRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
+        mContactRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mContactRecyclerView.setAdapter(mAdapter);
+        mContactRecyclerView.setHasFixedSize(true);
+        mContactRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
+        mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
+        mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
+
+        mContactRequestBadge.setBadgeTextPadding((int) AndroidTool.dip2px(2));
+        mContactRequestBadge.setBadgePadding(0, (int) AndroidTool.dip2px(6), (int) AndroidTool.dip2px(4), 0);
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_alpha_black));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
@@ -100,7 +105,7 @@ public class ContactFragment extends BaseFragment {
     }
 
     private void loadData() {
-        mFriendList.addAll(FriendsTestData.getTestData());
+
         mAdapter.notifyDataSetChanged();
     }
 
@@ -108,13 +113,18 @@ public class ContactFragment extends BaseFragment {
 
         @Override
         public void onItemClick(int position, View itemView) {
-            mContext.startActivity(new Intent(mContext, FriendProfileActivity.class));
+            if (position == 0) {
+
+            } else {
+                mContext.startActivity(new Intent(mContext, FriendProfileActivity.class));
+            }
         }
 
         @Override
         public void onItemLongClick(int position, View itemView) {
 
         }
+
     };
 
 
@@ -123,15 +133,15 @@ public class ContactFragment extends BaseFragment {
         public void onSelected(int position, String text) {
             final int scrollPosition = mAdapter.findPositionByLetter(text);
             if (scrollPosition >= 0) {
-                mFriendsRecyclerView.scrollToPosition(scrollPosition);
-                mFriendsRecyclerView.post(new Runnable() {
+                mContactRecyclerView.scrollToPosition(scrollPosition);
+                mContactRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
                         int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
                         if (scrollPosition > firstPosition) {
-                            View childView = mFriendsRecyclerView.getChildAt(scrollPosition - firstPosition);
+                            View childView = mContactRecyclerView.getChildAt(scrollPosition - firstPosition);
                             int scrollY = childView.getTop() - mLetterSegmentationItemDecoration.getSpace();
-                            mFriendsRecyclerView.scrollBy(0, scrollY);
+                            mContactRecyclerView.scrollBy(0, scrollY);
                         }
                     }
                 });

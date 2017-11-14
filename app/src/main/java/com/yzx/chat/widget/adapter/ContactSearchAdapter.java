@@ -21,12 +21,12 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class FriendSearchAdapter extends BaseAdapter implements Filterable {
+public class ContactSearchAdapter extends BaseAdapter implements Filterable {
 
     private List<FriendBean> mFriendList;
     private Filter mFriendFilter;
 
-    public FriendSearchAdapter(List<FriendBean> friendBeanList) {
+    public ContactSearchAdapter(List<FriendBean> friendBeanList) {
         mFriendList = new ArrayList<>(friendBeanList.size() + 3);
         mFriendFilter = new FriendFilter(friendBeanList);
     }
@@ -51,7 +51,7 @@ public class FriendSearchAdapter extends BaseAdapter implements Filterable {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_friends, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
             convertView.setTag(new ItemViewHolder(convertView));
         }
         ItemViewHolder viewHolder = (ItemViewHolder) convertView.getTag();

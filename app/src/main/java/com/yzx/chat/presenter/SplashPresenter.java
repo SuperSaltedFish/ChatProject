@@ -28,7 +28,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void init() {
-        if (EMClient.getInstance().isLoggedInBefore() && IdentityManager.getInstance().isLogged()) {
+        if (EMClient.getInstance().isLoggedInBefore()) {
             NetworkUtil.cancel(mInitAsyncTask);
             mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
             mInitAsyncTask.execute();

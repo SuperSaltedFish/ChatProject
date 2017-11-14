@@ -10,7 +10,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/parting_line_color_alpha_black" />
 
-    <com.yzx.chat.widget.view.AvatarImageView
+    <com.yzx.chat.widget.view.BadgeImageView
         android:id="@+id/ConversationAdapter_mIvSingleAvatar"
         android:layout_width="56dp"
         android:layout_height="56dp"

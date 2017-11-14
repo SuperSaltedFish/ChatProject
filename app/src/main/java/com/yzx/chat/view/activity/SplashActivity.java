@@ -52,7 +52,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     public void startHomeActivity() {
         startActivity(new Intent(this,HomeActivity.class));
         finish();
-        overridePendingTransition(R.anim.avtivity_slide_in_right,0);
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
     }
 
     @Override

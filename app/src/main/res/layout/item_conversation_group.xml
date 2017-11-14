@@ -45,7 +45,7 @@
         android:gravity="center_vertical"
         android:textSize="12sp"/>
 
-    <com.yzx.chat.widget.view.AvatarImageView
+    <com.yzx.chat.widget.view.BadgeImageView
         android:id="@+id/ConversationAdapter_mTvGroupLastHeadImage"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -80,22 +80,22 @@
         android:layout_toStartOf="@+id/ConversationAdapter_mTvGroupTime"
         android:orientation="horizontal">
 
-        <com.yzx.chat.widget.view.AvatarImageView
+        <com.yzx.chat.widget.view.BadgeImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
 
-        <com.yzx.chat.widget.view.AvatarImageView
+        <com.yzx.chat.widget.view.BadgeImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
 
-        <com.yzx.chat.widget.view.AvatarImageView
+        <com.yzx.chat.widget.view.BadgeImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>
 
-        <com.yzx.chat.widget.view.AvatarImageView
+        <com.yzx.chat.widget.view.BadgeImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/temp_head_image"/>

@@ -28,12 +28,12 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class FriendsAdapter extends BaseRecyclerViewAdapter<FriendsAdapter.ItemView> {
+public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemView> {
 
     private List<FriendBean> mFriendList;
     private SparseArray<String> mIdentitySparseArray;
 
-    public FriendsAdapter(List<FriendBean> friendList) {
+    public ContactAdapter(List<FriendBean> friendList) {
         mFriendList = friendList;
         mIdentitySparseArray = new SparseArray<>(30);
         registerAdapterDataObserver(mDataObserver);
@@ -46,7 +46,7 @@ public class FriendsAdapter extends BaseRecyclerViewAdapter<FriendsAdapter.ItemV
             parent.addView(view);
             return new ItemSearchView(view, mFriendList);
         } else {
-            return new ItemFriendView(LayoutInflater.from(mContext).inflate(R.layout.item_friends, parent, false));
+            return new ItemFriendView(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
         }
     }
 
@@ -152,7 +152,7 @@ public class FriendsAdapter extends BaseRecyclerViewAdapter<FriendsAdapter.ItemV
     private static class ItemSearchView extends ItemView {
 
         private List<FriendBean> mFriendList;
-        private FriendSearchAdapter mSearchAdapter;
+        private ContactSearchAdapter mSearchAdapter;
 
         AutoCompleteTextView mAutoCompleteTextView;
 
@@ -166,7 +166,7 @@ public class FriendsAdapter extends BaseRecyclerViewAdapter<FriendsAdapter.ItemV
 
         private void initView() {
             mAutoCompleteTextView = (AutoCompleteTextView) itemView;
-            mSearchAdapter = new FriendSearchAdapter(mFriendList);
+            mSearchAdapter = new ContactSearchAdapter(mFriendList);
         }
 
         private void setView() {
