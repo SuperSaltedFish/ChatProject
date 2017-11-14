@@ -38,7 +38,26 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/BaseLightTheme">
+        android:theme="@style/DefaultLightTheme">
+
+        <activity android:name=".view.activity.SplashActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".view.activity.LoginActivity"
+            android:theme="@style/LoginTheme"
+            android:launchMode="singleTask">
+
+        </activity>
+
+
         <activity
             android:name=".view.activity.HomeActivity"
             android:windowSoftInputMode="adjustPan">
@@ -47,36 +66,30 @@
 
         </activity>
 
-        <activity android:name=".view.activity.SplashActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".view.activity.LoginActivity"
-            android:theme="@style/LoginTheme"
-            android:launchMode="singleTask">
-
-        </activity>
         <activity
             android:name=".view.activity.QrCodeScanActivity"
             android:theme="@style/NoBackgroundDarkTheme">
 
         </activity>
+
+
         <activity
             android:name=".view.activity.ImageSelectorActivity"
             android:theme="@style/BaseDarkTheme">
 
         </activity>
-        <activity android:name=".view.activity.TestActivity">
 
-        </activity>
         <activity
             android:name=".view.activity.FriendProfileActivity"
             android:theme="@style/TransparentStatusBarLightTheme">
+
+        </activity>
+
+
+
+
+        <activity android:name=".view.activity.TestActivity">
 
         </activity>
 

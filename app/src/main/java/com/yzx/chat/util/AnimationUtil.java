@@ -25,10 +25,6 @@ public class AnimationUtil {
         view.startAnimation(anim);
     }
 
-    public static void scaleAnim(View view, float fromScale, float toScale, int msec) {
-        scaleAnim(view, fromScale, fromScale, toScale, toScale, msec);
-    }
-
     public static void scaleAnim(View view, float fromScaleX, float fromScaleY, float toScaleX, float toScaleY, int msec) {
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("scaleX", fromScaleX, toScaleX);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleY", fromScaleY, toScaleY);
@@ -95,7 +91,8 @@ public class AnimationUtil {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 animListener.onAnimationEnd(animation);
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                activity.overridePendingTransition(0, 0);
+                //activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
         anim.start();

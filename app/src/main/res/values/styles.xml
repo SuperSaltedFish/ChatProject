@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="BaseLightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="DefaultLightTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/theme_main_color</item>
         <item name="colorPrimaryDark">@color/theme_main_color</item>
@@ -16,17 +16,18 @@
     <style name="BaseDarkTheme" parent="Theme.AppCompat.NoActionBar">
         <!--<item name="colorPrimary">@color/theme_main_color</item>-->
         <!--<item name="colorPrimaryDark">@color/theme_main_color</item>-->
+        <item name="colorAccent">@color/theme_main_color</item>
+
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="colorAccent">@color/theme_main_color</item>
     </style>
 
-    <style name="TransparentStatusBarLightTheme" parent="BaseLightTheme">
+    <style name="TransparentStatusBarLightTheme" parent="DefaultLightTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="NoBackgroundLightTheme" parent="BaseLightTheme">
+    <style name="NoBackgroundLightTheme" parent="DefaultLightTheme">
         <item name="android:windowBackground">@null</item>
     </style>
 
@@ -37,10 +38,15 @@
     <style name="LoginTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_register</item>
         <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="colorPrimary">@color/theme_main_color</item>
         <item name="colorPrimaryDark">@color/theme_main_color</item>
         <item name="colorAccent">@color/theme_main_color</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="HomePopupMenuStyle" parent="@style/Widget.AppCompat.PopupMenu.Overflow">

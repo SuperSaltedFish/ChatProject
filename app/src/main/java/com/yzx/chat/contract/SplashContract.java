@@ -1,5 +1,7 @@
 package com.yzx.chat.contract;
 
+import android.content.Context;
+
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
@@ -11,7 +13,8 @@ import com.yzx.chat.base.BaseView;
 public class SplashContract {
 
     public interface View extends BaseView<Presenter> {
-        void complete();
+        void startLoginActivity();
+        void startHomeActivity();
         void error(String error);
 
     }
@@ -19,8 +22,7 @@ public class SplashContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void initChat();
+        void init();
 
-        void initDatabase();
     }
 }

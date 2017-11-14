@@ -20,7 +20,7 @@ public class AndroidTool {
     private static int sScreenDensity;
     private static Context sApplicationContext;
 
-    public synchronized static void init(Application context) {
+    public synchronized static void init(Context context) {
         if (sApplicationContext != null) {
             return;
         }

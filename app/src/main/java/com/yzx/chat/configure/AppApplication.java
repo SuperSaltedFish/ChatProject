@@ -9,6 +9,7 @@ import com.hyphenate.chat.EMOptions;
 import com.yzx.chat.broadcast.NetworkStateReceive;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.List;
 
@@ -23,7 +24,6 @@ public class AppApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         String processAppName = getProcessName(this,android.os.Process.myPid());
         if(processAppName!=null&&processAppName.equalsIgnoreCase(getPackageName())){
             IdentityManager.init(this,
@@ -49,7 +49,7 @@ public class AppApplication extends Application {
         //初始化
         EMClient.getInstance().init(this, options);
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-        EMClient.getInstance().setDebugMode(true);
+        EMClient.getInstance().setDebugMode(false);
     }
 
     public static String getProcessName(Context cxt, int pid) {

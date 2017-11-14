@@ -3,6 +3,7 @@ package com.yzx.chat.tool;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.text.TextUtils;
 
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
@@ -33,6 +34,7 @@ public class IdentityManager {
 
     public synchronized static void init(Context applicationContext, String preferencesFileName,
                                          String rsaKeyAlias, String aesKeyAlias, String tokenAlias, String deviceIDAlias) {
+
         sManager = new IdentityManager(applicationContext, preferencesFileName, rsaKeyAlias, aesKeyAlias, tokenAlias, deviceIDAlias);
     }
 
@@ -58,6 +60,26 @@ public class IdentityManager {
 
     public synchronized void clearAuthenticationData() {
         mPreferences.edit().clear().apply();
+        mAESKey = null;
+        mToken = null;
+    }
+
+    public boolean isLogged(){
+        return !TextUtils.isEmpty(getToken()) && initAESKey();
+    }
+
+    public synchronized boolean saveAESKey(String key) {
+        byte[] rsaEncrypt = rsaEncryptByPublicKey(key.getBytes());
+        if (rsaEncrypt == null) {
+            return false;
+        }
+        String base64Data = Base64Util.encodeToString(rsaEncrypt);
+        if(base64Data==null){
+            return false;
+        }
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(mAESKeyAlias, base64Data);
+        return editor.commit();
     }
 
     public boolean saveToken(String token){
@@ -96,19 +118,6 @@ public class IdentityManager {
         return Base64Util.encodeToString(mRSAKeyPair.getPublic().getEncoded());
     }
 
-    public synchronized boolean saveAESKey(String key) {
-        byte[] rsaEncrypt = rsaEncryptByPublicKey(key.getBytes());
-        if (rsaEncrypt == null) {
-            return false;
-        }
-        String base64Data = Base64Util.encodeToString(rsaEncrypt);
-        if(base64Data==null){
-            return false;
-        }
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(mAESKeyAlias, base64Data);
-        return editor.commit();
-    }
 
     public byte[] rsaEncryptByPublicKey(byte[] data) {
         return RSAUtil.encryptByPublicKey(data, mRSAKeyPair.getPublic());

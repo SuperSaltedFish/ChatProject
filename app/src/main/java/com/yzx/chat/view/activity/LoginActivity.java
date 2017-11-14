@@ -254,7 +254,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             showError(mTvLoginHint, getString(R.string.LoginActivity_Error_PasswordLength) + MIN_PASSWORD_LENGTH);
             return;
         }
-        if(!isReVerify){
+        if (!isReVerify) {
             mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
         }
         if (isReVerify) {
@@ -272,13 +272,13 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     private void login(boolean isSkipVerify) {
         final String username = mEtLoginUsername.getText().toString();
         final String password = mEtLoginPassword.getText().toString();
-         String verifyCode = mEtVerifyCode.getText().toString();
-        if (!isSkipVerify ) {
-            if( TextUtils.isEmpty(verifyCode)) {
+        String verifyCode = mEtVerifyCode.getText().toString();
+        if (!isSkipVerify) {
+            if (TextUtils.isEmpty(verifyCode)) {
                 showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
                 return;
             }
-        }else {
+        } else {
             verifyCode = "";
         }
         final String finalVerifyCode = verifyCode;
@@ -312,7 +312,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_IllegalPassword));
             return;
         }
-        if(!isReVerify){
+        if (!isReVerify) {
             mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
         }
         if (isReVerify) {
@@ -492,15 +492,17 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     @Override
     public void verifySuccess() {
-        ProgressBar bar = mPbVerifyProgress;
-        if(mVfPageSwitch.getDisplayedChild()==0){
+        ProgressBar bar;
+        if (mVfPageSwitch.getDisplayedChild() == 0) {
             bar = mPbLoginProgress;
+        } else {
+            bar = mPbVerifyProgress;
         }
-        AnimationUtil.circularRevealShowByFullActivityAnim(LoginActivity.this, bar, R.color.theme_main_color, new AnimatorListenerAdapter() {
+        AnimationUtil.circularRevealShowByFullActivityAnim(LoginActivity.this, bar, R.drawable.bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
-                LoginActivity.this.startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                LoginActivity.this.startActivity(new Intent(LoginActivity.this, SplashActivity.class));
                 LoginActivity.this.finish();
             }
         });
