@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.presenter.SplashPresenter;
+
 
 public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter> implements SplashContract.View {
 

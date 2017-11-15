@@ -14,7 +14,7 @@
         <com.yzx.chat.widget.view.SegmentedControlView
             android:id="@+id/ContactFragment_mSegmentedControlView"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="28dp"
             android:layout_gravity="center" />
 
         <com.yzx.chat.widget.view.BadgeImageView

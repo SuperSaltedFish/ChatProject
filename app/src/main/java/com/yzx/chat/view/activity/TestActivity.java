@@ -50,7 +50,7 @@ public class TestActivity extends BaseCompatActivity {
 
             @Override
             public void onError(int code, String error) {
-                LogUtil.e("dwadwad");
+                LogUtil.e(error);
             }
 
             @Override

@@ -1,9 +1,12 @@
 package com.yzx.chat.presenter;
 
+import com.hyphenate.EMCallBack;
+import com.hyphenate.EMContactListener;
 import com.hyphenate.chat.EMClient;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 
 /**
@@ -33,8 +36,27 @@ public class SplashPresenter implements SplashContract.Presenter {
             mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
             mInitAsyncTask.execute();
         } else {
-            IdentityManager.getInstance().clearAuthenticationData();
-            mSplashView.startLoginActivity();
+//            IdentityManager.getInstance().clearAuthenticationData();
+//            mSplashView.startLoginActivity();
+            EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
+                @Override
+                public void onSuccess() {
+                    NetworkUtil.cancel(mInitAsyncTask);
+                    mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
+                    mInitAsyncTask.execute();
+                }
+
+                @Override
+                public void onError(int code, String error) {
+                    LogUtil.e(error);
+                    mSplashView.startLoginActivity();
+                }
+
+                @Override
+                public void onProgress(int progress, String status) {
+
+                }
+            });
         }
     }
 
@@ -67,7 +89,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             if (result == null) {
                 presenter.initSuccess();
             } else {
-                presenter.initFail(result);
+               presenter.initFail(result);
             }
         }
     }

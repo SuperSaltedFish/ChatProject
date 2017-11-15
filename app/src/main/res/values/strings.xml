@@ -50,5 +50,6 @@
     <string name="Server_Error">服务器繁忙，请稍候再试！</string>
     <string name="LoadMoreHint_NoMore">没有更多的消息</string>
     <string name="LoadMoreHint_Loading">正在加载更多消息</string>
+    <string name="ContactAdapter_SearchContact">搜索好友</string>
 
 </resources>

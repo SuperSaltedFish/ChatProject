@@ -83,8 +83,8 @@ public class ContactSearchAdapter extends BaseAdapter implements Filterable {
         }
 
         private void initView() {
-            mTvName = (TextView) mItemView.findViewById(R.id.FriendsAdapter_mTvName);
-            mIvHeadImage = (ImageView) mItemView.findViewById(R.id.FriendsAdapter_mIvHeadImage);
+            mTvName = (TextView) mItemView.findViewById(R.id.ContactAdapter_mTvName);
+            mIvHeadImage = (ImageView) mItemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
         }
     }
 

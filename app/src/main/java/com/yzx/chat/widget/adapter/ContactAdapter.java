@@ -1,7 +1,5 @@
 package com.yzx.chat.widget.adapter;
 
-import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -35,26 +33,26 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
 
     public ContactAdapter(List<FriendBean> friendList) {
         mFriendList = friendList;
-        mIdentitySparseArray = new SparseArray<>(30);
+        mIdentitySparseArray = new SparseArray<>(32);
         registerAdapterDataObserver(mDataObserver);
     }
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0) {
-            AutoCompleteTextView view = new AutoCompleteTextView(parent.getContext());
-            parent.addView(view);
-            return new ItemSearchView(view, mFriendList);
+            return new ItemSearchView(LayoutInflater.from(mContext).inflate(R.layout.item_contact_search, parent, false), mFriendList);
         } else {
-            return new ItemFriendView(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
+            return new ItemContactView(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
         }
     }
 
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
-        if (position != 0) {
+        if (position == 0) {
+
+        }else {
             position--;
-            ItemFriendView friendHolder = (ItemFriendView) holder;
+            ItemContactView friendHolder = (ItemContactView) holder;
             String identity = mIdentitySparseArray.get(position);
             if (identity != null) {
                 holder.itemView.setTag(identity);
@@ -131,20 +129,20 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         }
     }
 
-    private static class ItemFriendView extends ItemView {
+    private static class ItemContactView extends ItemView {
 
         TextView mTvName;
         ImageView mIvHeadImage;
 
-        ItemFriendView(View itemView) {
+        ItemContactView(View itemView) {
             super(itemView);
             initView();
 
         }
 
         private void initView() {
-            mTvName = (TextView) itemView.findViewById(R.id.FriendsAdapter_mTvName);
-            mIvHeadImage = (ImageView) itemView.findViewById(R.id.FriendsAdapter_mIvHeadImage);
+            mTvName = (TextView) itemView.findViewById(R.id.ContactAdapter_mTvName);
+            mIvHeadImage = (ImageView) itemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
         }
     }
 
@@ -154,7 +152,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         private List<FriendBean> mFriendList;
         private ContactSearchAdapter mSearchAdapter;
 
-        AutoCompleteTextView mAutoCompleteTextView;
+        AutoCompleteTextView mSearchView;
 
         ItemSearchView(View itemView, List<FriendBean> friendList) {
             super(itemView);
@@ -165,32 +163,21 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         }
 
         private void initView() {
-            mAutoCompleteTextView = (AutoCompleteTextView) itemView;
+            mSearchView = (AutoCompleteTextView) itemView.findViewById(R.id.ContactAdapter_mSearchView);
             mSearchAdapter = new ContactSearchAdapter(mFriendList);
         }
 
         private void setView() {
-            Context context = mAutoCompleteTextView.getContext();
-            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) AndroidTool.dip2px(40));
-            params.setMargins((int) AndroidTool.dip2px(16), (int) AndroidTool.dip2px(8), (int) AndroidTool.dip2px(16), 0);
-            mAutoCompleteTextView.setLayoutParams(params);
-            mAutoCompleteTextView.setAdapter(mSearchAdapter);
-            mAutoCompleteTextView.setThreshold(1);
-            mAutoCompleteTextView.setHint("Search");
-            mAutoCompleteTextView.setTextSize(14);
-            mAutoCompleteTextView.setTextColor(ContextCompat.getColor(context, R.color.text_color_alpha_black));
-            mAutoCompleteTextView.setBackground(null);
-            mAutoCompleteTextView.setOnItemClickListener(mOnSearchItemClickListener);
-            mAutoCompleteTextView.setDropDownVerticalOffset((int) AndroidTool.dip2px(8));
-            mAutoCompleteTextView.setCompoundDrawablePadding((int) AndroidTool.dip2px(8));
-            mAutoCompleteTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, R.drawable.ic_search), null, null, null);
+            mSearchView.setAdapter(mSearchAdapter);
+            mSearchView.setOnItemClickListener(mOnSearchItemClickListener);
+            mSearchView.setDropDownVerticalOffset((int) AndroidTool.dip2px(8));
         }
 
         private final AdapterView.OnItemClickListener mOnSearchItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FriendBean friendBean = mSearchAdapter.getFriendBeanByPosition(position);
-                mAutoCompleteTextView.setText(friendBean.getName());
+                mSearchView.setText(friendBean.getName());
             }
         };
     }
