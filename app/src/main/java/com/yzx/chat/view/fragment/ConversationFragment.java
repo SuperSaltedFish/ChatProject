@@ -15,7 +15,6 @@ import com.yzx.chat.R;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
 import com.yzx.chat.view.activity.ChatActivity;
-import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ConversationBean;
@@ -136,10 +135,4 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationList.addAll(newConversationList);
     }
 
-    @Override
-    public void updateUnreadBadge(int count) {
-        if (mContext instanceof HomeActivity) {
-            ((HomeActivity) mContext).updateUnreadMessageCount(count);
-        }
-    }
 }

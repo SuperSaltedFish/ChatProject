@@ -11,6 +11,7 @@ import com.hyphenate.chat.EMTextMessageBody;
 import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.util.NetworkUtil;
 
 import java.util.ArrayList;
@@ -32,19 +33,17 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<ConversationBean> mConversationList;
-    private int[] mUnreadMessageCount;
 
     @Override
     public void attachView(ConversationContract.View view) {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
-        mUnreadMessageCount = new int[1];
-        EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
+        ChatClientManager.getInstance().addMessageListener(mMessageListener,null);
     }
 
     @Override
     public void detachView() {
-        EMClient.getInstance().chatManager().removeMessageListener(mMessageListener);
+        ChatClientManager.getInstance().removeMessageListener(mMessageListener);
         mConversationView = null;
         mConversationList = null;
         NetworkUtil.cancel(mRefreshTask);
@@ -54,8 +53,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void refreshAllConversation(List<ConversationBean> oldConversationList) {
         NetworkUtil.cancel(mRefreshTask);
-        mUnreadMessageCount[0] = 0;
-        mRefreshTask = new RefreshAllConversationTask(this, mUnreadMessageCount);
+        mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList, oldConversationList);
     }
 
@@ -66,7 +64,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
         mConversationView.updateListView(diffResult, mConversationList);
-        mConversationView.updateUnreadBadge(mUnreadMessageCount[0]);
     }
 
     private static void sortConversationByLastChatTime(List<ConversationBean> conversationList) {
@@ -78,60 +75,34 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         });
     }
 
-    private final EMMessageListener mMessageListener = new EMMessageListener() {
+    private final ChatClientManager.MessageListener mMessageListener = new ChatClientManager.MessageListener() {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             refreshAllConversation(mConversationView.getOldConversationList());
         }
-
-        @Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageRead(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageDelivered(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageRecalled(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageChanged(EMMessage message, Object change) {
-
-        }
-
     };
 
     private static class RefreshAllConversationTask extends NetworkAsyncTask<List<ConversationBean>, DiffUtil.DiffResult> {
 
-        private int[] mUnreadMessageCount;
-
-        private RefreshAllConversationTask(Object lifeCycleDependence, int[] unreadMessageCount) {
+        private RefreshAllConversationTask(Object lifeCycleDependence) {
             super(lifeCycleDependence);
-            mUnreadMessageCount = unreadMessageCount;
         }
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ConversationBean>[] lists) {
-            Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+            Map<String, EMConversation> conversations = ChatClientManager.getInstance().getAllConversations();
             Collection<EMConversation> allConversations = conversations.values();
             List<ConversationBean> filterConversation = lists[0];
             filterConversation.clear();
             ConversationBean bean;
             EMMessage lastMessage;
+            int unreadCount = 0;
             for (EMConversation conversation : allConversations) {
                 if (conversation.getAllMessages().size() != 0) {
                     if (conversation.conversationId().equals(ChatPresenter.getConversationID())) {
                         conversation.markAllMessagesAsRead();
+                    }else {
+                        unreadCount+=conversation.getUnreadMsgCount();
                     }
                     lastMessage = conversation.getLastMessage();
                     switch (conversation.getType()) {
@@ -150,9 +121,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     bean.setLastMsgContent((((EMTextMessageBody) lastMessage.getBody()).getMessage()));
                     bean.setLastMsgTime(lastMessage.getMsgTime());
                     filterConversation.add(bean);
-                    mUnreadMessageCount[0] += bean.getUnreadMsgCount();
                 }
             }
+            ChatClientManager.getInstance().setMessageUnreadCount(unreadCount);
             sortConversationByLastChatTime(filterConversation);
             return DiffUtil.calculateDiff(new DiffCallback(lists[1], filterConversation), true);
         }

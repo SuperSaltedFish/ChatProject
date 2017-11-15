@@ -11,13 +11,15 @@ import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.ashokvarma.bottomnavigation.TextBadgeItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.contract.HomeContract;
+import com.yzx.chat.presenter.HomePresenter;
 import com.yzx.chat.view.fragment.ConversationFragment;
 import com.yzx.chat.view.fragment.ContactFragment;
 import com.yzx.chat.view.fragment.MomentsFragment;
 import com.yzx.chat.view.fragment.ProfileFragment;
 
 
-public class HomeActivity extends BaseCompatActivity {
+public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View{
 
     private final static int REQUEST_PERMISSIONS_CAMERA = 0x1;
 
@@ -50,7 +52,7 @@ public class HomeActivity extends BaseCompatActivity {
                 .setTextColorResource(android.R.color.white);
 
         mBottomNavigationBar
-                .addItem(new BottomNavigationItem(R.drawable.ic_chat, R.string.HomeBottomNavigationTitle_Chat))
+                .addItem(new BottomNavigationItem(R.drawable.ic_chat, R.string.HomeBottomNavigationTitle_Chat).setBadgeItem(mChatBadge))
                 .addItem(new BottomNavigationItem(R.drawable.ic_friend, R.string.HomeBottomNavigationTitle_Contact))
                 .addItem(new BottomNavigationItem(R.drawable.ic_moments, R.string.HomeBottomNavigationTitle_Moments))
                 .addItem(new BottomNavigationItem(R.drawable.ic_setting, R.string.HomeBottomNavigationTitle_Profile))
@@ -75,12 +77,18 @@ public class HomeActivity extends BaseCompatActivity {
         overridePendingTransition(R.anim.avtivity_slide_in_left,R.anim.activity_slide_out_right);
     }
 
-    public void updateUnreadMessageCount(int count){
+    @Override
+    public HomeContract.Presenter getPresenter() {
+        return new HomePresenter();
+    }
+
+    @Override
+    public void updateUnreadBadge(int count){
         if(count==0){
             mChatBadge.hide(false);
         }else {
             if(count>=10){
-                mChatBadge.setText(String.valueOf(10));
+                mChatBadge.setText(String.valueOf(count));
             }else {
                 mChatBadge.setText(" "+count+" ");
             }
@@ -129,5 +137,4 @@ public class HomeActivity extends BaseCompatActivity {
             transaction.commit();
         }
     };
-
 }

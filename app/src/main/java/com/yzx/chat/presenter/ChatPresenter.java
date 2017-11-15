@@ -98,7 +98,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private void loadMoreComplete(List<EMMessage> messageList) {
         mIsLoadingMore = false;
-        if(messageList.size()<Constants.CHAT_MESSAGE_PAGE_SIZE){
+        if(messageList==null||messageList.size()<Constants.CHAT_MESSAGE_PAGE_SIZE){
             mHasMoreMessage = false;
         }
         mChatView.showMore(messageList,mHasMoreMessage);
@@ -167,7 +167,6 @@ public class ChatPresenter implements ChatContract.Presenter {
             mStartID = startID;
             mCount = count;
         }
-
 
         @Override
         protected List<EMMessage> doInBackground(Void... voids) {

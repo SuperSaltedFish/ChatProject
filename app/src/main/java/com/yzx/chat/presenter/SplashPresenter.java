@@ -5,6 +5,7 @@ import com.hyphenate.EMContactListener;
 import com.hyphenate.chat.EMClient;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
@@ -76,9 +77,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 
         @Override
         protected String doInBackground(Void... voids) {
-            EMClient client = EMClient.getInstance();
-            client.chatManager().loadAllConversations();
-            client.groupManager().loadAllGroups();
+            ChatClientManager.getInstance().loadAllConversationsAndGroups();
             return null;
         }
 

@@ -1,12 +1,15 @@
 package com.yzx.chat.tool;
 
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.hyphenate.EMContactListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMOptions;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,8 +28,15 @@ public class ChatClientManager {
     private EMClient mEMClient;
     private Map<MessageListener, String> mMessageListenerMap;
     private List<ContactListener> mContactListenerList;
+    private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
 
-    public static void init() {
+    private volatile int mMessageUnreadCount =-1;
+
+    public static void init(Context context) {
+        EMOptions options = new EMOptions();
+        options.setAcceptInvitationAlways(false);
+        EMClient.getInstance().init(context.getApplicationContext(), options);
+        EMClient.getInstance().setDebugMode(false);
         sManager = new ChatClientManager();
     }
 
@@ -40,7 +50,8 @@ public class ChatClientManager {
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
         mContactListenerList = new LinkedList<>();
-        mEMClient =   EMClient.getInstance();
+        mUnreadCountChangeListenerList = new LinkedList<>();
+        mEMClient = EMClient.getInstance();
         mEMClient.chatManager().addMessageListener(mEMMessageListener);
         mEMClient.contactManager().setContactListener(mEMContactListener);
     }
@@ -63,9 +74,58 @@ public class ChatClientManager {
         }
     }
 
+    public void removeMessageListener(MessageListener listener) {
+        mMessageListenerMap.remove(listener);
+    }
+
     public void addContactListener(ContactListener listener) {
         if (!mContactListenerList.contains(listener)) {
             mContactListenerList.add(listener);
+        }
+    }
+
+    public void removeContactListener(ContactListener listener) {
+        mContactListenerList.remove(listener);
+    }
+
+    public void addUnreadCountChangeListener(UnreadCountChangeListener listener) {
+        if (!mUnreadCountChangeListenerList.contains(listener)) {
+            mUnreadCountChangeListenerList.add(listener);
+        }
+    }
+
+    public void removeUnreadCountChangeListener(UnreadCountChangeListener listener) {
+        mUnreadCountChangeListenerList.remove(listener);
+    }
+
+    public synchronized int getMessageUnreadCount() {
+        return mMessageUnreadCount;
+    }
+
+    public synchronized void setMessageUnreadCount(int messageUnreadCount) {
+        if (mMessageUnreadCount != messageUnreadCount) {
+            for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
+                listener.onUnreadCountChange(messageUnreadCount);
+            }
+        }
+        mMessageUnreadCount = messageUnreadCount;
+    }
+
+    public void loadAllConversationsAndGroups() {
+        mEMClient.chatManager().loadAllConversations();
+        mEMClient.groupManager().loadAllGroups();
+    }
+
+    public Map<String, EMConversation> getAllConversations() {
+        return mEMClient.chatManager().getAllConversations();
+    }
+
+    public List<EMMessage> loadMoreMssage(String conversationID, String startMessageID, int count) {
+        EMConversation conversation = mEMClient.chatManager().getConversation(conversationID);
+        if (conversation == null) {
+            return null;
+        } else {
+            return conversation.loadMoreMsgFromDB(startMessageID, count);
         }
     }
 
@@ -160,5 +220,9 @@ public class ChatClientManager {
 
     public interface ContactListener {
         void onContactInvited(String userID, String reason);
+    }
+
+    public interface UnreadCountChangeListener {
+        void onUnreadCountChange(int unreadCount);
     }
 }

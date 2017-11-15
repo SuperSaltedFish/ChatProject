@@ -17,11 +17,9 @@ import java.util.List;
 public class ConversationContract {
 
     public interface View extends BaseView<Presenter> {
-
         List<ConversationBean> getOldConversationList();
 
-        void updateListView(DiffUtil.DiffResult diffResult,List<ConversationBean> newConversationList);
-        void updateUnreadBadge(int count);
+        void updateListView(DiffUtil.DiffResult diffResult, List<ConversationBean> newConversationList);
     }
 
 
