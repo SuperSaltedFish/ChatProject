@@ -22,6 +22,7 @@ public class ChatClientManager {
 
     private static ChatClientManager sManager;
 
+    private EMClient mEMClient;
     private Map<MessageListener, String> mMessageListenerMap;
     private List<ContactListener> mContactListenerList;
 
@@ -39,9 +40,21 @@ public class ChatClientManager {
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
         mContactListenerList = new LinkedList<>();
+        mEMClient =   EMClient.getInstance();
+        mEMClient.chatManager().addMessageListener(mEMMessageListener);
+        mEMClient.contactManager().setContactListener(mEMContactListener);
+    }
 
-        EMClient.getInstance().chatManager().addMessageListener(mEMMessageListener);
-        EMClient.getInstance().contactManager().setContactListener(mEMContactListener);
+    public void markMessageAsRead(EMMessage message) {
+        message.setUnread(false);
+    }
+
+    public void markConversationsAsRead(String conversationID) {
+        mEMClient.chatManager().getConversation(conversationID);
+    }
+
+    public void markAllConversationsAsRead() {
+
     }
 
     public void addMessageListener(MessageListener listener, String conversationID) {
@@ -124,7 +137,9 @@ public class ChatClientManager {
 
         @Override
         public void onContactInvited(String username, String reason) {
-
+            for (ContactListener listener : mContactListenerList) {
+                listener.onContactInvited(username, reason);
+            }
         }
 
         @Override
@@ -144,6 +159,6 @@ public class ChatClientManager {
     }
 
     public interface ContactListener {
-
+        void onContactInvited(String userID, String reason);
     }
 }
