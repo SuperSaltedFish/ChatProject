@@ -1,8 +1,12 @@
 package com.yzx.chat.view.activity;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,9 +18,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.hyphenate.chat.EMMessage;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.yzx.chat.R;
-import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
@@ -31,17 +33,17 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
-    public final static String SHARED_ELEMENTS_BOTTOM_LAYOUT = "BottomLayout";
-    public final static String SHARED_ELEMENTS_CONTENT = "Content";
-    public final static String INTENT_CONVERSATION_ID = "ConversationID";
 
+    public static final String ACTION_EXIT = "Exit";
+    public static final String INTENT_CONVERSATION_ID = "ConversationID";
+
+    private ExitReceiver mExitReceiver;
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
     private ImageView mIvSendMessage;
     private EditText mEtContent;
     private RelativeLayout mRlBottomLayout;
     private ChatMessageAdapter mAdapter;
-    private String mConversationID;
 
     private List<EMMessage> mMessageList;
 
@@ -56,7 +58,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         init();
         setView();
         setData(getIntent());
-
     }
 
     private void init() {
@@ -67,11 +68,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRlBottomLayout = (RelativeLayout) findViewById(R.id.ChatActivity_mRlBottomLayout);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
+        mExitReceiver = new ExitReceiver();
     }
 
     private void setView() {
-        mRlBottomLayout.setTransitionName(SHARED_ELEMENTS_BOTTOM_LAYOUT);
-        mRvChatView.setTransitionName(SHARED_ELEMENTS_CONTENT);
 
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
@@ -88,13 +88,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mExitReceiver, new IntentFilter(ACTION_EXIT));
     }
 
     private void setData(Intent intent) {
+        String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
         mMessageList.clear();
-        mConversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
-        setTitle(mConversationID);
-        mPresenter.init(mConversationID);
+        setTitle(conversationID);
+        mPresenter.init(conversationID);
     }
 
     @Override
@@ -123,6 +125,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mExitReceiver);
     }
 
     private final View.OnClickListener mSendMesClickListener = new View.OnClickListener() {
@@ -185,6 +193,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (!isHasMoreMessage) {
             mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
             mAdapter.notifyItemChanged(mMessageList.size());
+        }
+    }
+
+    private class ExitReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ChatActivity.this.finish();
         }
     }
 }

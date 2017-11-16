@@ -1,5 +1,7 @@
 package com.yzx.chat.presenter;
 
+import android.os.Handler;
+
 import com.yzx.chat.contract.HomeContract;
 import com.yzx.chat.tool.ChatClientManager;
 
@@ -10,23 +12,42 @@ import com.yzx.chat.tool.ChatClientManager;
 public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View mHomeView;
+    private Handler mHandler;
 
     @Override
     public void attachView(HomeContract.View view) {
         mHomeView = view;
+        mHandler = new Handler();
         ChatClientManager.getInstance().addUnreadCountChangeListener(mUnreadCountChangeListener);
     }
 
     @Override
     public void detachView() {
         mHomeView = null;
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
         ChatClientManager.getInstance().removeUnreadCountChangeListener(mUnreadCountChangeListener);
     }
 
     private final ChatClientManager.UnreadCountChangeListener mUnreadCountChangeListener = new ChatClientManager.UnreadCountChangeListener() {
         @Override
-        public void onUnreadCountChange(int unreadCount) {
-            mHomeView.updateUnreadBadge(unreadCount);
+        public void onMessageUnreadCountChange(final int unreadCount) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mHomeView.updateMessageUnreadBadge(unreadCount);
+                }
+            });
+        }
+
+        @Override
+        public void onContactUnreadCountChange(final int unreadCount) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mHomeView.updateContactUnreadBadge(unreadCount);
+                }
+            });
         }
     };
 }

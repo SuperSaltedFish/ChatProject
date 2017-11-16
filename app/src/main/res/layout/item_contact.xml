@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="56dp"
-              android:layout_marginStart="8dp"
-              android:gravity="center_vertical">
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_marginStart="8dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:gravity="center_vertical">
 
     <ImageView
         android:id="@+id/ContactAdapter_mIvHeadImage"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:padding="4dp"/>
+        android:padding="4dp" />
 
     <TextView
         android:id="@+id/ContactAdapter_mTvName"
@@ -17,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:maxLines="1"
-        android:textColor="@color/text_color_alpha_black"/>
+        android:textColor="@color/text_color_alpha_black" />
 
 </LinearLayout>

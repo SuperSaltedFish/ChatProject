@@ -9,6 +9,7 @@ import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.util.NetworkUtil;
 
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private ChatContract.View mChatView;
     private Handler mHandler;
-    private static String mToChatName;
+    private static String sToChatName;
     private LoadMoreTask mLoadMoreTask;
     private boolean mIsLoadingMore;
     private boolean mHasMoreMessage;
@@ -40,11 +41,12 @@ public class ChatPresenter implements ChatContract.Presenter {
         reset();
         mChatView = null;
         mHandler = null;
+        sToChatName = null;
     }
 
     @Override
     public void init(String conversationID) {
-        mToChatName = conversationID;
+        sToChatName = conversationID;
         mHasMoreMessage = true;
         mIsLoadingMore = false;
         EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
@@ -65,7 +67,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void reset() {
-        mToChatName = null;
+        sToChatName = null;
         EMClient.getInstance().chatManager().removeMessageListener(mMessageListener);
         mHandler.removeCallbacksAndMessages(null);
         NetworkUtil.cancel(mLoadMoreTask);
@@ -73,7 +75,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void sendMessage(String content) {
-        EMMessage message = EMMessage.createTxtSendMessage(content, mToChatName);
+        EMMessage message = EMMessage.createTxtSendMessage(content, sToChatName);
         EMClient.getInstance().chatManager().sendMessage(message);
         mChatView.showNew(message);
     }
@@ -82,7 +84,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void loadMoreMessage(String lastMessageID) {
         mIsLoadingMore = true;
         NetworkUtil.cancel(mLoadMoreTask);
-        mLoadMoreTask = new LoadMoreTask(this, mToChatName, lastMessageID, Constants.CHAT_MESSAGE_PAGE_SIZE);
+        mLoadMoreTask = new LoadMoreTask(this, sToChatName, lastMessageID, Constants.CHAT_MESSAGE_PAGE_SIZE);
         mLoadMoreTask.execute();
     }
 
@@ -98,10 +100,10 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private void loadMoreComplete(List<EMMessage> messageList) {
         mIsLoadingMore = false;
-        if(messageList==null||messageList.size()<Constants.CHAT_MESSAGE_PAGE_SIZE){
+        if (messageList == null || messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
             mHasMoreMessage = false;
         }
-        mChatView.showMore(messageList,mHasMoreMessage);
+        mChatView.showMore(messageList, mHasMoreMessage);
     }
 
     private void loadNewComplete(List<EMMessage> messageList) {
@@ -113,7 +115,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         public void onMessageReceived(List<EMMessage> messages) {
             final List<EMMessage> messageList = new LinkedList<>();
             for (EMMessage message : messages) {
-                if (mToChatName.equals(message.conversationId())) {
+                if (sToChatName.equals(message.conversationId())) {
                     messageList.add(message);
                 }
             }
@@ -152,7 +154,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     };
 
     public static String getConversationID() {
-        return mToChatName;
+        return sToChatName;
     }
 
     private static class LoadMoreTask extends NetworkAsyncTask<Void, List<EMMessage>> {
@@ -170,8 +172,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
         @Override
         protected List<EMMessage> doInBackground(Void... voids) {
-            EMConversation conversation = EMClient.getInstance().chatManager().getConversation(mConversationID);
-            return conversation.loadMoreMsgFromDB(mStartID, mCount);
+            return ChatClientManager.getInstance().loadMoreMessage(mConversationID, mStartID, mCount);
         }
 
         @Override

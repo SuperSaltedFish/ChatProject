@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
@@ -18,8 +19,7 @@ import com.yzx.chat.view.fragment.ContactFragment;
 import com.yzx.chat.view.fragment.MomentsFragment;
 import com.yzx.chat.view.fragment.ProfileFragment;
 
-
-public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View{
+public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View {
 
     private final static int REQUEST_PERMISSIONS_CAMERA = 0x1;
 
@@ -27,6 +27,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     private FragmentManager mFragmentManager;
     private Fragment[] mFragments;
     private TextBadgeItem mChatBadge;
+    private TextBadgeItem mContactBadge;
 
     @Override
     protected int getLayoutID() {
@@ -43,6 +44,10 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     private void initView() {
         mBottomNavigationBar = (BottomNavigationBar) findViewById(R.id.HomeActivity_mBottomNavigationBar);
         mFragments = new Fragment[4];
+        mFragments[0] = new ConversationFragment();
+        mFragments[1] = new ContactFragment();
+        mFragments[2] = new MomentsFragment();
+        mFragments[3] = new ProfileFragment();
         mFragmentManager = getSupportFragmentManager();
     }
 
@@ -51,15 +56,23 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .setBackgroundColorResource(R.color.red)
                 .setTextColorResource(android.R.color.white);
 
+        mContactBadge = new TextBadgeItem()
+                .setBackgroundColorResource(R.color.red)
+                .setTextColorResource(android.R.color.white);
+
         mBottomNavigationBar
                 .addItem(new BottomNavigationItem(R.drawable.ic_chat, R.string.HomeBottomNavigationTitle_Chat).setBadgeItem(mChatBadge))
-                .addItem(new BottomNavigationItem(R.drawable.ic_friend, R.string.HomeBottomNavigationTitle_Contact))
+                .addItem(new BottomNavigationItem(R.drawable.ic_friend, R.string.HomeBottomNavigationTitle_Contact).setBadgeItem(mContactBadge))
                 .addItem(new BottomNavigationItem(R.drawable.ic_moments, R.string.HomeBottomNavigationTitle_Moments))
                 .addItem(new BottomNavigationItem(R.drawable.ic_setting, R.string.HomeBottomNavigationTitle_Profile))
                 .initialise();
-
         mBottomNavigationBar.setTabSelectedListener(mOnTabSelectedListener);
-        mBottomNavigationBar.selectTab(0);
+
+        mFragmentManager.beginTransaction()
+                .add(R.id.HomeActivity_mClContent, mFragments[0], String.valueOf(0))
+                .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
+                .hide(mFragments[1])
+                .commit();
     }
 
     @Override
@@ -74,7 +87,13 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        overridePendingTransition(R.anim.avtivity_slide_in_left,R.anim.activity_slide_out_right);
+        overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
+    }
+
+    @Override
+    public void onBackPressed() {
+        LocalBroadcastManager.getInstance(this).sendBroadcastSync(new Intent(ChatActivity.ACTION_EXIT));
+        finish();
     }
 
     @Override
@@ -83,55 +102,49 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     @Override
-    public void updateUnreadBadge(int count){
-        if(count==0){
+    public void updateMessageUnreadBadge(int count) {
+        if (count == 0) {
             mChatBadge.hide(false);
-        }else {
-            if(count>=10){
+        } else {
+            if (count >= 10) {
                 mChatBadge.setText(String.valueOf(count));
-            }else {
-                mChatBadge.setText(" "+count+" ");
+            } else {
+                mChatBadge.setText(" " + count + " ");
             }
             mChatBadge.show(false);
         }
     }
 
+    @Override
+    public void updateContactUnreadBadge(int count) {
+        if (count == 0) {
+            mContactBadge.hide(false);
+        } else {
+            if (count >= 10) {
+                mContactBadge.setText(String.valueOf(count));
+            } else {
+                mContactBadge.setText(" " + count + " ");
+            }
+            mContactBadge.show(false);
+        }
+    }
 
     private final BottomNavigationBar.OnTabSelectedListener mOnTabSelectedListener = new BottomNavigationBar.SimpleOnTabSelectedListener() {
         @Override
         public void onTabSelected(int position) {
             Fragment fragment = mFragments[position];
-            FragmentTransaction transaction = mFragmentManager.beginTransaction();
-            if (fragment == null) {
-                switch (position) {
-                    case 0:
-                        fragment = new ConversationFragment();
-                        break;
-                    case 1:
-                        fragment = new ContactFragment();
-                        break;
-                    case 2:
-                        fragment = new MomentsFragment();
-                        break;
-                    case 3:
-                        fragment = new ProfileFragment();
-                        break;
-                    default:
-                        return;
-                }
-                mFragments[position] = fragment;
-                transaction.add(R.id.HomeActivity_mClContent, fragment);
+            if (fragment.isVisible()) {
+                return;
             }
-            if (!fragment.isVisible()) {
-                for (Fragment temp : mFragments) {
-                    if (temp == null) {
-                        continue;
-                    }
-                    if (temp != fragment) {
-                        transaction.hide(temp);
-                    } else {
-                        transaction.show(temp);
-                    }
+            FragmentTransaction transaction = mFragmentManager.beginTransaction();
+            if (mFragmentManager.findFragmentByTag(String.valueOf(position)) == null) {
+                transaction.add(R.id.HomeActivity_mClContent, fragment, String.valueOf(position));
+            }
+            for (Fragment temp : mFragments) {
+                if (temp != fragment) {
+                    transaction.hide(temp);
+                } else {
+                    transaction.show(temp);
                 }
             }
             transaction.commit();

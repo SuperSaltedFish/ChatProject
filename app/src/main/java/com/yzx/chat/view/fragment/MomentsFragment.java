@@ -17,6 +17,8 @@ import com.yzx.chat.base.BaseFragment;
 
 public class MomentsFragment extends BaseFragment {
 
+    public static final String TAG = MomentsFragment.class.getSimpleName();
+
     private RecyclerView mRecyclerView;
     private HistoryMomentsAdapter mAdapter;
 

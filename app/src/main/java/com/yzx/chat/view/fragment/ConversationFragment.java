@@ -1,6 +1,7 @@
 package com.yzx.chat.view.fragment;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.util.DiffUtil;
@@ -30,6 +31,8 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View {
+
+    public static final String TAG = ConversationFragment.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -72,7 +75,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    public void onFirstVisible() {
+    protected void onFirstVisible() {
         mPresenter.refreshAllConversation(mConversationList);
     }
 
@@ -94,22 +97,20 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
         @SuppressWarnings("unchecked")
         @Override
-        public void onItemClick(int position, View itemView) {
-            String conversationID = mConversationList.get(position).getConversationID();
-            Intent intent = new Intent(mContext, ChatActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
-//            Activity activity = (Activity) mContext;
-//            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                    activity,
-//                    new Pair<>(activity.findViewById(R.id.HomeActivity_mBottomNavigationView), ChatActivity.SHARED_ELEMENTS_BOTTOM_LAYOUT),
-//                    new Pair<>(itemView, ChatActivity.SHARED_ELEMENTS_CONTENT));
-//            ActivityCompat.startActivity(mContext, intent, activityOptions.toBundle());
-            ActivityOptionsCompat compat =  ActivityOptionsCompat.makeCustomAnimation(mContext,R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
-            ActivityCompat.startActivity(mContext, intent, compat.toBundle());
-            getActivity().overridePendingTransition(R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
-            mPresenter.markConversationAsRead(conversationID);
-            mPresenter.refreshAllConversation(mConversationList);
+        public void onItemClick(final int position, View itemView) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    String conversationID = mConversationList.get(position).getConversationID();
+                    Intent intent = new Intent(mContext, ChatActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
+                    ActivityOptionsCompat compat =  ActivityOptionsCompat.makeCustomAnimation(mContext,R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
+                    ActivityCompat.startActivity(mContext, intent, compat.toBundle());
+                    mPresenter.markConversationAsRead(conversationID);
+                    mPresenter.refreshAllConversation(mConversationList);
+                }
+            });
         }
 
 

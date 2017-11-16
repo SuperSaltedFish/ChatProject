@@ -18,6 +18,8 @@ import java.util.List;
 
 public class ProfileFragment extends BaseFragment {
 
+    public static final String TAG = ProfileFragment.class.getSimpleName();
+
 //    private MagicIndicator mPagerIndicator;
     private ViewPager mVpProfile;
     private List<String> mTabTitleList;

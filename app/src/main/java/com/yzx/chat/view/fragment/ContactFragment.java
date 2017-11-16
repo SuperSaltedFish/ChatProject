@@ -2,6 +2,7 @@ package com.yzx.chat.view.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +35,8 @@ import java.util.List;
  */
 
 public class ContactFragment extends BaseFragment {
+
+    public static final String TAG = ContactFragment.class.getSimpleName();
 
     private RecyclerView mContactRecyclerView;
     private ContactAdapter mAdapter;
@@ -100,12 +103,14 @@ public class ContactFragment extends BaseFragment {
                 .setDefaultSelectedPosition(0)
                 .setStretch(true)
                 .update();
+    }
 
+    @Override
+    protected void onFirstVisible() {
         loadData();
     }
 
     private void loadData() {
-
         mAdapter.notifyDataSetChanged();
     }
 
@@ -116,7 +121,12 @@ public class ContactFragment extends BaseFragment {
             if (position == 0) {
 
             } else {
-                mContext.startActivity(new Intent(mContext, FriendProfileActivity.class));
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mContext.startActivity(new Intent(mContext, FriendProfileActivity.class));
+                    }
+                });
             }
         }
 

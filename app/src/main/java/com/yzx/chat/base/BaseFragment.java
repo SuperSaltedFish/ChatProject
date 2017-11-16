@@ -102,7 +102,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
 
 
-    public void onFirstVisible() {
+    protected void onFirstVisible() {
     }
 
     public View getParentView() {

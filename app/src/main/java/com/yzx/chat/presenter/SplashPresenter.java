@@ -32,11 +32,11 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void init() {
-        if (EMClient.getInstance().isLoggedInBefore()) {
-            NetworkUtil.cancel(mInitAsyncTask);
-            mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
-            mInitAsyncTask.execute();
-        } else {
+//        if (EMClient.getInstance().isLoggedInBefore()) {
+//            NetworkUtil.cancel(mInitAsyncTask);
+//            mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
+//            mInitAsyncTask.execute();
+//        } else {
 //            IdentityManager.getInstance().clearAuthenticationData();
 //            mSplashView.startLoginActivity();
             EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
@@ -58,7 +58,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 
                 }
             });
-        }
+//        }
     }
 
     private void initSuccess() {

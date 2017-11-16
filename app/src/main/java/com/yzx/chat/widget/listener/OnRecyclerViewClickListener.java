@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView.OnItemTouchListener;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.yzx.chat.tool.AndroidTool;
+
 /**
  * Created by YZX on 2017年09月08日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
@@ -12,7 +14,7 @@ import android.view.View;
 
 public abstract class OnRecyclerViewClickListener implements OnItemTouchListener {
 
-    private static final int TOUCH_SLOP = 10;
+    private static final int TOUCH_SLOP = (int) AndroidTool.dip2px(8);
 
     private float mLastDownX;
     private float mLastDownY;

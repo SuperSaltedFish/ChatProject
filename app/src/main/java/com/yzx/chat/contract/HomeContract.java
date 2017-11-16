@@ -11,7 +11,9 @@ import com.yzx.chat.base.BaseView;
 public class HomeContract {
 
     public interface View extends BaseView<Presenter> {
-         void updateUnreadBadge(int count);
+        void updateMessageUnreadBadge(int count);
+
+        void updateContactUnreadBadge(int count);
     }
 
 

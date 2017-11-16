@@ -10,6 +10,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,7 +31,8 @@ public class ChatClientManager {
     private List<ContactListener> mContactListenerList;
     private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
 
-    private volatile int mMessageUnreadCount =-1;
+    private volatile int mMessageUnreadCount = -1;
+    private volatile int mContactUnreadCount;
 
     public static void init(Context context) {
         EMOptions options = new EMOptions();
@@ -54,18 +56,6 @@ public class ChatClientManager {
         mEMClient = EMClient.getInstance();
         mEMClient.chatManager().addMessageListener(mEMMessageListener);
         mEMClient.contactManager().setContactListener(mEMContactListener);
-    }
-
-    public void markMessageAsRead(EMMessage message) {
-        message.setUnread(false);
-    }
-
-    public void markConversationsAsRead(String conversationID) {
-        mEMClient.chatManager().getConversation(conversationID);
-    }
-
-    public void markAllConversationsAsRead() {
-
     }
 
     public void addMessageListener(MessageListener listener, String conversationID) {
@@ -105,11 +95,23 @@ public class ChatClientManager {
     public synchronized void setMessageUnreadCount(int messageUnreadCount) {
         if (mMessageUnreadCount != messageUnreadCount) {
             for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
-                listener.onUnreadCountChange(messageUnreadCount);
+                listener.onMessageUnreadCountChange(messageUnreadCount);
             }
         }
         mMessageUnreadCount = messageUnreadCount;
     }
+
+    public int getContactUnreadCount() {
+        return mContactUnreadCount;
+    }
+
+    public synchronized void makeAllContactAsRead() {
+        if (mContactUnreadCount != 0) {
+            mContactUnreadCount = 0;
+            callContactUnreadChange();
+        }
+    }
+
 
     public void loadAllConversationsAndGroups() {
         mEMClient.chatManager().loadAllConversations();
@@ -120,7 +122,7 @@ public class ChatClientManager {
         return mEMClient.chatManager().getAllConversations();
     }
 
-    public List<EMMessage> loadMoreMssage(String conversationID, String startMessageID, int count) {
+    public List<EMMessage> loadMoreMessage(String conversationID, String startMessageID, int count) {
         EMConversation conversation = mEMClient.chatManager().getConversation(conversationID);
         if (conversation == null) {
             return null;
@@ -129,6 +131,18 @@ public class ChatClientManager {
         }
     }
 
+    private synchronized void setContactUnreadCount(int count) {
+        if (mContactUnreadCount != count) {
+            mContactUnreadCount = count;
+            callContactUnreadChange();
+        }
+    }
+
+    private void callContactUnreadChange() {
+        for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
+            listener.onContactUnreadCountChange(mContactUnreadCount);
+        }
+    }
 
     private final EMMessageListener mEMMessageListener = new EMMessageListener() {
         @Override
@@ -197,9 +211,8 @@ public class ChatClientManager {
 
         @Override
         public void onContactInvited(String username, String reason) {
-            for (ContactListener listener : mContactListenerList) {
-                listener.onContactInvited(username, reason);
-            }
+            setContactUnreadCount(mContactUnreadCount + 1);
+            LogUtil.e("新消息");
         }
 
         @Override
@@ -223,6 +236,8 @@ public class ChatClientManager {
     }
 
     public interface UnreadCountChangeListener {
-        void onUnreadCountChange(int unreadCount);
+        void onMessageUnreadCountChange(int unreadCount);
+
+        void onContactUnreadCountChange(int unreadCount);
     }
 }
