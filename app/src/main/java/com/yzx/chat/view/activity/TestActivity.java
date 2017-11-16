@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.text.emoji.widget.EmojiTextView;
 import android.util.Log;
 import android.view.View;
 
@@ -33,6 +34,13 @@ import java.security.PublicKey;
 
 public class TestActivity extends BaseCompatActivity {
 
+    private static final String WOMAN_TECHNOLOGIST = "\uD83D\uDC69\u200D\uD83D\uDCBB";
+
+    private static final String WOMAN_SINGER = "\uD83D\uDC69\u200D\uD83C\uDFA4";
+
+    static final String EMOJI = WOMAN_TECHNOLOGIST + " " + WOMAN_SINGER;
+
+
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
@@ -41,23 +49,8 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EMClient.getInstance().logout(true);
-        EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                LogUtil.e("dwadwad");
-            }
-
-            @Override
-            public void onError(int code, String error) {
-                LogUtil.e(error);
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-                LogUtil.e("dwadwad");
-            }
-        });
+        EmojiTextView textView = findViewById(R.id.ssss);
+        textView.setText(EMOJI+"我爱你");
     }
 
     public void onClick(View v) {

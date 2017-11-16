@@ -6,7 +6,7 @@
     android:layout_marginEnd="8dp"
     android:layout_marginStart="80dp">
 
-    <TextView
+    <android.support.text.emoji.widget.EmojiTextView
         android:id="@+id/ChatMessageAdapter_mTvTextContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

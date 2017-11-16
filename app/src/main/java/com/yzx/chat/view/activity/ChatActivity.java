@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,7 +42,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
     private ImageView mIvSendMessage;
-    private EditText mEtContent;
+    private EmojiEditText mEtContent;
     private RelativeLayout mRlBottomLayout;
     private ChatMessageAdapter mAdapter;
 
@@ -64,7 +65,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mToolbar = (Toolbar) findViewById(R.id.ChatActivity_mToolbar);
         mRvChatView = (RecyclerView) findViewById(R.id.ChatActivity_mRvChatView);
         mIvSendMessage = (ImageView) findViewById(R.id.ChatActivity_mIvSendMessage);
-        mEtContent = (EditText) findViewById(R.id.ChatActivity_mEtContent);
+        mEtContent = (EmojiEditText) findViewById(R.id.ChatActivity_mEtContent);
         mRlBottomLayout = (RelativeLayout) findViewById(R.id.ChatActivity_mRlBottomLayout);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);

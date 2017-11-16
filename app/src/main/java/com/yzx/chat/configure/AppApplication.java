@@ -3,6 +3,8 @@ package com.yzx.chat.configure;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.support.text.emoji.EmojiCompat;
+import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 
 import com.hyphenate.EMContactListener;
 import com.hyphenate.chat.EMClient;
@@ -39,6 +41,8 @@ public class AppApplication extends Application {
             AndroidTool.init(this);
 
             ChatClientManager.init(this);
+
+            EmojiCompat.init(new BundledEmojiCompatConfig(this));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
+import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -156,21 +157,21 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     private static class ReceiveViewHolder extends MessageViewHolder {
         ImageView mIvAvatar;
-        TextView mTvTextContent;
+        EmojiTextView mTvTextContent;
 
         ReceiveViewHolder(View itemView) {
             super(itemView);
             mIvAvatar = (ImageView) itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
-            mTvTextContent = (TextView) itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
+            mTvTextContent = (EmojiTextView) itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
         }
     }
 
     private static class LoadMoreViewHolder extends MessageViewHolder {
-        TextView mTvHintContent;
+        EmojiTextView mTvHintContent;
 
         LoadMoreViewHolder(View itemView) {
             super(itemView);
-            mTvHintContent = (TextView) itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
+            mTvHintContent = (EmojiTextView) itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
         }
     }
 }
