@@ -38,7 +38,7 @@ public class ChatClientManager {
         EMOptions options = new EMOptions();
         options.setAcceptInvitationAlways(false);
         EMClient.getInstance().init(context.getApplicationContext(), options);
-        EMClient.getInstance().setDebugMode(false);
+        EMClient.getInstance().setDebugMode(true);
         sManager = new ChatClientManager();
     }
 
