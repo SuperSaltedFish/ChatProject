@@ -18,8 +18,11 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.broadcast.NetworkStateReceive;
 
+import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.database.DBManager;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 
 import com.yzx.chat.tool.IdentityManager;
@@ -34,11 +37,6 @@ import java.security.PublicKey;
 
 public class TestActivity extends BaseCompatActivity {
 
-    private static final String WOMAN_TECHNOLOGIST = "\uD83D\uDC69\u200D\uD83D\uDCBB";
-
-    private static final String WOMAN_SINGER = "\uD83D\uDC69\u200D\uD83C\uDFA4";
-
-    static final String EMOJI = WOMAN_TECHNOLOGIST + " " + WOMAN_SINGER;
 
 
     @Override
@@ -49,12 +47,18 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EmojiTextView textView = findViewById(R.id.ssss);
-        textView.setText(EMOJI+"我爱你");
+
+        ContactBean bean = new ContactBean();
+        bean.setUserTo("1");
+        bean.setUserFrom("2");
+        bean.setType("4");
+        bean.setReason("5");
+        ContactDao contactDao = DBManager.getInstance().getDaoInstance(new ContactDao());
+        contactDao.replace(bean);
+        ContactBean bean1 = contactDao.loadByKey("1","2");
+        LogUtil.e("awdwadwad:"+bean1);
     }
 
-    public void onClick(View v) {
-    }
 
     private void testRSA() {
         byte[] data = "ddddddddddd||".getBytes();

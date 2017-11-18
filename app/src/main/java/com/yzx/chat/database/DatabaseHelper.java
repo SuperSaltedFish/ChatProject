@@ -14,12 +14,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context, String name, int version) {
         super(context, name, null, version);
-
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.beginTransaction();
+        db.execSQL(ContactDao.CREATE_TABLE_SQL);
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     @Override

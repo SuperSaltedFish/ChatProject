@@ -10,6 +10,7 @@ import com.hyphenate.EMContactListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.yzx.chat.broadcast.NetworkStateReceive;
+import com.yzx.chat.database.DBManager;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.IdentityManager;
@@ -41,6 +42,8 @@ public class AppApplication extends Application {
             AndroidTool.init(this);
 
             ChatClientManager.init(this);
+
+            DBManager.init(this, Constants.DATABASE_NAME, Constants.DATABASE_VERSION);
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
         }

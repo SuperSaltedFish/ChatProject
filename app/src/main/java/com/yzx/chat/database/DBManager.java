@@ -3,23 +3,21 @@ package com.yzx.chat.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 /**
  * Created by YZX on 2017年11月17日.
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class DaoManager {
+public class DBManager {
 
-    private static DaoManager sManager;
+    private static DBManager sManager;
 
     public static void init(Context context, String name, int version) {
-        sManager = new DaoManager(context.getApplicationContext(), name, version);
+        sManager = new DBManager(context.getApplicationContext(), name, version);
     }
 
-    public static DaoManager getInstance() {
+    public static DBManager getInstance() {
         if (sManager == null) {
             throw new RuntimeException("ChatClientManager is not initialized");
         }
@@ -34,18 +32,13 @@ public class DaoManager {
     private int mWritingCount;
 
 
-    private DaoManager(Context context, String name, int version) {
+    private DBManager(Context context, String name, int version) {
         mHelper = new DatabaseHelper(context, name, version);
     }
 
-    public <T extends AbstractDao> T getDaoInstance(Class<T> c) {
-        try {
-            T instance = c.newInstance();
-            instance.setReadWriteHelper(mReadWriteHelper);
-            return instance;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(" No default constructor found in " + c.getSimpleName());
-        }
+    public <T extends AbstractDao> T getDaoInstance(T t) {
+        t.setReadWriteHelper(mReadWriteHelper);
+        return t;
     }
 
     private final AbstractDao.ReadWriteHelper mReadWriteHelper = new AbstractDao.ReadWriteHelper() {

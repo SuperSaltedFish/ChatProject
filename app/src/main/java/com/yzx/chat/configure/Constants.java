@@ -8,9 +8,8 @@ public class Constants {
 
     public static final String URL_API_BASE = "http://192.168.16.143:3000/v1/api/";
 
-    public static final boolean DATABASE_ENCRYPTED = false;
-    public static final String DATABASE_UNENCRYPTED_NAME = "data-db";
-    public static final String DATABASE_ENCRYPTED_NAME = "data-db-encrypted";
+    public static final String DATABASE_NAME = "data.db";
+    public static final int DATABASE_VERSION = 1;
 
     public static final String RSA_KEY_ALIAS = "RSA_SecretKey";
     public static final String AES_KEY_ALIAS = "AES_SecretKey";
