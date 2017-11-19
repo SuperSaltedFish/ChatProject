@@ -13,6 +13,8 @@ import android.widget.Toolbar;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.contract.ContactContract;
+import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.view.activity.FriendProfileActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
@@ -34,7 +36,7 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ContactFragment extends BaseFragment {
+public class ContactFragment extends BaseFragment<ContactContract.Presenter> implements ContactContract.View {
 
     public static final String TAG = ContactFragment.class.getSimpleName();
 
@@ -107,12 +109,10 @@ public class ContactFragment extends BaseFragment {
 
     @Override
     protected void onFirstVisible() {
-        loadData();
+        mAdapter.notifyDataSetChanged();
+        mPresenter.loadAllContact();
     }
 
-    private void loadData() {
-        mAdapter.notifyDataSetChanged();
-    }
 
     private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {
 
@@ -187,4 +187,18 @@ public class ContactFragment extends BaseFragment {
         }
     };
 
+    @Override
+    public ContactContract.Presenter getPresenter() {
+        return new ContactPresenter();
+    }
+
+    @Override
+    public void updateUnreadBadge(int unreadCount) {
+        if (unreadCount == 0) {
+            mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_HIDE);
+        } else {
+            mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
+            mContactRequestBadge.setBadgeText(unreadCount);
+        }
+    }
 }

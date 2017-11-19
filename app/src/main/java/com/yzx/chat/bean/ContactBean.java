@@ -1,16 +1,33 @@
 package com.yzx.chat.bean;
 
+import android.support.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Created by YZX on 2017年11月17日.
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class ContactBean  {
+public class ContactBean {
+
+    public static final String CONTACT_TYPE_ADDED = "Added";
+    public static final String CONTACT_TYPE_DELETED = "Deleted";
+    public static final String CONTACT_TYPE_INVITED = "Invited";
+    public static final String CONTACT_TYPE_ACCEPTED = "Accepted";
+    public static final String CONTACT_TYPE_DECLINED = "Declined";
+
+    @StringDef({CONTACT_TYPE_ADDED, CONTACT_TYPE_DELETED, CONTACT_TYPE_INVITED, CONTACT_TYPE_ACCEPTED, CONTACT_TYPE_DECLINED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ContactType {
+    }
 
     private String userTo;
     private String userFrom;
     private String type;
     private String reason;
+    private boolean isRemind;
 
     public String getUserTo() {
         return userTo;
@@ -28,11 +45,12 @@ public class ContactBean  {
         this.userFrom = userFrom;
     }
 
+    @ContactType
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(@ContactType String type) {
         this.type = type;
     }
 
@@ -44,4 +62,11 @@ public class ContactBean  {
         this.reason = reason;
     }
 
+    public boolean isRemind() {
+        return isRemind;
+    }
+
+    public void setRemind(boolean remind) {
+        isRemind = remind;
+    }
 }

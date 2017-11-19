@@ -10,7 +10,9 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.database.DBHelper;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,14 +27,6 @@ import java.util.Map;
 public class ChatClientManager {
 
     private static ChatClientManager sManager;
-
-    private EMClient mEMClient;
-    private Map<MessageListener, String> mMessageListenerMap;
-    private List<ContactListener> mContactListenerList;
-    private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
-
-    private volatile int mMessageUnreadCount = -1;
-    private volatile int mContactUnreadCount;
 
     public static void init(Context context) {
         EMOptions options = new EMOptions();
@@ -49,10 +43,22 @@ public class ChatClientManager {
         return sManager;
     }
 
+
+    private EMClient mEMClient;
+    private Map<MessageListener, String> mMessageListenerMap;
+    private List<ContactListener> mContactListenerList;
+    private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
+
+    private ContactDao mContactDao;
+
+    private volatile int mMessageUnreadCount = -1;
+    private volatile int mContactUnreadCount;
+
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
         mContactListenerList = new LinkedList<>();
         mUnreadCountChangeListenerList = new LinkedList<>();
+        mContactDao = DBManager.getInstance().getContactDao();
         mEMClient = EMClient.getInstance();
         mEMClient.chatManager().addMessageListener(mEMMessageListener);
         mEMClient.contactManager().setContactListener(mEMContactListener);
@@ -88,10 +94,6 @@ public class ChatClientManager {
         mUnreadCountChangeListenerList.remove(listener);
     }
 
-    public synchronized int getMessageUnreadCount() {
-        return mMessageUnreadCount;
-    }
-
     public synchronized void setMessageUnreadCount(int messageUnreadCount) {
         if (mMessageUnreadCount != messageUnreadCount) {
             for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
@@ -101,17 +103,21 @@ public class ChatClientManager {
         mMessageUnreadCount = messageUnreadCount;
     }
 
-    public int getContactUnreadCount() {
-        return mContactUnreadCount;
+    public synchronized void setContactUnreadCount(int contactUnreadCount) {
+        if (mContactUnreadCount != contactUnreadCount) {
+            if (contactUnreadCount == 0) {
+                mContactDao.makeAllRemindAsNoRemind(IdentityManager.getInstance().getUserID());
+            }
+            for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
+                listener.onContactUnreadCountChange(mContactUnreadCount);
+            }
+        }
+        mContactUnreadCount = contactUnreadCount;
     }
 
     public synchronized void makeAllContactAsRead() {
-        if (mContactUnreadCount != 0) {
-            mContactUnreadCount = 0;
-            callContactUnreadChange();
-        }
+        setContactUnreadCount(0);
     }
-
 
     public void loadAllConversationsAndGroups() {
         mEMClient.chatManager().loadAllConversations();
@@ -128,19 +134,6 @@ public class ChatClientManager {
             return null;
         } else {
             return conversation.loadMoreMsgFromDB(startMessageID, count);
-        }
-    }
-
-    private synchronized void setContactUnreadCount(int count) {
-        if (mContactUnreadCount != count) {
-            mContactUnreadCount = count;
-            callContactUnreadChange();
-        }
-    }
-
-    private void callContactUnreadChange() {
-        for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
-            listener.onContactUnreadCountChange(mContactUnreadCount);
         }
     }
 
@@ -211,8 +204,21 @@ public class ChatClientManager {
 
         @Override
         public void onContactInvited(String username, String reason) {
-            setContactUnreadCount(mContactUnreadCount + 1);
-            LogUtil.e("新消息");
+            ContactBean bean = mContactDao.loadByKey(IdentityManager.getInstance().getUserID(), username);
+            if (bean != null && !bean.isRemind()) {
+                bean.setType(ContactBean.CONTACT_TYPE_INVITED);
+                bean.setRemind(true);
+                mContactDao.update(bean);
+            } else {
+                bean = new ContactBean();
+                bean.setUserTo(IdentityManager.getInstance().getUserID());
+                bean.setUserFrom(username);
+                bean.setType(ContactBean.CONTACT_TYPE_INVITED);
+                bean.setReason(reason);
+                bean.setRemind(true);
+                mContactDao.insert(bean);
+                setContactUnreadCount(mContactUnreadCount + 1);
+            }
         }
 
         @Override

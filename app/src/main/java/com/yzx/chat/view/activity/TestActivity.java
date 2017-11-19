@@ -1,32 +1,17 @@
 package com.yzx.chat.view.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.text.emoji.widget.EmojiTextView;
 import android.util.Log;
-import android.view.View;
 
-import com.hyphenate.EMCallBack;
-import com.hyphenate.EMMessageListener;
-import com.hyphenate.chat.EMChatManager;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.broadcast.NetworkStateReceive;
 
 import com.yzx.chat.database.ContactDao;
-import com.yzx.chat.database.DBManager;
+import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 
-import com.yzx.chat.tool.IdentityManager;
-import com.yzx.chat.util.Base64Util;
+import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 
@@ -49,14 +34,12 @@ public class TestActivity extends BaseCompatActivity {
         super.onCreate(savedInstanceState);
 
         ContactBean bean = new ContactBean();
-        bean.setUserTo("1");
-        bean.setUserFrom("2");
-        bean.setType("4");
+        bean.setUserTo("2");
+        bean.setUserFrom("26");
+        bean.setType(ContactBean.CONTACT_TYPE_INVITED);
         bean.setReason("5");
-        ContactDao contactDao = DBManager.getInstance().getDaoInstance(new ContactDao());
-        contactDao.replace(bean);
-        ContactBean bean1 = contactDao.loadByKey("1","2");
-        LogUtil.e("awdwadwad:"+bean1);
+        ContactDao contactDao = DBManager.getInstance().getContactDao();
+        LogUtil.e("awdwadwad:"+contactDao.update(bean));
     }
 
 

@@ -9,21 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class DBManager {
-
-    private static DBManager sManager;
-
-    public static void init(Context context, String name, int version) {
-        sManager = new DBManager(context.getApplicationContext(), name, version);
-    }
-
-    public static DBManager getInstance() {
-        if (sManager == null) {
-            throw new RuntimeException("ChatClientManager is not initialized");
-        }
-        return sManager;
-    }
-
+public class DBHelper {
 
     private DatabaseHelper mHelper;
     private SQLiteDatabase mReadableDatabase;
@@ -32,7 +18,7 @@ public class DBManager {
     private int mWritingCount;
 
 
-    private DBManager(Context context, String name, int version) {
+    public DBHelper(Context context, String name, int version) {
         mHelper = new DatabaseHelper(context, name, version);
     }
 

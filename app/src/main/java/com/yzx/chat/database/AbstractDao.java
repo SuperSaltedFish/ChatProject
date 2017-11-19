@@ -178,7 +178,7 @@ public abstract class AbstractDao<T> {
 
     public boolean isExist(T entity) {
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), toWhereArgsOfKey(entity), null, null, null);
+        Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), toWhereArgsOfKey(entity), null, null, null,null);
         boolean result = (cursor.getCount() > 0);
         cursor.close();
         return result;

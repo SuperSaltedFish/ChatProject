@@ -8,7 +8,7 @@ public class Constants {
 
     public static final String URL_API_BASE = "http://192.168.16.143:3000/v1/api/";
 
-    public static final String DATABASE_NAME = "data.db";
+    public static final String DATABASE_NAME = "ddata.db";
     public static final int DATABASE_VERSION = 1;
 
     public static final String RSA_KEY_ALIAS = "RSA_SecretKey";
