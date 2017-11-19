@@ -24,9 +24,9 @@ public class HomePresenter implements HomeContract.Presenter {
     @Override
     public void detachView() {
         mHomeView = null;
+        ChatClientManager.getInstance().removeUnreadCountChangeListener(mUnreadCountChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
-        ChatClientManager.getInstance().removeUnreadCountChangeListener(mUnreadCountChangeListener);
     }
 
     private final ChatClientManager.UnreadCountChangeListener mUnreadCountChangeListener = new ChatClientManager.UnreadCountChangeListener() {

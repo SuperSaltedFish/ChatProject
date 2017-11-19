@@ -52,7 +52,7 @@ public class ChatClientManager {
     private ContactDao mContactDao;
 
     private volatile int mMessageUnreadCount = -1;
-    private volatile int mContactUnreadCount;
+    private volatile int mContactUnreadCount = -1;
 
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
@@ -105,17 +105,15 @@ public class ChatClientManager {
 
     public synchronized void setContactUnreadCount(int contactUnreadCount) {
         if (mContactUnreadCount != contactUnreadCount) {
-            if (contactUnreadCount == 0) {
-                mContactDao.makeAllRemindAsNoRemind(IdentityManager.getInstance().getUserID());
-            }
             for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
-                listener.onContactUnreadCountChange(mContactUnreadCount);
+                listener.onContactUnreadCountChange(contactUnreadCount);
             }
         }
         mContactUnreadCount = contactUnreadCount;
     }
 
     public synchronized void makeAllContactAsRead() {
+        mContactDao.makeAllRemindAsNoRemind(IdentityManager.getInstance().getUserID());
         setContactUnreadCount(0);
     }
 
@@ -205,10 +203,12 @@ public class ChatClientManager {
         @Override
         public void onContactInvited(String username, String reason) {
             ContactBean bean = mContactDao.loadByKey(IdentityManager.getInstance().getUserID(), username);
-            if (bean != null && !bean.isRemind()) {
-                bean.setType(ContactBean.CONTACT_TYPE_INVITED);
-                bean.setRemind(true);
-                mContactDao.update(bean);
+            if (bean != null) {
+                if (!bean.isRemind()) {
+                    bean.setType(ContactBean.CONTACT_TYPE_INVITED);
+                    bean.setRemind(true);
+                    mContactDao.update(bean);
+                } else return;
             } else {
                 bean = new ContactBean();
                 bean.setUserTo(IdentityManager.getInstance().getUserID());
@@ -217,8 +217,8 @@ public class ChatClientManager {
                 bean.setReason(reason);
                 bean.setRemind(true);
                 mContactDao.insert(bean);
-                setContactUnreadCount(mContactUnreadCount + 1);
             }
+            setContactUnreadCount(mContactUnreadCount < 0 ? 1 : mContactUnreadCount + 1);
         }
 
         @Override

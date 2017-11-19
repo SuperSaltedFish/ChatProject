@@ -1,5 +1,7 @@
 package com.yzx.chat.presenter;
 
+import android.os.Handler;
+
 import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.ChatClientManager;
@@ -15,15 +17,21 @@ public class ContactPresenter implements ContactContract.Presenter {
 
     private ContactContract.View mContactView;
     private LoadUnreadCountTask mLoadUnreadCountTask;
+    private Handler mHandler;
 
     @Override
     public void attachView(ContactContract.View view) {
         mContactView = view;
+        mHandler = new Handler();
+        ChatClientManager.getInstance().addUnreadCountChangeListener(mUnreadCountChangeListener);
     }
 
     @Override
     public void detachView() {
         mContactView = null;
+        ChatClientManager.getInstance().removeUnreadCountChangeListener(mUnreadCountChangeListener);
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler=null;
     }
 
     @Override
@@ -38,6 +46,23 @@ public class ContactPresenter implements ContactContract.Presenter {
         mContactView.updateUnreadBadge(count);
         ChatClientManager.getInstance().setContactUnreadCount(count);
     }
+
+    private final ChatClientManager.UnreadCountChangeListener mUnreadCountChangeListener = new ChatClientManager.UnreadCountChangeListener() {
+        @Override
+        public void onMessageUnreadCountChange(int unreadCount) {
+
+        }
+
+        @Override
+        public void onContactUnreadCountChange(final int unreadCount) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mContactView.updateUnreadBadge(unreadCount);
+                }
+            });
+        }
+    };
 
     private static class LoadUnreadCountTask extends NetworkAsyncTask<Void, Integer> {
 

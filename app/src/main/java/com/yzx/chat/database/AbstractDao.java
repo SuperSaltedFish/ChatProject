@@ -32,7 +32,7 @@ public abstract class AbstractDao<T> {
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), keyValues, null, null, null);
         T entity = null;
-        if (cursor.getCount() > 0&&cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             entity = toEntity(cursor);
         }
         cursor.close();

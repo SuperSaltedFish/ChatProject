@@ -197,8 +197,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         if (unreadCount == 0) {
             mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_HIDE);
         } else {
-            mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
             mContactRequestBadge.setBadgeText(unreadCount);
+            mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
         }
     }
 }

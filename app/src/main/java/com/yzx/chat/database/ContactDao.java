@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.bean.ContactBean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by YZX on 2017年11月18日.
  * 每一个不曾起舞的日子 都是对生命的辜负
@@ -36,10 +39,27 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     + "PRIMARY KEY (" + COLUMN_NAME_UserTo + ", " + COLUMN_NAME_UserFrom + ")"
                     + ")";
 
+    public List<ContactBean> loadAllRemind(String userID){
+        SQLiteDatabase database = mHelper.openReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_Remind + "=?", new String[]{"1"});
+        List<ContactBean> contactList = new ArrayList<>(cursor.getCount());
+        while (cursor.moveToNext()){
+            contactList.add(toEntity(cursor));
+        }
+        cursor.close();
+        mHelper.closeReadableDatabase();
+        return contactList;
+    }
+
     public int loadRemindCount() {
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_Remind + "=?", new String[]{"1"});
-        int result = cursor.getCount();
+        int result;
+        if(cursor.moveToFirst()){
+            result = cursor.getInt(0);
+        }else {
+            result=0;
+        }
         cursor.close();
         mHelper.closeReadableDatabase();
         return result;
