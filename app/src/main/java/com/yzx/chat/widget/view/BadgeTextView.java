@@ -11,17 +11,17 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-
 /**
- * Created by YZX on 2017年05月31日.
- * 生命太短暂,不要去做一些根本没有人想要的东西
+ * Created by YZX on 2017年11月20日.
+ * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class BadgeImageView extends android.support.v7.widget.AppCompatImageView {
+public class BadgeTextView extends TextView {
 
     public static final int MODE_HIDE = 0;
     public static final int MODE_SHOW = 1;
@@ -54,15 +54,15 @@ public class BadgeImageView extends android.support.v7.widget.AppCompatImageView
 
     private boolean isReset = true;
 
-    public BadgeImageView(Context context) {
+    public BadgeTextView(Context context) {
         this(context, null);
     }
 
-    public BadgeImageView(Context context, @Nullable AttributeSet attrs) {
+    public BadgeTextView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BadgeImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public BadgeTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
 
@@ -85,7 +85,7 @@ public class BadgeImageView extends android.support.v7.widget.AppCompatImageView
         mBadgeTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 12, mContext.getResources().getDisplayMetrics());
         mBadgeText = String.valueOf(0);
-        mBadgeMode = MODE_SHOW;
+        mBadgeMode = MODE_HIDE;
         mBadgeBackgroundColor = Color.RED;
         mBadgeTextColor = Color.WHITE;
     }
@@ -208,7 +208,3 @@ public class BadgeImageView extends android.support.v7.widget.AppCompatImageView
         invalidate();
     }
 }
-
-
-
-

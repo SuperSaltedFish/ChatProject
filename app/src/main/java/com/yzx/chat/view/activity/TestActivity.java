@@ -1,7 +1,14 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -14,10 +21,13 @@ import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
+import com.yzx.chat.widget.view.BadgeTextView;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -33,14 +43,22 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ContactBean bean = new ContactBean();
-        bean.setUserTo("2");
-        bean.setUserFrom("26");
-        bean.setType(ContactBean.CONTACT_TYPE_INVITED);
-        bean.setReason("5");
-        ContactDao contactDao = DBManager.getInstance().getContactDao();
-        LogUtil.e("awdwadwad:"+contactDao.update(bean));
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(null);
+
+
+        set((BadgeTextView) findViewById(R.id.s333));
     }
+
+    private void set(BadgeTextView textView){
+        textView.setBadgeMode(BadgeTextView.MODE_SHOW);
+        textView.setBadgeText(15);
+        textView.setBadgeTextSize(10);
+    }
+
 
 
     private void testRSA() {

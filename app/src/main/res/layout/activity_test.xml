@@ -3,14 +3,121 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".view.activity.TestActivity">
 
-    <android.support.text.emoji.widget.EmojiTextView
-        android:id="@+id/ssss"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:textSize="30sp" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/theme_main_color"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="新的联系人"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+    </android.support.v7.widget.Toolbar>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/theme_main_color">
+
+        <com.yzx.chat.widget.view.RoundFrameLayout
+            android:layout_width="match_parent"
+            android:layout_marginBottom="2dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="2dp"
+            android:elevation="2dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:maxLines="1"
+                android:paddingEnd="40dp"
+                android:paddingStart="16dp"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_search" />
+
+        </com.yzx.chat.widget.view.RoundFrameLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:background="@color/theme_main_color"
+        android:gravity="center">
+
+        <com.yzx.chat.widget.view.BadgeTextView
+            android:id="@+id/s111"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:text="找人"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <com.yzx.chat.widget.view.BadgeTextView
+            android:id="@+id/s222"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:text="找群"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+
+        <com.yzx.chat.widget.view.BadgeTextView
+            android:id="@+id/s333"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:text="新的消息"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+
+    </LinearLayout>
+
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="6dp"-->
+        <!--android:background="@drawable/bg_shadow_bottom" />-->
 
 </LinearLayout>
 
