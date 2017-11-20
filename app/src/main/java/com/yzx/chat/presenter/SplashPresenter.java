@@ -39,6 +39,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 //        } else {
 //            IdentityManager.getInstance().clearAuthenticationData();
 //            mSplashView.startLoginActivity();
+        EMClient.getInstance().logout(true);
             EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
                 @Override
                 public void onSuccess() {

@@ -34,25 +34,15 @@ public abstract class NetworkAsyncTask<Params, Result> {
     }
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = Math.min(1,CPU_COUNT);
+    private static final int CORE_POOL_SIZE = Math.min(1, CPU_COUNT);
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
 
     private static final int MESSAGE_POST_RESULT = 0x1;
 
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-        @Override
-        public Thread newThread(@NonNull Runnable r) {
-            Thread thread = new Thread();
-            thread.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
-            return new Thread(r);
-        }
-
-    };
-
     private static final ThreadPoolExecutor mThreadPoolExecutor;
 
     static {
-        mThreadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(64), sThreadFactory);
+        mThreadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(64), new BackgroundThreadFactory());
         mThreadPoolExecutor.allowCoreThreadTimeOut(true);
     }
 
@@ -69,7 +59,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
         if (lifeCycleDependence != null) {
             mLifeCycleReference = new WeakReference<>(lifeCycleDependence);
         }
-        mHandler = new InternalHandler( Looper.getMainLooper());
+        mHandler = new InternalHandler(Looper.getMainLooper());
         isCancel = new AtomicBoolean(false);
     }
 
@@ -78,7 +68,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
         if (isAlreadyExecute) {
             throw new RuntimeException("Cannot execute task: the task has already been executed");
         }
-        if(isCancel()){
+        if (isCancel()) {
             return;
         }
         onPreExecute();
@@ -116,11 +106,11 @@ public abstract class NetworkAsyncTask<Params, Result> {
         }
     }
 
-    public void runOnUiThread(Runnable r){
+    public void runOnUiThread(Runnable r) {
         mHandler.post(r);
     }
 
-    private synchronized void postResult(Result result){
+    private synchronized void postResult(Result result) {
         Message message = mHandler.obtainMessage(MESSAGE_POST_RESULT, new TaskResult<>(NetworkAsyncTask.this, result));
         message.sendToTarget();
     }
@@ -157,7 +147,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
             if (msg.what == MESSAGE_POST_RESULT) {
                 TaskResult<?> result = (TaskResult<?>) msg.obj;
                 NetworkAsyncTask task = result.mTask;
-                if (!task.isCancel()&&task.getLifeCycleObject()!=null) {
+                if (!task.isCancel() && task.getLifeCycleObject() != null) {
                     task.onPostExecute(result.mData, task.getLifeCycleObject());
                 }
             }
@@ -171,6 +161,17 @@ public abstract class NetworkAsyncTask<Params, Result> {
         TaskResult(NetworkAsyncTask task, Result result) {
             mTask = task;
             mData = result;
+        }
+
+    }
+
+    private static class BackgroundThreadFactory implements ThreadFactory {
+
+        @Override
+        public Thread newThread(@NonNull Runnable r) {
+            Thread thread = new Thread();
+            thread.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
+            return new Thread(r);
         }
     }
 

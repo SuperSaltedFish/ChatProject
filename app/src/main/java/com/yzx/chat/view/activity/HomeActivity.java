@@ -39,6 +39,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         super.onCreate(savedInstanceState);
         initView();
         setView();
+        setData();
     }
 
     private void initView() {
@@ -73,6 +74,10 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
                 .hide(mFragments[1])
                 .commit();
+    }
+
+    private void setData() {
+        mPresenter.loadUnreadCount();
     }
 
     @Override

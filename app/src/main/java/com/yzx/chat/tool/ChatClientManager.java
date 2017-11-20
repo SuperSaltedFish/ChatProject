@@ -51,8 +51,8 @@ public class ChatClientManager {
 
     private ContactDao mContactDao;
 
-    private volatile int mMessageUnreadCount = -1;
-    private volatile int mContactUnreadCount = -1;
+    private volatile int mMessageUnreadCount;
+    private volatile int mContactUnreadCount;
 
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
@@ -115,6 +115,14 @@ public class ChatClientManager {
     public synchronized void makeAllContactAsRead() {
         mContactDao.makeAllRemindAsNoRemind(IdentityManager.getInstance().getUserID());
         setContactUnreadCount(0);
+    }
+
+    public int getMessageUnreadCount() {
+        return mMessageUnreadCount;
+    }
+
+    public int getContactUnreadCount() {
+        return mContactUnreadCount;
     }
 
     public void loadAllConversationsAndGroups() {
