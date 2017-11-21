@@ -22,6 +22,7 @@ import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.BadgeTextView;
+import com.yzx.chat.widget.view.NineGridImageView;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -42,21 +43,12 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(null);
-
-
-        set((BadgeTextView) findViewById(R.id.s333));
-    }
-
-    private void set(BadgeTextView textView){
-        textView.setBadgeMode(BadgeTextView.MODE_SHOW);
-        textView.setBadgeText(15);
-        textView.setBadgeTextSize(10);
+        NineGridImageView  mNineGridImageView = (NineGridImageView) findViewById(R.id.FriendProfileActivity_mNineGridImageView);
+        List<String> s = new ArrayList<>();
+        s.add("");
+        s.add("");
+        s.add("");
+        mNineGridImageView.setImageData(s);
     }
 
 
