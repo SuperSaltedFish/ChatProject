@@ -106,7 +106,7 @@
             android:layout_marginBottom="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
-            android:background="@drawable/radius_login_btn"
+            android:background="@drawable/radius_btn_20dp"
             android:textSize="13dp" />
 
     </FrameLayout>

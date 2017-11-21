@@ -98,7 +98,7 @@
             android:layout_gravity="center"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
-            android:background="@drawable/radius_login_btn"
+            android:background="@drawable/radius_btn_20dp"
             android:text="@string/LoginActivity_Layout_Login"
             android:textSize="13dp" />
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yzx.chat.widget.view.RoundRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:background="#ffffff"
+    android:elevation="1dp"
+    android:padding="8dp">
+
+
+    <ImageView
+        android:id="@+id/NewContactAdapter_mIvAvatar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/temp_head_image" />
+
+
+    <TextView
+        android:id="@+id/NewContactAdapter_mTvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/NewContactAdapter_mTvReason"
+        android:layout_alignEnd="@+id/NewContactAdapter_mTvReason"
+        android:layout_alignStart="@+id/NewContactAdapter_mTvReason"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:text="夜之星"
+        android:textColor="@color/text_color_alpha_black"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/NewContactAdapter_mTvReason"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_alignBottom="@+id/NewContactAdapter_mIvAvatar"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/NewContactAdapter_mIvAvatar"
+        android:gravity="top"
+        android:ellipsize="end"
+        android:layout_toStartOf="@+id/NewContactAdapter_mBtnAdd"
+        android:maxLines="1"
+        android:text="请问可以添加我为好友吗"
+        android:textSize="12sp" />
+
+
+    <Button
+        android:id="@+id/NewContactAdapter_mBtnAdd"
+        android:layout_width="72dp"
+        android:maxLines="1"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/selector_btn_round"
+        android:text="添加"
+        android:textColor="@android:color/white" />
+
+</com.yzx.chat.widget.view.RoundRelativeLayout>

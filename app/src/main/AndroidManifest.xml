@@ -39,47 +39,48 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/DefaultLightTheme">
-
-        <activity android:name=".view.activity.SplashActivity"
+        <activity
+            android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
-
         <activity
             android:name=".view.activity.LoginActivity"
-            android:theme="@style/LoginTheme"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:theme="@style/LoginTheme">
 
         </activity>
-
-
         <activity
             android:name=".view.activity.HomeActivity"
             android:windowSoftInputMode="adjustPan">
+
         </activity>
-        <activity android:name=".view.activity.ChatActivity"
+        <activity
+            android:name=".view.activity.ChatActivity"
             android:windowSoftInputMode="adjustResize">
 
         </activity>
-
-
         <activity
             android:name=".view.activity.QrCodeScanActivity"
             android:theme="@style/NoBackgroundDarkTheme">
 
         </activity>
-
-
         <activity
             android:name=".view.activity.ImageSelectorActivity"
             android:theme="@style/BaseDarkTheme">
 
         </activity>
-
         <activity
             android:name=".view.activity.FriendProfileActivity"
             android:theme="@style/TransparentStatusBarLightTheme">
+
+        </activity>
+
+        <activity android:name=".view.activity.FindNewContactActivity">
 
         </activity>
 
@@ -87,11 +88,7 @@
 
 
         <activity android:name=".view.activity.TestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
@@ -100,27 +97,34 @@
 
 
 
-         <!-- 以下为环信-->
-         <meta-data android:name="EASEMOB_APPKEY"  android:value="qq244546875#superchat" />
-         <!-- 声明SDK所需的service SDK核心功能-->
-         <service android:name="com.hyphenate.chat.EMChatService" android:exported="true"/>
-         <service android:name="com.hyphenate.chat.EMJobService"
-         android:permission="android.permission.BIND_JOB_SERVICE"
-         android:exported="true"
-         />
-         <!-- 声明SDK所需的receiver -->
-         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
-         <intent-filter>
-         <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-         <data android:scheme="package"/>
-         </intent-filter>
-         <!-- 可选filter -->
-         <intent-filter>
-         <action android:name="android.intent.action.BOOT_COMPLETED"/>
-         <action android:name="android.intent.action.USER_PRESENT" />
-         </intent-filter>
-         </receiver>
 
+
+
+        <!-- 以下为环信 -->
+        <meta-data
+            android:name="EASEMOB_APPKEY"
+            android:value="qq244546875#superchat" />
+        <!-- 声明SDK所需的service SDK核心功能 -->
+        <service
+            android:name="com.hyphenate.chat.EMChatService"
+            android:exported="true" />
+        <service
+            android:name="com.hyphenate.chat.EMJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!-- 声明SDK所需的receiver -->
+        <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+            <!-- 可选filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

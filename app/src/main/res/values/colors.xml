@@ -282,6 +282,8 @@
 
     <color name="theme_main_color">#7892e3</color>
 
+    <color name="theme_main_color_alpha">#607892e3</color>
+
     <color name="theme_main_tint_color">#c47892e3</color>
 
     <color name="theme_background_color">#f8f9fc</color>
