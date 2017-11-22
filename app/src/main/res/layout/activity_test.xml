@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:background="@color/theme_main_color"
-        android:layout_height="200dp">
+        android:layout_height="208dp"
+        android:background="@color/theme_main_color">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -16,7 +15,7 @@
             android:fitsSystemWindows="true">
 
             <ImageView
-                android:id="@+id/back"
+                android:id="@+id/FriendProfileActivity_mIvBack"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="start|center_vertical"
@@ -24,207 +23,387 @@
                 android:src="@drawable/ic_back" />
 
             <TextView
+                android:id="@+id/FriendProfileActivity_mTvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="Profile"
+                android:text="个人信息"
                 android:textColor="@color/text_main_color_white"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
 
         </FrameLayout>
 
-        <ImageView
+        <com.yzx.chat.widget.view.CircleImageView
+            android:id="@+id/FriendProfileActivity_mIvAvatar"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="16dp"
+            android:background="@android:color/white"
+            android:elevation="3dp"
+            android:padding="1dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/temp_head_image" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/FriendProfileActivity_mIvAvatar"
+            android:layout_alignTop="@+id/FriendProfileActivity_mIvAvatar"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/FriendProfileActivity_mIvAvatar"
+            android:layout_toStartOf="@+id/FriendProfileActivity_mIvEdit"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvNick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="我是叫Avatar"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="每个不曾起舞的日子，都是对生命的辜负。"
+                android:textColor="@color/text_main_color_white_alpha"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <com.yzx.chat.widget.view.CircleImageView
+            android:id="@+id/FriendProfileActivity_mIvEdit"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="@color/theme_main_color_light"
+            android:padding="16dp"
+            android:src="@drawable/ic_edit" />
 
     </RelativeLayout>
 
 
-    <android.support.v7.widget.CardView
+    <com.yzx.chat.widget.view.RoundLinearLayout
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="104dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="152dp"
-        app:layout_anchor="@id/FriendProfileActivity_mAppBarLayout"
-        app:layout_anchorGravity="bottom|center_horizontal">
+        android:paddingTop="4dp"
+        android:layout_marginTop="160dp"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:elevation="2dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:orientation="horizontal">
 
-    </android.support.v7.widget.CardView>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_above="@+id/FriendProfileActivity_mTvFollowCount"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_follow"
+                android:tint="@color/theme_main_color_light" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvFollowCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="512"
+                android:textColor="@color/theme_main_color"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/FriendProfileActivity_mTvFollowCount"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="关注"
+                android:textColor="@color/theme_main_color_light"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="32dp"
+            android:background="@color/theme_main_color_light" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_above="@+id/FriendProfileActivity_mTvWalkCount"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_walk"
+                android:tint="@color/theme_main_color_light" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvWalkCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="235"
+                android:textColor="@color/theme_main_color"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/FriendProfileActivity_mTvWalkCount"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="今天步行"
+                android:textColor="@color/theme_main_color_light"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="32dp"
+            android:background="@color/theme_main_color_light" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_above="@+id/FriendProfileActivity_mTvLeavingMessageCount"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_leave_message"
+                android:tint="@color/theme_main_color_light" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLeavingMessageCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="112"
+                android:textColor="@color/theme_main_color"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/FriendProfileActivity_mTvLeavingMessageCount"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="留言"
+                android:textColor="@color/theme_main_color_light"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+    </com.yzx.chat.widget.view.RoundLinearLayout>
 
 
     <ScrollView
-        android:layout_marginTop="264dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_marginTop="264dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/FriendProfileActivity_mIvIconAccount"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_sex_man" />
-
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelAccount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/FriendProfileActivity_mIvIconAccount"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="帐号"
-                android:textColor="@color/text_color_alpha_black"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvContentAccount"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelAccount"
-                android:layout_below="@+id/FriendProfileActivity_mTvLabelAccount"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
-                android:gravity="center_vertical"
-                android:text="244546875@qq.com"
-                android:textSize="13sp" />
-        </RelativeLayout>
+                android:layout_margin="8dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+                <ImageView
+                    android:id="@+id/FriendProfileActivity_mIvIconAccount"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_sex_man" />
 
-            <ImageView
-                android:id="@+id/FriendProfileActivity_mIvIconLocation"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_location" />
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvLabelAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/FriendProfileActivity_mIvIconAccount"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="帐号"
+                    android:textColor="@color/text_color_alpha_black"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelLocation"
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvContentAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelAccount"
+                    android:layout_below="@+id/FriendProfileActivity_mTvLabelAccount"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
+                    android:gravity="center_vertical"
+                    android:text="244546875@qq.com"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/FriendProfileActivity_mIvIconLocation"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="所在地区"
-                android:textColor="@color/text_color_alpha_black"
-                android:textStyle="bold" />
+                android:layout_margin="8dp">
 
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvContentLocation"
+                <ImageView
+                    android:id="@+id/FriendProfileActivity_mIvIconLocation"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_location" />
+
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvLabelLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/FriendProfileActivity_mIvIconLocation"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="所在地区"
+                    android:textColor="@color/text_color_alpha_black"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvContentLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelLocation"
+                    android:layout_below="@+id/FriendProfileActivity_mTvLabelLocation"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
+                    android:gravity="center_vertical"
+                    android:text="广东 珠海"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelLocation"
-                android:layout_below="@+id/FriendProfileActivity_mTvLabelLocation"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
-                android:gravity="center_vertical"
-                android:text="广东 珠海"
-                android:textSize="13sp" />
-        </RelativeLayout>
+                android:layout_margin="8dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+                <ImageView
+                    android:id="@+id/FriendProfileActivity_mIvIconSignature"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_signature" />
 
-            <ImageView
-                android:id="@+id/FriendProfileActivity_mIvIconSignature"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_signature" />
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvLabelSignature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/FriendProfileActivity_mIvIconSignature"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconSignature"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="个性签名"
+                    android:textColor="@color/text_color_alpha_black"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelSignature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/FriendProfileActivity_mIvIconSignature"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconSignature"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="个性签名"
-                android:textColor="@color/text_color_alpha_black"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvContentSignature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelSignature"
+                    android:layout_below="@+id/FriendProfileActivity_mTvLabelSignature"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconSignature"
+                    android:gravity="center_vertical"
+                    android:text="How to improve UI improve UI performance and responsiveness by sending work to a Service running in the background"
+                    android:textSize="13sp" />
+            </RelativeLayout>
 
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvContentSignature"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelSignature"
-                android:layout_below="@+id/FriendProfileActivity_mTvLabelSignature"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconSignature"
-                android:gravity="center_vertical"
-                android:text="How to improve UI improve UI performance and responsiveness by sending work to a Service running in the background"
-                android:textSize="13sp" />
-        </RelativeLayout>
+                android:layout_margin="8dp">
 
+                <ImageView
+                    android:id="@+id/FriendProfileActivity_mIvIconAlbum"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="24dp"
+                    android:src="@drawable/ic_camera" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+                <TextView
+                    android:id="@+id/FriendProfileActivity_mTvLabelAlbum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/FriendProfileActivity_mIvIconAlbum"
+                    android:layout_marginBottom="4dp"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAlbum"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="相册"
+                    android:textColor="@color/text_color_alpha_black"
+                    android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/FriendProfileActivity_mIvIconAlbum"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_camera" />
+                <com.yzx.chat.widget.view.NineGridImageView
+                    android:id="@+id/FriendProfileActivity_mNineGridImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelAlbum"
+                    android:layout_below="@+id/FriendProfileActivity_mTvLabelAlbum"
+                    android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAlbum" />
 
-            <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelAlbum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/FriendProfileActivity_mIvIconAlbum"
-                android:layout_marginBottom="4dp"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAlbum"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="相册"
-                android:textColor="@color/text_color_alpha_black"
-                android:textStyle="bold" />
+            </RelativeLayout>
 
-            <com.yzx.chat.widget.view.NineGridImageView
-                android:id="@+id/FriendProfileActivity_mNineGridImageView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignStart="@+id/FriendProfileActivity_mTvLabelAlbum"
-                android:layout_below="@+id/FriendProfileActivity_mTvLabelAlbum"
-                android:layout_toEndOf="@+id/FriendProfileActivity_mIvIconAlbum" />
-
-        </RelativeLayout>
-
-    </LinearLayout>
+        </LinearLayout>
 
     </ScrollView>
 </merge>
