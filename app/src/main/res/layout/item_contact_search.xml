@@ -13,7 +13,7 @@
     android:hint="@string/ContactAdapter_SearchContact"
     android:maxLength="16"
     android:maxLines="1"
-    android:textColor="@color/text_color_alpha_black"
+    android:textColor="@color/text_primary_color_black_alpha"
     android:textSize="14sp">
 
 </AutoCompleteTextView>

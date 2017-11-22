@@ -46,7 +46,7 @@
             android:id="@+id/AlbumAdapter_mDivisionLine"
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/parting_line_color_alpha_black"/>
+            android:background="@color/separation_line_color_black_alpha"/>
 
         <com.yzx.chat.widget.view.NineGridImageView
             android:id="@+id/AlbumAdapter_mNineGridImageView"

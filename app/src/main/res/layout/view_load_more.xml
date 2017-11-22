@@ -10,7 +10,7 @@
         android:layout_height="1px"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
-        android:background="@color/parting_line_color_alpha_black" />
+        android:background="@color/separation_line_color_black_alpha" />
 
     <TextView
         android:id="@+id/LoadMoreView_mTvHintContent"
@@ -20,7 +20,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="center"
-        android:textColor="@color/parting_line_color_alpha_black"
+        android:textColor="@color/separation_line_color_black_alpha"
         android:textSize="12sp" />
 
     <View
@@ -28,6 +28,6 @@
         android:layout_height="1px"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
-        android:background="@color/parting_line_color_alpha_black" />
+        android:background="@color/separation_line_color_black_alpha" />
 
 </LinearLayout>

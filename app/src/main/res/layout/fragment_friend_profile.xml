@@ -24,7 +24,7 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:text="Unlimited丶星（叶智星）"
-            android:textColor="@color/text_color_alpha_black"
+            android:textColor="@color/text_primary_color_black_alpha"
             android:textSize="22sp"/>
 
         <RelativeLayout

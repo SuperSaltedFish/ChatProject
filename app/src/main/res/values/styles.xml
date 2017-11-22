@@ -4,9 +4,11 @@
     <style name="DefaultLightTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/theme_main_color</item>
-        <item name="colorPrimaryDark">@color/theme_main_color</item>
+        <item name="colorPrimaryDark">@color/theme_main_color_dark</item>
         <item name="colorAccent">@color/theme_main_color</item>
         <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textColorSecondary">@color/text_secondary_color_black_alpha</item>
+        <item name="android:textColorPrimary">@color/text_primary_color_black_alpha</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>

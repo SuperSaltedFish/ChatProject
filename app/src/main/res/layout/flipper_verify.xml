@@ -60,7 +60,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/parting_line_color_alpha_white" />
+        android:background="@color/separation_line_color_white_alpha" />
 
     <TextView
         android:layout_width="match_parent"

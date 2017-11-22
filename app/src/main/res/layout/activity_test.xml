@@ -88,7 +88,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
-            android:background="@color/theme_main_color_light"
+            android:background="#6280f7"
             android:padding="16dp"
             android:src="@drawable/ic_edit" />
 
@@ -119,8 +119,7 @@
                 android:layout_height="24dp"
                 android:layout_above="@+id/FriendProfileActivity_mTvFollowCount"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/ic_follow"
-                android:tint="@color/theme_main_color_light" />
+                android:src="@drawable/ic_follow" />
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvFollowCount"
@@ -165,8 +164,7 @@
                 android:layout_height="24dp"
                 android:layout_above="@+id/FriendProfileActivity_mTvWalkCount"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/ic_walk"
-                android:tint="@color/theme_main_color_light" />
+                android:src="@drawable/ic_walk" />
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvWalkCount"
@@ -210,8 +208,7 @@
                 android:layout_height="24dp"
                 android:layout_above="@+id/FriendProfileActivity_mTvLeavingMessageCount"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/ic_leave_message"
-                android:tint="@color/theme_main_color_light" />
+                android:src="@drawable/ic_leave_message" />
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvLeavingMessageCount"
@@ -239,7 +236,7 @@
     </com.yzx.chat.widget.view.RoundLinearLayout>
 
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="264dp">
@@ -273,7 +270,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="帐号"
-                    android:textColor="@color/text_color_alpha_black"
+                    android:textColor="@color/text_primary_color_black_alpha"
                     android:textStyle="bold" />
 
                 <TextView
@@ -311,7 +308,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="所在地区"
-                    android:textColor="@color/text_color_alpha_black"
+                    android:textColor="@color/text_primary_color_black_alpha"
                     android:textStyle="bold" />
 
                 <TextView
@@ -349,7 +346,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="个性签名"
-                    android:textColor="@color/text_color_alpha_black"
+                    android:textColor="@color/text_primary_color_black_alpha"
                     android:textStyle="bold" />
 
                 <TextView
@@ -389,7 +386,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="相册"
-                    android:textColor="@color/text_color_alpha_black"
+                    android:textColor="@color/text_primary_color_black_alpha"
                     android:textStyle="bold" />
 
                 <com.yzx.chat.widget.view.NineGridImageView
@@ -405,5 +402,5 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </merge>

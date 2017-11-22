@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_alignParentBottom="true"
-        android:background="@color/parting_line_color_alpha_black" />
+        android:background="@color/separation_line_color_black_alpha" />
 
     <com.yzx.chat.widget.view.BadgeImageView
         android:id="@+id/ConversationAdapter_mIvSingleAvatar"
@@ -30,7 +30,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:textColor="@color/text_color_alpha_black"
+        android:textColor="@color/text_primary_color_black_alpha"
         android:textSize="17sp" />
 
     <TextView
