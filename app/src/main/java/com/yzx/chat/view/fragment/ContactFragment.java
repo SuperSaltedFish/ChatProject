@@ -16,6 +16,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.FriendProfileActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.base.BaseFragment;
@@ -95,6 +96,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
         mContactRequestBadge.setBadgeTextPadding((int) AndroidTool.dip2px(2));
         mContactRequestBadge.setBadgePadding(0, (int) AndroidTool.dip2px(6), (int) AndroidTool.dip2px(4), 0);
+        mContactRequestBadge.setOnClickListener(mOnContactRequestBadgeClick);
+
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black_alpha));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
@@ -112,6 +115,13 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mAdapter.notifyDataSetChanged();
         mPresenter.loadAllContact();
     }
+
+    private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(mContext, FindNewContactActivity.class));
+        }
+    };
 
 
     private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {

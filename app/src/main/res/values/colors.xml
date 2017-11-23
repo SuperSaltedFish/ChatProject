@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="theme_main_color">#5677fc</color>
+    <color name="theme_main_color">#5179f3</color>
 
     <color name="theme_main_color_light">#a2a9f7</color>
 
-    <color name="theme_main_color_dark">#435edf</color>
+    <color name="theme_main_color_dark">#4b6cdd</color>
 
     <color name="text_primary_color_black_alpha">#af000000</color>
 
