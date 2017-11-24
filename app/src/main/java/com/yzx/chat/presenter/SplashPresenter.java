@@ -24,6 +24,7 @@ public class SplashPresenter implements SplashContract.Presenter {
         mSplashView = view;
     }
 
+    
     @Override
     public void detachView() {
         NetworkUtil.cancel(mInitAsyncTask);
