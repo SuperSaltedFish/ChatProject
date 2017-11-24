@@ -118,8 +118,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     };
 
-
-
     @Override
     public ConversationContract.Presenter getPresenter() {
         return new ConversationPresenter();

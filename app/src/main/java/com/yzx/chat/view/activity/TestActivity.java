@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -19,6 +20,7 @@ import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 
 import com.yzx.chat.tool.DBManager;
+import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.BadgeTextView;
@@ -43,12 +45,9 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NineGridImageView  mNineGridImageView = (NineGridImageView) findViewById(R.id.FriendProfileActivity_mNineGridImageView);
-        List<String> s = new ArrayList<>();
-        s.add("");
-        s.add("");
-        s.add("");
-        mNineGridImageView.setImageData(s);
+        SharedPreferences manager = getSharedPreferences("555", Context.MODE_PRIVATE);
+        manager.edit().putString("sss","111").commit();
+        LogUtil.e(manager.getString("sss",null));
     }
 
 

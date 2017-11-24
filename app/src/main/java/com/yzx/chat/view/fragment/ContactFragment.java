@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -23,13 +24,13 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.FriendBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
-import com.yzx.chat.test.FriendsTestData;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.view.BadgeImageView;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
 import com.yzx.chat.widget.view.SegmentedControlView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private LinearLayoutManager mLinearLayoutManager;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
-    private List<FriendBean> mFriendList = FriendsTestData.getTestData();
+    private List<FriendBean> mFriendList;
 
 
     @Override
@@ -72,6 +73,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
         mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
+        mFriendList = new ArrayList<>(128);
         mAdapter = new ContactAdapter(mFriendList);
     }
 
@@ -112,8 +114,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected void onFirstVisible() {
-        mAdapter.notifyDataSetChanged();
-        mPresenter.loadAllContact();
+        mPresenter.refreshAllContact(mFriendList);
     }
 
     private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
@@ -210,5 +211,12 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
             mContactRequestBadge.setBadgeText(unreadCount);
             mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
         }
+    }
+
+    @Override
+    public void updateContactListView(DiffUtil.DiffResult diffResult, List<FriendBean> newFriendList) {
+        diffResult.dispatchUpdatesTo(mAdapter);
+        mFriendList.clear();
+        mFriendList.addAll(newFriendList);
     }
 }

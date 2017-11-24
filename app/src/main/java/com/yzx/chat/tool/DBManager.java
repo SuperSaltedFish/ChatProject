@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.database.DBHelper;
+import com.yzx.chat.database.FriendDao;
 
 import java.util.HashMap;
 
@@ -40,6 +41,15 @@ public class DBManager {
         if (dao == null) {
             dao = mDBHelper.getDaoInstance(new ContactDao());
             mDaoInstanceMap.put(ContactDao.class, dao);
+        }
+        return dao;
+    }
+
+    public FriendDao getFriendDao() {
+        FriendDao dao = (FriendDao) mDaoInstanceMap.get(FriendDao.class);
+        if (dao == null) {
+            dao = mDBHelper.getDaoInstance(new FriendDao());
+            mDaoInstanceMap.put(FriendDao.class, dao);
         }
         return dao;
     }

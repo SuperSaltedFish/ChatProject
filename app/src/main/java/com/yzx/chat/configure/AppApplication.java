@@ -12,6 +12,7 @@ import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.tool.SharePreferenceManager;
 
 import java.util.List;
 
@@ -21,18 +22,24 @@ import java.util.List;
  */
 public class AppApplication extends Application {
 
+    private static Context ApplicationContext;
+
+    public static Context getAppContext(){
+        return ApplicationContext;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        if(ApplicationContext==null){
+            ApplicationContext = this;
+        }
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
-            IdentityManager.init(this,
-                    Constants.PREFERENCES_AUTHENTICATION,
-                    Constants.RSA_KEY_ALIAS,
-                    Constants.AES_KEY_ALIAS,
-                    Constants.TOKEN_ALIAS,
-                    Constants.DEVICE_ID_ALIAS);
+
+            SharePreferenceManager.getInstance();
+
+            IdentityManager.getInstance();
 
             NetworkStateReceive.init(this);
 

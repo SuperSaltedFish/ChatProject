@@ -15,7 +15,7 @@ public class ChatContract {
     public interface View extends BaseView<Presenter> {
         void showNew(EMMessage message);
         void showNew(List<EMMessage> messageList);
-        void showMore(List<EMMessage> messageList,boolean isHasMoreMessage);
+        void showMore(List<EMMessage> messageList, boolean isHasMoreMessage);
     }
 
 

@@ -56,7 +56,7 @@ public class ContactSearchAdapter extends BaseAdapter implements Filterable {
         }
         ItemViewHolder viewHolder = (ItemViewHolder) convertView.getTag();
         FriendBean friendBean = mFriendList.get(position);
-        viewHolder.mTvName.setText(friendBean.getName());
+        viewHolder.mTvName.setText(friendBean.getNicknameOrRemarkName());
         GlideUtil.loadCircleFromUrl(parent.getContext(), viewHolder.mIvHeadImage, R.drawable.temp_head_image);
         return convertView;
     }
@@ -105,7 +105,7 @@ public class ContactSearchAdapter extends BaseAdapter implements Filterable {
             if (constraint != null) {
                 constraint = constraint.toString().toLowerCase();
                 for (FriendBean friend : mAllFriendList) {
-                    if (friend.getName().contains(constraint) || friend.getNameAbbreviation().contains(constraint)) {
+                    if (friend.getNicknameOrRemarkName().contains(constraint) || friend.getAbbreviation().contains(constraint)) {
                         mFilterFriendList.add(friend);
                     }
                 }

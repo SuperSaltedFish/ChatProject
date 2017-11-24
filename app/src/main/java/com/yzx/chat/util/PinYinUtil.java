@@ -129,7 +129,7 @@ public class PinYinUtil {
             if (key.getBytes().length >= 2) {
                 value = convert(key);
                 if (value == null || value.length() == 0) {
-                    value = "";
+                    value = "#";
                 } else {
                     value = value.substring(0, 1);
                 }

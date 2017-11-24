@@ -34,7 +34,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
     }
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-    private static final int CORE_POOL_SIZE = Math.min(1, CPU_COUNT);
+    private static final int CORE_POOL_SIZE = Math.min(2, CPU_COUNT);
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
 
     private static final int MESSAGE_POST_RESULT = 0x1;

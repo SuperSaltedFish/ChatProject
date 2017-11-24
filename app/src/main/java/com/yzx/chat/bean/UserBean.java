@@ -6,25 +6,25 @@ package com.yzx.chat.bean;
  */
 
 public class UserBean {
-    private String _id;
-    private String telephone;
+    private String userID;
+    private String account;
     private String nickname;
     private String avatar;
 
-    public String get_id() {
-        return _id;
+    public String getUserID() {
+        return userID;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
-    public String getTelephone() {
-        return telephone;
+    public String getAccount() {
+        return account;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getNickname() {

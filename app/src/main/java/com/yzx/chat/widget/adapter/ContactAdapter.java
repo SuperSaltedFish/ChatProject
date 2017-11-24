@@ -50,7 +50,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
     public void bindDataToViewHolder(ItemView holder, int position) {
         if (position == 0) {
 
-        }else {
+        } else {
             position--;
             ItemContactView friendHolder = (ItemContactView) holder;
             String identity = mIdentitySparseArray.get(position);
@@ -60,7 +60,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
                 holder.itemView.setTag(null);
             }
             FriendBean friendBean = mFriendList.get(position);
-            friendHolder.mTvName.setText(friendBean.getName());
+            friendHolder.mTvName.setText(friendBean.getNicknameOrRemarkName());
             GlideUtil.loadCircleFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
         }
     }
@@ -91,13 +91,12 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
     private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onChanged() {
-            if (mFriendList != null) {
-                Collections.sort(mFriendList, mFriendNameComparator);
+            if (mFriendList != null&&mFriendList.size()!=0) {
                 String identity;
                 String abbreviation;
                 String currentIdentity = null;
                 for (int i = 0, length = mFriendList.size(); i < length; i++) {
-                    abbreviation = mFriendList.get(i).getNameAbbreviation();
+                    abbreviation = mFriendList.get(i).getAbbreviation();
                     if (abbreviation != null) {
                         identity = abbreviation.substring(0, 1);
                         if (!identity.equals(currentIdentity)) {
@@ -109,17 +108,6 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
             }
         }
 
-    };
-
-    private final Comparator<FriendBean> mFriendNameComparator = new Comparator<FriendBean>() {
-        @Override
-        public int compare(FriendBean o1, FriendBean o2) {
-            if (o2 != null && o1 != null) {
-                return o1.getNameAbbreviation().compareTo(o2.getNameAbbreviation());
-            } else {
-                return 0;
-            }
-        }
     };
 
     static abstract class ItemView extends RecyclerView.ViewHolder {
@@ -177,7 +165,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FriendBean friendBean = mSearchAdapter.getFriendBeanByPosition(position);
-                mSearchView.setText(friendBean.getName());
+                mSearchView.setText(friendBean.getNicknameOrRemarkName());
             }
         };
     }

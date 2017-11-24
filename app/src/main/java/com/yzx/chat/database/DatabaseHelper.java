@@ -19,7 +19,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
+        db.execSQL(UserDao.CREATE_TABLE_SQL);
         db.execSQL(ContactDao.CREATE_TABLE_SQL);
+        db.execSQL(FriendDao.CREATE_TABLE_SQL);
         db.setTransactionSuccessful();
         db.endTransaction();
     }

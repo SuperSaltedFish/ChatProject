@@ -24,7 +24,7 @@ public class AndroidTool {
         if (sApplicationContext != null) {
             return;
         }
-        sApplicationContext = context;
+        sApplicationContext = context.getApplicationContext();
 
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         sScreenWidth = dm.widthPixels;
