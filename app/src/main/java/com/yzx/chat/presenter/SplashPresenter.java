@@ -1,14 +1,26 @@
 package com.yzx.chat.presenter;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.hyphenate.EMCallBack;
-import com.hyphenate.EMContactListener;
 import com.hyphenate.chat.EMClient;
+import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.contract.SplashContract;
+import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.api.user.GetUserFriendsBean;
+import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.network.framework.HttpCallback;
+import com.yzx.chat.network.framework.HttpResponse;
+import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.ChatClientManager;
-import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by YZX on 2017年11月04日.
@@ -17,50 +29,83 @@ import com.yzx.chat.util.NetworkUtil;
 public class SplashPresenter implements SplashContract.Presenter {
 
     private SplashContract.View mSplashView;
+    private UserApi mUserApi;
     private InitAsyncTask mInitAsyncTask;
+    private Call<JsonResponse<GetUserFriendsBean>> mGetUserFriendsTask;
+
+    private AtomicInteger mAtomicInteger;
 
     @Override
     public void attachView(SplashContract.View view) {
         mSplashView = view;
+        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        mAtomicInteger = new AtomicInteger();
     }
 
     @Override
     public void detachView() {
-        NetworkUtil.cancel(mInitAsyncTask);
+        NetworkUtil.cancelTask(mInitAsyncTask);
         mSplashView = null;
     }
 
     @Override
     public void init() {
-//        if (EMClient.getInstance().isLoggedInBefore()) {
-//            NetworkUtil.cancel(mInitAsyncTask);
-//            mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
-//            mInitAsyncTask.execute();
-//        } else {
-//            IdentityManager.getInstance().clearAuthenticationData();
-//            mSplashView.startLoginActivity();
-        EMClient.getInstance().logout(true);
-            EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
-                @Override
-                public void onSuccess() {
-                    NetworkUtil.cancel(mInitAsyncTask);
-                    mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
-                    mInitAsyncTask.execute();
-                }
-
-                @Override
-                public void onError(int code, String error) {
-                    LogUtil.e(error);
-                    mSplashView.startLoginActivity();
-                }
-
-                @Override
-                public void onProgress(int progress, String status) {
-
-                }
-            });
+        loadAllFriend();
+//        mAtomicInteger.set(2);
+////        if (EMClient.getInstance().isLoggedInBefore()) {
+////            NetworkUtil.cancel(mInitAsyncTask);
+////            mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
+////            mInitAsyncTask.execute();
+////        } else {
+////            IdentityManager.getInstance().clearAuthenticationData();
+////            mSplashView.startLoginActivity();
+//        EMClient.getInstance().logout(true);
+//            EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
+//                @Override
+//                public void onSuccess() {
+//                    NetworkUtil.cancelTask(mInitAsyncTask);
+//                    mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
+//                    mInitAsyncTask.execute();
+//                    loadAllFriend();
+//                }
+//
+//                @Override
+//                public void onError(int code, String error) {
+//                    LogUtil.e(error);
+//                    mSplashView.startLoginActivity();
+//                }
+//
+//                @Override
+//                public void onProgress(int progress, String status) {
+//
+//                }
+//            });
 //        }
+
+
     }
+
+    private void complete(){
+
+    }
+
+    private void loadAllFriend(){
+        NetworkUtil.cancelCall(mGetUserFriendsTask);
+        mGetUserFriendsTask = mUserApi.getUserFriends();
+        mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserFriendsBean>() {
+            @Override
+            protected void onSuccess(GetUserFriendsBean response) {
+                DBManager.getInstance().getFriendDao().replaceAll(response.getUserList());
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                LogUtil.e(message);
+            }
+        });
+        sHttpExecutor.submit(mGetUserFriendsTask);
+    }
+
 
     private void initSuccess() {
         mSplashView.startHomeActivity();

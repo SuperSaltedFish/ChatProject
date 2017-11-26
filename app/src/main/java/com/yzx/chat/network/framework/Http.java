@@ -6,6 +6,9 @@ import android.text.TextUtils;
 
 import com.yzx.chat.util.LogUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -79,7 +82,7 @@ public class Http {
                 conn.setDoInput(true);
                 conn.setUseCaches(false);
                 conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestProperty("Content-Type", "application/json");
                 conn.setRequestProperty("Charset", "UTF-8");
 //               conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
@@ -93,7 +96,13 @@ public class Http {
             }
 
             if (!TextUtils.isEmpty(params)) {
-                params = "params="+params;
+                try {
+                    params = new JSONObject().put("params",params).toString();
+                } catch (JSONException e) {
+                    conn.disconnect();
+                    result.throwable = e;
+                    break;
+                }
                 conn.setRequestProperty("Content-Length", String.valueOf(params.getBytes().length));
                 BufferedWriter bufferedWriter = null;
                 try {

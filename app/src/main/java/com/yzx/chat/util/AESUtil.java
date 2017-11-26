@@ -23,7 +23,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
@@ -31,12 +30,12 @@ import javax.security.auth.x500.X500Principal;
 
 public class AESUtil {
 
-    private final static String RSA = "AES";
+    private final static String AES = "AES";
     private final static String PROVIDER = "AndroidKeyStore";
     private final static String ALGORITHM = "AES/CBC/PKCS7Padding";
     private final static String CERTIFICATE_SUBJECT = "CN=YeZhiXing";
-    private final static int DEFAULT_KEY_SIZE = 512;
-    private final static byte[] IV_BYTES = new byte[16];
+    private final static int DEFAULT_KEY_SIZE = 192;
+    private final static byte[] IV_BYTES =new byte[16];
 
     private static KeyStore sKeyStore;
 
@@ -46,7 +45,7 @@ public class AESUtil {
 
     public static byte[] generateAESKey(int keySize) {
         try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(RSA);
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(AES);
             keyGenerator.init(keySize);
             return keyGenerator.generateKey().getEncoded();
         } catch (NoSuchAlgorithmException e) {
@@ -95,7 +94,7 @@ public class AESUtil {
 
     @Nullable
     public static byte[] encrypt(byte[] content, byte[] keyBytes) {
-        return encrypt(content, new SecretKeySpec(keyBytes, RSA));
+        return encrypt(content, new SecretKeySpec(keyBytes, AES));
     }
 
     @Nullable
@@ -120,7 +119,7 @@ public class AESUtil {
 
     @Nullable
     public static byte[] decrypt(byte[] content, byte[] keyBytes) {
-        return decrypt(content, new SecretKeySpec(keyBytes, RSA));
+        return decrypt(content, new SecretKeySpec(keyBytes, AES));
     }
 
     @Nullable
@@ -159,11 +158,4 @@ public class AESUtil {
         return true;
     }
 
-    private static int getMaxDecryptSize(int keySize){
-        return keySize/8;
-    }
-
-    private static int getMaxEncryptSize(int keySize){
-        return keySize/8-11;
-    }
 }

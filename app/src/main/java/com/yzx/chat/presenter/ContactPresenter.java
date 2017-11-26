@@ -40,8 +40,8 @@ public class ContactPresenter implements ContactContract.Presenter {
     @Override
     public void detachView() {
         ChatClientManager.getInstance().removeUnreadCountChangeListener(mUnreadCountChangeListener);
-        NetworkUtil.cancel(mLoadUnreadCountTask);
-        NetworkUtil.cancel(mRefreshContactsTask);
+        NetworkUtil.cancelTask(mLoadUnreadCountTask);
+        NetworkUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mHandler.removeCallbacksAndMessages(null);
         mFriendList.clear();
@@ -52,11 +52,11 @@ public class ContactPresenter implements ContactContract.Presenter {
     @SuppressWarnings("unchecked")
     @Override
     public void refreshAllContact(List<FriendBean> oldData) {
-        NetworkUtil.cancel(mLoadUnreadCountTask);
+        NetworkUtil.cancelTask(mLoadUnreadCountTask);
         mLoadUnreadCountTask = new LoadUnreadCountTask(this);
         mLoadUnreadCountTask.execute();
 
-        NetworkUtil.cancel(mRefreshContactsTask);
+        NetworkUtil.cancelTask(mRefreshContactsTask);
         mRefreshContactsTask = new RefreshAllContactsTask(this);
         mRefreshContactsTask.execute(oldData, mFriendList);
     }

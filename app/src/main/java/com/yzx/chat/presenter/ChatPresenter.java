@@ -70,7 +70,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         sToChatName = null;
         EMClient.getInstance().chatManager().removeMessageListener(mMessageListener);
         mHandler.removeCallbacksAndMessages(null);
-        NetworkUtil.cancel(mLoadMoreTask);
+        NetworkUtil.cancelTask(mLoadMoreTask);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void loadMoreMessage(String lastMessageID) {
         mIsLoadingMore = true;
-        NetworkUtil.cancel(mLoadMoreTask);
+        NetworkUtil.cancelTask(mLoadMoreTask);
         mLoadMoreTask = new LoadMoreTask(this, sToChatName, lastMessageID, Constants.CHAT_MESSAGE_PAGE_SIZE);
         mLoadMoreTask.execute();
     }

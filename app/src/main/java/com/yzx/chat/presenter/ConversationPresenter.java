@@ -46,13 +46,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         ChatClientManager.getInstance().removeMessageListener(mMessageListener);
         mConversationView = null;
         mConversationList = null;
-        NetworkUtil.cancel(mRefreshTask);
+        NetworkUtil.cancelTask(mRefreshTask);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void refreshAllConversation(List<ConversationBean> oldConversationList) {
-        NetworkUtil.cancel(mRefreshTask);
+        NetworkUtil.cancelTask(mRefreshTask);
         mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList, oldConversationList);
     }

@@ -22,12 +22,10 @@ import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.util.Base64Util;
-import com.yzx.chat.util.HttpCallUtil;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.NetworkUtil;
 import com.yzx.chat.util.RSAUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -78,10 +76,10 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void reset() {
-        HttpCallUtil.cancel(mGetSecretKeyCall);
-        HttpCallUtil.cancel(mLoginCall);
-        HttpCallUtil.cancel(mRegisterCall);
-        HttpCallUtil.cancel(mObtainSMSCodeCall);
+        NetworkUtil.cancelCall(mGetSecretKeyCall);
+        NetworkUtil.cancelCall(mLoginCall);
+        NetworkUtil.cancelCall(mRegisterCall);
+        NetworkUtil.cancelCall(mObtainSMSCodeCall);
     }
 
     @Override
@@ -117,7 +115,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initSecretKeyCall() {
-        HttpCallUtil.cancel(mGetSecretKeyCall);
+        NetworkUtil.cancelCall(mGetSecretKeyCall);
         mGetSecretKeyCall = mAuthApi.getSignature();
         mGetSecretKeyCall.setCallback(mGetSecretKeyCallback);
         mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
@@ -137,7 +135,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initSMSCodeCall(String username, String type, Map<String, Object> data) {
-        HttpCallUtil.cancel(mObtainSMSCodeCall);
+        NetworkUtil.cancelCall(mObtainSMSCodeCall);
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
@@ -148,7 +146,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initLoginCall(String username, String password, String verifyCode) {
-        HttpCallUtil.cancel(mLoginCall);
+        NetworkUtil.cancelCall(mLoginCall);
         mLoginCall = mAuthApi.login(
                 username,
                 password,
@@ -160,7 +158,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initRegisterCall(String username, String password, String nickname, String verifyCode) {
-        HttpCallUtil.cancel(mRegisterCall);
+        NetworkUtil.cancelCall(mRegisterCall);
         mRegisterCall = mAuthApi.register(
                 username,
                 password,

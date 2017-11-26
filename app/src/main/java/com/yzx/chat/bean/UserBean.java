@@ -7,7 +7,7 @@ package com.yzx.chat.bean;
 
 public class UserBean {
     private String userID;
-    private String account;
+    private String telephone;
     private String nickname;
     private String avatar;
 
@@ -19,12 +19,12 @@ public class UserBean {
         this.userID = userID;
     }
 
-    public String getAccount() {
-        return account;
+    public String getTelephone() {
+        return telephone;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public String getNickname() {

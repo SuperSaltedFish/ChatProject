@@ -1,6 +1,6 @@
 package com.yzx.chat.network.api.user;
 
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.bean.FriendBean;
 
 import java.util.ArrayList;
 
@@ -11,5 +11,13 @@ import java.util.ArrayList;
 
 public class GetUserFriendsBean {
 
-    ArrayList<UserBean> userList;
+    ArrayList<FriendBean> userList;
+
+    public ArrayList<FriendBean> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(ArrayList<FriendBean> userList) {
+        this.userList = userList;
+    }
 }

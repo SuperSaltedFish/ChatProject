@@ -21,6 +21,8 @@ import com.yzx.chat.network.chat.NetworkAsyncTask;
 
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.SharePreferenceManager;
+import com.yzx.chat.util.AESUtil;
+import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.BadgeTextView;
@@ -45,9 +47,9 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences manager = getSharedPreferences("555", Context.MODE_PRIVATE);
-        manager.edit().putString("sss","111").commit();
-        LogUtil.e(manager.getString("sss",null));
+       byte[] key = "DE_MA_XI_YA_WANG".getBytes();
+       byte[] s1 =  AESUtil.encrypt(new byte[]{31,32,33,34},key);
+       LogUtil.e(Base64Util.encodeToString(s1));
     }
 
 
