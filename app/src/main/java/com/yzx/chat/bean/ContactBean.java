@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 public class ContactBean {
-
+////
     public static final String CONTACT_TYPE_ADDED = "Added";
     public static final String CONTACT_TYPE_DELETED = "Deleted";
     public static final String CONTACT_TYPE_INVITED = "Invited";
