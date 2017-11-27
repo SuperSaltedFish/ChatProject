@@ -29,6 +29,9 @@ public abstract class AbstractDao<T> {
     }
 
     public T loadByKey(String... keyValues) {
+        if(keyValues==null||keyValues.length==0){
+            return null;
+        }
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), keyValues, null, null, null);
         T entity = null;
@@ -41,6 +44,9 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean insert(T entity) {
+        if(entity==null){
+            return false;
+        }
         ContentValues values = toContentValues(entity, new ContentValues());
         if (values == null) {
             return false;
@@ -51,6 +57,9 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean insertAll(Iterable<T> entityIterable) {
+        if(entityIterable==null){
+            return false;
+        }
         boolean result = true;
         SQLiteDatabase database = mHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
@@ -75,6 +84,9 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean replace(T entity) {
+        if(entity==null){
+            return false;
+        }
         ContentValues values = toContentValues(entity, new ContentValues());
         if (values == null) {
             return false;
@@ -85,6 +97,9 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean replaceAll(Iterable<T> entityIterable) {
+        if(entityIterable==null){
+            return false;
+        }
         boolean result = true;
         SQLiteDatabase database = mHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
@@ -109,6 +124,9 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean update(T entity) {
+        if(entity==null){
+            return false;
+        }
         ContentValues values = toContentValues(entity, new ContentValues());
         if (values == null) {
             return false;
@@ -120,6 +138,9 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean updateAll(Iterable<T> entityIterable) {
+        if(entityIterable==null){
+            return false;
+        }
         boolean result = true;
         SQLiteDatabase database = mHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
@@ -144,18 +165,27 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean delete(T entity) {
+        if(entity==null){
+            return false;
+        }
         boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
         mHelper.closeWritableDatabase();
         return result;
     }
 
     public boolean deleteByKey(String ...keyValue) {
+        if(keyValue==null||keyValue.length==0){
+            return false;
+        }
         boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(),keyValue) > 0;
         mHelper.closeWritableDatabase();
         return result;
     }
 
     public boolean deleteAll(Iterable<T> entityIterable) {
+        if(entityIterable==null){
+            return false;
+        }
         boolean result = true;
         SQLiteDatabase database = mHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
@@ -177,50 +207,15 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean isExist(T entity) {
+        if(entity==null){
+            return false;
+        }
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), toWhereArgsOfKey(entity), null, null, null,null);
         boolean result = (cursor.getCount() > 0);
         cursor.close();
         return result;
     }
-
-
-//    private static ContentValues beanToContentValues(Object entity) {
-//        ContentValues values = new ContentValues();
-//        Field[] Fields = entity.getClass().getDeclaredFields();
-//        Class valueType;
-//        String fieldName;
-//        try {
-//            for (Field field : Fields) {
-//                field.setAccessible(true);
-//                if (field.isAnnotationPresent(Transient.class)) {
-//                    continue;
-//                }
-//                valueType = field.getType();
-//                fieldName = field.getName();
-//                if (valueType == String.class)
-//                    values.put(fieldName, (String) field.get(entity));
-//                else if (valueType == int.class || valueType == Integer.class)
-//                    values.put(fieldName, field.getInt(entity));
-//                else if (valueType == boolean.class || valueType == Boolean.class)
-//                    values.put(fieldName, field.getBoolean(entity));
-//                else if (valueType == double.class || valueType == Double.class)
-//                    values.put(fieldName, field.getDouble(entity));
-//                else if (valueType == long.class || valueType == Long.class)
-//                    values.put(fieldName, field.getLong(entity));
-//                else if (valueType == float.class || valueType == Float.class)
-//                    values.put(fieldName, field.getFloat(entity));
-//                else if (valueType == short.class || valueType == Short.class)
-//                    values.put(fieldName, field.getShort(entity));
-//                else if (valueType == byte.class || valueType == Byte.class)
-//                    values.put(fieldName, field.getByte(entity));
-//            }
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
 
     public interface ReadWriteHelper {
         SQLiteDatabase openReadableDatabase();

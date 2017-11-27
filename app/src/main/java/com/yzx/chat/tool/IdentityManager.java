@@ -1,6 +1,7 @@
 package com.yzx.chat.tool;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.RSAUtil;
+import com.yzx.chat.view.activity.LoginActivity;
 
 import java.security.KeyPair;
 import java.util.Locale;
@@ -55,6 +57,13 @@ public class IdentityManager {
         mSharePreferenceManager.getIdentitySharedPreferences().edit().clear().apply();
         mAESKey = null;
         mToken = null;
+    }
+
+    public void startToLoginActivity(){
+        Context context = AppApplication.getAppContext();
+        Intent intent = new Intent(context,LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     public boolean isLogged() {

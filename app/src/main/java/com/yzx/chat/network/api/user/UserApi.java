@@ -15,7 +15,18 @@ public interface UserApi {
     @HttpApi(RequestMethod = "POST", Path = "user/getUserProfile")
     Call<JsonResponse<GetUserProfileBean>> getUserProfile(String userID);
 
+    @HttpApi(RequestMethod = "POST", Path = "user/searchUser")
+    Call<JsonResponse<SearchUserBean>> searchUser();
+
     @HttpApi(RequestMethod = "POST", Path = "user/getUserFriends")
     Call<JsonResponse<GetUserFriendsBean>> getUserFriends();
 
+    @HttpApi(RequestMethod = "POST", Path = "user/addFriend")
+    Call<JsonResponse<Void>> addFriend(String friendUserID);
+
+    @HttpApi(RequestMethod = "POST", Path = "user/deleteFriend")
+    Call<JsonResponse<Void>> deleteFriend(String friendUserID);
+
+    @HttpApi(RequestMethod = "POST", Path = "user/setFriendRemark")
+    Call<JsonResponse<Void>> deleteFriend(String friendUserID,String Remark);
 }

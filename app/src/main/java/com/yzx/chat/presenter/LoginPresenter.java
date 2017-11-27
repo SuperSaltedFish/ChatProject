@@ -19,6 +19,7 @@ import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.util.Base64Util;
@@ -60,6 +61,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         mManager = IdentityManager.getInstance();
         mGson = new GsonBuilder().serializeNulls().create();
         mHandler = new Handler(Looper.myLooper());
+
+        mManager.clearAuthenticationData();
     }
 
     @Override
@@ -179,7 +182,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
     }
 
-    private boolean checkVerifyInfo(LoginRegisterBean bean) {
+    private boolean saveVerifyInfo(LoginRegisterBean bean) {
         String token = bean.getToken();
         String secretKey = bean.getSecretKey();
         if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey)) {
@@ -189,6 +192,9 @@ public class LoginPresenter implements LoginContract.Presenter {
             return false;
         }
         if (!mManager.saveToken(token)) {
+            return false;
+        }
+        if(!DBManager.getInstance().getUserDao().replace(bean.getUser())){
             return false;
         }
         return true;
@@ -242,7 +248,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private final BaseHttpCallback<LoginRegisterBean> mLoginCallback = new BaseHttpCallback<LoginRegisterBean>() {
         @Override
         protected void onSuccess(LoginRegisterBean response) {
-            if (checkVerifyInfo(response)) {
+            if (saveVerifyInfo(response)) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -273,7 +279,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private final BaseHttpCallback<LoginRegisterBean> mRegisterCallback = new BaseHttpCallback<LoginRegisterBean>() {
         @Override
         protected void onSuccess(LoginRegisterBean response) {
-            if (checkVerifyInfo(response)) {
+            if (saveVerifyInfo(response)) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {

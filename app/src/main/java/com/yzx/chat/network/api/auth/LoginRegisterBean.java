@@ -1,6 +1,7 @@
 package com.yzx.chat.network.api.auth;
 
 
+import com.yzx.chat.bean.UserBean;
 
 /**
  * Created by YZX on 2017年10月15日.
@@ -10,6 +11,7 @@ package com.yzx.chat.network.api.auth;
 public class LoginRegisterBean {
     private String token;
     private String secretKey;
+    private UserBean user;
 
     public String getToken() {
         return token;
@@ -25,5 +27,13 @@ public class LoginRegisterBean {
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
+    }
+
+    public UserBean getUser() {
+        return user;
+    }
+
+    public void setUser(UserBean user) {
+        this.user = user;
     }
 }
