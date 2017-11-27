@@ -7,9 +7,11 @@ import android.support.v7.widget.Toolbar;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.contract.FindNewContactContract;
+import com.yzx.chat.presenter.FindNewContactPresenter;
 import com.yzx.chat.widget.adapter.NewContactAdapter;
 
-public class FindNewContactActivity extends BaseCompatActivity {
+public class FindNewContactActivity extends BaseCompatActivity<FindNewContactContract.Presenter> implements FindNewContactContract.View {
 
     private RecyclerView mRvNewContact;
     private Toolbar mToolbar;
@@ -47,5 +49,10 @@ public class FindNewContactActivity extends BaseCompatActivity {
         mRvNewContact.setAdapter(mAdapter);
         mRvNewContact.setHasFixedSize(true);
 
+    }
+
+    @Override
+    public FindNewContactContract.Presenter getPresenter() {
+        return new FindNewContactPresenter();
     }
 }

@@ -28,6 +28,7 @@ public class ContactBean {
     private String type;
     private String reason;
     private boolean isRemind;
+    private int time;
 
     public String getUserTo() {
         return userTo;
@@ -68,5 +69,13 @@ public class ContactBean {
 
     public void setRemind(boolean remind) {
         isRemind = remind;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
     }
 }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -49,12 +50,11 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      new Handler().postDelayed(new Runnable() {
-          @Override
-          public void run() {
-              IdentityManager.getInstance().startToLoginActivity();
-          }
-      }, 3000);
+        ContactDao dao = DBManager.getInstance().getContactDao();
+
+
+        List<ContactBean> contactBeans = dao.loadAllContactInfo("To1");
+        LogUtil.e(contactBeans.toString());
     }
 
     private void testRSA() {
@@ -76,38 +76,10 @@ public class TestActivity extends BaseCompatActivity {
         }
     }
 
-    private void testDiyAsyncTask() {
-        String s = new String("dawd");
-        ChatTask chatTask = new ChatTask(s);
-        chatTask.execute();
-    }
-
     private void testHTTP() {
 
     }
 
-
-    private static class ChatTask extends NetworkAsyncTask<Void, String> {
-
-        public ChatTask(Object lifeCycleDependence) {
-            super(lifeCycleDependence);
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return "你好";
-        }
-
-        @Override
-        protected void onPostExecute(String s, Object lifeCycleObject) {
-            Log.e("onPostExecute", " adwd " + lifeCycleObject.toString());
-        }
-    }
 
 
 }

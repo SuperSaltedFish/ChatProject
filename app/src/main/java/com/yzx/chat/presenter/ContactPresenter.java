@@ -88,9 +88,9 @@ public class ContactPresenter implements ContactContract.Presenter {
         }
     };
 
-    private static class RefreshAllContactsTask extends NetworkAsyncTask<List<FriendBean>, DiffUtil.DiffResult> {
+    private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactPresenter,List<FriendBean>, DiffUtil.DiffResult> {
 
-        RefreshAllContactsTask(Object lifeCycleDependence) {
+        RefreshAllContactsTask(ContactPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
@@ -112,16 +112,15 @@ public class ContactPresenter implements ContactContract.Presenter {
         }
 
         @Override
-        protected void onPostExecute(DiffUtil.DiffResult diffResult, Object lifeCycleObject) {
-            super.onPostExecute(diffResult, lifeCycleObject);
-            ContactPresenter presenter = (ContactPresenter) lifeCycleObject;
-            presenter.refreshComplete(diffResult);
+        protected void onPostExecute(DiffUtil.DiffResult diffResult, ContactPresenter lifeDependentObject) {
+            super.onPostExecute(diffResult, lifeDependentObject);
+            lifeDependentObject.refreshComplete(diffResult);
         }
     }
 
-    private static class LoadUnreadCountTask extends NetworkAsyncTask<Void, Integer> {
+    private static class LoadUnreadCountTask extends NetworkAsyncTask<ContactPresenter,Void, Integer> {
 
-        LoadUnreadCountTask(Object lifeCycleDependence) {
+        LoadUnreadCountTask(ContactPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
@@ -133,10 +132,9 @@ public class ContactPresenter implements ContactContract.Presenter {
         }
 
         @Override
-        protected void onPostExecute(Integer integer, Object lifeCycleObject) {
-            super.onPostExecute(integer, lifeCycleObject);
-            ContactPresenter presenter = (ContactPresenter) lifeCycleObject;
-            presenter.loadUnreadComplete(integer);
+        protected void onPostExecute(Integer integer, ContactPresenter lifeDependentObject) {
+            super.onPostExecute(integer, lifeDependentObject);
+            lifeDependentObject.loadUnreadComplete(integer);
         }
     }
 

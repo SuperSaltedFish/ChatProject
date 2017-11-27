@@ -82,9 +82,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
-    private static class RefreshAllConversationTask extends NetworkAsyncTask<List<ConversationBean>, DiffUtil.DiffResult> {
+    private static class RefreshAllConversationTask extends NetworkAsyncTask<ConversationPresenter,List<ConversationBean>, DiffUtil.DiffResult> {
 
-        private RefreshAllConversationTask(Object lifeCycleDependence) {
+        RefreshAllConversationTask(ConversationPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
@@ -129,12 +129,10 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
 
         @Override
-        protected void onPostExecute(DiffUtil.DiffResult diffResult, Object lifeCycleObject) {
-            super.onPostExecute(diffResult, lifeCycleObject);
-            ConversationPresenter presenter = (ConversationPresenter) lifeCycleObject;
-            presenter.refreshComplete(diffResult);
+        protected void onPostExecute(DiffUtil.DiffResult diffResult, ConversationPresenter lifeDependentObject) {
+            super.onPostExecute(diffResult, lifeDependentObject);
+            lifeDependentObject.refreshComplete(diffResult);
         }
-
     }
 
     private static class DiffCallback extends DiffUtil.Callback {

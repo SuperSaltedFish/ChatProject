@@ -215,6 +215,7 @@ public class ChatClientManager {
                 if (!bean.isRemind()) {
                     bean.setType(ContactBean.CONTACT_TYPE_INVITED);
                     bean.setRemind(true);
+                    bean.setTime((int) (System.currentTimeMillis()/1000));
                     mContactDao.update(bean);
                 } else return;
             } else {
@@ -224,6 +225,7 @@ public class ChatClientManager {
                 bean.setType(ContactBean.CONTACT_TYPE_INVITED);
                 bean.setReason(reason);
                 bean.setRemind(true);
+                bean.setTime((int) (System.currentTimeMillis()/1000));
                 mContactDao.insert(bean);
             }
             setContactUnreadCount(mContactUnreadCount < 0 ? 1 : mContactUnreadCount + 1);

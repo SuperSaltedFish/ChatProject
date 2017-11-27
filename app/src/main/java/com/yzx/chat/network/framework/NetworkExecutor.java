@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 public class NetworkExecutor {
 
+    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+    private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
+
     private static volatile NetworkExecutor sNetworkExecutor;
     private static volatile Handler sUIHandler;
 
@@ -36,7 +39,7 @@ public class NetworkExecutor {
         }
         mThreadPoolExecutor = new ThreadPoolExecutor(
                 0,
-                4,
+                MAXIMUM_POOL_SIZE,
                 30, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(32));
     }
@@ -53,6 +56,11 @@ public class NetworkExecutor {
             return;
         }
         mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, startIndex, length, this));
+    }
+
+    public void cleanAllTask(){
+        mThreadPoolExecutor.purge();
+        mThreadPoolExecutor.getQueue().clear();
     }
 
 

@@ -59,27 +59,33 @@ public class SplashPresenter implements SplashContract.Presenter {
 ////        } else {
 ////            IdentityManager.getInstance().clearAuthenticationData();
 ////            mSplashView.startLoginActivity();
-//        EMClient.getInstance().logout(true);
-//            EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
-//                @Override
-//                public void onSuccess() {
-//                    NetworkUtil.cancelTask(mInitAsyncTask);
-//                    mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
-//                    mInitAsyncTask.execute();
-//                    loadAllFriend();
-//                }
-//
-//                @Override
-//                public void onError(int code, String error) {
-//                    LogUtil.e(error);
-//                    mSplashView.startLoginActivity();
-//                }
-//
-//                @Override
-//                public void onProgress(int progress, String status) {
-//
-//                }
-//            });
+        if(EMClient.getInstance().isLoggedInBefore()){
+            NetworkUtil.cancelTask(mInitAsyncTask);
+            mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
+            mInitAsyncTask.execute();
+            loadAllFriend();
+        }else {
+            EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
+                @Override
+                public void onSuccess() {
+                    NetworkUtil.cancelTask(mInitAsyncTask);
+                    mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
+                    mInitAsyncTask.execute();
+                    loadAllFriend();
+                }
+
+                @Override
+                public void onError(int code, String error) {
+                    LogUtil.e(error);
+                    mSplashView.startLoginActivity();
+                }
+
+                @Override
+                public void onProgress(int progress, String status) {
+
+                }
+            });
+        }
 //        }
 
 
@@ -115,9 +121,9 @@ public class SplashPresenter implements SplashContract.Presenter {
         mSplashView.error(error);
     }
 
-    private static class InitAsyncTask extends NetworkAsyncTask<Void, String> {
+    private static class InitAsyncTask extends NetworkAsyncTask<SplashPresenter,Void, String> {
 
-        InitAsyncTask(Object lifeCycleDependence) {
+        InitAsyncTask(SplashPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
@@ -128,13 +134,12 @@ public class SplashPresenter implements SplashContract.Presenter {
         }
 
         @Override
-        protected void onPostExecute(String result, Object lifeCycleObject) {
-            super.onPostExecute(result, lifeCycleObject);
-            SplashPresenter presenter = (SplashPresenter) lifeCycleObject;
+        protected void onPostExecute(String result, SplashPresenter lifeDependentObject) {
+            super.onPostExecute(result, lifeDependentObject);
             if (result == null) {
-                presenter.initSuccess();
+                lifeDependentObject.initSuccess();
             } else {
-               presenter.initFail(result);
+                lifeDependentObject.initFail(result);
             }
         }
     }

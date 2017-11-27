@@ -23,11 +23,13 @@ public class ContactDao extends AbstractDao<ContactBean> {
     private static final String COLUMN_NAME_Type = "Type";
     private static final String COLUMN_NAME_Reason = "Reason";
     private static final String COLUMN_NAME_Remind = "Remind";
+    private static final String COLUMN_NAME_Time = "Time";
     private static final int COLUMN_INDEX_UserTo = 0;
     private static final int COLUMN_INDEX_UserFrom = 1;
     private static final int COLUMN_INDEX_Type = 2;
     private static final int COLUMN_INDEX_Reason = 3;
     private static final int COLUMN_INDEX_Remind = 4;
+    private static final int COLUMN_INDEX_Time = 5;
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
@@ -36,14 +38,15 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     + COLUMN_NAME_Type + " TEXT NOT NULL,"
                     + COLUMN_NAME_Reason + " TEXT,"
                     + COLUMN_NAME_Remind + " INTEGER,"
+                    + COLUMN_NAME_Time + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_UserTo + ", " + COLUMN_NAME_UserFrom + ")"
                     + ")";
 
-    public List<ContactBean> loadAllRemind(String userID){
+    public List<ContactBean> loadAllContactInfo(String userID) {
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_Remind + "=?", new String[]{"1"});
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_UserTo + "=? ORDER BY "+COLUMN_NAME_Remind+" DESC,"+COLUMN_NAME_Time+" DESC", new String[]{userID});
         List<ContactBean> contactList = new ArrayList<>(cursor.getCount());
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
         cursor.close();
@@ -55,10 +58,10 @@ public class ContactDao extends AbstractDao<ContactBean> {
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_Remind + "=?", new String[]{"1"});
         int result;
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             result = cursor.getInt(0);
-        }else {
-            result=0;
+        } else {
+            result = 0;
         }
         cursor.close();
         mHelper.closeReadableDatabase();
@@ -96,6 +99,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
         values.put(ContactDao.COLUMN_NAME_Type, entity.getType());
         values.put(ContactDao.COLUMN_NAME_Reason, entity.getReason());
         values.put(ContactDao.COLUMN_NAME_Remind, entity.isRemind() ? 1 : 0);
+        values.put(ContactDao.COLUMN_NAME_Time, entity.getTime());
         return values;
     }
 
@@ -107,6 +111,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
         bean.setType(cursor.getString(COLUMN_INDEX_Type));
         bean.setReason(cursor.getString(COLUMN_INDEX_Reason));
         bean.setRemind(cursor.getInt(COLUMN_INDEX_Remind) == 1);
+        bean.setTime(cursor.getInt(COLUMN_INDEX_Time));
         return bean;
     }
 

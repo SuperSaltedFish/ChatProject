@@ -23,14 +23,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public abstract class NetworkAsyncTask<Params, Result> {
+public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
 
     protected void onPreExecute() {
     }
 
-    protected abstract Result doInBackground(Params... params);
+    protected abstract Result doInBackground(Param... params);
 
-    protected void onPostExecute(Result result, Object lifeCycleObject) {
+    protected void onPostExecute(Result result, LifeDependent lifeDependentObject) {
     }
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
@@ -46,25 +46,32 @@ public abstract class NetworkAsyncTask<Params, Result> {
         mThreadPoolExecutor.allowCoreThreadTimeOut(true);
     }
 
+    public static void cleanAllTask() {
+        mThreadPoolExecutor.purge();
+        mThreadPoolExecutor.getQueue().clear();
+    }
 
-    private WeakReference<Object> mLifeCycleReference;
+
+    private WeakReference<LifeDependent> mLifeDependentReference;
     private InternalHandler mHandler;
     private Future<?> mFuture;
     private boolean isAlreadyExecute;
+    private boolean isLifeCycleDependent;
 
 
     private AtomicBoolean isCancel;
 
-    public NetworkAsyncTask(Object lifeCycleDependence) {
+    public NetworkAsyncTask(LifeDependent lifeCycleDependence) {
         if (lifeCycleDependence != null) {
-            mLifeCycleReference = new WeakReference<>(lifeCycleDependence);
+            mLifeDependentReference = new WeakReference<>(lifeCycleDependence);
+            isLifeCycleDependent = true;
         }
         mHandler = new InternalHandler(Looper.getMainLooper());
         isCancel = new AtomicBoolean(false);
     }
 
     @MainThread
-    public synchronized void execute(Params... params) {
+    public synchronized void execute(Param... params) {
         if (isAlreadyExecute) {
             throw new RuntimeException("Cannot execute task: the task has already been executed");
         }
@@ -80,8 +87,8 @@ public abstract class NetworkAsyncTask<Params, Result> {
         if (mFuture != null) {
             mFuture.cancel(true);
         }
-        if (mLifeCycleReference != null) {
-            mLifeCycleReference.clear();
+        if (mLifeDependentReference != null) {
+            mLifeDependentReference.clear();
         }
         isCancel.set(true);
     }
@@ -89,20 +96,24 @@ public abstract class NetworkAsyncTask<Params, Result> {
     public boolean isCancel() {
         if (isCancel.get()) {
             return true;
-        } else if (mLifeCycleReference == null) {
+        } else if (mLifeDependentReference == null) {
             return false;
-        } else if (mLifeCycleReference.get() == null) {
+        } else if (mLifeDependentReference.get() == null) {
             return true;
         }
         return false;
     }
 
+    public boolean isLifeCycleDependent() {
+        return isLifeCycleDependent;
+    }
+
     @Nullable
     private Object getLifeCycleObject() {
-        if (mLifeCycleReference == null) {
+        if (mLifeDependentReference == null) {
             return null;
         } else {
-            return mLifeCycleReference.get();
+            return mLifeDependentReference.get();
         }
     }
 
@@ -118,9 +129,9 @@ public abstract class NetworkAsyncTask<Params, Result> {
 
     private class WorkerRunnable implements Runnable {
 
-        private Params[] mParams;
+        private Param[] mParams;
 
-        WorkerRunnable(Params[] params) {
+        WorkerRunnable(Param[] params) {
             mParams = params;
         }
 
@@ -147,7 +158,7 @@ public abstract class NetworkAsyncTask<Params, Result> {
             if (msg.what == MESSAGE_POST_RESULT) {
                 TaskResult<?> result = (TaskResult<?>) msg.obj;
                 NetworkAsyncTask task = result.mTask;
-                if (!task.isCancel() && task.getLifeCycleObject() != null) {
+                if (!task.isCancel() && (task.getLifeCycleObject() != null || task.isLifeCycleDependent())) {
                     task.onPostExecute(result.mData, task.getLifeCycleObject());
                 }
             }

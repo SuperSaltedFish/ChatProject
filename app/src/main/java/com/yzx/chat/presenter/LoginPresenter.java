@@ -16,6 +16,7 @@ import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.GetSecretKeyBean;
 import com.yzx.chat.network.api.auth.LoginRegisterBean;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
+import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.tool.AndroidTool;
@@ -63,6 +64,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         mHandler = new Handler(Looper.myLooper());
 
         mManager.clearAuthenticationData();
+        sHttpExecutor.cleanAllTask();
+        NetworkAsyncTask.cleanAllTask();
     }
 
     @Override

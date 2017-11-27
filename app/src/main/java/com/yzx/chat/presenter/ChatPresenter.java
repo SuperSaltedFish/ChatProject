@@ -157,12 +157,12 @@ public class ChatPresenter implements ChatContract.Presenter {
         return sToChatName;
     }
 
-    private static class LoadMoreTask extends NetworkAsyncTask<Void, List<EMMessage>> {
+    private static class LoadMoreTask extends NetworkAsyncTask<ChatPresenter,Void, List<EMMessage>> {
         private String mConversationID;
         private String mStartID;
         private int mCount;
 
-        LoadMoreTask(Object lifeCycleDependence, String conversationID,
+        LoadMoreTask(ChatPresenter lifeCycleDependence, String conversationID,
                      String startID, int count) {
             super(lifeCycleDependence);
             mConversationID = conversationID;
@@ -170,16 +170,16 @@ public class ChatPresenter implements ChatContract.Presenter {
             mCount = count;
         }
 
+
         @Override
         protected List<EMMessage> doInBackground(Void... voids) {
             return ChatClientManager.getInstance().loadMoreMessage(mConversationID, mStartID, mCount);
         }
 
         @Override
-        protected void onPostExecute(List<EMMessage> emMessages, Object lifeCycleObject) {
-            super.onPostExecute(emMessages, lifeCycleObject);
-            ChatPresenter presenter = (ChatPresenter) lifeCycleObject;
-            presenter.loadMoreComplete(emMessages);
+        protected void onPostExecute(List<EMMessage> emMessages, ChatPresenter lifeDependentObject) {
+            super.onPostExecute(emMessages, lifeDependentObject);
+            lifeDependentObject.loadMoreComplete(emMessages);
         }
     }
 }
