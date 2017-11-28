@@ -29,11 +29,13 @@ public class ChatPresenter implements ChatContract.Presenter {
     private LoadMoreTask mLoadMoreTask;
     private boolean mIsLoadingMore;
     private boolean mHasMoreMessage;
+    private ChatClientManager mChatManager;
 
     @Override
     public void attachView(ChatContract.View view) {
         mChatView = view;
         mHandler = new Handler();
+        mChatManager = ChatClientManager.getInstance();
     }
 
     @Override
@@ -49,7 +51,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         sToChatName = conversationID;
         mHasMoreMessage = true;
         mIsLoadingMore = false;
-        EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
+        mChatManager.addMessageListener(mMessageListener,conversationID);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
         List<EMMessage> messageList = conversation.getAllMessages();
         int count = messageList.size();
@@ -68,7 +70,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void reset() {
         sToChatName = null;
-        EMClient.getInstance().chatManager().removeMessageListener(mMessageListener);
+        mChatManager.removeMessageListener(mMessageListener);
         mHandler.removeCallbacksAndMessages(null);
         NetworkUtil.cancelTask(mLoadMoreTask);
     }
@@ -110,48 +112,18 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView.showNew(messageList);
     }
 
-    private final EMMessageListener mMessageListener = new EMMessageListener() {
+    private final ChatClientManager.MessageListener mMessageListener = new ChatClientManager.MessageListener() {
         @Override
-        public void onMessageReceived(List<EMMessage> messages) {
-            final List<EMMessage> messageList = new LinkedList<>();
-            for (EMMessage message : messages) {
-                if (sToChatName.equals(message.conversationId())) {
-                    messageList.add(message);
-                }
-            }
+        public void onMessageReceived(final List<EMMessage> messages) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    loadNewComplete(messageList);
+                    loadNewComplete(messages);
                 }
             });
         }
-
-        @Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageRead(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageDelivered(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageRecalled(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageChanged(EMMessage message, Object change) {
-
-        }
     };
+
 
     public static String getConversationID() {
         return sToChatName;

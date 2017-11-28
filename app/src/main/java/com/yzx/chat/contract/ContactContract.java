@@ -23,7 +23,6 @@ public class ContactContract {
 
     public interface Presenter extends BasePresenter<View> {
         void refreshAllContact(List<FriendBean> oldData);
-        void loadUnreadComplete(int count);
 
     }
 }

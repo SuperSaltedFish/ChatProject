@@ -85,7 +85,7 @@ public class BadgeImageView extends android.support.v7.widget.AppCompatImageView
         mBadgeTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 12, mContext.getResources().getDisplayMetrics());
         mBadgeText = String.valueOf(0);
-        mBadgeMode = MODE_SHOW;
+        mBadgeMode = MODE_HIDE;
         mBadgeBackgroundColor = Color.RED;
         mBadgeTextColor = Color.WHITE;
     }

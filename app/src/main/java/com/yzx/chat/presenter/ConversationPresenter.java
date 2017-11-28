@@ -8,6 +8,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
@@ -125,52 +126,32 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             }
             ChatClientManager.getInstance().setMessageUnreadCount(unreadCount);
             sortConversationByLastChatTime(filterConversation);
-            return DiffUtil.calculateDiff(new DiffCallback(lists[1], filterConversation), true);
+
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ConversationBean>(lists[1],filterConversation) {
+                @Override
+                public boolean isItemEquals(ConversationBean oldItem, ConversationBean newItem) {
+                    return oldItem.getConversationID().equals(newItem.getConversationID());
+                }
+
+                @Override
+                public boolean isContentsEquals(ConversationBean oldItem, ConversationBean newItem) {
+                    if (oldItem.getLastMsgTime() != newItem.getLastMsgTime()) {
+                        return false;
+                    }
+                    if (oldItem.getUnreadMsgCount() != newItem.getUnreadMsgCount()) {
+                        return false;
+                    }
+                    return true;
+                }
+            }, true);
+
+            return diffResult;
         }
 
         @Override
         protected void onPostExecute(DiffUtil.DiffResult diffResult, ConversationPresenter lifeDependentObject) {
             super.onPostExecute(diffResult, lifeDependentObject);
             lifeDependentObject.refreshComplete(diffResult);
-        }
-    }
-
-    private static class DiffCallback extends DiffUtil.Callback {
-
-        private List<ConversationBean> mNewData;
-        private List<ConversationBean> mOldData;
-
-        DiffCallback(List<ConversationBean> oldData, List<ConversationBean> newData) {
-            this.mOldData = oldData;
-            this.mNewData = newData;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return mOldData == null ? 0 : mOldData.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return mNewData == null ? 0 : mNewData.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return mNewData.get(newItemPosition).getConversationID().equals(mOldData.get(oldItemPosition).getConversationID());
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            ConversationBean oldBean = mOldData.get(oldItemPosition);
-            ConversationBean newBean = mNewData.get(oldItemPosition);
-            if (oldBean.getLastMsgTime() != newBean.getLastMsgTime()) {
-                return false;
-            }
-            if (oldBean.getUnreadMsgCount() != newBean.getUnreadMsgCount()) {
-                return false;
-            }
-            return true;
         }
     }
 

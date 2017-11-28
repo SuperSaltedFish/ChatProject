@@ -10,6 +10,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
+import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.database.DBHelper;
@@ -74,6 +75,7 @@ public class ChatClientManager {
         mMessageListenerMap.remove(listener);
     }
 
+
     public void addContactListener(ContactListener listener) {
         if (!mContactListenerList.contains(listener)) {
             mContactListenerList.add(listener);
@@ -103,7 +105,8 @@ public class ChatClientManager {
         mMessageUnreadCount = messageUnreadCount;
     }
 
-    public synchronized void setContactUnreadCount(int contactUnreadCount) {
+    public synchronized void updateContactUnreadCount() {
+        int contactUnreadCount = mContactDao.loadRemindCount();
         if (mContactUnreadCount != contactUnreadCount) {
             for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
                 listener.onContactUnreadCountChange(contactUnreadCount);
@@ -114,7 +117,7 @@ public class ChatClientManager {
 
     public synchronized void makeAllContactAsRead() {
         mContactDao.makeAllRemindAsNoRemind(IdentityManager.getInstance().getUserID());
-        setContactUnreadCount(0);
+        updateContactUnreadCount();
     }
 
     public int getMessageUnreadCount() {
@@ -130,6 +133,7 @@ public class ChatClientManager {
         mEMClient.groupManager().loadAllGroups();
     }
 
+
     public Map<String, EMConversation> getAllConversations() {
         return mEMClient.chatManager().getAllConversations();
     }
@@ -142,6 +146,12 @@ public class ChatClientManager {
             return conversation.loadMoreMsgFromDB(startMessageID, count);
         }
     }
+
+
+    public void requestAddContact(String contactID, String reason) throws HyphenateException {
+        mEMClient.contactManager().addContact(contactID, reason);
+    }
+
 
     private final EMMessageListener mEMMessageListener = new EMMessageListener() {
         @Override
@@ -210,25 +220,15 @@ public class ChatClientManager {
 
         @Override
         public void onContactInvited(String username, String reason) {
-            ContactBean bean = mContactDao.loadByKey(IdentityManager.getInstance().getUserID(), username);
-            if (bean != null) {
-                if (!bean.isRemind()) {
-                    bean.setType(ContactBean.CONTACT_TYPE_INVITED);
-                    bean.setRemind(true);
-                    bean.setTime((int) (System.currentTimeMillis()/1000));
-                    mContactDao.update(bean);
-                } else return;
-            } else {
-                bean = new ContactBean();
-                bean.setUserTo(IdentityManager.getInstance().getUserID());
-                bean.setUserFrom(username);
-                bean.setType(ContactBean.CONTACT_TYPE_INVITED);
-                bean.setReason(reason);
-                bean.setRemind(true);
-                bean.setTime((int) (System.currentTimeMillis()/1000));
-                mContactDao.insert(bean);
-            }
-            setContactUnreadCount(mContactUnreadCount < 0 ? 1 : mContactUnreadCount + 1);
+            ContactBean bean = new ContactBean();
+            bean.setUserTo(IdentityManager.getInstance().getUserID());
+            bean.setUserFrom(username);
+            bean.setType(ContactBean.CONTACT_TYPE_INVITED);
+            bean.setReason(reason);
+            bean.setRemind(true);
+            bean.setTime((int) (System.currentTimeMillis() / 1000));
+            mContactDao.replace(bean);
+            updateContactUnreadCount();
         }
 
         @Override

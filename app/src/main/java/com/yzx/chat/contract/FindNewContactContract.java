@@ -2,6 +2,9 @@ package com.yzx.chat.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.ContactBean;
+
+import java.util.List;
 
 /**
  * Created by YZX on 2017年11月27日.
@@ -17,8 +20,9 @@ public class FindNewContactContract {
 
 
     public interface Presenter extends BasePresenter<View> {
-        void loadFriendRequest();
-        void acceptFriendRequest(String friendUserID);
+        void loadContactRequest(List<ContactBean> mOldContactList);
+        void requestAddContact(String contactID,String reason);
+        void acceptContactRequest(String contactID);
         void searchUser(String nicknameOrTelephone);
     }
 }

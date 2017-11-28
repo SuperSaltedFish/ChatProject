@@ -38,5 +38,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 
 
-    debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
+//    debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
 }
