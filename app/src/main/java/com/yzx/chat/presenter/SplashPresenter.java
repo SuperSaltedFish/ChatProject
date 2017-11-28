@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 public class SplashPresenter implements SplashContract.Presenter {
-
+//
     private SplashContract.View mSplashView;
     private UserApi mUserApi;
     private InitAsyncTask mInitAsyncTask;
