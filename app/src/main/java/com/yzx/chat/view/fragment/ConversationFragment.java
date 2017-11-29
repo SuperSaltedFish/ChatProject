@@ -109,8 +109,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                     intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
                     ActivityOptionsCompat compat =  ActivityOptionsCompat.makeCustomAnimation(mContext,R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
                     ActivityCompat.startActivity(mContext, intent, compat.toBundle());
-                    mPresenter.markConversationAsRead(conversationID);
-                    mPresenter.refreshAllConversation(mConversationList);
                 }
             });
         }

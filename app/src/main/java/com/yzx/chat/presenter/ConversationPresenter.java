@@ -34,17 +34,21 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<ConversationBean> mConversationList;
+    private ChatClientManager mChatManager;
 
     @Override
     public void attachView(ConversationContract.View view) {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
-        ChatClientManager.getInstance().addMessageListener(mMessageListener,null);
+        mChatManager = ChatClientManager.getInstance();
+        mChatManager.addMessageListener(mMessageListener, null);
+        mChatManager.addUnreadCountChangeListener(mUnreadChangeListener);
     }
 
     @Override
     public void detachView() {
-        ChatClientManager.getInstance().removeMessageListener(mMessageListener);
+        mChatManager.removeMessageListener(mMessageListener);
+        mChatManager.removeUnreadCountChangeListener(mUnreadChangeListener);
         mConversationView = null;
         mConversationList = null;
         NetworkUtil.cancelTask(mRefreshTask);
@@ -56,11 +60,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         NetworkUtil.cancelTask(mRefreshTask);
         mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList, oldConversationList);
-    }
-
-    @Override
-    public void markConversationAsRead(String conversationID) {
-        EMClient.getInstance().chatManager().getConversation(conversationID).markAllMessagesAsRead();
     }
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
@@ -83,7 +82,19 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
-    private static class RefreshAllConversationTask extends NetworkAsyncTask<ConversationPresenter,List<ConversationBean>, DiffUtil.DiffResult> {
+    private final ChatClientManager.UnreadCountChangeListener mUnreadChangeListener = new ChatClientManager.UnreadCountChangeListener() {
+        @Override
+        public void onMessageUnreadCountChange(int unreadCount) {
+            refreshAllConversation(mConversationView.getOldConversationList());
+        }
+
+        @Override
+        public void onContactUnreadCountChange(int unreadCount) {
+
+        }
+    };
+
+    private static class RefreshAllConversationTask extends NetworkAsyncTask<ConversationPresenter, List<ConversationBean>, DiffUtil.DiffResult> {
 
         RefreshAllConversationTask(ConversationPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
@@ -102,8 +113,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 if (conversation.getAllMessages().size() != 0) {
                     if (conversation.conversationId().equals(ChatPresenter.getConversationID())) {
                         conversation.markAllMessagesAsRead();
-                    }else {
-                        unreadCount+=conversation.getUnreadMsgCount();
+                    } else {
+                        unreadCount += conversation.getUnreadMsgCount();
                     }
                     lastMessage = conversation.getLastMessage();
                     switch (conversation.getType()) {
@@ -127,7 +138,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             ChatClientManager.getInstance().setMessageUnreadCount(unreadCount);
             sortConversationByLastChatTime(filterConversation);
 
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ConversationBean>(lists[1],filterConversation) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ConversationBean>(lists[1], filterConversation) {
                 @Override
                 public boolean isItemEquals(ConversationBean oldItem, ConversationBean newItem) {
                     return oldItem.getConversationID().equals(newItem.getConversationID());

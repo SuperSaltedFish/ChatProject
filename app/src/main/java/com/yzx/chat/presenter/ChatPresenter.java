@@ -53,6 +53,8 @@ public class ChatPresenter implements ChatContract.Presenter {
         mIsLoadingMore = false;
         mChatManager.addMessageListener(mMessageListener,conversationID);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
+        mChatManager.setMessageUnreadCount(mChatManager.getMessageUnreadCount()-conversation.getUnreadMsgCount());
+        conversation.markAllMessagesAsRead();
         List<EMMessage> messageList = conversation.getAllMessages();
         int count = messageList.size();
         if (count == 0) {

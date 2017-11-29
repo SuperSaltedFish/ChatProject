@@ -1,7 +1,9 @@
 package com.yzx.chat.tool;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
@@ -18,17 +20,27 @@ public class AndroidTool {
     private static int sScreenWidth;
     private static int sScreenHeight;
     private static int sScreenDensity;
+    private static int sActivityStartedCount;
+    private static String sTopActivityName;
     private static Context sApplicationContext;
 
-    public synchronized static void init(Context context) {
+    public synchronized static void init(Application application) {
         if (sApplicationContext != null) {
             return;
         }
-        sApplicationContext = context.getApplicationContext();
-
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        application.registerActivityLifecycleCallbacks(sLifecycleCallbacks);
+        sApplicationContext = application.getApplicationContext();
+        DisplayMetrics dm = application.getResources().getDisplayMetrics();
         sScreenWidth = dm.widthPixels;
         sScreenHeight = dm.heightPixels;
+    }
+
+    public static boolean isAppForeground(){
+        return sActivityStartedCount>0;
+    }
+
+    public static String getTopActivityName(){
+        return sTopActivityName;
     }
 
 
@@ -73,4 +85,43 @@ public class AndroidTool {
                 spVal, sApplicationContext.getResources().getDisplayMetrics());
 
     }
+
+
+
+    private static Application.ActivityLifecycleCallbacks sLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+            sActivityStartedCount++;
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            sTopActivityName = activity.getClass().getSimpleName();
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            sActivityStartedCount--;
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+
+        }
+    };
 }
