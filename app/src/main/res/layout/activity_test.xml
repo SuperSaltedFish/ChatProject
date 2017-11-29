@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.yzx.chat.widget.view.EmojiRecyclerview
+    <com.yzx.chat.widget.view.CarouselView
         android:id="@+id/sss"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="200dp" />
 
 </LinearLayout>

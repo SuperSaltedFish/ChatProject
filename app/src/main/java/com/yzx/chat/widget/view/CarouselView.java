@@ -1,6 +1,7 @@
 package com.yzx.chat.widget.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
@@ -16,9 +17,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 
+import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.util.LogUtil;
+
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -32,14 +36,11 @@ public class CarouselView extends FrameLayout {
     private ViewPager mViewPager;
     private ViewPagerIndicator mViewPagerIndicator;
     private Context mContext;
-    private ArrayList<String> mPicUrlList;
+    private List<String> mPicUrlList;
     private LinkedList<WeakReference<ImageView>> mCacheViewQueue;
     private Handler mHandler;
-    private CarouseRunnable mCarouseRunnable;
-    private int mIntervalTime = 5000;
+    private int mCarouselInterval = 0;
 
-
-    private boolean isStartCarousel = false;
 
     public CarouselView(Context context) {
         this(context, null);
@@ -56,6 +57,7 @@ public class CarouselView extends FrameLayout {
     public CarouselView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mContext = context;
+        mHandler = new Handler();
         init();
     }
 
@@ -64,20 +66,19 @@ public class CarouselView extends FrameLayout {
         mViewPager = new ViewPager(mContext);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(mOnPageChangeListener);
-        int oPagerCount = mPagerAdapter.getCount();
-        mViewPager.setCurrentItem(oPagerCount / 2 - (oPagerCount / 2) % 2);
 
         mViewPagerIndicator = new ViewPagerIndicator(mContext);
 
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         mViewPagerIndicator.setLayoutParams(params);
+        mViewPagerIndicator.setIndicatorColor(Color.BLACK, Color.RED);
 
         mCacheViewQueue = new LinkedList<>();
-        mCarouseRunnable = new CarouseRunnable(mViewPager);
 
-        addView(mViewPager, 0);
-        addView(mViewPagerIndicator, 1);
+        addView(mViewPagerIndicator);
+        addView(mViewPager);
+
     }
 
     private void initIndicator() {
@@ -86,12 +87,19 @@ public class CarouselView extends FrameLayout {
         }
     }
 
+    private void refresh() {
+        int oPagerCount = mPagerAdapter.getCount();
+        mViewPager.setCurrentItem(oPagerCount / 2 - (oPagerCount / 2) % 2);
+    }
 
-    private ImageView getNewItem() {
-        ImageView itemView = new ImageView(mContext);
-        ViewPager.LayoutParams params = new ViewPager.LayoutParams();
-        itemView.setLayoutParams(params);
-        return itemView;
+    private void delayedShowNext(final int nextPosition) {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mViewPager.setCurrentItem(nextPosition + 1, true);
+            }
+        }, mCarouselInterval);
     }
 
     private final PagerAdapter mPagerAdapter = new PagerAdapter() {
@@ -109,6 +117,7 @@ public class CarouselView extends FrameLayout {
         public void destroyItem(ViewGroup container, int position, Object object) {
             ImageView itemView = (ImageView) object;
             container.removeView(itemView);
+            GlideUtil.clear(mContext, itemView);
             itemView.setImageBitmap(null);
             mCacheViewQueue.offer(new WeakReference<>(itemView));
         }
@@ -120,16 +129,14 @@ public class CarouselView extends FrameLayout {
             if (weakReference != null && weakReference.get() != null) {
                 itemView = weakReference.get();
             } else {
-                itemView = getNewItem();
+                itemView = new ImageView(mContext);
             }
             container.addView(itemView);
-            int listSize = mPicUrlList.size();
-//            GlideUtil.loadFromUrl(mContext, itemView, mPicUrlList.get(position % listSize));
 
-            if (!isStartCarousel && listSize > 1) {
-                isStartCarousel = true;
-                mOnPageChangeListener.onPageSelected(0);
-            }
+            int listSize = mPicUrlList.size();
+            GlideUtil.loadFromUrl(mContext, itemView, mPicUrlList.get(position % listSize));
+
+
             return itemView;
         }
     };
@@ -137,69 +144,50 @@ public class CarouselView extends FrameLayout {
     private final ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
         @Override
         public void onPageSelected(final int position) {
+            if (mCarouselInterval == 0) {
+                return;
+            }
             mViewPagerIndicator.setSelectedIndex(position % mPicUrlList.size());
-            mHandler.removeCallbacks(mCarouseRunnable);
-            mCarouseRunnable.setPosition(position + 1);
-            mHandler.postDelayed(mCarouseRunnable, mIntervalTime);
+            delayedShowNext(position + 1);
         }
     };
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (mHandler == null) {
-            mHandler = getHandler();
-        } else if (isStartCarousel) {
-            int position = mViewPager.getCurrentItem() + 1;
-            mCarouseRunnable.setPosition(position);
-            mHandler.postDelayed(mCarouseRunnable, mIntervalTime);
-        }
-
-    }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mHandler != null) {
-            mHandler.removeCallbacks(mCarouseRunnable);
-        }
+        mHandler.removeCallbacksAndMessages(null);
     }
 
-    private static class CarouseRunnable implements Runnable {
-        WeakReference<ViewPager> mViewPagerWeakReference;
-        private int mPosition;
 
-        CarouseRunnable(ViewPager pViewPager) {
-            mViewPagerWeakReference = new WeakReference<>(pViewPager);
-        }
-
-        void setPosition(int position) {
-            mPosition = position;
-        }
-
-        @Override
-        public void run() {
-            ViewPager oViewPager = mViewPagerWeakReference.get();
-            if (oViewPager != null && oViewPager.isAttachedToWindow()) {
-                oViewPager.setCurrentItem(mPosition, true);
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if(changedView==this) {
+            if (visibility == VISIBLE) {
+                delayedShowNext(mViewPager.getCurrentItem() + 1);
+            } else {
+                mHandler.removeCallbacksAndMessages(null);
             }
         }
+
     }
 
-    public int getIntervalTime() {
-        return mIntervalTime;
+    public int getCarouselInterval() {
+        return mCarouselInterval;
     }
 
-    public void setIntervalTime(int pIntervalTime) {
-        mIntervalTime = pIntervalTime;
+    public void setCarouselInterval(int carouselInterval) {
+        mCarouselInterval = carouselInterval;
     }
 
-    public ArrayList<String> getPicUrls() {
+    public List<String> getPicUrls() {
         return mPicUrlList;
     }
 
-    public void setPicUrls(ArrayList<String> picUrls) {
+    public void setPicUrls(List<String> picUrls) {
         mPicUrlList = picUrls;
+        refresh();
         initIndicator();
         mPagerAdapter.notifyDataSetChanged();
     }

@@ -20,6 +20,7 @@ public class EmojiRecyclerview extends RecyclerView {
     private int[] mEmojiUnicodeArray;
     private GridLayoutManager mGridLayoutManager;
     private EmojiAdapter mAdapter;
+    private int mEmojiSize;
 
     public EmojiRecyclerview(Context context) {
         this(context, null);
@@ -27,6 +28,11 @@ public class EmojiRecyclerview extends RecyclerView {
 
     public EmojiRecyclerview(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
+        setDefaultValue();
+    }
+
+    private void setDefaultValue() {
+        mEmojiSize = 16;
     }
 
     public EmojiRecyclerview(Context context, @Nullable AttributeSet attrs, int defStyle) {
@@ -38,19 +44,24 @@ public class EmojiRecyclerview extends RecyclerView {
 
     public void setEmojiData(int[] emojiUnicodeArray, int spanCount) {
         mEmojiUnicodeArray = emojiUnicodeArray;
-        if(mGridLayoutManager==null){
-            mGridLayoutManager = new GridLayoutManager(mContext,spanCount);
+        if (mGridLayoutManager == null) {
+            mGridLayoutManager = new GridLayoutManager(mContext, spanCount);
             setLayoutManager(mGridLayoutManager);
-        }else {
+        } else {
             mGridLayoutManager.setSpanCount(spanCount);
         }
     }
 
-    public void notifyDataSetChanged(){
+    public void setEmojiSize(int size){
+        mEmojiSize = size;
+        notifyDataSetChanged();
+    }
+
+    public void notifyDataSetChanged() {
         mAdapter.notifyDataSetChanged();
     }
 
-    private static class EmojiItemView extends EmojiTextView{
+    private static class EmojiItemView extends EmojiTextView {
 
         public EmojiItemView(Context context) {
             super(context);
@@ -59,6 +70,13 @@ public class EmojiRecyclerview extends RecyclerView {
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
+                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY));
+            } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
+                super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
+            }
         }
     }
 
@@ -66,16 +84,17 @@ public class EmojiRecyclerview extends RecyclerView {
 
         @Override
         public EmojiHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            EmojiTextView emojiTextView = new EmojiTextView(mContext);
-            emojiTextView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            emojiTextView.setGravity(Gravity.CENTER);
-            return new EmojiHolder(emojiTextView);
+            EmojiItemView itemView = new EmojiItemView(mContext);
+            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            itemView.setGravity(Gravity.CENTER);
+            return new EmojiHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(EmojiHolder holder, int position) {
             char[] emoji = Character.toChars(mEmojiUnicodeArray[position]);
             holder.mEmojiTextView.setText(emoji, 0, emoji.length);
+            holder.mEmojiTextView.setTextSize(mEmojiSize);
         }
 
         @Override

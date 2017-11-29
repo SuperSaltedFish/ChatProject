@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 
 
@@ -40,10 +41,10 @@ public class ViewPagerIndicator extends LinearLayout {
     public ViewPagerIndicator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mContext = context;
-        initDefault();
+        setDefault();
     }
 
-    private void initDefault() {
+    private void setDefault() {
         mSelectedColor = Color.argb(225, 237, 56, 81);
         mUnSelectedColor = Color.argb(225, 168, 168, 168);
 //        mRadiusSize = DensityUtil.dip2px(8);
@@ -91,7 +92,7 @@ public class ViewPagerIndicator extends LinearLayout {
         mIntervalSize = intervalSize;
     }
 
-    private static class IndicatorView extends android.support.v7.widget.AppCompatImageView {
+    private static class IndicatorView extends View {
 
         private Paint mPaint;
 
