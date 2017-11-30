@@ -22,23 +22,26 @@
         android:background="@color/theme_background_color"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingBottom="72dp" />
+        android:paddingBottom="56dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="56dp"
+        android:background="@drawable/bg_shadow_top" />
 
     <RelativeLayout
         android:id="@+id/ChatActivity_mRlBottomLayout"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="56dp"
         android:layout_gravity="bottom"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:background="@drawable/bg_chat_item_recv"
+        android:background="#eeffffff"
         android:focusable="true"
         android:focusableInTouchMode="true">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#eeffffff" />
 
         <com.yzx.chat.widget.view.CircleImageView
             android:id="@+id/ChatActivity_mIvMore"
