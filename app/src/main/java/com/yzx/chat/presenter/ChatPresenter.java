@@ -2,7 +2,6 @@ package com.yzx.chat.presenter;
 
 import android.os.Handler;
 
-import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
@@ -12,7 +11,6 @@ import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.util.NetworkUtil;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -63,9 +61,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (count < Constants.CHAT_MESSAGE_PAGE_SIZE) {
             List<EMMessage> dbMessageList = conversation.loadMoreMsgFromDB(messageList.get(0).getMsgId(), Constants.CHAT_MESSAGE_PAGE_SIZE - count);
             dbMessageList.addAll(messageList);
-            mChatView.showNew(dbMessageList);
+            mChatView.showNewMessage(dbMessageList);
         } else {
-            mChatView.showNew(messageList);
+            mChatView.showNewMessage(messageList);
         }
     }
 
@@ -81,7 +79,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void sendMessage(String content) {
         EMMessage message = EMMessage.createTxtSendMessage(content, sToChatName);
         EMClient.getInstance().chatManager().sendMessage(message);
-        mChatView.showNew(message);
+        mChatView.showNewMessage(message);
     }
 
     @Override
@@ -107,11 +105,11 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (messageList == null || messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
             mHasMoreMessage = false;
         }
-        mChatView.showMore(messageList, mHasMoreMessage);
+        mChatView.showMoreMessage(messageList, mHasMoreMessage);
     }
 
     private void loadNewComplete(List<EMMessage> messageList) {
-        mChatView.showNew(messageList);
+        mChatView.showNewMessage(messageList);
     }
 
     private final ChatClientManager.MessageListener mMessageListener = new ChatClientManager.MessageListener() {

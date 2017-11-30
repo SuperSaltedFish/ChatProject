@@ -1,6 +1,7 @@
 package com.yzx.chat.base;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import com.yzx.chat.R;
 
@@ -28,6 +31,7 @@ import java.util.List;
 public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCompatActivity {
 
     protected P mPresenter;
+    protected InputMethodManager mInputManager;
 
     @LayoutRes
     protected abstract int getLayoutID();
@@ -48,6 +52,16 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (mPresenter != null) {
             mPresenter.detachView();
             mPresenter = null;
+        }
+    }
+
+    protected void hideSoftKeyboard() {
+        if (mInputManager == null) {
+            mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                mInputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 

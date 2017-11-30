@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
             result = 0;
         }
         cursor.close();
+        LogUtil.e("close");
         mHelper.closeReadableDatabase();
         return result;
     }

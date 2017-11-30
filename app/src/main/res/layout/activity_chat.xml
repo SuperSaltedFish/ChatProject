@@ -3,95 +3,112 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".view.activity.ChatActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/ChatActivity_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
+        android:layout_gravity="top"
         android:background="@color/theme_main_color"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/ChatActivity_mRvChatView"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        android:background="@color/theme_background_color"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingBottom="56dp" />
+        android:layout_marginTop="?actionBarSize">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="56dp"
-        android:background="@drawable/bg_shadow_top" />
-
-    <RelativeLayout
-        android:id="@+id/ChatActivity_mRlBottomLayout"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="#eeffffff"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-
-
-        <com.yzx.chat.widget.view.CircleImageView
-            android:id="@+id/ChatActivity_mIvMore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="8dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_more"
-            android:tint="@color/theme_main_color" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/ChatActivity_mRvChatView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/ChatActivity_mLlInputLayout"
+            android:layout_alignParentTop="true"
+            android:overScrollMode="never" />
 
         <View
-            android:id="@+id/ChatActivity_mDivider"
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_toEndOf="@+id/ChatActivity_mIvMore"
-            android:background="@color/theme_main_color" />
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_above="@+id/ChatActivity_mLlInputLayout"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_shadow_top" />
+
+        <com.yzx.chat.widget.view.KeyboardPanelSwitcher
+            android:id="@+id/ChatActivity_mLlInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/ChatActivity_mRlBottomLayout"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
 
-        <android.support.text.emoji.widget.EmojiEditText
-            android:id="@+id/ChatActivity_mEtContent"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@+id/ChatActivity_mDivider"
-            android:layout_toStartOf="@+id/ChatActivity_mIvSendMessage"
-            android:background="@null"
-            android:hint="Input Something..."
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:textColor="#9e000000"
-            android:textColorHint="@android:color/darker_gray"
-            android:textSize="16sp" />
+                <ImageView
+                    android:id="@+id/ChatActivity_mIvShowMore"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="8dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_more"
+                    android:tint="@color/theme_main_color" />
 
-        <com.yzx.chat.widget.view.CircleImageView
-            android:id="@+id/ChatActivity_mIvSendMessage"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="6dp"
-            android:background="@color/theme_main_color"
-            android:paddingBottom="8dp"
-            android:paddingEnd="12dp"
-            android:paddingStart="8dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/ic_message_send" />
+                <View
+                    android:id="@+id/ChatActivity_mDivider"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_toEndOf="@+id/ChatActivity_mIvShowMore"
+                    android:background="@color/theme_main_color" />
+
+
+                <android.support.text.emoji.widget.EmojiEditText
+                    android:id="@+id/ChatActivity_mEtContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/ChatActivity_mDivider"
+                    android:layout_toStartOf="@+id/ChatActivity_mIvSendMessage"
+                    android:background="@null"
+                    android:hint="Input Something..."
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:textColor="#9e000000"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textSize="16sp" />
+
+                <com.yzx.chat.widget.view.CircleImageView
+                    android:id="@+id/ChatActivity_mIvSendMessage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="6dp"
+                    android:background="@color/theme_main_color"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="8dp"
+                    android:src="@drawable/ic_message_send" />
+
+            </RelativeLayout>
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/ChatActivity_mVpMoreInput"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:visibility="gone" />
+
+        </com.yzx.chat.widget.view.KeyboardPanelSwitcher>
 
 
     </RelativeLayout>

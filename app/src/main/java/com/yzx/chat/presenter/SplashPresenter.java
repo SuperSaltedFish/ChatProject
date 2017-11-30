@@ -50,7 +50,6 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void init() {
-        loadAllFriend();
 //        mAtomicInteger.set(2);
 ////        if (EMClient.getInstance().isLoggedInBefore()) {
 ////            NetworkUtil.cancel(mInitAsyncTask);
@@ -63,7 +62,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             NetworkUtil.cancelTask(mInitAsyncTask);
             mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
             mInitAsyncTask.execute();
-            loadAllFriend();
+           // loadAllFriend();
         }else {
             EMClient.getInstance().login("244546875", "12345678", new EMCallBack() {
                 @Override
@@ -71,7 +70,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                     NetworkUtil.cancelTask(mInitAsyncTask);
                     mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
                     mInitAsyncTask.execute();
-                    loadAllFriend();
+                   // loadAllFriend();
                 }
 
                 @Override

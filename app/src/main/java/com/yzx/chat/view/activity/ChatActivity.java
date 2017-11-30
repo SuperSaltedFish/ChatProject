@@ -8,13 +8,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -40,8 +40,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private ExitReceiver mExitReceiver;
     private RecyclerView mRvChatView;
+    private ViewPager mVpMoreInput;
     private Toolbar mToolbar;
     private ImageView mIvSendMessage;
+    private ImageView mIvShowMore;
     private EmojiEditText mEtContent;
     private RelativeLayout mRlBottomLayout;
     private ChatMessageAdapter mAdapter;
@@ -62,11 +64,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void init() {
-        mToolbar = (Toolbar) findViewById(R.id.ChatActivity_mToolbar);
-        mRvChatView = (RecyclerView) findViewById(R.id.ChatActivity_mRvChatView);
-        mIvSendMessage = (ImageView) findViewById(R.id.ChatActivity_mIvSendMessage);
-        mEtContent = (EmojiEditText) findViewById(R.id.ChatActivity_mEtContent);
-        mRlBottomLayout = (RelativeLayout) findViewById(R.id.ChatActivity_mRlBottomLayout);
+        mToolbar = findViewById(R.id.ChatActivity_mToolbar);
+        mRvChatView = findViewById(R.id.ChatActivity_mRvChatView);
+        mIvSendMessage = findViewById(R.id.ChatActivity_mIvSendMessage);
+        mEtContent = findViewById(R.id.ChatActivity_mEtContent);
+        mRlBottomLayout = findViewById(R.id.ChatActivity_mRlBottomLayout);
+        mIvShowMore = findViewById(R.id.ChatActivity_mIvShowMore);
+        mVpMoreInput = findViewById(R.id.ChatActivity_mVpMoreInput);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mExitReceiver = new ExitReceiver();
@@ -89,11 +93,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
+        mIvShowMore.setOnClickListener(mOnShowMoreClickListener);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mExitReceiver, new IntentFilter(ACTION_EXIT));
     }
 
     private void setData(Intent intent) {
+        mEtContent.clearFocus();
         String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
         mMessageList.clear();
         setTitle(conversationID);
@@ -102,6 +108,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     public void onBackPressed() {
+        if(isShowMoreInput()){
+            hintMoreInput();
+            return;
+        }
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
@@ -133,6 +143,19 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mExitReceiver);
     }
+
+
+
+    private final View.OnClickListener mOnShowMoreClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(isShowMoreInput()){
+                hintMoreInput();
+            }else {
+                showMoreInput();
+            }
+        }
+    };
 
     private final View.OnClickListener mSendMesClickListener = new View.OnClickListener() {
         @Override
@@ -168,14 +191,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void showNew(EMMessage message) {
+    public void showNewMessage(EMMessage message) {
         List<EMMessage> messageList = new ArrayList<>(1);
         messageList.add(message);
-        showNew(messageList);
+        showNewMessage(messageList);
     }
 
     @Override
-    public void showNew(List<EMMessage> messageList) {
+    public void showNewMessage(List<EMMessage> messageList) {
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
@@ -186,7 +209,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void showMore(List<EMMessage> messageList, boolean isHasMoreMessage) {
+    public void showMoreMessage(List<EMMessage> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
             mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
             mMessageList.addAll(0, messageList);
@@ -195,6 +218,20 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
             mAdapter.notifyItemChanged(mMessageList.size());
         }
+    }
+
+    private boolean isShowMoreInput(){
+        return mVpMoreInput.getVisibility()==View.VISIBLE;
+    }
+
+    private void hintMoreInput(){
+        mVpMoreInput.setVisibility(View.GONE);
+    }
+
+    private void showMoreInput(){
+        hideSoftKeyboard();
+        mVpMoreInput.setCurrentItem(0, false);
+        mVpMoreInput.setVisibility(View.VISIBLE);
     }
 
     private class ExitReceiver extends BroadcastReceiver {

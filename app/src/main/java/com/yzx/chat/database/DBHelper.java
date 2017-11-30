@@ -58,7 +58,7 @@ public class DBHelper {
                     return;
                 }
                 mReadingCount--;
-                if (mReadingCount == 0 || mReadableDatabase != null) {
+                if (mReadingCount == 0 && mReadableDatabase != null) {
                     mReadableDatabase.close();
                     mReadableDatabase = null;
                 }
@@ -72,7 +72,7 @@ public class DBHelper {
                     return;
                 }
                 mWritingCount--;
-                if (mWritingCount == 0 || mWritableDatabase != null) {
+                if (mWritingCount == 0 && mWritableDatabase != null) {
                     mWritableDatabase.close();
                     mWritableDatabase = null;
                 }

@@ -14,6 +14,7 @@ import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.database.DBHelper;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.LinkedList;
