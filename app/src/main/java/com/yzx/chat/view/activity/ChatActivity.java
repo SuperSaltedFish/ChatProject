@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -22,9 +23,12 @@ import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
+import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
+import com.yzx.chat.widget.view.EmotionPanelLinearLayout;
+import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +49,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private ImageView mIvSendMessage;
     private ImageView mIvShowMore;
     private EmojiEditText mEtContent;
-    private RelativeLayout mRlBottomLayout;
+    private KeyboardPanelSwitcher mLlInputLayout;
+    private EmotionPanelLinearLayout mEmotionPanelLayout;
     private ChatMessageAdapter mAdapter;
 
     private List<EMMessage> mMessageList;
+
+    private int mKeyBoardHeight;
+    private boolean isOpenedKeyBoard;
+    private boolean isShowMoreInputAfterCloseKeyBoard;
 
     @Override
     protected int getLayoutID() {
@@ -68,16 +77,17 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView = findViewById(R.id.ChatActivity_mRvChatView);
         mIvSendMessage = findViewById(R.id.ChatActivity_mIvSendMessage);
         mEtContent = findViewById(R.id.ChatActivity_mEtContent);
-        mRlBottomLayout = findViewById(R.id.ChatActivity_mRlBottomLayout);
         mIvShowMore = findViewById(R.id.ChatActivity_mIvShowMore);
         mVpMoreInput = findViewById(R.id.ChatActivity_mVpMoreInput);
+        mLlInputLayout = findViewById(R.id.ChatActivity_mLlInputLayout);
+        mEmotionPanelLayout = findViewById(R.id.ChatActivity_mEmotionPanelLayout);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mExitReceiver = new ExitReceiver();
+        mKeyBoardHeight = SharePreferenceManager.getInstance().getConfigurePreferences().getKeyBoardHeight();
     }
 
     private void setView() {
-
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -93,9 +103,57 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
-        mIvShowMore.setOnClickListener(mOnShowMoreClickListener);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mExitReceiver, new IntentFilter(ACTION_EXIT));
+
+        setKeyBoardSwitcherListener();
+
+        if (mKeyBoardHeight > 0) {
+            mEmotionPanelLayout.setHeight(mKeyBoardHeight);
+        }
+
+    }
+
+    private void setKeyBoardSwitcherListener() {
+        mLlInputLayout.setOnKeyBoardSwitchListener(new KeyboardPanelSwitcher.onSoftKeyBoardSwitchListener() {
+            @Override
+            public void onSoftKeyBoardOpened(int keyBoardHeight) {
+                if (mKeyBoardHeight != keyBoardHeight) {
+                    mEmotionPanelLayout.setHeight(mKeyBoardHeight);
+                    mKeyBoardHeight = keyBoardHeight;
+                    SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
+                }
+                if (isShowMoreInput()) {
+                    hintMoreInput();
+                }
+                isOpenedKeyBoard = true;
+            }
+
+            @Override
+            public void onSoftKeyBoardClosed() {
+                if (isShowMoreInputAfterCloseKeyBoard) {
+                    showMoreInput();
+                    isShowMoreInputAfterCloseKeyBoard = false;
+                } else {
+                    hintMoreInput();
+                }
+                isOpenedKeyBoard = false;
+            }
+
+        });
+        mIvShowMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isShowMoreInput()) {
+                    hintMoreInput();
+                } else if (isOpenedKeyBoard) {
+                    hideSoftKeyboard();
+                    isShowMoreInputAfterCloseKeyBoard = true;
+                } else {
+                    showMoreInput();
+                }
+            }
+        });
     }
 
     private void setData(Intent intent) {
@@ -107,8 +165,21 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mEtContent.clearFocus();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mExitReceiver);
+    }
+
+
+    @Override
     public void onBackPressed() {
-        if(isShowMoreInput()){
+        if (isShowMoreInput()) {
             hintMoreInput();
             return;
         }
@@ -137,25 +208,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mExitReceiver);
-    }
-
-
-
-    private final View.OnClickListener mOnShowMoreClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(isShowMoreInput()){
-                hintMoreInput();
-            }else {
-                showMoreInput();
-            }
-        }
-    };
 
     private final View.OnClickListener mSendMesClickListener = new View.OnClickListener() {
         @Override
@@ -220,18 +272,17 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
     }
 
-    private boolean isShowMoreInput(){
-        return mVpMoreInput.getVisibility()==View.VISIBLE;
+    private boolean isShowMoreInput() {
+        return mEmotionPanelLayout.getVisibility() == View.VISIBLE;
     }
 
-    private void hintMoreInput(){
-        mVpMoreInput.setVisibility(View.GONE);
+    private void hintMoreInput() {
+        mEmotionPanelLayout.setVisibility(View.GONE);
     }
 
-    private void showMoreInput(){
-        hideSoftKeyboard();
+    private void showMoreInput() {
         mVpMoreInput.setCurrentItem(0, false);
-        mVpMoreInput.setVisibility(View.VISIBLE);
+        mEmotionPanelLayout.setVisibility(View.VISIBLE);
     }
 
     private class ExitReceiver extends BroadcastReceiver {

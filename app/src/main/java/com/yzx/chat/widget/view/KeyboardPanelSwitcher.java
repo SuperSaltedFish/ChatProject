@@ -13,23 +13,64 @@ import com.yzx.chat.util.LogUtil;
  */
 
 public class KeyboardPanelSwitcher extends LinearLayout {
+
+    private int mInitMeasureHeight;
+    private int mCurrentMeasureHeight;
+
+    private boolean isInitComplete;
+
+    private onSoftKeyBoardSwitchListener mOnKeyBoardSwitchListener;
+
+
     public KeyboardPanelSwitcher(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public KeyboardPanelSwitcher(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public KeyboardPanelSwitcher(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int measureHeight = MeasureSpec.getSize(heightMeasureSpec);
+        if (!isInitComplete) {
+            mInitMeasureHeight = measureHeight;
+            mCurrentMeasureHeight = measureHeight;
+            return;
+        }
+        if (measureHeight == mCurrentMeasureHeight) {
+            return;
+        }
+        if (mOnKeyBoardSwitchListener != null) {
+            if(mInitMeasureHeight != measureHeight){
+                mOnKeyBoardSwitchListener.onSoftKeyBoardOpened(mInitMeasureHeight - measureHeight);
+            }else {
+                mOnKeyBoardSwitchListener.onSoftKeyBoardClosed();
+            }
+        }
+        mCurrentMeasureHeight = measureHeight;
+
+    }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        isInitComplete = true;
+    }
 
-        LogUtil.e(changed+" "+l+" "+t+" "+r+" "+b);
+    public void setOnKeyBoardSwitchListener(onSoftKeyBoardSwitchListener onKeyBoardSwitchListener) {
+        mOnKeyBoardSwitchListener = onKeyBoardSwitchListener;
+    }
+
+    public interface onSoftKeyBoardSwitchListener {
+        void onSoftKeyBoardOpened(int keyBoardHeight);
+
+        void onSoftKeyBoardClosed();
     }
 }

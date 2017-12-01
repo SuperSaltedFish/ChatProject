@@ -65,7 +65,6 @@ public class ContactDao extends AbstractDao<ContactBean> {
             result = 0;
         }
         cursor.close();
-        LogUtil.e("close");
         mHelper.closeReadableDatabase();
         return result;
     }

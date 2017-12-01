@@ -2,7 +2,6 @@ package com.yzx.chat.tool;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -27,7 +26,7 @@ public class IdentityManager {
 
     private static volatile IdentityManager sManager;
 
-    private SharePreferenceManager mSharePreferenceManager;
+    private SharePreferenceManager.IdentityPreferences mIdentityPreferences;
     private KeyPair mRSAKeyPair;
     private byte[] mAESKey;
     private String mToken;
@@ -49,19 +48,19 @@ public class IdentityManager {
         if (sManager != null) {
             throw new RuntimeException("Please use the 'getInstance' method to obtain the instance.");
         }
-        mSharePreferenceManager = SharePreferenceManager.getInstance();
+        mIdentityPreferences = SharePreferenceManager.getInstance().getIdentityPreferences();
         mRSAKeyPair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(AppApplication.getAppContext(), RSA_KEY_ALIAS);
     }
 
     public synchronized void clearAuthenticationData() {
-        mSharePreferenceManager.getIdentitySharedPreferences().edit().clear().apply();
+        mIdentityPreferences.clear();
         mAESKey = null;
         mToken = null;
     }
 
-    public void startToLoginActivity(){
+    public void startToLoginActivity() {
         Context context = AppApplication.getAppContext();
-        Intent intent = new Intent(context,LoginActivity.class);
+        Intent intent = new Intent(context, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -79,7 +78,7 @@ public class IdentityManager {
         if (base64Data == null) {
             return false;
         }
-        return mSharePreferenceManager.putAESKey(base64Data);
+        return mIdentityPreferences.putAESKey(base64Data);
     }
 
     public boolean saveToken(String token) {
@@ -91,7 +90,7 @@ public class IdentityManager {
         if (base64Data == null) {
             return false;
         }
-        return mSharePreferenceManager.putToken(base64Data);
+        return mIdentityPreferences.putToken(base64Data);
     }
 
     public String getToken() {
@@ -158,7 +157,7 @@ public class IdentityManager {
 
     private synchronized boolean initAESKey() {
         if (mAESKey == null) {
-            String aesKeyStr = mSharePreferenceManager.getAESKey();
+            String aesKeyStr = mIdentityPreferences.getAESKey();
             if (aesKeyStr == null) {
                 return false;
             }
@@ -169,7 +168,7 @@ public class IdentityManager {
 
     private synchronized boolean checkHasToken() {
         if (mToken == null) {
-            String tokenStr = mSharePreferenceManager.getToken();
+            String tokenStr = mIdentityPreferences.getToken();
             if (tokenStr != null) {
                 byte[] tokenBytes = rsaDecryptByPrivateKey(Base64Util.decode(tokenStr));
                 if (tokenBytes != null) {
@@ -181,7 +180,7 @@ public class IdentityManager {
     }
 
     private synchronized void createDeviceID() {
-        mDeviceID = mSharePreferenceManager.getDeviceID();
+        mDeviceID = mIdentityPreferences.getDeviceID();
         if (mDeviceID != null) {
             byte[] data = rsaDecryptByPrivateKey(Base64Util.decode(mDeviceID));
             if (data != null) {
@@ -197,7 +196,7 @@ public class IdentityManager {
                     Build.BRAND,
                     Build.MODEL);
             String base64DeviceID = Base64Util.encodeToString(rsaEncryptByPublicKey(mDeviceID.getBytes()));
-            mSharePreferenceManager.putDeviceID(base64DeviceID);
+            mIdentityPreferences.putDeviceID(base64DeviceID);
         }
     }
 

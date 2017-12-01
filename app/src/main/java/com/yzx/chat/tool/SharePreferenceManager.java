@@ -11,11 +11,6 @@ import com.yzx.chat.configure.AppApplication;
  */
 
 public class SharePreferenceManager {
-    private static final String PREFERENCES_NAME_IDENTITY = "Identity";
-    private static final String IDENTITY_KEY_RSA_KEY = "RSA_SecretKey";
-    private static final String IDENTITY_KEY_AES_KEY = "AES_SecretKey";
-    private static final String IDENTITY_KEY_TOKEN = "Token";
-    private static final String IDENTITY_KEY_DEVICE_ID = "DeviceID";
 
     private static SharePreferenceManager sManager;
 
@@ -30,7 +25,8 @@ public class SharePreferenceManager {
         return sManager;
     }
 
-    private SharedPreferences Identity;
+    private IdentityPreferences mIdentityPreferences;
+    private ConfigurePreferences mConfigurePreferences;
 
     private SharePreferenceManager() {
         if (sManager != null) {
@@ -38,46 +34,95 @@ public class SharePreferenceManager {
         }
     }
 
-    public SharedPreferences getIdentitySharedPreferences() {
-        if (Identity == null) {
+    public IdentityPreferences getIdentityPreferences() {
+        if (mIdentityPreferences == null) {
             synchronized (this) {
-                if (Identity == null) {
-                    Identity = AppApplication.getAppContext().getSharedPreferences(PREFERENCES_NAME_IDENTITY, Context.MODE_PRIVATE);
+                if (mIdentityPreferences == null) {
+                    mIdentityPreferences = new IdentityPreferences(AppApplication.getAppContext());
                 }
             }
         }
-        return Identity;
+        return mIdentityPreferences;
     }
 
-    public boolean putRSAKey(String value) {
-        return getIdentitySharedPreferences().edit().putString(IDENTITY_KEY_RSA_KEY, value).commit();
+    public ConfigurePreferences getConfigurePreferences() {
+        if (mConfigurePreferences == null) {
+            synchronized (this) {
+                if (mConfigurePreferences == null) {
+                    mConfigurePreferences = new ConfigurePreferences(AppApplication.getAppContext());
+                }
+            }
+        }
+        return mConfigurePreferences;
     }
 
-    public boolean putAESKey(String value) {
-        return getIdentitySharedPreferences().edit().putString(IDENTITY_KEY_AES_KEY, value).commit();
+
+    public static class IdentityPreferences {
+        private static final String PREFERENCES_NAME_IDENTITY = "Identity";
+        private static final String IDENTITY_KEY_RSA_Secret_Key = "RSASecretKey";
+        private static final String IDENTITY_KEY_AES_Secret_Key = "AESSecretKey";
+        private static final String IDENTITY_KEY_Token = "Token";
+        private static final String IDENTITY_KEY_DEVICE_ID = "DeviceID";
+
+        private SharedPreferences mPreferences;
+
+        IdentityPreferences(Context context) {
+            mPreferences = context.getSharedPreferences(PREFERENCES_NAME_IDENTITY, Context.MODE_PRIVATE);
+        }
+
+        public void clear() {
+            mPreferences.edit().clear().apply();
+        }
+
+        public boolean putRSAKey(String value) {
+            return mPreferences.edit().putString(IDENTITY_KEY_RSA_Secret_Key, value).commit();
+        }
+
+        public boolean putAESKey(String value) {
+            return mPreferences.edit().putString(IDENTITY_KEY_AES_Secret_Key, value).commit();
+        }
+
+        public boolean putToken(String value) {
+            return mPreferences.edit().putString(IDENTITY_KEY_Token, value).commit();
+        }
+
+        public void putDeviceID(String value) {
+            mPreferences.edit().putString(IDENTITY_KEY_DEVICE_ID, value).apply();
+        }
+
+        public String getRSAKey() {
+            return mPreferences.getString(IDENTITY_KEY_RSA_Secret_Key, null);
+        }
+
+        public String getAESKey() {
+            return mPreferences.getString(IDENTITY_KEY_AES_Secret_Key, null);
+        }
+
+        public String getToken() {
+            return mPreferences.getString(IDENTITY_KEY_Token, null);
+        }
+
+        public String getDeviceID() {
+            return mPreferences.getString(IDENTITY_KEY_DEVICE_ID, null);
+        }
     }
 
-    public boolean putToken(String value) {
-        return getIdentitySharedPreferences().edit().putString(IDENTITY_KEY_TOKEN, value).commit();
-    }
+    public static class ConfigurePreferences {
+        private static final String PREFERENCES_NAME_CONFIGURE = "Configure";
+        private static final String CONFIGURE_KEY_KEY_BOARD_HEIGHT = "KeyBoardHeight";
 
-    public void putDeviceID(String value) {
-        getIdentitySharedPreferences().edit().putString(IDENTITY_KEY_DEVICE_ID, value).apply();
-    }
+        private SharedPreferences mPreferences;
 
-    public String getRSAKey() {
-        return getIdentitySharedPreferences().getString(IDENTITY_KEY_RSA_KEY, null);
-    }
+        ConfigurePreferences(Context context) {
+            mPreferences = context.getSharedPreferences(PREFERENCES_NAME_CONFIGURE, Context.MODE_PRIVATE);
+        }
 
-    public String getAESKey() {
-        return getIdentitySharedPreferences().getString(IDENTITY_KEY_AES_KEY, null);
-    }
+        public void putKeyBoardHeight(int value) {
+            mPreferences.edit().putInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT, value).apply();
+        }
 
-    public String getToken() {
-        return getIdentitySharedPreferences().getString(IDENTITY_KEY_TOKEN, null);
-    }
-
-    public String getDeviceID() {
-        return getIdentitySharedPreferences().getString(IDENTITY_KEY_DEVICE_ID, null);
+        public int getKeyBoardHeight() {
+            return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT, 0);
+        }
     }
 }
