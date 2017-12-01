@@ -23,10 +23,13 @@ import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
+import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.SharePreferenceManager;
+import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
+import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelLinearLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
 
@@ -44,7 +47,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private ExitReceiver mExitReceiver;
     private RecyclerView mRvChatView;
-    private ViewPager mVpMoreInput;
     private Toolbar mToolbar;
     private ImageView mIvSendMessage;
     private ImageView mIvShowMore;
@@ -78,7 +80,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendMessage = findViewById(R.id.ChatActivity_mIvSendMessage);
         mEtContent = findViewById(R.id.ChatActivity_mEtContent);
         mIvShowMore = findViewById(R.id.ChatActivity_mIvShowMore);
-        mVpMoreInput = findViewById(R.id.ChatActivity_mVpMoreInput);
         mLlInputLayout = findViewById(R.id.ChatActivity_mLlInputLayout);
         mEmotionPanelLayout = findViewById(R.id.ChatActivity_mEmotionPanelLayout);
         mMessageList = new ArrayList<>(64);
@@ -108,10 +109,20 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         setKeyBoardSwitcherListener();
 
+        setEmotionPanel();
+
         if (mKeyBoardHeight > 0) {
             mEmotionPanelLayout.setHeight(mKeyBoardHeight);
         }
 
+    }
+
+    private void setEmotionPanel() {
+        EmojiRecyclerview emojiRecyclerview = new EmojiRecyclerview(this);
+        emojiRecyclerview.setEmojiData(EmojiUtil.getCommonlyUsedEmojiUnicode(),7);
+        emojiRecyclerview.setEmojiSize(24);
+        emojiRecyclerview.setPadding((int) AndroidTool.dip2px(8),0,(int)AndroidTool.dip2px(8),0);
+        mEmotionPanelLayout.addEmotionPanePage(emojiRecyclerview,null);
     }
 
     private void setKeyBoardSwitcherListener() {
@@ -119,8 +130,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onSoftKeyBoardOpened(int keyBoardHeight) {
                 if (mKeyBoardHeight != keyBoardHeight) {
-                    mEmotionPanelLayout.setHeight(mKeyBoardHeight);
                     mKeyBoardHeight = keyBoardHeight;
+                    mEmotionPanelLayout.setHeight(mKeyBoardHeight);
                     SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
                 }
                 if (isShowMoreInput()) {
@@ -281,7 +292,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void showMoreInput() {
-        mVpMoreInput.setCurrentItem(0, false);
         mEmotionPanelLayout.setVisibility(View.VISIBLE);
     }
 

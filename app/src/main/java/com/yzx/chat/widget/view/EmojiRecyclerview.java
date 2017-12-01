@@ -2,12 +2,14 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.text.emoji.EmojiCompat;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * Created by YZX on 2017年11月29日.
@@ -52,7 +54,7 @@ public class EmojiRecyclerview extends RecyclerView {
         }
     }
 
-    public void setEmojiSize(int size){
+    public void setEmojiSize(int size) {
         mEmojiSize = size;
         notifyDataSetChanged();
     }
@@ -82,6 +84,8 @@ public class EmojiRecyclerview extends RecyclerView {
 
     private class EmojiAdapter extends RecyclerView.Adapter<EmojiRecyclerview.EmojiHolder> {
 
+        private EmojiCompat mEmojiCompat = EmojiCompat.get();
+
         @Override
         public EmojiHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             EmojiItemView itemView = new EmojiItemView(mContext);
@@ -92,9 +96,9 @@ public class EmojiRecyclerview extends RecyclerView {
 
         @Override
         public void onBindViewHolder(EmojiHolder holder, int position) {
-            char[] emoji = Character.toChars(mEmojiUnicodeArray[position]);
-            holder.mEmojiTextView.setText(emoji, 0, emoji.length);
-            holder.mEmojiTextView.setTextSize(mEmojiSize);
+            String emoji = new String(Character.toChars(mEmojiUnicodeArray[position]));
+            holder.mTextView.setText(mEmojiCompat.process(emoji, 0, emoji.length(), 1));
+            holder.mTextView.setTextSize(mEmojiSize);
         }
 
         @Override
@@ -105,11 +109,11 @@ public class EmojiRecyclerview extends RecyclerView {
     }
 
     private static class EmojiHolder extends RecyclerView.ViewHolder {
-        EmojiTextView mEmojiTextView;
+        TextView mTextView;
 
-        EmojiHolder(EmojiTextView itemView) {
+        EmojiHolder(TextView itemView) {
             super(itemView);
-            mEmojiTextView = itemView;
+            mTextView = itemView;
         }
     }
 

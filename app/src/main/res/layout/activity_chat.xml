@@ -105,14 +105,7 @@
                 android:id="@+id/ChatActivity_mEmotionPanelLayout"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:gravity="bottom"
-                android:orientation="vertical"
                 android:visibility="gone">
-
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/ChatActivity_mVpMoreInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
 
             </com.yzx.chat.widget.view.EmotionPanelLinearLayout>
 
