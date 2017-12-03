@@ -101,13 +101,13 @@
 
             </RelativeLayout>
 
-            <com.yzx.chat.widget.view.EmotionPanelLinearLayout
+            <com.yzx.chat.widget.view.EmotionPanelFrameLayout
                 android:id="@+id/ChatActivity_mEmotionPanelLayout"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:visibility="gone">
 
-            </com.yzx.chat.widget.view.EmotionPanelLinearLayout>
+            </com.yzx.chat.widget.view.EmotionPanelFrameLayout>
 
 
         </com.yzx.chat.widget.view.KeyboardPanelSwitcher>

@@ -8,16 +8,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
@@ -30,7 +27,7 @@ import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
-import com.yzx.chat.widget.view.EmotionPanelLinearLayout;
+import com.yzx.chat.widget.view.EmotionPanelFrameLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
 
 import java.util.ArrayList;
@@ -52,7 +49,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private ImageView mIvShowMore;
     private EmojiEditText mEtContent;
     private KeyboardPanelSwitcher mLlInputLayout;
-    private EmotionPanelLinearLayout mEmotionPanelLayout;
+    private EmotionPanelFrameLayout mEmotionPanelLayout;
     private ChatMessageAdapter mAdapter;
 
     private List<EMMessage> mMessageList;
@@ -119,10 +116,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void setEmotionPanel() {
         EmojiRecyclerview emojiRecyclerview = new EmojiRecyclerview(this);
+        emojiRecyclerview.setHasFixedSize(true);
         emojiRecyclerview.setEmojiData(EmojiUtil.getCommonlyUsedEmojiUnicode(),7);
         emojiRecyclerview.setEmojiSize(24);
         emojiRecyclerview.setPadding((int) AndroidTool.dip2px(8),0,(int)AndroidTool.dip2px(8),0);
-        mEmotionPanelLayout.addEmotionPanePage(emojiRecyclerview,null);
+        mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview,getDrawable(R.drawable.ic_moments));
     }
 
     private void setKeyBoardSwitcherListener() {
