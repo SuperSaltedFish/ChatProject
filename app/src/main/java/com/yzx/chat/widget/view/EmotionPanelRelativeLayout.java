@@ -14,10 +14,9 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class EmotionPanelFrameLayout extends FrameLayout {
+public class EmotionPanelRelativeLayout extends RelativeLayout {
 
     private Context mContext;
     private ViewPager mVpMoreInput;
@@ -35,21 +34,24 @@ public class EmotionPanelFrameLayout extends FrameLayout {
     private HorizontalScrollView mTabScrollView;
     private LinearLayout mTabLinearLayout;
 
-    private Paint mSeparationLinePaint ;
-    private int mSeparationLineHeight;
+    private TabView mLeftMenuView;
+    private TabView mRightMenuView;
+
+    private Paint mSeparationLinePaint;
+    private int mSeparationLineWidth;
     private int mSeparationLineColor;
     private int mTabHeight;
     private int mTabItemPadding;
 
-    public EmotionPanelFrameLayout(Context context) {
+    public EmotionPanelRelativeLayout(Context context) {
         this(context, null);
     }
 
-    public EmotionPanelFrameLayout(Context context, @Nullable AttributeSet attrs) {
+    public EmotionPanelRelativeLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public EmotionPanelFrameLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public EmotionPanelRelativeLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         setDefaultValue();
@@ -58,43 +60,65 @@ public class EmotionPanelFrameLayout extends FrameLayout {
     }
 
     private void setDefaultValue() {
-        mTabHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, mContext.getResources().getDisplayMetrics());
-        mSeparationLineHeight = 1;
+        mTabHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, mContext.getResources().getDisplayMetrics());
+        mSeparationLineWidth = 1;
         mSeparationLineColor = Color.parseColor("#38000000");
         mSeparationLinePaint = new Paint();
         mSeparationLinePaint.setColor(mSeparationLineColor);
-        mSeparationLinePaint.setStrokeWidth(mSeparationLineHeight);
-        mTabItemPadding =  (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
+        mSeparationLinePaint.setStrokeWidth(mSeparationLineWidth);
+        mTabItemPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
     }
 
     private void init() {
-        FrameLayout.LayoutParams params;
-
         mVpMoreInput = new ViewPager(mContext);
-        mVpMoreInput.setAdapter(mPagerAdapter);
-        mVpMoreInput.addOnPageChangeListener(mOnPageChangeListener);
-        params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        params.gravity = Gravity.TOP;
-        params.bottomMargin = mTabHeight;
-        mVpMoreInput.setLayoutParams(params);
-
         mTabLinearLayout = new LinearLayout(mContext);
-        mTabLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-
         mTabScrollView = new HorizontalScrollView(mContext);
-        params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mTabHeight);
-        params.gravity = Gravity.BOTTOM;
+        mLeftMenuView = new TabView(mContext);
+        mRightMenuView = new TabView(mContext);
+
+        LayoutParams params;
+
+        params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, mTabHeight);
+        params.addRule(ALIGN_PARENT_LEFT);
+        params.addRule(ALIGN_PARENT_BOTTOM);
+        mLeftMenuView.setLayoutParams(params);
+        mRightMenuView.setSeparationLineMode(TabView.SEPARATION_LINE_LEFT);
+        mLeftMenuView.setId(mLeftMenuView.hashCode());
+
+        params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, mTabHeight);
+        params.addRule(ALIGN_PARENT_RIGHT);
+        params.addRule(ALIGN_PARENT_BOTTOM);
+        mRightMenuView.setLayoutParams(params);
+        mRightMenuView.setSeparationLineMode(TabView.SEPARATION_LINE_RIGHT);
+        mRightMenuView.setId(mRightMenuView.hashCode());
+
+        params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, mTabHeight);
+        params.addRule(ALIGN_PARENT_BOTTOM);
+        params.addRule(END_OF, mLeftMenuView.getId());
+        params.addRule(START_OF, mRightMenuView.getId());
         mTabScrollView.setLayoutParams(params);
         mTabScrollView.addView(mTabLinearLayout, new HorizontalScrollView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mTabScrollView.setId(mTabScrollView.hashCode());
 
-//         mSeparationLineView = new View(mContext);
-//         mSeparationLineView.setBackgroundColor(mSeparationLineColor);
-//
+        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params.addRule(ALIGN_PARENT_TOP);
+        params.addRule(ABOVE, mTabScrollView.getId());
+        mVpMoreInput.setLayoutParams(params);
+        mVpMoreInput.setAdapter(mPagerAdapter);
+        mVpMoreInput.addOnPageChangeListener(mOnPageChangeListener);
+
+        addView(mLeftMenuView);
+        addView(mRightMenuView);
         addView(mVpMoreInput);
         addView(mTabScrollView);
 
-
         mEmotionPanelList = new ArrayList<>(12);
+    }
+
+    private TabView getTabVIew() {
+        TabView tabView = new TabView(mContext);
+        tabView.setPadding(mTabItemPadding * 4, mTabItemPadding, mTabItemPadding * 4, mTabItemPadding);
+        return tabView;
     }
 
     public void setHeight(@Px int height) {
@@ -111,12 +135,23 @@ public class EmotionPanelFrameLayout extends FrameLayout {
 
     public void addEmotionPanelPage(View pageView, Drawable icon) {
         mEmotionPanelList.add(pageView);
-        TabView tabView = new TabView(mContext);
+        TabView tabView = getTabVIew();
         tabView.setImageDrawable(icon);
-        tabView.setPadding(mTabItemPadding*4,mTabItemPadding,mTabItemPadding*4,mTabItemPadding);
         mTabLinearLayout.addView(tabView);
         mPagerAdapter.notifyDataSetChanged();
 
+    }
+
+    public void setLeftMenu(Drawable icon, View.OnClickListener listener) {
+        mLeftMenuView.setImageDrawable(icon);
+        mLeftMenuView.setOnClickListener(listener);
+        mLeftMenuView.setPadding(mTabItemPadding * 4, mTabItemPadding, mTabItemPadding * 4, mTabItemPadding);
+    }
+
+    public void setRightMenu(Drawable icon, View.OnClickListener listener) {
+        mRightMenuView.setImageDrawable(icon);
+        mRightMenuView.setOnClickListener(listener);
+        mLeftMenuView.setPadding(mTabItemPadding * 4, mTabItemPadding, mTabItemPadding * 4, mTabItemPadding);
     }
 
     @Override
@@ -124,8 +159,8 @@ public class EmotionPanelFrameLayout extends FrameLayout {
         super.onDraw(canvas);
         int width = getWidth();
         int height = getHeight();
-        canvas.drawLine(0, 0, width, 0,mSeparationLinePaint);
-        canvas.drawLine(0, height-mTabHeight, width, height-mTabHeight,mSeparationLinePaint);
+        canvas.drawLine(0, 0, width, 0, mSeparationLinePaint);
+        canvas.drawLine(0, height - mTabHeight, width, height - mTabHeight, mSeparationLinePaint);
     }
 
     private final ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -146,7 +181,8 @@ public class EmotionPanelFrameLayout extends FrameLayout {
     };
 
     private final PagerAdapter mPagerAdapter = new PagerAdapter() {
-        private boolean isFirstinstantiate = true;
+        private boolean isFirstInstantiate = true;
+
         @Override
         public int getCount() {
             return mEmotionPanelList == null ? 0 : mEmotionPanelList.size();
@@ -171,15 +207,20 @@ public class EmotionPanelFrameLayout extends FrameLayout {
         public Object instantiateItem(ViewGroup container, int position) {
             View panelView = mEmotionPanelList.get(position);
             container.addView(panelView);
-            if(isFirstinstantiate){
+            if (isFirstInstantiate) {
                 mOnPageChangeListener.onPageSelected(position);
-                isFirstinstantiate = false;
+                isFirstInstantiate = false;
             }
             return panelView;
         }
     };
 
     private class TabView extends android.support.v7.widget.AppCompatImageView {
+
+        public static final int SEPARATION_LINE_LEFT = 1;
+        public static final int SEPARATION_LINE_RIGHT = 2;
+
+        private int mSeparationLineMode;
 
         public TabView(Context context) {
             this(context, null);
@@ -191,14 +232,19 @@ public class EmotionPanelFrameLayout extends FrameLayout {
 
         public TabView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
+            mSeparationLineMode = SEPARATION_LINE_LEFT;
+        }
+
+        public void setSeparationLineMode(int separationLineMode) {
+            mSeparationLineMode = separationLineMode;
         }
 
         @Override
         public void setSelected(boolean selected) {
             super.setSelected(selected);
-            if(selected){
+            if (selected) {
                 setBackgroundColor(mSeparationLineColor);
-            }else {
+            } else {
                 setBackground(null);
             }
         }
@@ -208,7 +254,11 @@ public class EmotionPanelFrameLayout extends FrameLayout {
             super.onDraw(canvas);
             int width = getWidth();
             int height = getHeight();
-            canvas.drawLine(width-mSeparationLineHeight, 0, width-mSeparationLineHeight, height,mSeparationLinePaint);
+            if(mSeparationLineMode==SEPARATION_LINE_LEFT) {
+                canvas.drawLine(width - mSeparationLineWidth, 0, width - mSeparationLineWidth, height, mSeparationLinePaint);
+            }else {
+                canvas.drawLine(0, 0, 0, height, mSeparationLinePaint);
+            }
         }
     }
 

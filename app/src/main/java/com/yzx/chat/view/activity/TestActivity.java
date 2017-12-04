@@ -60,12 +60,12 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CarouselView carouselView = findViewById(R.id.sss);
-        List<String> s = new ArrayList<>();
-        s.add("https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=950004826,3164354653&fm=27&gp=0.jpg");
-        s.add("https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2260926939,1550208231&fm=27&gp=0.jpg");
-        carouselView.setPicUrls(s);
-        carouselView.setCarouselInterval(2000);
+//        CarouselView carouselView = findViewById(R.id.sss);
+//        List<String> s = new ArrayList<>();
+//        s.add("https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=950004826,3164354653&fm=27&gp=0.jpg");
+//        s.add("https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2260926939,1550208231&fm=27&gp=0.jpg");
+//        carouselView.setPicUrls(s);
+//        carouselView.setCarouselInterval(2000);
 
 
     }
