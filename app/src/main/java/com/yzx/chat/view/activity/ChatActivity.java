@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.LocalBroadcastManager;
@@ -15,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.hyphenate.chat.EMMessage;
@@ -25,7 +23,6 @@ import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.AndroidTool;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.EmojiUtil;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
@@ -45,20 +42,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public static final String ACTION_EXIT = "Exit";
     public static final String INTENT_CONVERSATION_ID = "ConversationID";
 
-    private View mDecorView;
     private ExitReceiver mExitReceiver;
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
     private ImageView mIvSendMessage;
     private ImageView mIvShowMore;
     private EmojiEditText mEtContent;
-    private KeyboardPanelSwitcher mRlInputLayout;
+    private KeyboardPanelSwitcher mLlInputLayout;
     private EmotionPanelRelativeLayout mEmotionPanelLayout;
     private ChatMessageAdapter mAdapter;
 
     private List<EMMessage> mMessageList;
 
-    private Rect mWindowDisplayFrame;
     private int mKeyBoardHeight;
     private boolean isOpenedKeyBoard;
     private boolean isShowMoreInputAfterCloseKeyBoard;
@@ -82,9 +77,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendMessage = findViewById(R.id.ChatActivity_mIvSendMessage);
         mEtContent = findViewById(R.id.ChatActivity_mEtContent);
         mIvShowMore = findViewById(R.id.ChatActivity_mIvShowMore);
-        mRlInputLayout = findViewById(R.id.ChatActivity_mRlInputLayout);
+        mLlInputLayout = findViewById(R.id.ChatActivity_mLlInputLayout);
         mEmotionPanelLayout = findViewById(R.id.ChatActivity_mEmotionPanelLayout);
-        mDecorView = getWindow().getDecorView();
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mExitReceiver = new ExitReceiver();
@@ -128,46 +122,33 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setPadding((int) AndroidTool.dip2px(8),0,(int)AndroidTool.dip2px(8),0);
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview,getDrawable(R.drawable.ic_moments));
 
-
-
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting),null);
     }
 
     private void setKeyBoardSwitcherListener() {
-        mDecorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        mLlInputLayout.setOnKeyBoardSwitchListener(new KeyboardPanelSwitcher.onSoftKeyBoardSwitchListener() {
             @Override
-            public void onGlobalLayout() {
-                if(mWindowDisplayFrame==null){
-                    mWindowDisplayFrame = new Rect();
-                    mDecorView.getWindowVisibleDisplayFrame(mWindowDisplayFrame);
-                }else {
-                    Rect rect = new Rect();
-                    mDecorView.getWindowVisibleDisplayFrame(rect);
-                    if(mWindowDisplayFrame.bottom>rect.bottom){
-                        if(!isOpenedKeyBoard) {
-                            int keyBoardHeight = mWindowDisplayFrame.bottom - rect.bottom;
-                            if (mKeyBoardHeight != keyBoardHeight) {
-                                mKeyBoardHeight = keyBoardHeight;
-                                mEmotionPanelLayout.setHeight(mKeyBoardHeight);
-                                SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
-                            }
-                            if (isShowMoreInput()) {
-                               hintMoreInput();
-                            }
-                            isOpenedKeyBoard = true;
-                        }
-                    }else {
-                        if(isOpenedKeyBoard) {
-                            if (isShowMoreInputAfterCloseKeyBoard) {
-                                showMoreInput();
-                                isShowMoreInputAfterCloseKeyBoard = false;
-                            } else {
-                                hintMoreInput();
-                            }
-                            isOpenedKeyBoard = false;
-                        }
-                    }
+            public void onSoftKeyBoardOpened(int keyBoardHeight) {
+                if (mKeyBoardHeight != keyBoardHeight) {
+                    mKeyBoardHeight = keyBoardHeight;
+                    mEmotionPanelLayout.setHeight(mKeyBoardHeight);
+                    SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
                 }
+                if (isShowMoreInput()) {
+                    hintMoreInput();
+                }
+                isOpenedKeyBoard = true;
+            }
+
+            @Override
+            public void onSoftKeyBoardClosed() {
+                if (isShowMoreInputAfterCloseKeyBoard) {
+                    showMoreInput();
+                    isShowMoreInputAfterCloseKeyBoard = false;
+                } else {
+                    hintMoreInput();
+                }
+                isOpenedKeyBoard = false;
             }
         });
         mIvShowMore.setOnClickListener(new View.OnClickListener() {

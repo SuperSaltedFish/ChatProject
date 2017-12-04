@@ -3,6 +3,7 @@ package com.yzx.chat.widget.view;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.yzx.chat.util.LogUtil;
@@ -12,7 +13,7 @@ import com.yzx.chat.util.LogUtil;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
-public class KeyboardPanelSwitcher extends RelativeLayout {
+public class KeyboardPanelSwitcher extends LinearLayout {
 
     private int mInitMeasureHeight;
     private int mLastMeasureHeight;
@@ -33,11 +34,6 @@ public class KeyboardPanelSwitcher extends RelativeLayout {
     public KeyboardPanelSwitcher(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
     }
 
 
