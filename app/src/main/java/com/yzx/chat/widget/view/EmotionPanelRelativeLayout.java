@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -74,7 +76,7 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
         mTabLinearLayout = new LinearLayout(mContext);
         mTabScrollView = new HorizontalScrollView(mContext);
         mLeftMenuView = new TabView(mContext);
-        mRightMenuView = new TabView(mContext);
+        mRightMenuView =  new TabView(mContext);
 
         LayoutParams params;
 
@@ -82,7 +84,7 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
         params.addRule(ALIGN_PARENT_LEFT);
         params.addRule(ALIGN_PARENT_BOTTOM);
         mLeftMenuView.setLayoutParams(params);
-        mRightMenuView.setSeparationLineMode(TabView.SEPARATION_LINE_LEFT);
+        mLeftMenuView.setSeparationLineMode(TabView.SEPARATION_LINE_LEFT);
         mLeftMenuView.setId(mLeftMenuView.hashCode());
 
         params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, mTabHeight);
@@ -117,7 +119,8 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
 
     private TabView getTabVIew() {
         TabView tabView = new TabView(mContext);
-        tabView.setPadding(mTabItemPadding * 4, mTabItemPadding, mTabItemPadding * 4, mTabItemPadding);
+        tabView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        tabView.setPadding(mTabItemPadding * 4, 0, mTabItemPadding * 4, 0);
         return tabView;
     }
 
@@ -145,13 +148,21 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
     public void setLeftMenu(Drawable icon, View.OnClickListener listener) {
         mLeftMenuView.setImageDrawable(icon);
         mLeftMenuView.setOnClickListener(listener);
-        mLeftMenuView.setPadding(mTabItemPadding * 4, mTabItemPadding, mTabItemPadding * 4, mTabItemPadding);
+        if (icon == null && listener == null) {
+            mLeftMenuView.setPadding(0, 0, 0, 0);
+        } else {
+            mLeftMenuView.setPadding(mTabItemPadding * 4, 0, mTabItemPadding * 4, 0);
+        }
     }
 
     public void setRightMenu(Drawable icon, View.OnClickListener listener) {
         mRightMenuView.setImageDrawable(icon);
         mRightMenuView.setOnClickListener(listener);
-        mLeftMenuView.setPadding(mTabItemPadding * 4, mTabItemPadding, mTabItemPadding * 4, mTabItemPadding);
+        if (icon == null && listener == null) {
+            mRightMenuView.setPadding(0, 0, 0, 0);
+        } else {
+            mRightMenuView.setPadding(mTabItemPadding * 4, 0, mTabItemPadding * 4, 0);
+        }
     }
 
     @Override
@@ -252,11 +263,14 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
+            if (isSelected()) {
+                return;
+            }
             int width = getWidth();
             int height = getHeight();
-            if(mSeparationLineMode==SEPARATION_LINE_LEFT) {
+            if (mSeparationLineMode == SEPARATION_LINE_LEFT) {
                 canvas.drawLine(width - mSeparationLineWidth, 0, width - mSeparationLineWidth, height, mSeparationLinePaint);
-            }else {
+            } else {
                 canvas.drawLine(0, 0, 0, height, mSeparationLinePaint);
             }
         }

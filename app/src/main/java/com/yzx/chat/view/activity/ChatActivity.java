@@ -127,6 +127,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setEmojiSize(24);
         emojiRecyclerview.setPadding((int) AndroidTool.dip2px(8),0,(int)AndroidTool.dip2px(8),0);
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview,getDrawable(R.drawable.ic_moments));
+
+
+
+        mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting),null);
     }
 
     private void setKeyBoardSwitcherListener() {
@@ -140,16 +144,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     Rect rect = new Rect();
                     mDecorView.getWindowVisibleDisplayFrame(rect);
                     if(mWindowDisplayFrame.bottom>rect.bottom){
-                        int keyBoardHeight = mWindowDisplayFrame.bottom-rect.bottom;
-                        if (mKeyBoardHeight != keyBoardHeight) {
-                            mKeyBoardHeight = keyBoardHeight;
-                            mEmotionPanelLayout.setHeight(mKeyBoardHeight);
-                            SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
+                        if(!isOpenedKeyBoard) {
+                            int keyBoardHeight = mWindowDisplayFrame.bottom - rect.bottom;
+                            if (mKeyBoardHeight != keyBoardHeight) {
+                                mKeyBoardHeight = keyBoardHeight;
+                                mEmotionPanelLayout.setHeight(mKeyBoardHeight);
+                                SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
+                            }
+                            if (isShowMoreInput()) {
+                               hintMoreInput();
+                            }
+                            isOpenedKeyBoard = true;
                         }
-                        if (isShowMoreInput()) {
-                            hintMoreInput();
-                        }
-                        isOpenedKeyBoard = true;
                     }else {
                         if(isOpenedKeyBoard) {
                             if (isShowMoreInputAfterCloseKeyBoard) {

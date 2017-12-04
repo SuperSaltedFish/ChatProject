@@ -63,7 +63,7 @@ public class EmojiRecyclerview extends RecyclerView {
         mAdapter.notifyDataSetChanged();
     }
 
-    private static class EmojiItemView extends EmojiTextView {
+    private static class EmojiItemView extends TextView {
 
         public EmojiItemView(Context context) {
             super(context);
@@ -84,8 +84,6 @@ public class EmojiRecyclerview extends RecyclerView {
 
     private class EmojiAdapter extends RecyclerView.Adapter<EmojiRecyclerview.EmojiHolder> {
 
-        private EmojiCompat mEmojiCompat = EmojiCompat.get();
-
         @Override
         public EmojiHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             EmojiItemView itemView = new EmojiItemView(mContext);
@@ -96,8 +94,8 @@ public class EmojiRecyclerview extends RecyclerView {
 
         @Override
         public void onBindViewHolder(EmojiHolder holder, int position) {
-            String emoji = new String(Character.toChars(mEmojiUnicodeArray[position]));
-            holder.mTextView.setText(mEmojiCompat.process(emoji, 0, emoji.length(), 1));
+            char[] emoji = Character.toChars(mEmojiUnicodeArray[position]);
+            holder.mTextView.setText(emoji,0,emoji.length);
             holder.mTextView.setTextSize(mEmojiSize);
         }
 
