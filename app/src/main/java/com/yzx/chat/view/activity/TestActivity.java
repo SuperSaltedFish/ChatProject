@@ -22,12 +22,21 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.database.DBHelper;
+import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.api.user.GetUserFriendsBean;
+import com.yzx.chat.network.api.user.GetUserProfileBean;
+import com.yzx.chat.network.api.user.SearchUserBean;
+import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 
+import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.network.framework.NetworkExecutor;
+import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.NotifyManager;
@@ -35,6 +44,7 @@ import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.NetworkUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.BadgeTextView;
 import com.yzx.chat.widget.view.CarouselView;
@@ -51,7 +61,6 @@ import java.util.List;
 public class TestActivity extends BaseCompatActivity {
 
 
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
@@ -60,12 +69,21 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        CarouselView carouselView = findViewById(R.id.sss);
-//        List<String> s = new ArrayList<>();
-//        s.add("https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=950004826,3164354653&fm=27&gp=0.jpg");
-//        s.add("https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2260926939,1550208231&fm=27&gp=0.jpg");
-//        carouselView.setPicUrls(s);
-//        carouselView.setCarouselInterval(2000);
+
+        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        Call<JsonResponse<GetUserProfileBean>> task = api.getUserProfile("baiz2m0mnjyB6YYyMPki9PSe2sByw7Pm7zMcGwhSi87kKajiph7t7ySaSF0TxRH3");
+        task.setCallback(new BaseHttpCallback<GetUserProfileBean>() {
+            @Override
+            protected void onSuccess(GetUserProfileBean response) {
+                LogUtil.e("dwadwd");
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                    LogUtil.e("dwadwd");
+            }
+        });
+        NetworkExecutor.getInstance().submit(task);
 
 
     }
@@ -92,7 +110,6 @@ public class TestActivity extends BaseCompatActivity {
     private void testHTTP() {
 
     }
-
 
 
 }

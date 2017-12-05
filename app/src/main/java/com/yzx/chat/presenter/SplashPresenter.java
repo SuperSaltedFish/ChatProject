@@ -100,7 +100,7 @@ public class SplashPresenter implements SplashContract.Presenter {
         mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserFriendsBean>() {
             @Override
             protected void onSuccess(GetUserFriendsBean response) {
-                DBManager.getInstance().getFriendDao().replaceAll(response.getUserList());
+                DBManager.getInstance().getFriendDao().replaceAll(response.getFriends());
             }
 
             @Override

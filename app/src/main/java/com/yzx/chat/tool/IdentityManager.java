@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.view.activity.LoginActivity;
 
@@ -196,7 +198,8 @@ public class IdentityManager {
                     Build.BRAND,
                     Build.MODEL);
             String base64DeviceID = Base64Util.encodeToString(rsaEncryptByPublicKey(mDeviceID.getBytes()));
-            mIdentityPreferences.putDeviceID(base64DeviceID);
+           boolean s =  mIdentityPreferences.putDeviceID(base64DeviceID);
+            LogUtil.e(s+"");
         }
     }
 

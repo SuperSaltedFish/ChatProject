@@ -11,13 +11,13 @@ import java.util.ArrayList;
 
 public class GetUserFriendsBean {
 
-    ArrayList<FriendBean> userList;
+    ArrayList<FriendBean> friends;
 
-    public ArrayList<FriendBean> getUserList() {
-        return userList;
+    public ArrayList<FriendBean> getFriends() {
+        return friends;
     }
 
-    public void setUserList(ArrayList<FriendBean> userList) {
-        this.userList = userList;
+    public void setFriends(ArrayList<FriendBean> friends) {
+        this.friends = friends;
     }
 }

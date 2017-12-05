@@ -42,8 +42,11 @@ public class ApiManager {
             request.setToken(IdentityManager.getInstance().getToken());
             String json = sGson.toJson(request);
             LogUtil.e("request: "+json);
+//            if (json != null) {
+//                return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
+//            }
             if (json != null) {
-                return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
+                return json;
             }
             return null;
         }
@@ -51,15 +54,22 @@ public class ApiManager {
         @Nullable
         @Override
         public Object responseToObject(String url, String httpResponse, Type genericType) {
-            byte[] data = IdentityManager.getInstance().aesDecryptFromBase64String(httpResponse);
-            if (data != null) {
-                try {
-                    String strData = new String(data);
-                    LogUtil.e("request: "+strData);
-                    return sGson.fromJson(strData, genericType);
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                }
+//            byte[] data = IdentityManager.getInstance().aesDecryptFromBase64String(httpResponse);
+//            if (data != null) {
+//                try {
+//                    String strData = new String(data);
+//                    LogUtil.e("response: "+strData);
+//                    return sGson.fromJson(strData, genericType);
+//                } catch (JsonSyntaxException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            return null;
+            try {
+                LogUtil.e("response: "+httpResponse);
+                return sGson.fromJson(httpResponse, genericType);
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -90,5 +100,4 @@ public class ApiManager {
             writer.value(value);
         }
     }
-
 }

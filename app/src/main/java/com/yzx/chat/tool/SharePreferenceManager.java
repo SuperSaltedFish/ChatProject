@@ -71,7 +71,9 @@ public class SharePreferenceManager {
         }
 
         public void clear() {
+            String deviceID = getDeviceID();
             mPreferences.edit().clear().apply();
+            putDeviceID(deviceID);
         }
 
         public boolean putRSAKey(String value) {
@@ -86,8 +88,8 @@ public class SharePreferenceManager {
             return mPreferences.edit().putString(IDENTITY_KEY_Token, value).commit();
         }
 
-        public void putDeviceID(String value) {
-            mPreferences.edit().putString(IDENTITY_KEY_DEVICE_ID, value).apply();
+        public boolean putDeviceID(String value) {
+           return mPreferences.edit().putString(IDENTITY_KEY_DEVICE_ID, value).commit();
         }
 
         public String getRSAKey() {

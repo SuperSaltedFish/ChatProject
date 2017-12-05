@@ -9,13 +9,13 @@ import com.yzx.chat.bean.UserBean;
 
 public class GetUserProfileBean {
 
-    private UserBean user;
+    private UserBean userProfile;
 
-    public UserBean getUser() {
-        return user;
+    public UserBean getUserProfile() {
+        return userProfile;
     }
 
-    public void setUser(UserBean user) {
-        this.user = user;
+    public void setUserProfile(UserBean userProfile) {
+        this.userProfile = userProfile;
     }
 }
