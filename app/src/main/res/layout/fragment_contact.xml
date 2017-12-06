@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <Toolbar
         android:id="@+id/ContactFragment_mToolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="?actionBarSize"
         android:background="@color/theme_main_color"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.yzx.chat.widget.view.SegmentedControlView
             android:id="@+id/ContactFragment_mSegmentedControlView"
@@ -21,17 +24,20 @@
             android:id="@+id/ContactFragment_mContactRequestBadge"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
             android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="4dp"
             android:src="@drawable/ic_contact_add" />
 
     </Toolbar>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/ContactFragment_mSmartRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/ContactFragment_mToolbar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ContactFragment_mToolbar"
         app:srlEnablePureScrollMode="true">
 
         <android.support.v7.widget.RecyclerView
@@ -41,43 +47,43 @@
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
+    <com.yzx.chat.widget.view.IndexBarView
+        android:id="@+id/ContactFragment_mIndexBarView"
+        android:layout_width="16dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_index_bar"
+        android:paddingBottom="2dp"
+        android:paddingTop="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/ContactFragment_mFBtnAdd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ContactFragment_mToolbar" />
+
     <TextView
         android:id="@+id/ContactFragment_mTvIndexBarHint"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_alignTop="@+id/ContactFragment_mIndexBarView"
-        android:layout_centerInParent="true"
-        android:layout_marginEnd="16dp"
-        android:layout_toStartOf="@+id/ContactFragment_mIndexBarView"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/bg_index_bar_hint"
         android:gravity="center"
         android:scaleX="0"
         android:scaleY="0"
         android:textColor="@color/text_main_color_white_alpha"
-        android:textSize="44sp" />
-
-    <com.yzx.chat.widget.view.IndexBarView
-        android:id="@+id/ContactFragment_mIndexBarView"
-        android:layout_width="16dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/ContactFragment_mFBtnAdd"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/ContactFragment_mToolbar"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_index_bar"
-        android:paddingBottom="2dp"
-        android:paddingTop="4dp" />
+        android:textSize="44sp"
+        app:layout_constraintEnd_toStartOf="@+id/ContactFragment_mIndexBarView"
+        app:layout_constraintTop_toTopOf="@+id/ContactFragment_mIndexBarView" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/ContactFragment_mFBtnAdd"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:clickable="true"
-        android:src="@drawable/ic_more" />
+        android:src="@drawable/ic_more"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
