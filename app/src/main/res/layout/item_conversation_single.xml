@@ -1,61 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:layout_gravity="center"
     android:background="?android:attr/selectableItemBackground"
-    android:clickable="true">
+    android:clickable="true"
+    android:focusable="true">
 
     <View
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="1px"
-        android:layout_alignParentBottom="true"
-        android:background="@color/separation_line_color_black_alpha" />
+        android:background="@color/separation_line_color_black_alpha"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="71dp" />
 
     <com.yzx.chat.widget.view.BadgeImageView
         android:id="@+id/ConversationAdapter_mIvSingleAvatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/temp_head_image" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/temp_head_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ConversationAdapter_mTvName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ConversationAdapter_mTvSingleLastMessage"
-        android:layout_alignEnd="@+id/ConversationAdapter_mTvSingleLastMessage"
-        android:layout_alignStart="@+id/ConversationAdapter_mTvSingleLastMessage"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:textColor="@color/text_primary_color_black_alpha"
-        android:textSize="17sp" />
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/ConversationAdapter_mTvSingleLastMessage"
+        app:layout_constraintEnd_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
+        app:layout_constraintStart_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintTop_toTopOf="@+id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/ConversationAdapter_mTvSingleTime"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ConversationAdapter_mTvName"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/ConversationAdapter_mTvName"
-        android:layout_marginEnd="16dp"
+        android:layout_height="0dp"
         android:gravity="center_vertical"
-        android:textSize="13sp" />
+        android:layout_marginEnd="12dp"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ConversationAdapter_mTvName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ConversationAdapter_mTvName" />
 
 
     <TextView
         android:id="@+id/ConversationAdapter_mTvSingleLastMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="26dp"
-        android:layout_alignBottom="@+id/ConversationAdapter_mIvSingleAvatar"
-        android:layout_marginStart="8dp"
-        android:layout_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
-        android:layout_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
-        android:gravity="top"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
         android:maxLines="1"
-        android:textSize="13sp" />
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/ConversationAdapter_mTvName" />
 
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

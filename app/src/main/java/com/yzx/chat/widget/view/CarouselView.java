@@ -166,11 +166,10 @@ public class CarouselView extends FrameLayout {
     private final ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
         @Override
         public void onPageSelected(final int position) {
-            if (mCarouselInterval == 0) {
-                return;
+           mViewPagerIndicator.setSelectedIndex(position % mPicUrlList.size());
+            if (mCarouselInterval != 0) {
+                delayedShowNext();
             }
-            mViewPagerIndicator.setSelectedIndex(position % mPicUrlList.size());
-            delayedShowNext();
         }
     };
 
