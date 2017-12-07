@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -33,6 +34,15 @@ public class AndroidTool {
         DisplayMetrics dm = application.getResources().getDisplayMetrics();
         sScreenWidth = dm.widthPixels;
         sScreenHeight = dm.heightPixels;
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = sApplicationContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = sApplicationContext.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     public static boolean isAppForeground(){
