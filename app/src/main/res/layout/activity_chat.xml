@@ -30,7 +30,7 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="6dp"
+        android:layout_height="4dp"
         android:background="@drawable/bg_shadow_top"
         app:layout_constraintBottom_toBottomOf="@+id/ChatActivity_mRvChatView"
         app:layout_constraintLeft_toLeftOf="parent"

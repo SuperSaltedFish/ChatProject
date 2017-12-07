@@ -72,7 +72,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
 
     @Override
     public int getItemCount() {
-        return mFriendList == null ? 0 : mFriendList.size();
+        return mFriendList == null ? 0 : mFriendList.size()+1;
     }
 
     @Override
