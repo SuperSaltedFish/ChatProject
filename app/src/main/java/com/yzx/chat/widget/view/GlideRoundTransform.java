@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -30,7 +30,7 @@ public class GlideRoundTransform extends BitmapTransformation {
 
     public GlideRoundTransform(float dp) {
         super();
-        mRadius = AndroidTool.dip2px(dp);
+        mRadius = AndroidUtil.dip2px(dp);
     }
 
     @Override

@@ -13,11 +13,9 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.FriendBean;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -158,7 +156,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         private void setView() {
             mSearchView.setAdapter(mSearchAdapter);
             mSearchView.setOnItemClickListener(mOnSearchItemClickListener);
-            mSearchView.setDropDownVerticalOffset((int) AndroidTool.dip2px(8));
+            mSearchView.setDropDownVerticalOffset((int) AndroidUtil.dip2px(8));
         }
 
         private final AdapterView.OnItemClickListener mOnSearchItemClickListener = new AdapterView.OnItemClickListener() {

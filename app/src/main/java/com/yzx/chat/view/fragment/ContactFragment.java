@@ -16,7 +16,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.presenter.ContactPresenter;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.FriendProfileActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
@@ -86,7 +86,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.separation_line_color_black_alpha));
         mLetterSegmentationItemDecoration.setLineWidth(1);
         mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.separation_line_color_black_alpha));
-        mLetterSegmentationItemDecoration.setTextSize(AndroidTool.sp2px(16));
+        mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         mContactRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -96,8 +96,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
 
-        mContactRequestBadge.setBadgeTextPadding((int) AndroidTool.dip2px(2));
-        mContactRequestBadge.setBadgePadding(0, (int) AndroidTool.dip2px(6), (int) AndroidTool.dip2px(4), 0);
+        mContactRequestBadge.setBadgeTextPadding((int) AndroidUtil.dip2px(2));
+        mContactRequestBadge.setBadgePadding(0, (int) AndroidUtil.dip2px(6), (int) AndroidUtil.dip2px(4), 0);
         mContactRequestBadge.setOnClickListener(mOnContactRequestBadgeClick);
 
 

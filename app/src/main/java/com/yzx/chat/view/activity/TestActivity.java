@@ -7,8 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.MessageQueue;
 import android.os.SystemClock;
 import android.support.design.widget.TabLayout;
 import android.support.text.emoji.widget.EmojiTextView;
@@ -46,6 +50,7 @@ import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 import com.yzx.chat.util.RSAUtil;
+import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.view.BadgeTextView;
 import com.yzx.chat.widget.view.CarouselView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
@@ -70,20 +75,22 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-        Call<JsonResponse<GetUserProfileBean>> task = api.getUserProfile("baiz2m0mnjyB6YYyMPki9PSe2sByw7Pm7zMcGwhSi87kKajiph7t7ySaSF0TxRH3");
-        task.setCallback(new BaseHttpCallback<GetUserProfileBean>() {
-            @Override
-            protected void onSuccess(GetUserProfileBean response) {
-                LogUtil.e("dwadwd");
-            }
 
-            @Override
-            protected void onFailure(String message) {
-                    LogUtil.e("dwadwd");
-            }
-        });
-        NetworkExecutor.getInstance().submit(task);
+
+//        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+//        Call<JsonResponse<GetUserProfileBean>> task = api.getUserProfile("baiz2m0mnjyB6YYyMPki9PSe2sByw7Pm7zMcGwhSi87kKajiph7t7ySaSF0TxRH3");
+//        task.setCallback(new BaseHttpCallback<GetUserProfileBean>() {
+//            @Override
+//            protected void onSuccess(GetUserProfileBean response) {
+//                LogUtil.e("dwadwd");
+//            }
+//
+//            @Override
+//            protected void onFailure(String message) {
+//                    LogUtil.e("dwadwd");
+//            }
+//        });
+//        NetworkExecutor.getInstance().submit(task);
 
 
     }

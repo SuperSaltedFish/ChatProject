@@ -20,7 +20,7 @@ import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
@@ -119,7 +119,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setHasFixedSize(true);
         emojiRecyclerview.setEmojiData(EmojiUtil.getCommonlyUsedEmojiUnicode(),7);
         emojiRecyclerview.setEmojiSize(24);
-        emojiRecyclerview.setPadding((int) AndroidTool.dip2px(8),0,(int)AndroidTool.dip2px(8),0);
+        emojiRecyclerview.setPadding((int) AndroidUtil.dip2px(8),0,(int) AndroidUtil.dip2px(8),0);
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview,getDrawable(R.drawable.ic_moments));
 
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting),null);

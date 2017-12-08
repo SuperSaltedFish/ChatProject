@@ -19,7 +19,7 @@ import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.ApiManager;
@@ -259,7 +259,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     }
                 });
             } else {
-                onFailure(AndroidTool.getString(R.string.Server_Error));
+                onFailure(AndroidUtil.getString(R.string.Server_Error));
             }
         }
 
@@ -290,7 +290,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     }
                 });
             } else {
-                onFailure(AndroidTool.getString(R.string.Server_Error));
+                onFailure(AndroidUtil.getString(R.string.Server_Error));
             }
 
         }

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView.OnItemTouchListener;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 
 /**
  * Created by YZX on 2017年09月08日.
@@ -14,7 +14,7 @@ import com.yzx.chat.tool.AndroidTool;
 
 public abstract class OnRecyclerViewClickListener implements OnItemTouchListener {
 
-    private static final int TOUCH_SLOP = (int) AndroidTool.dip2px(8);
+    private static final int TOUCH_SLOP = (int) AndroidUtil.dip2px(8);
 
     private float mLastDownX;
     private float mLastDownY;

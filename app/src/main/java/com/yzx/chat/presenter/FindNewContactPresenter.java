@@ -15,7 +15,7 @@ import com.yzx.chat.network.api.user.SearchUserBean;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
@@ -196,7 +196,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
             } catch (HyphenateException e) {
                 e.printStackTrace();
             }
-            return AndroidTool.getString(R.string.FindNewContactPresenter_AddFriendFail);
+            return AndroidUtil.getString(R.string.FindNewContactPresenter_AddFriendFail);
         }
 
         @Override

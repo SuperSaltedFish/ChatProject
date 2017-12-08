@@ -1,4 +1,4 @@
-package com.yzx.chat.tool;
+package com.yzx.chat.util;
 
 import android.app.Activity;
 import android.app.Application;
@@ -17,7 +17,7 @@ import android.util.TypedValue;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
-public class AndroidTool {
+public class AndroidUtil {
     private static int sScreenWidth;
     private static int sScreenHeight;
     private static int sScreenDensity;

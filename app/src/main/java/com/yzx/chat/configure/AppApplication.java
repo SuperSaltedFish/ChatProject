@@ -7,8 +7,7 @@ import android.support.text.emoji.EmojiCompat;
 import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 
 import com.yzx.chat.broadcast.NetworkStateReceive;
-import com.yzx.chat.database.DBHelper;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
@@ -43,13 +42,13 @@ public class AppApplication extends Application {
 
             NetworkStateReceive.init(this);
 
-            AndroidTool.init(this);
+            AndroidUtil.init(this);
 
             DBManager.init(this, Constants.DATABASE_NAME, Constants.DATABASE_VERSION);
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 
-            ChatClientManager.init(this);
+          //  ChatClientManager.init(this);
         }
     }
 

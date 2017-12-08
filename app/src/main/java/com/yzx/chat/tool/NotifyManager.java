@@ -1,17 +1,16 @@
 package com.yzx.chat.tool;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 
 import com.yzx.chat.R;
 import com.yzx.chat.configure.AppApplication;
+import com.yzx.chat.util.AndroidUtil;
 
 /**
  * Created by YZX on 2017年11月28日.
@@ -52,7 +51,7 @@ public class NotifyManager {
 
         mDefaultNotifyBuilder = new Notification.Builder(AppApplication.getAppContext())
                 .setSmallIcon(R.drawable.ic_chat)
-                .setColor(AndroidTool.getColor(R.color.theme_main_color))
+                .setColor(AndroidUtil.getColor(R.color.theme_main_color))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
     }
@@ -67,7 +66,7 @@ public class NotifyManager {
                 .setTicker(title + ":" + content)
                 .setAutoCancel(true);
 
-        if (AndroidTool.isAppForeground()) {
+        if (AndroidUtil.isAppForeground()) {
 
         } else {
             mDefaultNotifyBuilder.setContentIntent(mLaunchPendingIntent);

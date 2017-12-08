@@ -12,7 +12,7 @@ import android.view.WindowManager;
 import android.widget.ListView;
 
 import com.yzx.chat.R;
-import com.yzx.chat.tool.AndroidTool;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.HomeMenuAdapter;
 
 /**
@@ -32,8 +32,8 @@ public class HomeOverflowPopupWindow extends ListPopupWindow {
         this.setAnchorView(anchorView);
         this.setDropDownGravity(Gravity.END);
         this.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.theme_main_color)));
-        this.setHorizontalOffset(-(int) AndroidTool.dip2px(16));
-        this.setWidth((int) AndroidTool.dip2px(176));
+        this.setHorizontalOffset(-(int) AndroidUtil.dip2px(16));
+        this.setWidth((int) AndroidUtil.dip2px(176));
         this.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
         this.setModal(true);
     }
