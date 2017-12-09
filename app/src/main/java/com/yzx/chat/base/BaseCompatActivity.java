@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
@@ -53,6 +54,15 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             mPresenter.detachView();
             mPresenter = null;
         }
+    }
+
+    protected void showSoftKeyboard(View focusView) {
+        if (mInputManager == null) {
+            mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
+        focusView.requestFocus();
+        mInputManager.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
+
     }
 
     protected void hideSoftKeyboard() {

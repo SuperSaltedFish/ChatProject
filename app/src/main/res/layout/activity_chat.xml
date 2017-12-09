@@ -36,6 +36,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+
     <com.yzx.chat.widget.view.KeyboardPanelSwitcher
         android:id="@+id/ChatActivity_mLlInputLayout"
         android:layout_width="0dp"
@@ -46,22 +47,22 @@
         app:layout_constraintRight_toRightOf="parent">
 
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
 
             <ImageView
-                android:id="@+id/ChatActivity_mIvShowMore"
+                android:id="@+id/ChatActivity_mIvMicrophone"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
                 android:layout_margin="8dp"
-                android:padding="4dp"
-                android:src="@drawable/ic_more"
+                android:padding="3dp"
+                android:src="@drawable/ic_microphone"
                 android:tint="@color/theme_main_color" />
 
             <View
@@ -70,17 +71,14 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="12dp"
                 android:layout_marginTop="12dp"
-                android:layout_toEndOf="@+id/ChatActivity_mIvShowMore"
                 android:background="@color/theme_main_color" />
-
 
             <android.support.text.emoji.widget.EmojiEditText
                 android:id="@+id/ChatActivity_mEtContent"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
-                android:layout_toEndOf="@+id/ChatActivity_mDivider"
-                android:layout_toStartOf="@+id/ChatActivity_mIvSendMessage"
+                android:layout_weight="1"
                 android:background="@null"
                 android:hint="Input Something..."
                 android:paddingBottom="8dp"
@@ -89,30 +87,62 @@
                 android:textColorHint="@android:color/darker_gray"
                 android:textSize="16sp" />
 
-            <com.yzx.chat.widget.view.CircleImageView
+            <ImageView
+                android:id="@+id/ChatActivity_mIvEmoticons"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_emoticons"
+                android:tint="@color/theme_main_color" />
+
+            <ImageView
                 android:id="@+id/ChatActivity_mIvSendMessage"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="6dp"
-                android:background="@color/theme_main_color"
-                android:paddingBottom="8dp"
-                android:paddingEnd="12dp"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp"
-                android:src="@drawable/ic_message_send" />
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_message_send"
+                android:tint="@color/theme_main_color" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
-
-        <com.yzx.chat.widget.view.EmotionPanelRelativeLayout
-            android:id="@+id/ChatActivity_mEmotionPanelLayout"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:visibility="gone">
+            android:layout_height="1px"
+            android:background="@color/separation_line_color_black_alpha" />
 
-        </com.yzx.chat.widget.view.EmotionPanelRelativeLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:id="@+id/ChatActivity_mLlRecorderLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.yzx.chat.widget.view.RecorderButton
+                    android:id="@+id/ChatActivity_mRecorderButton"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="center"
+                    android:background="#000000" />
+
+            </LinearLayout>
+
+
+            <com.yzx.chat.widget.view.EmotionPanelRelativeLayout
+                android:id="@+id/ChatActivity_mEmotionPanelLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:visibility="gone">
+
+            </com.yzx.chat.widget.view.EmotionPanelRelativeLayout>
+        </FrameLayout>
     </com.yzx.chat.widget.view.KeyboardPanelSwitcher>
 
 

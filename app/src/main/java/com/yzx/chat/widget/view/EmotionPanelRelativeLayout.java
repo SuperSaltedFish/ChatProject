@@ -62,7 +62,7 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
     }
 
     private void setDefaultValue() {
-        mTabHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, mContext.getResources().getDisplayMetrics());
+        mTabHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 36, mContext.getResources().getDisplayMetrics());
         mSeparationLineWidth = 1;
         mSeparationLineColor = Color.parseColor("#38000000");
         mSeparationLinePaint = new Paint();
@@ -170,7 +170,6 @@ public class EmotionPanelRelativeLayout extends RelativeLayout {
         super.onDraw(canvas);
         int width = getWidth();
         int height = getHeight();
-        canvas.drawLine(0, 0, width, 0, mSeparationLinePaint);
         canvas.drawLine(0, height - mTabHeight, width, height - mTabHeight, mSeparationLinePaint);
     }
 

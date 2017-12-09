@@ -1,8 +1,11 @@
 package com.yzx.chat.util;
 
 import android.media.MediaRecorder;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -14,14 +17,18 @@ import java.io.IOException;
 public class VoiceRecorder {
 
     private static final int DEFAULT_MAX_DURATION = 60 * 1000;
+    private static final int DEFAULT_GET_AMPLITUDE_INTERVAL = 200;
 
     private String mSavePath;
     private int mMaxDuration;
     private OnRecorderStateListener mListener;
 
+    private Handler mRecorderHandler;
     private String initFailReason;
     private MediaRecorder mRecorder;
     private long mStartRecorderTime;
+    private int mGetAmplitudeInterval = DEFAULT_GET_AMPLITUDE_INTERVAL;
+    private int mCurrentAmplitude;
 
     public VoiceRecorder(String savePath) {
         this(savePath, null);
@@ -39,17 +46,18 @@ public class VoiceRecorder {
         mSavePath = savePath;
         mMaxDuration = maxDuration;
         mListener = listener;
+        mRecorderHandler = new Handler();
     }
 
     private void init() {
         mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
         try {
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
             mRecorder.setOutputFile(mSavePath);
             mRecorder.setMaxDuration(mMaxDuration);
-        } catch (IllegalStateException e) {
+        } catch (RuntimeException e) {
             initFailReason = e.toString();
             return;
         }
@@ -87,15 +95,34 @@ public class VoiceRecorder {
 
     }
 
-    private void release(){
-        if(mRecorder!=null){
+    private void release() {
+        mRecorderHandler.removeCallbacksAndMessages(null);
+        if (mRecorder != null) {
             mRecorder.reset();
             mRecorder.release();
         }
-        mRecorder=null;
+        mCurrentAmplitude = 0;
+        mRecorder = null;
     }
 
-    public void prepare(){
+    private void updateAmplitude() {
+        mRecorderHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mRecorder == null || mListener == null) {
+                    return;
+                }
+                int nowAmplitude = mRecorder.getMaxAmplitude();
+                if (nowAmplitude != mCurrentAmplitude) {
+                    mListener.onAmplitudeChange(nowAmplitude);
+                    mCurrentAmplitude = nowAmplitude;
+                }
+                mRecorderHandler.postDelayed(this, mGetAmplitudeInterval);
+            }
+        });
+    }
+
+    public void prepare() {
         release();
         init();
     }
@@ -111,7 +138,8 @@ public class VoiceRecorder {
         try {
             mRecorder.start();
             mStartRecorderTime = System.currentTimeMillis();
-        } catch (IllegalStateException e) {
+            updateAmplitude();
+        } catch (RuntimeException e) {
             if (mListener != null) {
                 mListener.onError(e.toString());
             }
@@ -119,20 +147,30 @@ public class VoiceRecorder {
     }
 
     public void stop() {
-        if(mRecorder==null){
+        if (mRecorder == null) {
             return;
         }
         try {
             mRecorder.stop();
             if (mListener != null) {
-                mListener.onComplete(mSavePath,System.currentTimeMillis() - mStartRecorderTime);
+                mListener.onComplete(mSavePath, System.currentTimeMillis() - mStartRecorderTime);
             }
-        } catch (IllegalStateException e) {
+        } catch (RuntimeException e) {
             if (mListener != null) {
                 mListener.onError(e.toString());
             }
         }
         release();
+    }
+
+    public boolean cancelAndDelete() {
+        try {
+            mRecorder.stop();
+        } catch (RuntimeException ignored) {
+        }
+        release();
+        File file = new File(mSavePath);
+        return !file.exists() || file.delete();
     }
 
     public void setSavePath(String savePath) {
@@ -147,7 +185,10 @@ public class VoiceRecorder {
         mListener = listener;
     }
 
+
     public interface OnRecorderStateListener {
+        void onAmplitudeChange(int amplitude);
+
         void onComplete(String filePath, long duration);
 
         void onError(String error);

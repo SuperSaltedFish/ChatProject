@@ -55,6 +55,7 @@ import com.yzx.chat.widget.view.BadgeTextView;
 import com.yzx.chat.widget.view.CarouselView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.NineGridImageView;
+import com.yzx.chat.widget.view.RecorderButton;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -75,7 +76,42 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final VoiceRecorder voiceRecorder = new VoiceRecorder(Environment.getExternalStorageDirectory() + "/a/a.amr", 1000 * 60, new VoiceRecorder.OnRecorderStateListener() {
+            @Override
+            public void onAmplitudeChange(int amplitude) {
+                LogUtil.e("" + amplitude);
+            }
 
+            @Override
+            public void onComplete(String filePath, long duration) {
+                LogUtil.e("onComplete");
+            }
+
+            @Override
+            public void onError(String error) {
+                LogUtil.e("onError:" + error);
+            }
+        });
+
+
+        RecorderButton button = findViewById(R.id.rm);
+        button.setOnRecorderTouchListener(new RecorderButton.onRecorderTouchListener() {
+            @Override
+            public void onStart() {
+                voiceRecorder.prepare();
+                voiceRecorder.start();
+            }
+
+            @Override
+            public void onStop() {
+                voiceRecorder.stop();
+            }
+
+            @Override
+            public void onCancel() {
+                LogUtil.e(voiceRecorder.cancelAndDelete() + " ");
+            }
+        });
 
 //        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
 //        Call<JsonResponse<GetUserProfileBean>> task = api.getUserProfile("baiz2m0mnjyB6YYyMPki9PSe2sByw7Pm7zMcGwhSi87kKajiph7t7ySaSF0TxRH3");
