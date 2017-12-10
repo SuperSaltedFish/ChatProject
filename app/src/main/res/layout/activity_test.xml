@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
 
+
+    <com.yzx.chat.widget.view.AmplitudeView
+        android:id="@+id/rm"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
 
     <com.yzx.chat.widget.view.RecorderButton
-        android:id="@+id/rm"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:background="#000000" />
+        android:id="@+id/ssss"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
 
-</merge>
+
+</LinearLayout>

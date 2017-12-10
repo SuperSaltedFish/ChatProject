@@ -51,6 +51,7 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.util.VoiceRecorder;
+import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.BadgeTextView;
 import com.yzx.chat.widget.view.CarouselView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
@@ -75,13 +76,9 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        final AmplitudeView amplitudeView = findViewById(R.id.rm);
+        amplitudeView.setMaxAmplitude(32767);
         final VoiceRecorder voiceRecorder = new VoiceRecorder(Environment.getExternalStorageDirectory() + "/a/a.amr", 1000 * 60, new VoiceRecorder.OnRecorderStateListener() {
-            @Override
-            public void onAmplitudeChange(int amplitude) {
-                LogUtil.e("" + amplitude);
-            }
-
             @Override
             public void onComplete(String filePath, long duration) {
                 LogUtil.e("onComplete");
@@ -92,14 +89,24 @@ public class TestActivity extends BaseCompatActivity {
                 LogUtil.e("onError:" + error);
             }
         });
-
-
-        RecorderButton button = findViewById(R.id.rm);
+        RecorderButton button = findViewById(R.id.ssss);
         button.setOnRecorderTouchListener(new RecorderButton.onRecorderTouchListener() {
             @Override
             public void onStart() {
+                voiceRecorder.setOnAmplitudeChange(new VoiceRecorder.OnAmplitudeChange() {
+                    @Override
+                    public void onAmplitudeChange(int amplitude) {
+                        amplitudeView.setCurrentAmplitude(amplitude);
+                    }
+                }, new Handler(amplitudeView.getLooper()));
                 voiceRecorder.prepare();
                 voiceRecorder.start();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        amplitudeView.setTimeText("00:65");
+                    }
+                }, 3000);
             }
 
             @Override
@@ -114,16 +121,16 @@ public class TestActivity extends BaseCompatActivity {
         });
 
 //        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-//        Call<JsonResponse<GetUserProfileBean>> task = api.getUserProfile("baiz2m0mnjyB6YYyMPki9PSe2sByw7Pm7zMcGwhSi87kKajiph7t7ySaSF0TxRH3");
-//        task.setCallback(new BaseHttpCallback<GetUserProfileBean>() {
+//        Call<JsonResponse<Void>> task = api.addFriend("5a2bf866f9293d1084f59b59");
+//        task.setCallback(new BaseHttpCallback<Void>() {
 //            @Override
-//            protected void onSuccess(GetUserProfileBean response) {
-//                LogUtil.e("dwadwd");
+//            protected void onSuccess(Void response) {
+//                LogUtil.e("onSuccess");
 //            }
 //
 //            @Override
 //            protected void onFailure(String message) {
-//                    LogUtil.e("dwadwd");
+//                    LogUtil.e("onFailure");
 //            }
 //        });
 //        NetworkExecutor.getInstance().submit(task);
