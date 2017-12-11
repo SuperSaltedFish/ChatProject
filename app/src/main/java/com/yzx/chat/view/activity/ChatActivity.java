@@ -239,6 +239,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 mVoiceRecorder.setSavePath(DirectoryManager.getVoiceRecorderPath() + "a.amr");
                 mVoiceRecorder.prepare();
                 mVoiceRecorder.start();
+                mVoiceRecorderDownTimer.start();
                 mTvRecorderHint.setText(R.string.ChatActivity_SlideCancelSend);
             }
 
