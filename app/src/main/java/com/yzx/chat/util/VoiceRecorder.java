@@ -15,20 +15,28 @@ import java.io.IOException;
 
 public class VoiceRecorder {
 
+    public static final int MAX_AMPLITUDE = 32767;
+
     private static final int DEFAULT_MAX_DURATION = 60 * 1000;
-    private static final int DEFAULT_GET_AMPLITUDE_INTERVAL = 200;
+    private static final int DEFAULT_GET_AMPLITUDE_INTERVAL = 1000 / 16;
 
     private String mSavePath;
     private int mMaxDuration;
     private OnRecorderStateListener mOnRecorderStateListener;
     private OnAmplitudeChange mOnAmplitudeChangeListener;
 
-    private Handler mOnAmplitudeChangeHandler;
+    private Handler mAmplitudeChangeHandler;
     private String initFailReason;
     private MediaRecorder mRecorder;
     private long mStartRecorderTime;
     private int mGetAmplitudeInterval = DEFAULT_GET_AMPLITUDE_INTERVAL;
     private int mCurrentAmplitude;
+
+    private final Object mRecorderLock = new Object();
+
+    public VoiceRecorder() {
+        this(null);
+    }
 
     public VoiceRecorder(String savePath) {
         this(savePath, null);
@@ -52,8 +60,8 @@ public class VoiceRecorder {
         mRecorder = new MediaRecorder();
         try {
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mRecorder.setOutputFile(mSavePath);
             mRecorder.setMaxDuration(mMaxDuration);
         } catch (RuntimeException e) {
@@ -63,6 +71,7 @@ public class VoiceRecorder {
         mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
             @Override
             public void onInfo(MediaRecorder mr, int what, int extra) {
+                release();
                 if (what != MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN) {
                     if (mOnRecorderStateListener != null) {
                         mOnRecorderStateListener.onComplete(mSavePath, System.currentTimeMillis() - mStartRecorderTime);
@@ -70,12 +79,12 @@ public class VoiceRecorder {
                 } else {
                     mOnRecorderStateListener.onError("VoiceRecorder Error:MEDIA_RECORDER_INFO_UNKNOWN");
                 }
-                release();
             }
         });
         mRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
             @Override
             public void onError(MediaRecorder mr, int what, int extra) {
+                release();
                 if (mOnRecorderStateListener != null) {
                     if (what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
                         mOnRecorderStateListener.onError("VoiceRecorder Error:MEDIA_RECORDER_ERROR_UNKNOWN");
@@ -83,7 +92,6 @@ public class VoiceRecorder {
                         mOnRecorderStateListener.onError("VoiceRecorder Error:MEDIA_ERROR_SERVER_DIED");
                     }
                 }
-                release();
             }
         });
         try {
@@ -95,45 +103,49 @@ public class VoiceRecorder {
     }
 
     private void release() {
-        if (mOnAmplitudeChangeHandler != null) {
-            mOnAmplitudeChangeHandler.removeCallbacks(mGetAmplitudeRunnable);
+        synchronized (mRecorderLock) {
+            if (mAmplitudeChangeHandler != null) {
+                mAmplitudeChangeHandler.removeCallbacks(mGetAmplitudeRunnable);
+            }
+            if (mRecorder != null) {
+                mRecorder.reset();
+                mRecorder.release();
+            }
+            mCurrentAmplitude = 0;
+            mRecorder = null;
         }
-        if (mRecorder != null) {
-            mRecorder.reset();
-            mRecorder.release();
-        }
-        mCurrentAmplitude = 0;
-        mRecorder = null;
     }
 
     private void updateAmplitude() {
         if (mOnAmplitudeChangeListener == null) {
             return;
         }
-        if (mOnAmplitudeChangeHandler == null) {
-            mOnAmplitudeChangeHandler = new Handler();
+        if (mAmplitudeChangeHandler == null) {
+            mAmplitudeChangeHandler = new Handler();
         }
-        mOnAmplitudeChangeHandler.post(mGetAmplitudeRunnable);
+        mAmplitudeChangeHandler.post(mGetAmplitudeRunnable);
     }
 
     private final Runnable mGetAmplitudeRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mRecorder == null || mOnAmplitudeChangeListener == null) {
-                return;
+            synchronized (mRecorderLock) {
+                if (mRecorder == null || mOnAmplitudeChangeListener == null) {
+                    return;
+                }
+                int nowAmplitude;
+                try {
+                    nowAmplitude = mRecorder.getMaxAmplitude();
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (nowAmplitude != mCurrentAmplitude) {
+                    mOnAmplitudeChangeListener.onAmplitudeChange(nowAmplitude);
+                    mCurrentAmplitude = nowAmplitude;
+                }
+                mAmplitudeChangeHandler.postDelayed(this, mGetAmplitudeInterval);
             }
-            int nowAmplitude;
-            try {
-                nowAmplitude = mRecorder.getMaxAmplitude();
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                return;
-            }
-            if (nowAmplitude != mCurrentAmplitude) {
-                mOnAmplitudeChangeListener.onAmplitudeChange(nowAmplitude);
-                mCurrentAmplitude = nowAmplitude;
-            }
-            mOnAmplitudeChangeHandler.postDelayed(this, mGetAmplitudeInterval);
         }
     };
 
@@ -165,17 +177,22 @@ public class VoiceRecorder {
         if (mRecorder == null) {
             return;
         }
+        String error = null;
         try {
             mRecorder.stop();
+        } catch (RuntimeException e) {
+            error = e.toString();
+        }
+        release();
+        if (TextUtils.isEmpty(error)) {
             if (mOnRecorderStateListener != null) {
                 mOnRecorderStateListener.onComplete(mSavePath, System.currentTimeMillis() - mStartRecorderTime);
             }
-        } catch (RuntimeException e) {
+        } else {
             if (mOnRecorderStateListener != null) {
-                mOnRecorderStateListener.onError(e.toString());
+                mOnRecorderStateListener.onError(error);
             }
         }
-        release();
     }
 
     public boolean cancelAndDelete() {
@@ -205,11 +222,19 @@ public class VoiceRecorder {
     }
 
     public void setOnAmplitudeChange(OnAmplitudeChange onAmplitudeChange, Handler handler) {
-        if (mOnAmplitudeChangeHandler != null) {
-            mOnAmplitudeChangeHandler.removeCallbacks(mGetAmplitudeRunnable);
-        }
+        setAmplitudeChangeHandler(handler);
         mOnAmplitudeChangeListener = onAmplitudeChange;
-        mOnAmplitudeChangeHandler = handler;
+    }
+
+    public void setAmplitudeChangeHandler(Handler handler) {
+        if (mAmplitudeChangeHandler != null) {
+            mAmplitudeChangeHandler.removeCallbacks(mGetAmplitudeRunnable);
+        }
+        mAmplitudeChangeHandler = handler;
+    }
+
+    public Handler getAmplitudeChangeHandler() {
+        return mAmplitudeChangeHandler;
     }
 
     public interface OnRecorderStateListener {

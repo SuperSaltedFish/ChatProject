@@ -61,8 +61,15 @@ import com.yzx.chat.widget.view.RecorderButton;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -76,49 +83,11 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final AmplitudeView amplitudeView = findViewById(R.id.rm);
-        amplitudeView.setMaxAmplitude(32767);
-        final VoiceRecorder voiceRecorder = new VoiceRecorder(Environment.getExternalStorageDirectory() + "/a/a.amr", 1000 * 60, new VoiceRecorder.OnRecorderStateListener() {
-            @Override
-            public void onComplete(String filePath, long duration) {
-                LogUtil.e("onComplete");
-            }
-
-            @Override
-            public void onError(String error) {
-                LogUtil.e("onError:" + error);
-            }
-        });
-        RecorderButton button = findViewById(R.id.ssss);
-        button.setOnRecorderTouchListener(new RecorderButton.onRecorderTouchListener() {
-            @Override
-            public void onStart() {
-                voiceRecorder.setOnAmplitudeChange(new VoiceRecorder.OnAmplitudeChange() {
-                    @Override
-                    public void onAmplitudeChange(int amplitude) {
-                        amplitudeView.setCurrentAmplitude(amplitude);
-                    }
-                }, new Handler(amplitudeView.getLooper()));
-                voiceRecorder.prepare();
-                voiceRecorder.start();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        amplitudeView.setTimeText("00:65");
-                    }
-                }, 3000);
-            }
-
-            @Override
-            public void onStop() {
-                voiceRecorder.stop();
-            }
-
-            @Override
-            public void onCancel() {
-                LogUtil.e(voiceRecorder.cancelAndDelete() + " ");
-            }
-        });
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        Calendar calendar =   Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.setTimeInMillis(0);
+        calendar.getTime();
+        LogUtil.e(dateFormat.toString());
 
 //        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
 //        Call<JsonResponse<Void>> task = api.addFriend("5a2bf866f9293d1084f59b59");

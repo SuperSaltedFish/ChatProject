@@ -18,6 +18,7 @@ public class RecorderButton extends ImageView {
 
     private onRecorderTouchListener mListener;
     private boolean isCancel;
+    private boolean isTouchOutOfBounds;
 
     public RecorderButton(Context context) {
         this(context, null);
@@ -52,11 +53,11 @@ public class RecorderButton extends ImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mListener == null) {
-            return false;
+            return super.onTouchEvent(event);
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mListener.onStart();
+                mListener.onDown();
                 isCancel = false;
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -64,18 +65,28 @@ public class RecorderButton extends ImageView {
                     int x = (int) event.getX();
                     int y = (int) event.getY();
                     if (x < 0 || y < 0 || x > getWidth() || y > getHeight()) {
-                        isCancel = true;
-                        mListener.onCancel();
+                        if (!isTouchOutOfBounds) {
+                            isTouchOutOfBounds = true;
+                            mListener.onOutOfBoundsChange(true);
+                        }
+                    } else {
+                        if (isTouchOutOfBounds) {
+                            isTouchOutOfBounds = false;
+                            mListener.onOutOfBoundsChange(false);
+                        }
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 if (!isCancel) {
-                    mListener.onStop();
+                    mListener.onUp();
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                mListener.onCancel();
+                if (!isCancel) {
+                    isCancel = true;
+                    mListener.onCancel();
+                }
                 break;
         }
 
@@ -83,14 +94,27 @@ public class RecorderButton extends ImageView {
         return true;
     }
 
+    public void stop() {
+        if (mListener != null) {
+            reset();
+            mListener.onUp();
+        }
+    }
+
+    public void reset() {
+        isCancel = true;
+    }
+
     public void setOnRecorderTouchListener(onRecorderTouchListener listener) {
         mListener = listener;
     }
 
     public interface onRecorderTouchListener {
-        void onStart();
+        void onDown();
 
-        void onStop();
+        void onUp();
+
+        void onOutOfBoundsChange(boolean isOutOfBounds);
 
         void onCancel();
     }

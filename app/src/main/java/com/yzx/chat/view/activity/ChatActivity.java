@@ -1,11 +1,15 @@
 package com.yzx.chat.view.activity;
 
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
@@ -24,12 +29,16 @@ import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.EmojiUtil;
+import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
+import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
+import com.yzx.chat.widget.view.RecorderButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +49,14 @@ import java.util.List;
  */
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
 
+    private static final int MAX_VOICE_RECORDER_DURATION = 10 * 1000;
+    private static final int MIN_VOICE_RECORDER_DURATION = 800;
+
     private static final int MORE_INPUT_TYPE_NONE = 0;
     private static final int MORE_INPUT_TYPE_EMOTICONS = 1;
     private static final int MORE_INPUT_TYPE_MICROPHONE = 2;
+
+    private static final int REQUEST_PERMISSION_VOICERECORDER = 1;
 
     public static final String ACTION_EXIT = "Exit";
     public static final String INTENT_CONVERSATION_ID = "ConversationID";
@@ -57,13 +71,20 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private LinearLayout mLlRecorderLayout;
     private KeyboardPanelSwitcher mLlInputLayout;
     private EmotionPanelRelativeLayout mEmotionPanelLayout;
+    private AmplitudeView mAmplitudeView;
+    private RecorderButton mBtnRecorder;
+    private TextView mTvRecorderHint;
+    private VoiceRecorder mVoiceRecorder;
     private ChatMessageAdapter mAdapter;
+    private CountDownTimer mVoiceRecorderDownTimer;
 
     private List<EMMessage> mMessageList;
 
     private int mKeyBoardHeight;
     private boolean isOpenedKeyBoard;
     private int isShowMoreTypeAfterCloseKeyBoard;
+
+    private boolean isHasVoiceRecoederPermission;
 
     @Override
     protected int getLayoutID() {
@@ -88,9 +109,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mLlInputLayout = findViewById(R.id.ChatActivity_mLlInputLayout);
         mEmotionPanelLayout = findViewById(R.id.ChatActivity_mEmotionPanelLayout);
         mLlRecorderLayout = findViewById(R.id.ChatActivity_mLlRecorderLayout);
+        mAmplitudeView = findViewById(R.id.ChatActivity_mAmplitudeView);
+        mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
+        mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mExitReceiver = new ExitReceiver();
+        mVoiceRecorder = new VoiceRecorder();
         mKeyBoardHeight = SharePreferenceManager.getInstance().getConfigurePreferences().getKeyBoardHeight();
     }
 
@@ -116,6 +141,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         setKeyBoardSwitcherListener();
 
         setEmotionPanel();
+
+        setVoiceRecorder();
 
         if (mKeyBoardHeight > 0) {
             mEmotionPanelLayout.setHeight(mKeyBoardHeight);
@@ -181,6 +208,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvMicrophone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isHasVoiceRecoederPermission){
+                    requestPermissionsInCompatMode(new String[]{Manifest.permission.RECORD_AUDIO},REQUEST_PERMISSION_VOICERECORDER);
+                    return;
+                }
                 if (isShowMoreInput()) {
                     if (mLlRecorderLayout.getVisibility() == View.VISIBLE) {
                         showSoftKeyboard(mEtContent);
@@ -198,6 +229,86 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         });
     }
 
+    private void setVoiceRecorder() {
+        mAmplitudeView.setMaxAmplitude(VoiceRecorder.MAX_AMPLITUDE);
+        mVoiceRecorder.setMaxDuration(MAX_VOICE_RECORDER_DURATION);
+        mVoiceRecorder.setOnRecorderStateListener(new VoiceRecorder.OnRecorderStateListener() {
+            @Override
+            public void onComplete(String filePath, long duration) {
+                if (duration < MIN_VOICE_RECORDER_DURATION) {
+                    mVoiceRecorder.cancelAndDelete();
+                    showToast(getString(R.string.ChatActivity_VoiceRecorderVeryShort));
+                }
+                resetVoiceState();
+            }
+
+            @Override
+            public void onError(String error) {
+                LogUtil.e(error);
+                showToast(getString(R.string.ChatActivity_VoiceRecorderFail));
+                resetVoiceState();
+            }
+        });
+        mVoiceRecorder.setOnAmplitudeChange(new VoiceRecorder.OnAmplitudeChange() {
+            @Override
+            public void onAmplitudeChange(int amplitude) {
+                mAmplitudeView.setCurrentAmplitude(amplitude);
+            }
+        }, null);
+
+        mBtnRecorder.setOnRecorderTouchListener(new RecorderButton.onRecorderTouchListener() {
+            private boolean isOutOfBounds;
+
+            @Override
+            public void onDown() {
+                if (mVoiceRecorder.getAmplitudeChangeHandler() == null) {
+                    mVoiceRecorder.setAmplitudeChangeHandler(new Handler(mAmplitudeView.getLooper()));
+                }
+                mVoiceRecorder.setSavePath(Environment.getExternalStorageDirectory() + "/a/a.amr");
+                mVoiceRecorder.prepare();
+                mVoiceRecorder.start();
+                mTvRecorderHint.setText(R.string.ChatActivity_SlideCancelSend);
+            }
+
+            @Override
+            public void onUp() {
+                if (isOutOfBounds) {
+                    onCancel();
+                } else {
+                    mVoiceRecorder.stop();
+                    resetVoiceState();
+                }
+            }
+
+            @Override
+            public void onOutOfBoundsChange(boolean isOutOfBounds) {
+                this.isOutOfBounds = isOutOfBounds;
+                if (isOutOfBounds) {
+                    mTvRecorderHint.setText(R.string.R_string_ChatActivity_UpCancelSend);
+                } else {
+                    mTvRecorderHint.setText(R.string.ChatActivity_SlideCancelSend);
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                mVoiceRecorder.cancelAndDelete();
+                resetVoiceState();
+            }
+        });
+
+        mVoiceRecorderDownTimer = new CountDownTimer(MAX_VOICE_RECORDER_DURATION + 2000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mAmplitudeView.setTime((int) Math.round((MAX_VOICE_RECORDER_DURATION + 2000 - millisUntilFinished) / 1000.0));
+            }
+
+            @Override
+            public void onFinish() {
+            }
+        };
+    }
+
     private void setData(Intent intent) {
         mEtContent.clearFocus();
         String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
@@ -211,6 +322,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         super.onResume();
         mEtContent.clearFocus();
     }
+
 
     @Override
     protected void onDestroy() {
@@ -248,6 +360,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsSuccess(int requestCode) {
+        switch (requestCode){
+            case REQUEST_PERMISSION_VOICERECORDER:
+                if(!isHasVoiceRecoederPermission){
+                    showMoreInput(MORE_INPUT_TYPE_MICROPHONE);
+                }
+                isHasVoiceRecoederPermission = true;
+                break;
         }
     }
 
@@ -312,6 +436,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
             mAdapter.notifyItemChanged(mMessageList.size());
         }
+    }
+
+    private void resetVoiceState() {
+        mVoiceRecorderDownTimer.cancel();
+        mAmplitudeView.resetContent();
+        mTvRecorderHint.setText(R.string.R_string_ChatActivity_VoiceRecorderHint);
+        mVoiceRecorder.stop();
+        mBtnRecorder.reset();
     }
 
     private boolean isShowMoreInput() {

@@ -6,15 +6,6 @@
     android:orientation="vertical">
 
 
-    <com.yzx.chat.widget.view.AmplitudeView
-        android:id="@+id/rm"
-        android:layout_width="match_parent"
-        android:layout_height="200dp" />
-
-    <com.yzx.chat.widget.view.RecorderButton
-        android:id="@+id/ssss"
-        android:layout_width="match_parent"
-        android:layout_height="200dp" />
 
 
 </LinearLayout>

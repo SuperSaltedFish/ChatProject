@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.yzx.chat.R;
 
@@ -56,13 +57,16 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         }
     }
 
+    protected void showToast(String content) {
+        Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+    }
+
     protected void showSoftKeyboard(View focusView) {
         if (mInputManager == null) {
             mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         }
         focusView.requestFocus();
         mInputManager.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
-
     }
 
     protected void hideSoftKeyboard() {

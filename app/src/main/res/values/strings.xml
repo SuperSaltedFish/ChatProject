@@ -14,7 +14,7 @@
         <item name="Setting">设置</item>
     </string-array>
 
-    <string name="PermissionDialog_Help">帮助</string>
+    <string name="PermissionDialog_Help">无法使用该功能</string>
     <string name="PermissionDialog_MissPermissionHint">当前应用缺少必要权限。\n请点击“设置”-“权限”-开启所需权限。\n最后点击两次后退按钮，即可返回。</string>
     <string name="PermissionDialog_Cancel">取消</string>
     <string name="PermissionDialog_Setting">设置</string>
@@ -52,5 +52,10 @@
     <string name="LoadMoreHint_Loading">正在加载更多消息</string>
     <string name="ContactAdapter_SearchContact">搜索好友</string>
     <string name="FindNewContactPresenter_AddFriendFail">添加好友失败，请稍后再试</string>
+    <string name="ChatActivity_SlideCancelSend">上滑取消发送</string>
+    <string name="R.string.ChatActivity_UpCancelSend">松手取消发送</string>
+    <string name="R.string.ChatActivity_VoiceRecorderHint">按住后说话</string>
+    <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍后再试！</string>
+    <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短，取消发送</string>
 
 </resources>

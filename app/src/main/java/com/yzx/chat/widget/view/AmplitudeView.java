@@ -14,6 +14,10 @@ import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -72,7 +76,7 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.setFormat(PixelFormat.TRANSLUCENT);
         mSurfaceHolder.addCallback(this);
 
-        mTimeText = "00:00";
+        mTimeText = "0'";
         mTextPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, mContext.getResources().getDisplayMetrics());
         mTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, mContext.getResources().getDisplayMetrics());
         mLineWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, mContext.getResources().getDisplayMetrics());
@@ -125,6 +129,11 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    public void resetContent() {
+        setCurrentAmplitude(0);
+        setTime(0);
+    }
+
     public void setMaxAmplitude(float maxAmplitude) {
         mMaxAmplitude = maxAmplitude;
         update(false);
@@ -135,8 +144,8 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
         update(false);
     }
 
-    public void setTimeText(String timeText) {
-        mTimeText = timeText;
+    public void setTime(int second) {
+        mTimeText = String.valueOf(second) + "'";
         update(false);
     }
 
@@ -208,7 +217,7 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
             }
             float maxLineHeight;
             for (int i = 0, count = mPtsLeft.length / 2 + 2; i < count; i = i + 4) {
-                maxLineHeight = mViewHeight * mCurrentAmplitude / mMaxAmplitude * (i + 1 + count / 3) / (count + count / 3); //设置最大和最小的高度
+                maxLineHeight = mViewHeight * mCurrentAmplitude / mMaxAmplitude * (i + 1 + count / 5) / (count + count / 5); //设置最大和最小的高度
                 maxLineHeight = maxLineHeight * (mRandom.nextInt(6) + 4) / 10f;
                 mPtsLeft[i + 1] = (mViewHeight - maxLineHeight) / 2;
                 mPtsLeft[i + 3] = mPtsLeft[i + 1] + maxLineHeight;
@@ -224,8 +233,10 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
 
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             mPaint.setStrokeWidth(mLineWidth);
-            canvas.drawLines(mPtsLeft, mPaint);
-            canvas.drawLines(mPtsRight, mPaint);
+            if (mCurrentAmplitude != 0) {
+                canvas.drawLines(mPtsLeft, mPaint);
+                canvas.drawLines(mPtsRight, mPaint);
+            }
             mPaint.setStrokeWidth(1);
             canvas.drawLine(0, mViewHeight / 2, mAmplitudeWidth, mViewHeight / 2, mPaint);
             canvas.drawLine(mViewWidth - mAmplitudeWidth, mViewHeight / 2, mViewWidth, mViewHeight / 2, mPaint);

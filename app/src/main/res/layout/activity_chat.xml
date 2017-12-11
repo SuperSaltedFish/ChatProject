@@ -125,12 +125,30 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
+                <com.yzx.chat.widget.view.AmplitudeView
+                    android:id="@+id/ChatActivity_mAmplitudeView"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="48dp"
+                    android:layout_marginStart="48dp" />
+
                 <com.yzx.chat.widget.view.RecorderButton
-                    android:id="@+id/ChatActivity_mRecorderButton"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
+                    android:id="@+id/ChatActivity_mBtnRecorder"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_gravity="center"
-                    android:background="#000000" />
+                    android:background="@color/theme_main_color"
+                    android:padding="20dp"
+                    android:src="@drawable/ic_microphone" />
+
+                <TextView
+                    android:id="@+id/ChatActivity_mTvRecorderHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="按住说话"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
