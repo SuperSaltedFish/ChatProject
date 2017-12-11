@@ -7,6 +7,7 @@ import android.support.text.emoji.EmojiCompat;
 import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 
 import com.yzx.chat.broadcast.NetworkStateReceive;
+import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
@@ -40,7 +41,7 @@ public class AppApplication extends Application {
 
             IdentityManager.getInstance();
 
-            NetworkStateReceive.init(this);
+            DirectoryManager.init();
 
             AndroidUtil.init(this);
 

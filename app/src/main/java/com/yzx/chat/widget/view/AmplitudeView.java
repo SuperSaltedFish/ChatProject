@@ -182,11 +182,11 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
         @Override
         public void run() {
             synchronized (mSurfaceLock) {
-                Canvas canvas = mSurfaceHolder.lockCanvas();
-                if (canvas != null) {
-                    doDraw(canvas);  //这里做真正绘制的事情
-                    mSurfaceHolder.unlockCanvasAndPost(canvas);
-                }
+//                Canvas canvas = mSurfaceHolder.lockCanvas();
+//                if (canvas != null) {
+//                    doDraw(canvas);  //这里做真正绘制的事情
+//                    mSurfaceHolder.unlockCanvasAndPost(canvas);
+//                }
             }
         }
 
