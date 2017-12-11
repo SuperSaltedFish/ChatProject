@@ -84,7 +84,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private boolean isOpenedKeyBoard;
     private int isShowMoreTypeAfterCloseKeyBoard;
 
-    private boolean isHasVoiceRecoederPermission;
+    private boolean isHasVoiceRecorderPermission;
 
     @Override
     protected int getLayoutID() {
@@ -208,7 +208,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvMicrophone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isHasVoiceRecoederPermission){
+                if(!isHasVoiceRecorderPermission){
                     requestPermissionsInCompatMode(new String[]{Manifest.permission.RECORD_AUDIO},REQUEST_PERMISSION_VOICERECORDER);
                     return;
                 }
@@ -367,10 +367,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public void onRequestPermissionsSuccess(int requestCode) {
         switch (requestCode){
             case REQUEST_PERMISSION_VOICERECORDER:
-                if(!isHasVoiceRecoederPermission){
+                if(!isHasVoiceRecorderPermission){
                     showMoreInput(MORE_INPUT_TYPE_MICROPHONE);
                 }
-                isHasVoiceRecoederPermission = true;
+                isHasVoiceRecorderPermission = true;
                 break;
         }
     }
