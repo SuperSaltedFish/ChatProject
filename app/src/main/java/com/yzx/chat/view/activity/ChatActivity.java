@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.text.emoji.widget.EmojiEditText;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,8 +34,9 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
-import com.yzx.chat.widget.view.AmplitudeView;
+import com.yzx.chat.widget.view.AmplitudeView2;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
@@ -71,7 +73,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private LinearLayout mLlRecorderLayout;
     private KeyboardPanelSwitcher mLlInputLayout;
     private EmotionPanelRelativeLayout mEmotionPanelLayout;
-    private AmplitudeView mAmplitudeView;
+    private AmplitudeView2 mAmplitudeView;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
     private VoiceRecorder mVoiceRecorder;
@@ -79,6 +81,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private CountDownTimer mVoiceRecorderDownTimer;
 
     private List<EMMessage> mMessageList;
+    private int[] mEmojis;
 
     private int mKeyBoardHeight;
     private boolean isOpenedKeyBoard;
@@ -116,6 +119,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter = new ChatMessageAdapter(mMessageList);
         mExitReceiver = new ExitReceiver();
         mVoiceRecorder = new VoiceRecorder();
+        mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
         mKeyBoardHeight = SharePreferenceManager.getInstance().getConfigurePreferences().getKeyBoardHeight();
     }
 
@@ -153,12 +157,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private void setEmotionPanel() {
         EmojiRecyclerview emojiRecyclerview = new EmojiRecyclerview(this);
         emojiRecyclerview.setHasFixedSize(true);
-        emojiRecyclerview.setEmojiData(EmojiUtil.getCommonlyUsedEmojiUnicode(), 7);
+        emojiRecyclerview.setEmojiData(mEmojis, 7);
         emojiRecyclerview.setEmojiSize(24);
         emojiRecyclerview.setPadding((int) AndroidUtil.dip2px(8), 0, (int) AndroidUtil.dip2px(8), 0);
-        mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview, getDrawable(R.drawable.ic_moments));
+        emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewClickListener() {
+            @Override
+            public void onItemClick(int position, View itemView) {
+                mEtContent.getText().append(new String(Character.toChars(mEmojis[position])));
+            }
+        });
 
-        mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
+
+
+
+
+        mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview, getDrawable(R.drawable.ic_moments));
+        mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting),null);
     }
 
     private void setKeyBoardSwitcherListener() {
@@ -202,6 +216,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setVoiceRecorder() {
+        mAmplitudeView.setBackgroundColor(ContextCompat.getColor(this,R.color.theme_background_color));
+        mAmplitudeView.setAmplitudeColor(ContextCompat.getColor(this,R.color.theme_main_color));
         mAmplitudeView.setMaxAmplitude(VoiceRecorder.MAX_AMPLITUDE);
         mVoiceRecorder.setMaxDuration(MAX_VOICE_RECORDER_DURATION);
         mVoiceRecorder.setOnRecorderStateListener(new VoiceRecorder.OnRecorderStateListener() {

@@ -125,7 +125,7 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <com.yzx.chat.widget.view.AmplitudeView
+                <com.yzx.chat.widget.view.AmplitudeView2
                     android:id="@+id/ChatActivity_mAmplitudeView"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
