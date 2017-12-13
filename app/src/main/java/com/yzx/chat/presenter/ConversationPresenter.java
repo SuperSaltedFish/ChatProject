@@ -3,11 +3,8 @@ package com.yzx.chat.presenter;
 
 import android.support.v7.util.DiffUtil;
 
-import com.hyphenate.EMMessageListener;
-import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMTextMessageBody;
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.contract.ConversationContract;
@@ -42,13 +39,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
         mChatManager = ChatClientManager.getInstance();
-        mChatManager.addMessageListener(mMessageListener, null);
+        mChatManager.addOnMessageReceiveListener(mOnMessageReceiveListener, null);
         mChatManager.addUnreadCountChangeListener(mUnreadChangeListener);
     }
 
     @Override
     public void detachView() {
-        mChatManager.removeMessageListener(mMessageListener);
+        mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
         mChatManager.removeUnreadCountChangeListener(mUnreadChangeListener);
         mConversationView = null;
         mConversationList = null;
@@ -76,10 +73,16 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         });
     }
 
-    private final ChatClientManager.MessageListener mMessageListener = new ChatClientManager.MessageListener() {
+    private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             refreshAllConversation(mConversationView.getOldConversationList());
+//            boolean isAppBackground = !AndroidUtil.isAppForeground();
+//            Class topActivityClass = AndroidUtil.getTopActivityClass();
+//            for(EMMessage message:messages){
+//                message.getBody()
+//                NotifyManager.getInstance().notify();
+//            }
         }
     };
 

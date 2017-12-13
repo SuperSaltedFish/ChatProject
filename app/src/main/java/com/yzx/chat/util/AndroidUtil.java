@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -22,7 +21,7 @@ public class AndroidUtil {
     private static int sScreenHeight;
     private static int sScreenDensity;
     private static int sActivityStartedCount;
-    private static String sTopActivityName;
+    private static Class<? extends Activity> sTopActivityClass;
     private static Context sApplicationContext;
 
     public synchronized static void init(Application application) {
@@ -45,12 +44,12 @@ public class AndroidUtil {
         return result;
     }
 
-    public static boolean isAppForeground(){
-        return sActivityStartedCount>0;
+    public static boolean isAppForeground() {
+        return sActivityStartedCount > 0;
     }
 
-    public static String getTopActivityName(){
-        return sTopActivityName;
+    public static Class<? extends Activity> getTopActivityClass() {
+        return sTopActivityClass;
     }
 
 
@@ -97,7 +96,6 @@ public class AndroidUtil {
     }
 
 
-
     private static Application.ActivityLifecycleCallbacks sLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -111,7 +109,7 @@ public class AndroidUtil {
 
         @Override
         public void onActivityResumed(Activity activity) {
-            sTopActivityName = activity.getClass().getSimpleName();
+            sTopActivityClass = activity.getClass();
         }
 
         @Override

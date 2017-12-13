@@ -49,7 +49,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         sToChatName = conversationID;
         mHasMoreMessage = true;
         mIsLoadingMore = false;
-        mChatManager.addMessageListener(mMessageListener, conversationID);
+        mChatManager.addOnMessageReceiveListener(mOnMessageReceiveListener, conversationID);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
         mChatManager.setMessageUnreadCount(mChatManager.getMessageUnreadCount() - conversation.getUnreadMsgCount());
         conversation.markAllMessagesAsRead();
@@ -70,7 +70,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void reset() {
         sToChatName = null;
-        mChatManager.removeMessageListener(mMessageListener);
+        mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
         mHandler.removeCallbacksAndMessages(null);
         NetworkUtil.cancelTask(mLoadMoreTask);
     }
@@ -104,7 +104,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     private void sendMessage(EMMessage message) {
-        EMClient.getInstance().chatManager().sendMessage(message);
+        mChatManager.sendMessage(message);
         mChatView.showNewMessage(message);
     }
 
@@ -120,7 +120,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView.showNewMessage(messageList);
     }
 
-    private final ChatClientManager.MessageListener mMessageListener = new ChatClientManager.MessageListener() {
+    private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
         @Override
         public void onMessageReceived(final List<EMMessage> messages) {
             mHandler.post(new Runnable() {

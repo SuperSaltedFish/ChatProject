@@ -11,8 +11,7 @@
         android:id="@+id/ChatAdapter_mTvVoiceTimeLength"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="11'" />
+        android:gravity="center" />
 
     <FrameLayout
         android:id="@+id/ChatAdapter_mFlPlayLayout"

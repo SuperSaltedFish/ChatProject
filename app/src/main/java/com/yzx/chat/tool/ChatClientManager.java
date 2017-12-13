@@ -4,6 +4,7 @@ package com.yzx.chat.tool;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.EMContactListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
@@ -13,7 +14,6 @@ import com.hyphenate.chat.EMOptions;
 import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
-import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.HashMap;
@@ -47,8 +47,9 @@ public class ChatClientManager {
 
 
     private EMClient mEMClient;
-    private Map<MessageListener, String> mMessageListenerMap;
+    private Map<OnMessageReceiveListener, String> mMessageListenerMap;
     private List<ContactListener> mContactListenerList;
+    private List<OnMessageSendStateChangeListener> mMessageSendStateChangeListenerList;
     private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
 
     private ContactDao mContactDao;
@@ -66,13 +67,13 @@ public class ChatClientManager {
         mEMClient.contactManager().setContactListener(mEMContactListener);
     }
 
-    public void addMessageListener(MessageListener listener, String conversationID) {
+    public void addOnMessageReceiveListener(OnMessageReceiveListener listener, String conversationID) {
         if (!mMessageListenerMap.containsKey(listener)) {
             mMessageListenerMap.put(listener, conversationID);
         }
     }
 
-    public void removeMessageListener(MessageListener listener) {
+    public void removeOnMessageReceiveListener(OnMessageReceiveListener listener) {
         mMessageListenerMap.remove(listener);
     }
 
@@ -85,6 +86,17 @@ public class ChatClientManager {
 
     public void removeContactListener(ContactListener listener) {
         mContactListenerList.remove(listener);
+    }
+
+
+    public void addOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
+        if (!mMessageSendStateChangeListenerList.contains(listener)) {
+            mMessageSendStateChangeListenerList.add(listener);
+        }
+    }
+
+    public void removeOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
+        mMessageSendStateChangeListenerList.remove(listener);
     }
 
     public void addUnreadCountChangeListener(UnreadCountChangeListener listener) {
@@ -139,6 +151,11 @@ public class ChatClientManager {
         return mEMClient.chatManager().getAllConversations();
     }
 
+    public void sendMessage(EMMessage message) {
+        message.setMessageStatusCallback(mEMCallBack);
+        mEMClient.chatManager().sendMessage(message);
+    }
+
     public List<EMMessage> loadMoreMessage(String conversationID, String startMessageID, int count) {
         EMConversation conversation = mEMClient.chatManager().getConversation(conversationID);
         if (conversation == null) {
@@ -158,9 +175,9 @@ public class ChatClientManager {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             String conversationID;
-            MessageListener listener;
+            OnMessageReceiveListener listener;
             List<EMMessage> filterMessage;
-            for (Map.Entry<MessageListener, String> entry : mMessageListenerMap.entrySet()) {
+            for (Map.Entry<OnMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
                 conversationID = entry.getValue();
                 listener = entry.getKey();
                 if (listener == null) {
@@ -208,6 +225,7 @@ public class ChatClientManager {
         }
     };
 
+
     private final EMContactListener mEMContactListener = new EMContactListener() {
         @Override
         public void onContactAdded(String username) {
@@ -243,8 +261,48 @@ public class ChatClientManager {
         }
     };
 
+    private class MessageSendCallBack implements EMCallBack{
 
-    public interface MessageListener {
+        private EMMessage mEMMessage;
+
+        public MessageSendCallBack(EMMessage message) {
+            mEMMessage = message;
+        }
+
+        @Override
+        public void onSuccess() {
+            for(OnMessageSendStateChangeListener listener:mMessageSendStateChangeListenerList){
+                listener.onSendSuccess(mEMMessage);
+            }
+        }
+
+        @Override
+        public void onError(int code, String error) {
+            LogUtil.e("send fail:"+error);
+            for(OnMessageSendStateChangeListener listener:mMessageSendStateChangeListenerList){
+                listener.onSendError(mEMMessage);
+            }
+        }
+
+        @Override
+        public void onProgress(int progress, String status) {
+            for(OnMessageSendStateChangeListener listener:mMessageSendStateChangeListenerList){
+                listener.onSendProgress(mEMMessage);
+            }
+        }
+    }
+
+    public interface OnMessageSendStateChangeListener {
+
+        void onSendProgress(EMMessage message);
+
+        void onSendSuccess(EMMessage message);
+
+        void onSendError(EMMessage message);
+    }
+
+
+    public interface OnMessageReceiveListener {
         void onMessageReceived(List<EMMessage> messages);
     }
 

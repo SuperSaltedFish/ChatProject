@@ -55,6 +55,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new ReceiveTextMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
             case TYPE_SEND_MESSAGE_VOICE:
                 return new SendVoiceMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
+            case TYPE_RECEIVE_MESSAGE_VOICE:
+                return new ReceiveVoiceMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
             case TYPE_LOAD_MORE:
                 return new LoadMoreViewHolder(LayoutInflater.from(mContext).inflate(R.layout.view_load_more, parent, false));
             default:
@@ -132,7 +134,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     static abstract class MessageViewHolder extends RecyclerView.ViewHolder {
 
-
         MessageViewHolder(View itemView) {
             super(itemView);
         }
@@ -168,7 +169,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         @Override
         public void setDate(EMMessage message) {
             mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
-            GlideUtil.loadFromUrl(mTvTextContent.getContext(), mIvAvatar, R.drawable.temp_head_image);
+            GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
         }
     }
 
@@ -185,14 +186,41 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         @Override
         public void setDate(EMMessage message) {
             EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
-            int timeLength_ms = voiceBody.getLength()*1000;
-            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms/1000));
+            int timeLength_ms = voiceBody.getLength() * 1000;
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
             int rowWidth = mFlPlayLayout.getMinimumWidth();
-            if(timeLength_ms>=ChatActivity.MAX_VOICE_RECORDER_DURATION/2){
-                mFlPlayLayout.setMinimumWidth(2*rowWidth);
-            }else {
-                mFlPlayLayout.setMinimumWidth((int) (rowWidth*(1+timeLength_ms*2.0/ChatActivity.MAX_VOICE_RECORDER_DURATION)));
+            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+                mFlPlayLayout.setMinimumWidth(2 * rowWidth);
+            } else {
+                mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
             }
+        }
+    }
+
+    private static class ReceiveVoiceMessageHolder extends MessageViewHolder {
+        private TextView mTvVoiceTimeLength;
+        private FrameLayout mFlPlayLayout;
+        private ImageView mIvAvatar;
+
+        ReceiveVoiceMessageHolder(View itemView) {
+            super(itemView);
+            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
+            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
+            mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
+        }
+
+        @Override
+        public void setDate(EMMessage message) {
+            EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
+            int timeLength_ms = voiceBody.getLength() * 1000;
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
+            int rowWidth = mFlPlayLayout.getMinimumWidth();
+            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+                mFlPlayLayout.setMinimumWidth(2 * rowWidth);
+            } else {
+                mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
+            }
+            GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
         }
     }
 
