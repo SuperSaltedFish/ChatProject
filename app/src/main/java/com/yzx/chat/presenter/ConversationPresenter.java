@@ -13,6 +13,7 @@ import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.util.EMMessageUtil;
 import com.yzx.chat.util.NetworkUtil;
 
 import java.util.ArrayList;
@@ -130,7 +131,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     bean.setConversationID(conversation.conversationId());
                     bean.setName(conversation.conversationId());
                     bean.setUnreadMsgCount(conversation.getUnreadMsgCount());
-                    bean.setLastMsgContent((((EMTextMessageBody) lastMessage.getBody()).getMessage()));
+                    bean.setLastMsgContent(EMMessageUtil.getMessageDigest(lastMessage));
                     bean.setLastMsgTime(lastMessage.getMsgTime());
                     filterConversation.add(bean);
                 }

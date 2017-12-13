@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="80dp"
+    android:gravity="center_vertical|end"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/ChatAdapter_mTvVoiceTimeLength"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="11'" />
+
+    <FrameLayout
+        android:id="@+id/ChatAdapter_mFlPlayLayout"
+        android:layout_width="wrap_content"
+        android:minWidth="120dp"
+        android:layout_height="56dp"
+        android:background="@drawable/bg_chat_item_send">
+
+        <ImageView
+            android:id="@+id/ChatMessageAdapter_mIvPlayIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:gravity="center_vertical"
+            android:src="@drawable/ic_feedback" />
+
+    </FrameLayout>
+
+</LinearLayout>

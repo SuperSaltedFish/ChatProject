@@ -48,14 +48,24 @@
     <string name="LoginActivity_Error_Resending">正在发送</string>
 
     <string name="Server_Error">服务器繁忙，请稍候再试！</string>
+
     <string name="LoadMoreHint_NoMore">没有更多的消息</string>
     <string name="LoadMoreHint_Loading">正在加载更多消息</string>
+
     <string name="ContactAdapter_SearchContact">搜索好友</string>
+
     <string name="FindNewContactPresenter_AddFriendFail">添加好友失败，请稍后再试</string>
+
     <string name="ChatActivity_SlideCancelSend">上滑取消发送</string>
-    <string name="R.string.ChatActivity_UpCancelSend">松手取消发送</string>
-    <string name="R.string.ChatActivity_VoiceRecorderHint">按住后说话</string>
+    <string name="ChatActivity_UpCancelSend">松手取消发送</string>
+    <string name="ChatActivity_VoiceRecorderHint">按住后说话</string>
     <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍后再试！</string>
     <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短，取消发送</string>
+
+    <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
+    <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
+    <string name="EMMessageUtil_VoiceInfo">[语音信息]</string>
+    <string name="EMMessageUtil_VideoInfo">[视频信息]</string>
+    <string name="EMMessageUtil_FileInfo">[文件信息]</string>
 
 </resources>

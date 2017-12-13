@@ -14,7 +14,9 @@ import java.util.List;
 public class ChatContract {
     public interface View extends BaseView<Presenter> {
         void showNewMessage(EMMessage message);
+
         void showNewMessage(List<EMMessage> messageList);
+
         void showMoreMessage(List<EMMessage> messageList, boolean isHasMoreMessage);
     }
 
@@ -22,10 +24,17 @@ public class ChatContract {
     public interface Presenter extends BasePresenter<View> {
 
         void init(String conversationID);
+
         void reset();
+
         void sendMessage(String message);
+
+        void sendVoiceRecorder(String filePath,int timeLength);
+
         void loadMoreMessage(String lastMessageID);
+
         boolean isLoadingMore();
+
         boolean hasMoreMessage();
 
     }

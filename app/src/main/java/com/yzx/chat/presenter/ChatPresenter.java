@@ -49,9 +49,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         sToChatName = conversationID;
         mHasMoreMessage = true;
         mIsLoadingMore = false;
-        mChatManager.addMessageListener(mMessageListener,conversationID);
+        mChatManager.addMessageListener(mMessageListener, conversationID);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
-        mChatManager.setMessageUnreadCount(mChatManager.getMessageUnreadCount()-conversation.getUnreadMsgCount());
+        mChatManager.setMessageUnreadCount(mChatManager.getMessageUnreadCount() - conversation.getUnreadMsgCount());
         conversation.markAllMessagesAsRead();
         List<EMMessage> messageList = conversation.getAllMessages();
         int count = messageList.size();
@@ -77,9 +77,12 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void sendMessage(String content) {
-        EMMessage message = EMMessage.createTxtSendMessage(content, sToChatName);
-        EMClient.getInstance().chatManager().sendMessage(message);
-        mChatView.showNewMessage(message);
+        sendMessage(EMMessage.createTxtSendMessage(content, sToChatName));
+    }
+
+    @Override
+    public void sendVoiceRecorder(String filePath, int timeLength) {
+        sendMessage(EMMessage.createVoiceSendMessage(filePath, timeLength, sToChatName));
     }
 
     @Override
@@ -98,6 +101,11 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public boolean hasMoreMessage() {
         return mHasMoreMessage;
+    }
+
+    private void sendMessage(EMMessage message) {
+        EMClient.getInstance().chatManager().sendMessage(message);
+        mChatView.showNewMessage(message);
     }
 
     private void loadMoreComplete(List<EMMessage> messageList) {
@@ -129,7 +137,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         return sToChatName;
     }
 
-    private static class LoadMoreTask extends NetworkAsyncTask<ChatPresenter,Void, List<EMMessage>> {
+    private static class LoadMoreTask extends NetworkAsyncTask<ChatPresenter, Void, List<EMMessage>> {
         private String mConversationID;
         private String mStartID;
         private int mCount;

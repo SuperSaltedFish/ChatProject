@@ -36,12 +36,13 @@ import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
-import com.yzx.chat.widget.view.AmplitudeView2;
+import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
 import com.yzx.chat.widget.view.RecorderButton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,8 +52,8 @@ import java.util.List;
  */
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
 
-    private static final int MAX_VOICE_RECORDER_DURATION = 60 * 1000;
-    private static final int MIN_VOICE_RECORDER_DURATION = 800;
+    public static final int MAX_VOICE_RECORDER_DURATION = 60 * 1000;
+    private static final int MIN_VOICE_RECORDER_DURATION = 1000;
 
     private static final int MORE_INPUT_TYPE_NONE = 0;
     private static final int MORE_INPUT_TYPE_EMOTICONS = 1;
@@ -73,7 +74,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private LinearLayout mLlRecorderLayout;
     private KeyboardPanelSwitcher mLlInputLayout;
     private EmotionPanelRelativeLayout mEmotionPanelLayout;
-    private AmplitudeView2 mAmplitudeView;
+    private AmplitudeView mAmplitudeView;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
     private VoiceRecorder mVoiceRecorder;
@@ -168,11 +169,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         });
 
 
-
-
-
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview, getDrawable(R.drawable.ic_moments));
-        mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting),null);
+        mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
     }
 
     private void setKeyBoardSwitcherListener() {
@@ -216,8 +214,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setVoiceRecorder() {
-        mAmplitudeView.setBackgroundColor(ContextCompat.getColor(this,R.color.theme_background_color));
-        mAmplitudeView.setAmplitudeColor(ContextCompat.getColor(this,R.color.theme_main_color));
+        mAmplitudeView.setBackgroundColor(ContextCompat.getColor(this, R.color.theme_background_color));
+        mAmplitudeView.setAmplitudeColor(ContextCompat.getColor(this, R.color.theme_main_color));
         mAmplitudeView.setMaxAmplitude(VoiceRecorder.MAX_AMPLITUDE);
         mVoiceRecorder.setMaxDuration(MAX_VOICE_RECORDER_DURATION);
         mVoiceRecorder.setOnRecorderStateListener(new VoiceRecorder.OnRecorderStateListener() {
@@ -226,6 +224,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (duration < MIN_VOICE_RECORDER_DURATION) {
                     mVoiceRecorder.cancelAndDelete();
                     showToast(getString(R.string.ChatActivity_VoiceRecorderVeryShort));
+                }
+                if (new File(filePath).exists()) {
+                    mPresenter.sendVoiceRecorder(filePath, (int) (duration / 1000));
+                } else {
+                    showToast(getString(R.string.ChatActivity_VoiceRecorderFail));
                 }
                 resetVoiceState();
             }
@@ -273,7 +276,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             public void onOutOfBoundsChange(boolean isOutOfBounds) {
                 this.isOutOfBounds = isOutOfBounds;
                 if (isOutOfBounds) {
-                    mTvRecorderHint.setText(R.string.R_string_ChatActivity_UpCancelSend);
+                    mTvRecorderHint.setText(R.string.ChatActivity_UpCancelSend);
                 } else {
                     mTvRecorderHint.setText(R.string.ChatActivity_SlideCancelSend);
                 }
@@ -430,7 +433,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private void resetVoiceState() {
         mVoiceRecorderDownTimer.cancel();
         mAmplitudeView.resetContent();
-        mTvRecorderHint.setText(R.string.R_string_ChatActivity_VoiceRecorderHint);
+        mTvRecorderHint.setText(R.string.ChatActivity_VoiceRecorderHint);
         mVoiceRecorder.stop();
         mBtnRecorder.reset();
     }

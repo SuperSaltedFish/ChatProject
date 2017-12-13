@@ -4,33 +4,26 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
+import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
 
 /**
- * Created by YZX on 2017年12月09日.
- * 每一个不曾起舞的日子 都是对生命的辜负
+ * Created by YZX on 2017年12月13日.
+ * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback {
+public class AmplitudeView extends TextureView implements TextureView.SurfaceTextureListener {
 
     private static final String TAG = "AmplitudeView";
 
     private Context mContext;
-    private SurfaceHolder mSurfaceHolder;
     private final Object mSurfaceLock = new Object();
     private boolean isReset;
     private DrawRunnable mDrawRunnable;
@@ -51,6 +44,7 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
     private int mAmplitudeWidth;
     private int mAmplitudeColor;
     private int mLineInterval = 2;
+    private int mBackgroundColor;
     private Paint mPaint;
     private Random mRandom;
 
@@ -66,15 +60,12 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
     public AmplitudeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        mSurfaceHolder = getHolder();
         init();
     }
 
     private void init() {
         setFocusable(false);
-        setZOrderOnTop(true);
-        mSurfaceHolder.setFormat(PixelFormat.TRANSLUCENT);
-        mSurfaceHolder.addCallback(this);
+        setSurfaceTextureListener(this);
 
         mTimeText = "0'";
         mTextPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, mContext.getResources().getDisplayMetrics());
@@ -92,9 +83,10 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
         mDrawRunnable = new DrawRunnable();
     }
 
-
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        mViewWidth = width;
+        mViewHeight = height;
         mDrawThread = new HandlerThread(TAG) {
             @Override
             protected void onLooperPrepared() {
@@ -106,18 +98,25 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         mViewWidth = width;
         mViewHeight = height;
+        update(true);
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         synchronized (mSurfaceLock) {
             mHandler.removeCallbacksAndMessages(null);
             mDrawThread.quit();
         }
+        return true;
     }
+
 
     private void update(boolean isReset) {
         if (mHandler == null) {
@@ -132,6 +131,12 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
     public void resetContent() {
         setCurrentAmplitude(0);
         setTime(0);
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        mBackgroundColor = color;
+        update(false);
     }
 
     public void setMaxAmplitude(float maxAmplitude) {
@@ -182,10 +187,10 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
         @Override
         public void run() {
             synchronized (mSurfaceLock) {
-                Canvas canvas = mSurfaceHolder.lockCanvas();
+                Canvas canvas = lockCanvas();
                 if (canvas != null) {
                     doDraw(canvas);  //这里做真正绘制的事情
-                    mSurfaceHolder.unlockCanvasAndPost(canvas);
+                    unlockCanvasAndPost(canvas);
                 }
             }
         }
@@ -231,7 +236,7 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
                 mPtsRight[i + 3] = mPtsLeft[i + 3];
             }
 
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            canvas.drawColor(mBackgroundColor);
             mPaint.setStrokeWidth(mLineWidth);
             if (mCurrentAmplitude != 0) {
                 canvas.drawLines(mPtsLeft, mPaint);
@@ -243,5 +248,4 @@ public class AmplitudeView extends SurfaceView implements SurfaceHolder.Callback
             canvas.drawText(mTimeText, mViewWidth / 2, mTextBaseLine, mPaint);
         }
     }
-
 }
