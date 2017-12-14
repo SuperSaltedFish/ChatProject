@@ -16,6 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:textSize="16sp"
         android:background="@drawable/bg_chat_item_recv"
         android:gravity="center_vertical"
         android:minHeight="56dp"
@@ -24,4 +25,5 @@
         android:paddingStart="20dp"
         android:paddingTop="16dp"
         android:textColor="#9e000000" />
+
 </LinearLayout>

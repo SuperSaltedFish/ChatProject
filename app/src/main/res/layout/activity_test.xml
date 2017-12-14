@@ -6,6 +6,16 @@
     android:orientation="vertical">
 
 
+    <ImageView
+        android:id="@+id/im"
+        android:layout_width="32dp"
+        android:layout_height="32dp" />
+
+    <ImageView
+        android:id="@+id/im2"
+        android:layout_width="32dp"
+        android:layout_height="32dp" />
+
 
 
 </LinearLayout>

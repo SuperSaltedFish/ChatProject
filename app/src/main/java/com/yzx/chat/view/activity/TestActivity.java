@@ -16,12 +16,16 @@ import android.os.MessageQueue;
 import android.os.SystemClock;
 import android.support.design.widget.TabLayout;
 import android.support.text.emoji.widget.EmojiTextView;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -46,6 +50,7 @@ import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.NotifyManager;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AESUtil;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
@@ -75,6 +80,17 @@ import java.util.TimeZone;
 public class TestActivity extends BaseCompatActivity {
 
 
+
+
+
+
+
+
+
+
+
+
+
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
@@ -83,12 +99,17 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        Calendar calendar =   Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.setTimeInMillis(0);
-        calendar.getTime();
-        LogUtil.e(dateFormat.toString());
 
+        ImageView imageView = findViewById(R.id.im);
+        ImageView imageView1 = findViewById(R.id.im2);
+        CircularProgressDrawable drawable = new CircularProgressDrawable(this);
+        drawable.setStyle(CircularProgressDrawable.DEFAULT);
+        drawable.setArrowEnabled(false);
+        drawable.setStrokeWidth(AndroidUtil.dip2px(2));
+        drawable.setColorSchemeColors(ContextCompat.getColor(this,R.color.theme_main_color));
+        drawable.start();
+        imageView1.setImageDrawable(drawable);
+        imageView.setImageDrawable(drawable);
 //        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
 //        Call<JsonResponse<Void>> task = api.addFriend("5a2bf866f9293d1084f59b59");
 //        task.setCallback(new BaseHttpCallback<Void>() {

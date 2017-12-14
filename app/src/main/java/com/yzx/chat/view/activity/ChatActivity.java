@@ -402,9 +402,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     public void showNewMessage(EMMessage message) {
-        List<EMMessage> messageList = new ArrayList<>(1);
-        messageList.add(message);
-        showNewMessage(messageList);
+        if (mMessageList.size() == 0) {
+            mAdapter.notifyDataSetChanged();
+        } else {
+            mAdapter.notifyItemRangeInserted(0, 1);
+        }
+        mMessageList.add(message);
+        mRvChatView.scrollToPosition(0);
     }
 
     @Override
@@ -428,6 +432,16 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
             mAdapter.notifyItemChanged(mMessageList.size());
         }
+    }
+
+    @Override
+    public void updateMessageState(int position) {
+        mAdapter.notifyItemChanged(mMessageList.size() - position - 1);
+    }
+
+    @Override
+    public List<EMMessage> getAllMessage() {
+        return mMessageList;
     }
 
     private void resetVoiceState() {

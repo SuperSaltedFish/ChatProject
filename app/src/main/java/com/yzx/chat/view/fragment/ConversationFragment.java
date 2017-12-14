@@ -51,9 +51,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     protected void init(View parentView) {
-        mRecyclerView = (RecyclerView) parentView.findViewById(R.id.ConversationFragment_mRecyclerView);
-        mToolbar = (Toolbar) parentView.findViewById(R.id.ConversationFragment_mToolbar);
-        mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
+        mRecyclerView = parentView.findViewById(R.id.ConversationFragment_mRecyclerView);
+        mToolbar = parentView.findViewById(R.id.ConversationFragment_mToolbar);
+        mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
         mOverflowPopupWindow = new HomeOverflowPopupWindow(mContext, mToolbar, R.menu.menu_home_overflow);
         mConversationList = new ArrayList<>(64);
         mAdapter = new ConversationAdapter(mConversationList);

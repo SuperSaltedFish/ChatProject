@@ -2,6 +2,7 @@ package com.yzx.chat.tool;
 
 
 import android.content.Context;
+import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import com.hyphenate.EMCallBack;
@@ -14,8 +15,9 @@ import com.hyphenate.chat.EMOptions;
 import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
-import com.yzx.chat.util.LogUtil;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,8 +50,8 @@ public class ChatClientManager {
 
     private EMClient mEMClient;
     private Map<OnMessageReceiveListener, String> mMessageListenerMap;
+    private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
     private List<ContactListener> mContactListenerList;
-    private List<OnMessageSendStateChangeListener> mMessageSendStateChangeListenerList;
     private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
 
     private ContactDao mContactDao;
@@ -59,6 +61,7 @@ public class ChatClientManager {
 
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
+        mMessageSendStateChangeListenerMap = new HashMap<>();
         mContactListenerList = new LinkedList<>();
         mUnreadCountChangeListenerList = new LinkedList<>();
         mContactDao = DBManager.getInstance().getContactDao();
@@ -89,14 +92,14 @@ public class ChatClientManager {
     }
 
 
-    public void addOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
-        if (!mMessageSendStateChangeListenerList.contains(listener)) {
-            mMessageSendStateChangeListenerList.add(listener);
+    public void addOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener, String conversationID) {
+        if (!mMessageSendStateChangeListenerMap.containsKey(listener)) {
+            mMessageSendStateChangeListenerMap.put(listener, conversationID);
         }
     }
 
     public void removeOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
-        mMessageSendStateChangeListenerList.remove(listener);
+        mMessageSendStateChangeListenerMap.remove(listener);
     }
 
     public void addUnreadCountChangeListener(UnreadCountChangeListener listener) {
@@ -152,7 +155,7 @@ public class ChatClientManager {
     }
 
     public void sendMessage(EMMessage message) {
-        message.setMessageStatusCallback(mEMCallBack);
+        message.setMessageStatusCallback(new MessageSendCallBack(message));
         mEMClient.chatManager().sendMessage(message);
     }
 
@@ -261,7 +264,7 @@ public class ChatClientManager {
         }
     };
 
-    private class MessageSendCallBack implements EMCallBack{
+    private class MessageSendCallBack implements EMCallBack {
 
         private EMMessage mEMMessage;
 
@@ -271,34 +274,51 @@ public class ChatClientManager {
 
         @Override
         public void onSuccess() {
-            for(OnMessageSendStateChangeListener listener:mMessageSendStateChangeListenerList){
-                listener.onSendSuccess(mEMMessage);
+            String conversationID = mEMMessage.conversationId();
+            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onSendSuccess(mEMMessage);
+                }
             }
         }
 
         @Override
         public void onError(int code, String error) {
-            LogUtil.e("send fail:"+error);
-            for(OnMessageSendStateChangeListener listener:mMessageSendStateChangeListenerList){
-                listener.onSendError(mEMMessage);
+            String conversationID = mEMMessage.conversationId();
+            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onSendFail(mEMMessage);
+                }
             }
         }
 
         @Override
         public void onProgress(int progress, String status) {
-            for(OnMessageSendStateChangeListener listener:mMessageSendStateChangeListenerList){
-                listener.onSendProgress(mEMMessage);
+            String conversationID = mEMMessage.conversationId();
+            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onSendProgress(mEMMessage,progress);
+                }
             }
         }
     }
 
+//    public static final String MESSAGE_ATTRIBUTE_STATE = "MessageState";
+//    public static final int MESSAGE_STATE_PROGRESS = 0;
+//    public static final int MESSAGE_STATE_SUCCESS = 1;
+//    public static final int MESSAGE_STATE_FAIL = 2;
+//
+//    @IntDef({MESSAGE_STATE_PROGRESS, MESSAGE_STATE_SUCCESS, MESSAGE_STATE_FAIL})
+//    @Retention(RetentionPolicy.SOURCE)
+//    public @interface MessageState {}
+
     public interface OnMessageSendStateChangeListener {
 
-        void onSendProgress(EMMessage message);
+        void onSendProgress(EMMessage message,int progress);
 
         void onSendSuccess(EMMessage message);
 
-        void onSendError(EMMessage message);
+        void onSendFail(EMMessage message);
     }
 
 

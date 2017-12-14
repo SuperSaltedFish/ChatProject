@@ -1,10 +1,14 @@
 package com.yzx.chat.widget.adapter;
 
+import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +19,10 @@ import com.hyphenate.chat.EMVoiceMessageBody;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
+import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.listener.OnScrollToBottomListener;
 
@@ -28,7 +35,7 @@ import java.util.Locale;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageViewHolder> {
+public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageHolder> {
 
     private static final int TYPE_LOAD_MORE = 0;
     private static final int TYPE_SEND_MESSAGE_TEXT = 1;
@@ -47,18 +54,18 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     @Override
-    public MessageViewHolder getViewHolder(ViewGroup parent, int viewType) {
+    public MessageHolder getViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_SEND_MESSAGE_TEXT:
-                return new SendTextMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false));
+                return new TextSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false));
             case TYPE_RECEIVE_MESSAGE_TEXT:
-                return new ReceiveTextMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
+                return new TextReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
             case TYPE_SEND_MESSAGE_VOICE:
-                return new SendVoiceMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
+                return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
             case TYPE_RECEIVE_MESSAGE_VOICE:
-                return new ReceiveVoiceMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
+                return new VoiceReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
             case TYPE_LOAD_MORE:
-                return new LoadMoreViewHolder(LayoutInflater.from(mContext).inflate(R.layout.view_load_more, parent, false));
+                return new LoadMoreHolder(LayoutInflater.from(mContext).inflate(R.layout.view_load_more, parent, false));
             default:
                 return null;
         }
@@ -66,19 +73,29 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     @Override
-    public void bindDataToViewHolder(MessageViewHolder holder, int position) {
+    public void bindDataToViewHolder(MessageHolder holder, int position) {
         if (isEnableLoadMore && getItemCount() - 1 == position) {
             if (mScrollToBottomListener != null) {
                 mScrollToBottomListener.OnScrollToBottom();
             }
             holder.setDate(null);
-            LoadMoreViewHolder loadMoreHolder = (LoadMoreViewHolder) holder;
+            LoadMoreHolder loadMoreHolder = (LoadMoreHolder) holder;
             loadMoreHolder.mTvHintContent.setText(mLoadMoreHint);
         } else {
             holder.setDate(mMessageList.get(getPosition(position)));
         }
     }
 
+    @Override
+    public void onViewDetachedFromWindow(MessageHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        if (holder instanceof SendMessageHolder) {
+            SendMessageHolder sendMessageHolder = (SendMessageHolder) holder;
+            if (sendMessageHolder.mProgressDrawable != null) {
+                sendMessageHolder.mProgressDrawable.stop();
+            }
+        }
+    }
 
     @Override
     public int getItemCount() {
@@ -132,9 +149,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         return mMessageList.size() - position - 1;
     }
 
-    static abstract class MessageViewHolder extends RecyclerView.ViewHolder {
+    static abstract class MessageHolder extends RecyclerView.ViewHolder {
 
-        MessageViewHolder(View itemView) {
+        MessageHolder(View itemView) {
             super(itemView);
         }
 
@@ -142,42 +159,124 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     }
 
-    private static class SendTextMessageHolder extends MessageViewHolder {
+    static abstract class ReceiveMessageHolder extends MessageHolder {
+        private ImageView mIvAvatar;
+
+        ReceiveMessageHolder(View itemView) {
+            super(itemView);
+            mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
+            GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
+        }
+    }
+
+    static abstract class SendMessageHolder extends MessageHolder {
+
+        private ImageView mIvMessageState;
+        private CircularProgressDrawable mProgressDrawable;
+
+        SendMessageHolder(View itemView) {
+            super(itemView);
+            mIvMessageState = itemView.findViewById(R.id.ChatMessageAdapter_mIvMessageState);
+        }
+
+        @CallSuper
+        @Override
+        public void setDate(EMMessage message) {
+            setMessageState(message.status());
+        }
+
+        private void setMessageState(EMMessage.Status state) {
+            switch (state) {
+                case CREATE:
+                case INPROGRESS:
+                    if (mProgressDrawable == null) {
+                        mProgressDrawable = new CircularProgressDrawable(itemView.getContext());
+                        mProgressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
+                        mProgressDrawable.setArrowEnabled(false);
+                        mProgressDrawable.setStrokeWidth(AndroidUtil.dip2px(1));
+                        mProgressDrawable.setColorSchemeColors(AndroidUtil.getColor(R.color.theme_main_color));
+                        mIvMessageState.setImageDrawable(mProgressDrawable);
+                    }
+                    mProgressDrawable.start();
+                    break;
+                case SUCCESS:
+                    mIvMessageState.setImageDrawable(null);
+                    if(mProgressDrawable!=null){
+                        mProgressDrawable.stop();
+                        mProgressDrawable = null;
+                    }
+                    break;
+                case FAIL:
+                    mIvMessageState.setImageResource(R.drawable.ic_send_fail);
+                    if(mProgressDrawable!=null){
+                        mProgressDrawable.stop();
+                        mProgressDrawable = null;
+                    }
+                    break;
+            }
+        }
+
+    }
+
+    private static class TextSendMessageHolder extends SendMessageHolder {
         private TextView mTvTextContent;
 
-        SendTextMessageHolder(View itemView) {
+        TextSendMessageHolder(View itemView) {
             super(itemView);
             mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
         }
 
         @Override
         public void setDate(EMMessage message) {
+            super.setDate(message);
             mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
         }
     }
 
-    private static class ReceiveTextMessageHolder extends MessageViewHolder {
-        private ImageView mIvAvatar;
+    private static class TextReceiveMessageHolder extends ReceiveMessageHolder {
         private EmojiTextView mTvTextContent;
 
-        ReceiveTextMessageHolder(View itemView) {
+        TextReceiveMessageHolder(View itemView) {
             super(itemView);
-            mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
             mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
         }
 
         @Override
         public void setDate(EMMessage message) {
             mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
-            GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
         }
     }
 
-    private static class SendVoiceMessageHolder extends MessageViewHolder {
+    private static class VoiceSendMessageHolder extends SendMessageHolder {
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
 
-        SendVoiceMessageHolder(View itemView) {
+        VoiceSendMessageHolder(View itemView) {
+            super(itemView);
+            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
+            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
+        }
+
+        @Override
+        public void setDate(EMMessage message) {
+            super.setDate(message);
+            EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
+            int timeLength_ms = voiceBody.getLength() * 1000;
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
+            int rowWidth = mFlPlayLayout.getMinimumWidth();
+            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+                mFlPlayLayout.setMinimumWidth(2 * rowWidth);
+            } else {
+                mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
+            }
+        }
+    }
+
+    private static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
+        private TextView mTvVoiceTimeLength;
+        private FrameLayout mFlPlayLayout;
+
+        VoiceReceiveMessageHolder(View itemView) {
             super(itemView);
             mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
             mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
@@ -197,38 +296,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    private static class ReceiveVoiceMessageHolder extends MessageViewHolder {
-        private TextView mTvVoiceTimeLength;
-        private FrameLayout mFlPlayLayout;
-        private ImageView mIvAvatar;
 
-        ReceiveVoiceMessageHolder(View itemView) {
-            super(itemView);
-            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
-            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
-            mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
-        }
-
-        @Override
-        public void setDate(EMMessage message) {
-            EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
-            int timeLength_ms = voiceBody.getLength() * 1000;
-            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
-            int rowWidth = mFlPlayLayout.getMinimumWidth();
-            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
-                mFlPlayLayout.setMinimumWidth(2 * rowWidth);
-            } else {
-                mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
-            }
-            GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
-        }
-    }
-
-
-    private static class LoadMoreViewHolder extends MessageViewHolder {
+    private static class LoadMoreHolder extends MessageHolder {
         TextView mTvHintContent;
 
-        LoadMoreViewHolder(View itemView) {
+        LoadMoreHolder(View itemView) {
             super(itemView);
             mTvHintContent = itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
         }

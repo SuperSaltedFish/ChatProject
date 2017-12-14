@@ -18,6 +18,10 @@ public class ChatContract {
         void showNewMessage(List<EMMessage> messageList);
 
         void showMoreMessage(List<EMMessage> messageList, boolean isHasMoreMessage);
+
+        void updateMessageState(int position);
+
+        List<EMMessage> getAllMessage();
     }
 
 

@@ -50,6 +50,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mHasMoreMessage = true;
         mIsLoadingMore = false;
         mChatManager.addOnMessageReceiveListener(mOnMessageReceiveListener, conversationID);
+        mChatManager.addOnMessageSendStateChangeListener(mSendStateChangeListener, conversationID);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
         mChatManager.setMessageUnreadCount(mChatManager.getMessageUnreadCount() - conversation.getUnreadMsgCount());
         conversation.markAllMessagesAsRead();
@@ -71,6 +72,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void reset() {
         sToChatName = null;
         mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
+        mChatManager.removeOnMessageSendStateChangeListener(mSendStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         NetworkUtil.cancelTask(mLoadMoreTask);
     }
@@ -108,6 +110,22 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView.showNewMessage(message);
     }
 
+    private void updateMessage(EMMessage message) {
+        List<EMMessage> messageList = mChatView.getAllMessage();
+        for (int position = 0, length = messageList.size(); position < length; position++) {
+            if (messageList.get(position).getMsgId().equals(message.getMsgId())) {
+                final int finalPosition = position;
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChatView.updateMessageState(finalPosition);
+                    }
+                });
+                break;
+            }
+        }
+    }
+
     private void loadMoreComplete(List<EMMessage> messageList) {
         mIsLoadingMore = false;
         if (messageList == null || messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
@@ -118,6 +136,10 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private void loadNewComplete(List<EMMessage> messageList) {
         mChatView.showNewMessage(messageList);
+    }
+
+    public static String getConversationID() {
+        return sToChatName;
     }
 
     private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
@@ -132,10 +154,23 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
     };
 
+    private final ChatClientManager.OnMessageSendStateChangeListener mSendStateChangeListener = new ChatClientManager.OnMessageSendStateChangeListener() {
+        @Override
+        public void onSendProgress(EMMessage message, int progress) {
 
-    public static String getConversationID() {
-        return sToChatName;
-    }
+        }
+
+        @Override
+        public void onSendSuccess(EMMessage message) {
+            updateMessage(message);
+        }
+
+        @Override
+        public void onSendFail(EMMessage message) {
+            updateMessage(message);
+        }
+    };
+
 
     private static class LoadMoreTask extends NetworkAsyncTask<ChatPresenter, Void, List<EMMessage>> {
         private String mConversationID;
