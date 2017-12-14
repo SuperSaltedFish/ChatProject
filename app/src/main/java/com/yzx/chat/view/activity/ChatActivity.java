@@ -302,9 +302,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setData(Intent intent) {
-        mEtContent.clearFocus();
         String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
-        mMessageList.clear();
         setTitle(conversationID);
         mPresenter.init(conversationID);
     }
@@ -329,18 +327,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             hintMoreInput();
             return;
         }
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-        mPresenter.reset();
-    }
-
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        overridePendingTransition(R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
-        setData(intent);
+        finish();
+        overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
     }
 
 

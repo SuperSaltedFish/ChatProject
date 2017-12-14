@@ -29,8 +29,6 @@ public class ChatContract {
 
         void init(String conversationID);
 
-        void reset();
-
         void sendMessage(String message);
 
         void sendVoiceRecorder(String filePath,int timeLength);

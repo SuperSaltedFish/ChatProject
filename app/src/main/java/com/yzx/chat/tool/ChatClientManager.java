@@ -15,6 +15,7 @@ import com.hyphenate.chat.EMOptions;
 import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.util.LogUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -268,8 +269,9 @@ public class ChatClientManager {
 
         private EMMessage mEMMessage;
 
-        public MessageSendCallBack(EMMessage message) {
+        MessageSendCallBack(EMMessage message) {
             mEMMessage = message;
+            mEMMessage.setStatus(EMMessage.Status.INPROGRESS);
         }
 
         @Override
@@ -284,6 +286,7 @@ public class ChatClientManager {
 
         @Override
         public void onError(int code, String error) {
+            LogUtil.e(error);
             String conversationID = mEMMessage.conversationId();
             for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {

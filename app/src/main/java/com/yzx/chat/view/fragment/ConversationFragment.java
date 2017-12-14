@@ -105,7 +105,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                 public void run() {
                     String conversationID = mConversationList.get(position).getConversationID();
                     Intent intent = new Intent(mContext, ChatActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
                     ActivityOptionsCompat compat =  ActivityOptionsCompat.makeCustomAnimation(mContext,R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
                     ActivityCompat.startActivity(mContext, intent, compat.toBundle());

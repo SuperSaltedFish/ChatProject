@@ -23,7 +23,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private ChatContract.View mChatView;
     private Handler mHandler;
-    private static String sToChatName;
+    private static String sToChatName = "2445468752";
     private LoadMoreTask mLoadMoreTask;
     private boolean mIsLoadingMore;
     private boolean mHasMoreMessage;
@@ -38,7 +38,10 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void detachView() {
-        reset();
+        NetworkUtil.cancelTask(mLoadMoreTask);
+        mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
+        mChatManager.removeOnMessageSendStateChangeListener(mSendStateChangeListener);
+        mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
         mHandler = null;
         sToChatName = null;
@@ -68,14 +71,6 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
     }
 
-    @Override
-    public void reset() {
-        sToChatName = null;
-        mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
-        mChatManager.removeOnMessageSendStateChangeListener(mSendStateChangeListener);
-        mHandler.removeCallbacksAndMessages(null);
-        NetworkUtil.cancelTask(mLoadMoreTask);
-    }
 
     @Override
     public void sendMessage(String content) {
