@@ -10,9 +10,14 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.yzx.chat.util.LogUtil;
+
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +47,7 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
     private static final ThreadPoolExecutor mThreadPoolExecutor;
 
     static {
-        mThreadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(64), new BackgroundThreadFactory());
+        mThreadPoolExecutor = new NetworkThreadPoll(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(64), new BackgroundThreadFactory());
         mThreadPoolExecutor.allowCoreThreadTimeOut(true);
     }
 
@@ -176,12 +181,42 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
 
     }
 
+    private static class NetworkThreadPoll extends ThreadPoolExecutor {
+
+        NetworkThreadPoll(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+            super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+        }
+
+        @Override
+        protected void afterExecute(Runnable r, Throwable t) {
+            super.afterExecute(r, t);
+            Future<?> f = (Future<?>) r;
+            try {
+                f.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                LogUtil.e("InterruptedException" + e.toString());
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+                LogUtil.e("ExecutionException:" + e.toString());
+            }
+        }
+
+    }
+
     private static class BackgroundThreadFactory implements ThreadFactory {
 
         @Override
         public Thread newThread(@NonNull Runnable r) {
             Thread thread = new Thread();
             thread.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
+            thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    LogUtil.e(e.toString());
+                    e.printStackTrace();
+                }
+            });
             return new Thread(r);
         }
     }

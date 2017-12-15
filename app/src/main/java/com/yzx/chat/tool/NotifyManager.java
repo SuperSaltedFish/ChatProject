@@ -66,7 +66,7 @@ public class NotifyManager {
                 .setTicker(title + ":" + content)
                 .setAutoCancel(true);
 
-        if (AndroidUtil.isAppForeground()) {
+        if (ActivityTool.isAppForeground()) {
 
         } else {
             mDefaultNotifyBuilder.setContentIntent(mLaunchPendingIntent);

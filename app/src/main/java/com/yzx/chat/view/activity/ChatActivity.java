@@ -61,10 +61,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
 
-    public static final String ACTION_EXIT = "Exit";
     public static final String INTENT_CONVERSATION_ID = "ConversationID";
 
-    private ExitReceiver mExitReceiver;
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
     private ImageView mIvSendMessage;
@@ -118,10 +116,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mMessageList = new ArrayList<>(64);
         mAdapter = new ChatMessageAdapter(mMessageList);
-        mExitReceiver = new ExitReceiver();
         mVoiceRecorder = new VoiceRecorder();
         mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
         mKeyBoardHeight = SharePreferenceManager.getInstance().getConfigurePreferences().getKeyBoardHeight();
+    }
+
+    private void setData(Intent intent) {
+        String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
+        setTitle(conversationID);
+        mPresenter.init(conversationID);
     }
 
     private void setView() {
@@ -141,11 +144,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mExitReceiver, new IntentFilter(ACTION_EXIT));
+        setEmotionPanel();
 
         setKeyBoardSwitcherListener();
-
-        setEmotionPanel();
 
         setVoiceRecorder();
 
@@ -301,11 +302,77 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         };
     }
 
-    private void setData(Intent intent) {
-        String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
-        setTitle(conversationID);
-        mPresenter.init(conversationID);
+
+    private void resetVoiceState() {
+        mVoiceRecorderDownTimer.cancel();
+        mAmplitudeView.resetContent();
+        mTvRecorderHint.setText(R.string.ChatActivity_VoiceRecorderHint);
+        mVoiceRecorder.stop();
+        mBtnRecorder.reset();
     }
+
+    private void toggleMoreInput(int mode) {
+        switch (mode) {
+            case MORE_INPUT_TYPE_EMOTICONS:
+                if (isShowMoreInput()) {
+                    if (mEmotionPanelLayout.getVisibility() == View.VISIBLE) {
+                        hintMoreInput();
+                    } else {
+                        hintMoreInput();
+                        showMoreInput(MORE_INPUT_TYPE_EMOTICONS);
+                    }
+                } else if (isOpenedKeyBoard) {
+                    hideSoftKeyboard();
+                    isShowMoreTypeAfterCloseKeyBoard = MORE_INPUT_TYPE_EMOTICONS;
+                } else {
+                    showMoreInput(MORE_INPUT_TYPE_EMOTICONS);
+                }
+                break;
+            case MORE_INPUT_TYPE_MICROPHONE:
+                if (!isHasVoiceRecorderPermission) {
+                    requestPermissionsInCompatMode(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_VOICE_RECORDER);
+                    return;
+                }
+                if (isShowMoreInput()) {
+                    if (mLlRecorderLayout.getVisibility() == View.VISIBLE) {
+                        showSoftKeyboard(mEtContent);
+                    } else {
+                        hintMoreInput();
+                        showMoreInput(MORE_INPUT_TYPE_MICROPHONE);
+                    }
+                } else if (isOpenedKeyBoard) {
+                    hideSoftKeyboard();
+                    isShowMoreTypeAfterCloseKeyBoard = MORE_INPUT_TYPE_MICROPHONE;
+                } else {
+                    showMoreInput(MORE_INPUT_TYPE_MICROPHONE);
+                }
+                break;
+
+        }
+    }
+
+    private boolean isShowMoreInput() {
+        return mEmotionPanelLayout.getVisibility() == View.VISIBLE || mLlRecorderLayout.getVisibility() == View.VISIBLE;
+    }
+
+    private void hintMoreInput() {
+        mEmotionPanelLayout.setVisibility(View.GONE);
+        mLlRecorderLayout.setVisibility(View.GONE);
+        mIvMicrophone.setImageResource(R.drawable.ic_microphone);
+    }
+
+    private void showMoreInput(int type) {
+        switch (type) {
+            case MORE_INPUT_TYPE_EMOTICONS:
+                mEmotionPanelLayout.setVisibility(View.VISIBLE);
+                break;
+            case MORE_INPUT_TYPE_MICROPHONE:
+                mIvMicrophone.setImageResource(R.drawable.ic_keyboard);
+                mLlRecorderLayout.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
 
     @Override
     protected void onResume() {
@@ -317,7 +384,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mExitReceiver);
+        mMessageList = null;
     }
 
 
@@ -432,81 +499,4 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         return mMessageList;
     }
 
-    private void resetVoiceState() {
-        mVoiceRecorderDownTimer.cancel();
-        mAmplitudeView.resetContent();
-        mTvRecorderHint.setText(R.string.ChatActivity_VoiceRecorderHint);
-        mVoiceRecorder.stop();
-        mBtnRecorder.reset();
-    }
-
-    private void toggleMoreInput(int mode) {
-        switch (mode) {
-            case MORE_INPUT_TYPE_EMOTICONS:
-                if (isShowMoreInput()) {
-                    if (mEmotionPanelLayout.getVisibility() == View.VISIBLE) {
-                        hintMoreInput();
-                    } else {
-                        hintMoreInput();
-                        showMoreInput(MORE_INPUT_TYPE_EMOTICONS);
-                    }
-                } else if (isOpenedKeyBoard) {
-                    hideSoftKeyboard();
-                    isShowMoreTypeAfterCloseKeyBoard = MORE_INPUT_TYPE_EMOTICONS;
-                } else {
-                    showMoreInput(MORE_INPUT_TYPE_EMOTICONS);
-                }
-                break;
-            case MORE_INPUT_TYPE_MICROPHONE:
-                if (!isHasVoiceRecorderPermission) {
-                    requestPermissionsInCompatMode(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_VOICE_RECORDER);
-                    return;
-                }
-                if (isShowMoreInput()) {
-                    if (mLlRecorderLayout.getVisibility() == View.VISIBLE) {
-                        showSoftKeyboard(mEtContent);
-                    } else {
-                        hintMoreInput();
-                        showMoreInput(MORE_INPUT_TYPE_MICROPHONE);
-                    }
-                } else if (isOpenedKeyBoard) {
-                    hideSoftKeyboard();
-                    isShowMoreTypeAfterCloseKeyBoard = MORE_INPUT_TYPE_MICROPHONE;
-                } else {
-                    showMoreInput(MORE_INPUT_TYPE_MICROPHONE);
-                }
-                break;
-
-        }
-    }
-
-    private boolean isShowMoreInput() {
-        return mEmotionPanelLayout.getVisibility() == View.VISIBLE || mLlRecorderLayout.getVisibility() == View.VISIBLE;
-    }
-
-    private void hintMoreInput() {
-        mEmotionPanelLayout.setVisibility(View.GONE);
-        mLlRecorderLayout.setVisibility(View.GONE);
-        mIvMicrophone.setImageResource(R.drawable.ic_microphone);
-    }
-
-    private void showMoreInput(int type) {
-        switch (type) {
-            case MORE_INPUT_TYPE_EMOTICONS:
-                mEmotionPanelLayout.setVisibility(View.VISIBLE);
-                break;
-            case MORE_INPUT_TYPE_MICROPHONE:
-                mIvMicrophone.setImageResource(R.drawable.ic_keyboard);
-                mLlRecorderLayout.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
-
-    private class ExitReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ChatActivity.this.finish();
-        }
-    }
 }

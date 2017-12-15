@@ -6,6 +6,7 @@ import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMContactListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
@@ -54,6 +55,7 @@ public class ChatClientManager {
     private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
     private List<ContactListener> mContactListenerList;
     private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
+    private List<ConnectionListener> mConnectionListenerList;
 
     private ContactDao mContactDao;
 
@@ -65,8 +67,12 @@ public class ChatClientManager {
         mMessageSendStateChangeListenerMap = new HashMap<>();
         mContactListenerList = new LinkedList<>();
         mUnreadCountChangeListenerList = new LinkedList<>();
+        mConnectionListenerList= new LinkedList<>();
+
         mContactDao = DBManager.getInstance().getContactDao();
         mEMClient = EMClient.getInstance();
+
+        mEMClient.addConnectionListener(mEMConnectionListener);
         mEMClient.chatManager().addMessageListener(mEMMessageListener);
         mEMClient.contactManager().setContactListener(mEMContactListener);
     }
@@ -101,6 +107,16 @@ public class ChatClientManager {
 
     public void removeOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
         mMessageSendStateChangeListenerMap.remove(listener);
+    }
+
+    public void addConnectionListener(ConnectionListener listener) {
+        if (!mConnectionListenerList.contains(listener)) {
+            mConnectionListenerList.add(listener);
+        }
+    }
+
+    public void removeConnectionListener(ConnectionListener listener) {
+        mConnectionListenerList.remove(listener);
     }
 
     public void addUnreadCountChangeListener(UnreadCountChangeListener listener) {
@@ -173,6 +189,22 @@ public class ChatClientManager {
     public void requestAddContact(String contactID, String reason) throws HyphenateException {
         mEMClient.contactManager().addContact(contactID, reason);
     }
+
+    private final EMConnectionListener mEMConnectionListener = new EMConnectionListener() {
+        @Override
+        public void onConnected() {
+            for(ConnectionListener listener:mConnectionListenerList){
+                listener.onConnected();
+            }
+        }
+
+        @Override
+        public void onDisconnected(int errorCode) {
+            for(ConnectionListener listener:mConnectionListenerList){
+                listener.onDisconnected(errorCode);
+            }
+        }
+    };
 
 
     private final EMMessageListener mEMMessageListener = new EMMessageListener() {
@@ -300,24 +332,15 @@ public class ChatClientManager {
             String conversationID = mEMMessage.conversationId();
             for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendProgress(mEMMessage,progress);
+                    entry.getKey().onSendProgress(mEMMessage, progress);
                 }
             }
         }
     }
 
-//    public static final String MESSAGE_ATTRIBUTE_STATE = "MessageState";
-//    public static final int MESSAGE_STATE_PROGRESS = 0;
-//    public static final int MESSAGE_STATE_SUCCESS = 1;
-//    public static final int MESSAGE_STATE_FAIL = 2;
-//
-//    @IntDef({MESSAGE_STATE_PROGRESS, MESSAGE_STATE_SUCCESS, MESSAGE_STATE_FAIL})
-//    @Retention(RetentionPolicy.SOURCE)
-//    public @interface MessageState {}
-
     public interface OnMessageSendStateChangeListener {
 
-        void onSendProgress(EMMessage message,int progress);
+        void onSendProgress(EMMessage message, int progress);
 
         void onSendSuccess(EMMessage message);
 
@@ -337,5 +360,13 @@ public class ChatClientManager {
         void onMessageUnreadCountChange(int unreadCount);
 
         void onContactUnreadCountChange(int unreadCount);
+    }
+
+    public interface ConnectionListener {
+
+        void onConnected();
+
+        void onDisconnected(int errorCode);
+
     }
 }

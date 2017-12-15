@@ -55,7 +55,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mToolbar = parentView.findViewById(R.id.ConversationFragment_mToolbar);
         mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
         mOverflowPopupWindow = new HomeOverflowPopupWindow(mContext, mToolbar, R.menu.menu_home_overflow);
-        mConversationList = new ArrayList<>(64);
+        mConversationList = new ArrayList<>(128);
         mAdapter = new ConversationAdapter(mConversationList);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
     }

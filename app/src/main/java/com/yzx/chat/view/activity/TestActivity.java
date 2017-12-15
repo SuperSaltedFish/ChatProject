@@ -63,6 +63,7 @@ import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.NineGridImageView;
 import com.yzx.chat.widget.view.RecorderButton;
 
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -80,17 +81,6 @@ import java.util.TimeZone;
 public class TestActivity extends BaseCompatActivity {
 
 
-
-
-
-
-
-
-
-
-
-
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
@@ -100,16 +90,7 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView imageView = findViewById(R.id.im);
-        ImageView imageView1 = findViewById(R.id.im2);
-        CircularProgressDrawable drawable = new CircularProgressDrawable(this);
-        drawable.setStyle(CircularProgressDrawable.DEFAULT);
-        drawable.setArrowEnabled(false);
-        drawable.setStrokeWidth(AndroidUtil.dip2px(2));
-        drawable.setColorSchemeColors(ContextCompat.getColor(this,R.color.theme_main_color));
-        drawable.start();
-        imageView1.setImageDrawable(drawable);
-        imageView.setImageDrawable(drawable);
+
 //        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
 //        Call<JsonResponse<Void>> task = api.addFriend("5a2bf866f9293d1084f59b59");
 //        task.setCallback(new BaseHttpCallback<Void>() {

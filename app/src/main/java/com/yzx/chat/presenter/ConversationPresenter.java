@@ -39,12 +39,14 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
         mChatManager = ChatClientManager.getInstance();
+        mChatManager.addConnectionListener(mConnectionListener);
         mChatManager.addOnMessageReceiveListener(mOnMessageReceiveListener, null);
         mChatManager.addUnreadCountChangeListener(mUnreadChangeListener);
     }
 
     @Override
     public void detachView() {
+        mChatManager.removeConnectionListener(mConnectionListener);
         mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
         mChatManager.removeUnreadCountChangeListener(mUnreadChangeListener);
         mConversationView = null;
@@ -73,16 +75,22 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         });
     }
 
+    private final ChatClientManager.ConnectionListener mConnectionListener = new ChatClientManager.ConnectionListener() {
+        @Override
+        public void onConnected() {
+            refreshAllConversation(mConversationView.getOldConversationList());
+        }
+
+        @Override
+        public void onDisconnected(int errorCode) {
+
+        }
+    };
+
     private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
             refreshAllConversation(mConversationView.getOldConversationList());
-//            boolean isAppBackground = !AndroidUtil.isAppForeground();
-//            Class topActivityClass = AndroidUtil.getTopActivityClass();
-//            for(EMMessage message:messages){
-//                message.getBody()
-//                NotifyManager.getInstance().notify();
-//            }
         }
     };
 

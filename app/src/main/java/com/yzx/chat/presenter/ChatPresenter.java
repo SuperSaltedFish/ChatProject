@@ -20,14 +20,19 @@ import java.util.List;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
+    private static String sToChatName = "2445468752";
 
     private ChatContract.View mChatView;
     private Handler mHandler;
-    private static String sToChatName = "2445468752";
     private LoadMoreTask mLoadMoreTask;
+    private ChatClientManager mChatManager;
+
     private boolean mIsLoadingMore;
     private boolean mHasMoreMessage;
-    private ChatClientManager mChatManager;
+
+    public static String getConversationID() {
+        return sToChatName;
+    }
 
     @Override
     public void attachView(ChatContract.View view) {
@@ -133,19 +138,20 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView.showNewMessage(messageList);
     }
 
-    public static String getConversationID() {
-        return sToChatName;
-    }
 
     private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
+        Runnable mShowRunnable;
         @Override
         public void onMessageReceived(final List<EMMessage> messages) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    loadNewComplete(messages);
-                }
-            });
+            if(mShowRunnable==null){
+                mShowRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        loadNewComplete(messages);
+                    }
+                };
+            }
+            mHandler.post(mShowRunnable);
         }
     };
 

@@ -89,16 +89,10 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
-    }
 
     @Override
     public void onBackPressed() {
-        LocalBroadcastManager.getInstance(this).sendBroadcastSync(new Intent(ChatActivity.ACTION_EXIT));
-        finish();
+        moveTaskToBack(true);
     }
 
     @Override

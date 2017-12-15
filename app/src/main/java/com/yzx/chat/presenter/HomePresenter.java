@@ -25,10 +25,10 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void detachView() {
-        mHomeView = null;
-        mChatClientManager.removeUnreadCountChangeListener(mUnreadCountChangeListener);
-        mChatClientManager = null;
         mHandler.removeCallbacksAndMessages(null);
+        mChatClientManager.removeUnreadCountChangeListener(mUnreadCountChangeListener);
+        mHomeView = null;
+        mChatClientManager = null;
         mHandler = null;
     }
 
