@@ -166,6 +166,9 @@ public class ChatClientManager {
         mEMClient.groupManager().loadAllGroups();
     }
 
+    public EMConversation getSingleConversation(String conversationID) {
+        return mEMClient.chatManager().getConversation(conversationID);
+    }
 
     public Map<String, EMConversation> getAllConversations() {
         return mEMClient.chatManager().getAllConversations();
@@ -303,7 +306,6 @@ public class ChatClientManager {
 
         MessageSendCallBack(EMMessage message) {
             mEMMessage = message;
-            mEMMessage.setStatus(EMMessage.Status.INPROGRESS);
         }
 
         @Override

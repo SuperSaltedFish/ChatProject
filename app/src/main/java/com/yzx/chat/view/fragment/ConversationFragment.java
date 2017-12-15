@@ -1,5 +1,6 @@
 package com.yzx.chat.view.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -8,15 +9,15 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.exceptions.HyphenateException;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
@@ -35,6 +36,8 @@ import java.util.List;
 public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View {
 
     public static final String TAG = ConversationFragment.class.getSimpleName();
+
+    private static final int ACTIVITY_REQUEST_CODE = 10000;
 
     private RecyclerView mRecyclerView;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -78,7 +81,25 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     protected void onFirstVisible() {
-        mPresenter.refreshAllConversation(mConversationList);
+        mPresenter.refreshAllConversations(mConversationList);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode != ACTIVITY_REQUEST_CODE||resultCode!=ChatActivity.ACTIVITY_RESPONSE_CODE) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }else {
+            if(data!=null) {
+                String conversationID = data.getStringExtra(ChatActivity.INTENT_CONVERSATION_ID);
+                if(!TextUtils.isEmpty(conversationID)){
+                    mPresenter.refreshSingleConversation(conversationID);
+                }else {
+                    LogUtil.e("conversationID is Empty");
+                }
+            }else {
+                LogUtil.e("Intent is Empty");
+            }
+        }
     }
 
     private final Toolbar.OnMenuItemClickListener onOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {
@@ -106,8 +127,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                     String conversationID = mConversationList.get(position).getConversationID();
                     Intent intent = new Intent(mContext, ChatActivity.class);
                     intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
-                    ActivityOptionsCompat compat =  ActivityOptionsCompat.makeCustomAnimation(mContext,R.anim.avtivity_slide_in_right,R.anim.activity_slide_out_left);
-                    ActivityCompat.startActivity(mContext, intent, compat.toBundle());
+                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
+                    startActivityForResult(intent, ACTIVITY_REQUEST_CODE, compat.toBundle());
+
                 }
             });
         }
@@ -133,4 +155,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationList.addAll(newConversationList);
     }
 
+    @Override
+    public void updateListViewByPosition(int position, ConversationBean newBean) {
+        mConversationList.set(position,newBean);
+        mAdapter.notifyItemChanged(position);
+    }
 }

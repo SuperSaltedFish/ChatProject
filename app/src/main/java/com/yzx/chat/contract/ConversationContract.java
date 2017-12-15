@@ -20,10 +20,13 @@ public class ConversationContract {
         List<ConversationBean> getOldConversationList();
 
         void updateListView(DiffUtil.DiffResult diffResult, List<ConversationBean> newConversationList);
+        void updateListViewByPosition(int position,ConversationBean newBean);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void refreshAllConversation(List<ConversationBean> oldConversationList);
+        void refreshAllConversations(List<ConversationBean> oldConversationList);
+
+        void refreshSingleConversation(String conversationID);
     }
 }

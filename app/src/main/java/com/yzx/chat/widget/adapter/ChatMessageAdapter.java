@@ -187,7 +187,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         private void setMessageState(EMMessage.Status state) {
             switch (state) {
-                case CREATE:
                 case INPROGRESS:
                     if (mProgressDrawable == null) {
                         mProgressDrawable = new CircularProgressDrawable(itemView.getContext());
@@ -206,6 +205,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                         mProgressDrawable = null;
                     }
                     break;
+                case CREATE:
                 case FAIL:
                     mIvMessageState.setImageResource(R.drawable.ic_send_fail);
                     if(mProgressDrawable!=null){

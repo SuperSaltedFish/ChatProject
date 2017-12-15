@@ -56,10 +56,31 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void refreshAllConversation(List<ConversationBean> oldConversationList) {
+    public void refreshAllConversations(List<ConversationBean> oldConversationList) {
         NetworkUtil.cancelTask(mRefreshTask);
         mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList, oldConversationList);
+    }
+
+    @Override
+    public void refreshSingleConversation(String conversationID) {
+        EMConversation emConversation = mChatManager.getSingleConversation(conversationID);
+        if (emConversation != null) {
+            synchronized (ConversationPresenter.class) {
+                ConversationBean bean;
+                for (int i = 0, size = mConversationList.size(); i < size; i++) {
+                    bean = mConversationList.get(i);
+                    if (bean.getConversationID().equals(conversationID)) {
+                        EMMessage lastMessage = emConversation.getLastMessage();
+                        bean.setName(emConversation.conversationId());
+                        bean.setLastMsgContent(EMMessageUtil.getMessageDigest(lastMessage));
+                        bean.setLastMsgTime(lastMessage.getMsgTime());
+                        mConversationView.updateListViewByPosition(i, bean);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
@@ -78,7 +99,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private final ChatClientManager.ConnectionListener mConnectionListener = new ChatClientManager.ConnectionListener() {
         @Override
         public void onConnected() {
-            refreshAllConversation(mConversationView.getOldConversationList());
+            ChatClientManager.getInstance().loadAllConversationsAndGroups();
+            refreshAllConversations(mConversationView.getOldConversationList());
         }
 
         @Override
@@ -90,14 +112,14 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
         @Override
         public void onMessageReceived(List<EMMessage> messages) {
-            refreshAllConversation(mConversationView.getOldConversationList());
+            refreshAllConversations(mConversationView.getOldConversationList());
         }
     };
 
     private final ChatClientManager.UnreadCountChangeListener mUnreadChangeListener = new ChatClientManager.UnreadCountChangeListener() {
         @Override
         public void onMessageUnreadCountChange(int unreadCount) {
-            refreshAllConversation(mConversationView.getOldConversationList());
+            refreshAllConversations(mConversationView.getOldConversationList());
         }
 
         @Override
@@ -114,61 +136,64 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ConversationBean>[] lists) {
-            Map<String, EMConversation> conversations = ChatClientManager.getInstance().getAllConversations();
-            Collection<EMConversation> allConversations = conversations.values();
-            List<ConversationBean> filterConversation = lists[0];
-            filterConversation.clear();
-            ConversationBean bean;
-            EMMessage lastMessage;
-            int unreadCount = 0;
-            for (EMConversation conversation : allConversations) {
-                if (conversation.getAllMessages().size() != 0) {
-                    if (conversation.conversationId().equals(ChatPresenter.getConversationID())) {
-                        conversation.markAllMessagesAsRead();
-                    } else {
-                        unreadCount += conversation.getUnreadMsgCount();
+            synchronized (ConversationPresenter.class) {
+                Map<String, EMConversation> conversations = ChatClientManager.getInstance().getAllConversations();
+                Collection<EMConversation> allConversations = conversations.values();
+                List<ConversationBean> filterConversation = lists[0];
+                filterConversation.clear();
+                ConversationBean bean;
+                EMMessage lastMessage;
+                int unreadCount = 0;
+                for (EMConversation conversation : allConversations) {
+                    if (conversation.getAllMessages().size() != 0) {
+                        if (conversation.conversationId().equals(ChatPresenter.getConversationID())) {
+                            conversation.markAllMessagesAsRead();
+                        } else {
+                            unreadCount += conversation.getUnreadMsgCount();
+                        }
+                        lastMessage = conversation.getLastMessage();
+                        switch (conversation.getType()) {
+                            case Chat:
+                                bean = new ConversationBean.Single();
+                                break;
+                            case GroupChat:
+                                bean = new ConversationBean.Group();
+                                break;
+                            default:
+                                continue;
+                        }
+                        bean.setConversationID(conversation.conversationId());
+                        bean.setName(conversation.conversationId());
+                        bean.setUnreadMsgCount(conversation.getUnreadMsgCount());
+                        bean.setLastMsgContent(EMMessageUtil.getMessageDigest(lastMessage));
+                        bean.setLastMsgTime(lastMessage.getMsgTime());
+                        filterConversation.add(bean);
                     }
-                    lastMessage = conversation.getLastMessage();
-                    switch (conversation.getType()) {
-                        case Chat:
-                            bean = new ConversationBean.Single();
-                            break;
-                        case GroupChat:
-                            bean = new ConversationBean.Group();
-                            break;
-                        default:
-                            continue;
-                    }
-                    bean.setConversationID(conversation.conversationId());
-                    bean.setName(conversation.conversationId());
-                    bean.setUnreadMsgCount(conversation.getUnreadMsgCount());
-                    bean.setLastMsgContent(EMMessageUtil.getMessageDigest(lastMessage));
-                    bean.setLastMsgTime(lastMessage.getMsgTime());
-                    filterConversation.add(bean);
                 }
+                ChatClientManager.getInstance().setMessageUnreadCount(unreadCount);
+                sortConversationByLastChatTime(filterConversation);
+
+                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ConversationBean>(lists[1], filterConversation) {
+                    @Override
+                    public boolean isItemEquals(ConversationBean oldItem, ConversationBean newItem) {
+                        return oldItem.getConversationID().equals(newItem.getConversationID());
+                    }
+
+                    @Override
+                    public boolean isContentsEquals(ConversationBean oldItem, ConversationBean newItem) {
+                        if (oldItem.getLastMsgTime() != newItem.getLastMsgTime()) {
+                            return false;
+                        }
+                        if (oldItem.getUnreadMsgCount() != newItem.getUnreadMsgCount()) {
+                            return false;
+                        }
+                        return true;
+                    }
+                }, true);
+
+                return diffResult;
             }
-            ChatClientManager.getInstance().setMessageUnreadCount(unreadCount);
-            sortConversationByLastChatTime(filterConversation);
 
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ConversationBean>(lists[1], filterConversation) {
-                @Override
-                public boolean isItemEquals(ConversationBean oldItem, ConversationBean newItem) {
-                    return oldItem.getConversationID().equals(newItem.getConversationID());
-                }
-
-                @Override
-                public boolean isContentsEquals(ConversationBean oldItem, ConversationBean newItem) {
-                    if (oldItem.getLastMsgTime() != newItem.getLastMsgTime()) {
-                        return false;
-                    }
-                    if (oldItem.getUnreadMsgCount() != newItem.getUnreadMsgCount()) {
-                        return false;
-                    }
-                    return true;
-                }
-            }, true);
-
-            return diffResult;
         }
 
         @Override

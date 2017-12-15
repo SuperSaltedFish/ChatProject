@@ -190,16 +190,16 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
         @Override
         protected void afterExecute(Runnable r, Throwable t) {
             super.afterExecute(r, t);
-            Future<?> f = (Future<?>) r;
-            try {
-                f.get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                LogUtil.e("InterruptedException" + e.toString());
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-                LogUtil.e("ExecutionException:" + e.toString());
-            }
+//            Future<?> f = (Future<?>) r;
+//            try {
+//                f.get();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//                LogUtil.e("InterruptedException" + e.toString());
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//                LogUtil.e("ExecutionException:" + e.toString());
+//            }
         }
 
     }

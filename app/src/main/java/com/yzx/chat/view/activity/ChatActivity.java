@@ -52,6 +52,8 @@ import java.util.List;
  */
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
 
+    public static final int ACTIVITY_RESPONSE_CODE = 10000;
+
     public static final int MAX_VOICE_RECORDER_DURATION = 60 * 1000;
     private static final int MIN_VOICE_RECORDER_DURATION = 1000;
 
@@ -394,6 +396,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             hintMoreInput();
             return;
         }
+        setResult(ACTIVITY_RESPONSE_CODE,getIntent());
         finish();
         overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
     }
