@@ -34,4 +34,9 @@ public interface AuthApi {
                                                     @HttpParam("clientPublicKey") String publicKey,
                                                     @HttpParam("data") Object data);
 
+    @HttpApi(RequestMethod = "POST", Path = "auth/tokenVerify")
+    Call<JsonResponse<Void>> tokenVerify();
+
+
+
 }

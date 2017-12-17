@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -25,13 +26,11 @@ public class AnimationUtil {
         view.startAnimation(anim);
     }
 
-    public static void scaleAnim(View view, float fromScaleX, float fromScaleY, float toScaleX, float toScaleY, int msec) {
-        PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("scaleX", fromScaleX, toScaleX);
-        PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleY", fromScaleY, toScaleY);
-        ObjectAnimator scaleAnimator = ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY);
-        scaleAnimator.setDuration(msec);
-        scaleAnimator.setAutoCancel(true);
-        scaleAnimator.start();
+    public static void scaleAnim(View view, float toScaleX, float toScaleY, int msec) {
+        ViewCompat.animate(view)
+                .scaleX(toScaleX)
+                .scaleY(toScaleY)
+                .setDuration(msec);
     }
 
 

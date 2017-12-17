@@ -6,7 +6,7 @@ package com.yzx.chat.configure;
  */
 public class Constants {
 
-    public static final String URL_API_BASE = "http://192.168.16.116:3000/v1/api/";
+    public static final String URL_API_BASE = "http://47.95.250.204:3000/v1/api/";
 
     public static final String DATABASE_NAME = "asd1wddd.db";
     public static final int DATABASE_VERSION = 1;

@@ -20,15 +20,15 @@ import java.util.List;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
-    private static String sToChatName = "2445468752";
+    private static String sToChatName;
 
     private ChatContract.View mChatView;
     private Handler mHandler;
     private LoadMoreTask mLoadMoreTask;
     private ChatClientManager mChatManager;
 
-    private boolean mIsLoadingMore;
     private boolean mHasMoreMessage;
+    private boolean mIsLoadingMore;
 
     public static String getConversationID() {
         return sToChatName;
@@ -76,14 +76,19 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
     }
 
+    @Override
+    public void resendMessage(String messageID) {
+
+    }
+
 
     @Override
-    public void sendMessage(String content) {
+    public void sendTextMessage(String content) {
         sendMessage(EMMessage.createTxtSendMessage(content, sToChatName));
     }
 
     @Override
-    public void sendVoiceRecorder(String filePath, int timeLength) {
+    public void sendVoiceMessage(String filePath, int timeLength) {
         sendMessage(EMMessage.createVoiceSendMessage(filePath, timeLength, sToChatName));
     }
 
@@ -140,18 +145,14 @@ public class ChatPresenter implements ChatContract.Presenter {
 
 
     private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
-        Runnable mShowRunnable;
         @Override
         public void onMessageReceived(final List<EMMessage> messages) {
-            if(mShowRunnable==null){
-                mShowRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        loadNewComplete(messages);
-                    }
-                };
-            }
-            mHandler.post(mShowRunnable);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    loadNewComplete(messages);
+                }
+            });
         }
     };
 

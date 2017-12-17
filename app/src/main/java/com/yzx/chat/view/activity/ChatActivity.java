@@ -2,16 +2,12 @@ package com.yzx.chat.view.activity;
 
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +20,7 @@ import android.widget.TextView;
 
 import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryManager;
@@ -35,11 +32,12 @@ import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
-import com.yzx.chat.widget.listener.OnScrollToBottomListener;
+import com.yzx.chat.widget.listener.ResendMessageListener;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
+import com.yzx.chat.widget.view.NoAnimations;
 import com.yzx.chat.widget.view.RecorderButton;
 
 import java.io.File;
@@ -116,7 +114,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAmplitudeView = findViewById(R.id.ChatActivity_mAmplitudeView);
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
-        mMessageList = new ArrayList<>(64);
+        mMessageList = new ArrayList<>(128);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
         mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
@@ -141,8 +139,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setLayoutManager(layoutManager);
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
+        mRvChatView.setItemAnimator(new NoAnimations());
+//        mRvChatView.getItemAnimator().setAddDuration(0);
+//        mRvChatView.getItemAnimator().setChangeDuration(0);
+//        mRvChatView.getItemAnimator().setMoveDuration(0);
+//        mRvChatView.getItemAnimator().setRemoveDuration(0);
+//        ((SimpleItemAnimator) mRvChatView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
+        mAdapter.setResendMessageListener(mResendMessageListener);
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
 
@@ -229,7 +234,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     showToast(getString(R.string.ChatActivity_VoiceRecorderVeryShort));
                 }
                 if (new File(filePath).exists()) {
-                    mPresenter.sendVoiceRecorder(filePath, (int) (duration / 1000));
+                    mPresenter.sendVoiceMessage(filePath, (int) (duration / 1000));
                 } else {
                     showToast(getString(R.string.ChatActivity_VoiceRecorderFail));
                 }
@@ -396,7 +401,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             hintMoreInput();
             return;
         }
-        setResult(ACTIVITY_RESPONSE_CODE,getIntent());
+        setResult(ACTIVITY_RESPONSE_CODE, getIntent());
         finish();
         overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
     }
@@ -433,11 +438,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 return;
             }
             mEtContent.setText(null);
-            mPresenter.sendMessage(message);
+            mPresenter.sendTextMessage(message);
         }
     };
 
-    private final OnScrollToBottomListener mScrollToBottomListener = new OnScrollToBottomListener() {
+    private final BaseRecyclerViewAdapter.OnScrollToBottomListener mScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
         @Override
         public void OnScrollToBottom() {
             if (mPresenter.isLoadingMore()) {
@@ -452,6 +457,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
     };
 
+    private final ResendMessageListener mResendMessageListener = new ResendMessageListener() {
+        @Override
+        public void resendMessage(String messageID) {
+            LogUtil.e(messageID);
+        }
+    };
+
 
     @Override
     public ChatContract.Presenter getPresenter() {
@@ -460,31 +472,31 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     public void showNewMessage(EMMessage message) {
+        mMessageList.add(message);
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, 1);
         }
-        mMessageList.add(message);
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void showNewMessage(List<EMMessage> messageList) {
+        mMessageList.addAll(messageList);
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, messageList.size());
         }
-        mMessageList.addAll(messageList);
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void showMoreMessage(List<EMMessage> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
-            mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
             mMessageList.addAll(0, messageList);
+            mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
         }
         if (!isHasMoreMessage) {
             mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));

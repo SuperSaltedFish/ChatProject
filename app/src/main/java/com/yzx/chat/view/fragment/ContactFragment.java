@@ -28,6 +28,7 @@ import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.view.BadgeImageView;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
+import com.yzx.chat.widget.view.NoAnimations;
 import com.yzx.chat.widget.view.SegmentedControlView;
 
 import java.util.ArrayList;
@@ -92,6 +93,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.setLayoutManager(mLinearLayoutManager);
         mContactRecyclerView.setAdapter(mAdapter);
         mContactRecyclerView.setHasFixedSize(true);
+        mContactRecyclerView.setItemAnimator(new NoAnimations());
         mContactRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
@@ -168,8 +170,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
                 });
             }
             if (mFBtnAdd.getTag() == null) {
-                AnimationUtil.scaleAnim(mFBtnAdd, mFBtnAdd.getScaleX(), mFBtnAdd.getScaleY(), 0, 0, 300);
-                AnimationUtil.scaleAnim(mTvIndexBarHint, mTvIndexBarHint.getScaleX(), mTvIndexBarHint.getScaleY(), 1f, 1f, 300);
+                AnimationUtil.scaleAnim(mFBtnAdd, 0, 0, 300);
+                AnimationUtil.scaleAnim(mTvIndexBarHint, 1f, 1f, 300);
                 mFBtnAdd.setTag(true);
             }
             mTvIndexBarHint.setText(text);
@@ -180,8 +182,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         @Override
         public void onCancelSelected() {
             mFBtnAdd.setTag(null);
-            AnimationUtil.scaleAnim(mTvIndexBarHint, mTvIndexBarHint.getScaleX(), mTvIndexBarHint.getScaleY(), 0, 0, 250);
-            AnimationUtil.scaleAnim(mFBtnAdd, mFBtnAdd.getScaleX(), mFBtnAdd.getScaleY(), 1f, 1f, 250);
+            AnimationUtil.scaleAnim(mTvIndexBarHint, 0, 0, 250);
+            AnimationUtil.scaleAnim(mFBtnAdd, 1f, 1f, 250);
             mAutoEnableOverScrollListener.setEnableOverScroll(true);
         }
 

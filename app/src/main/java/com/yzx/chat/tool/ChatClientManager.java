@@ -177,7 +177,16 @@ public class ChatClientManager {
     public void sendMessage(EMMessage message) {
         message.setMessageStatusCallback(new MessageSendCallBack(message));
         mEMClient.chatManager().sendMessage(message);
+
     }
+
+    public void resendMessage(String messageID){
+       EMMessage message =  mEMClient.chatManager().getMessage(messageID);
+       if(message!=null){
+           sendMessage(message);
+       }
+    }
+
 
     public List<EMMessage> loadMoreMessage(String conversationID, String startMessageID, int count) {
         EMConversation conversation = mEMClient.chatManager().getConversation(conversationID);

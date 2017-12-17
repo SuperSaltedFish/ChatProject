@@ -14,6 +14,8 @@ public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder
 
     public Context mContext;
 
+    private OnScrollToBottomListener mScrollToBottomListener;
+
     public abstract VH getViewHolder(ViewGroup parent, int viewType);
 
     public abstract void bindDataToViewHolder(VH holder, int position);
@@ -29,7 +31,19 @@ public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(VH holder, int position) {
         bindDataToViewHolder(holder, position);
+        if (mScrollToBottomListener != null&&position==getItemCount()-1) {
+            mScrollToBottomListener.OnScrollToBottom();
+        }
     }
+
+    public void setScrollToBottomListener(OnScrollToBottomListener listener) {
+        mScrollToBottomListener = listener;
+    }
+
+    public  interface OnScrollToBottomListener {
+        void OnScrollToBottom();
+    }
+
 
 
 }

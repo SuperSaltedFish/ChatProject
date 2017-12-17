@@ -29,9 +29,11 @@ public class ChatContract {
 
         void init(String conversationID);
 
-        void sendMessage(String message);
+        void resendMessage(String messageID);
 
-        void sendVoiceRecorder(String filePath,int timeLength);
+        void sendTextMessage(String message);
+
+        void sendVoiceMessage(String filePath, int timeLength);
 
         void loadMoreMessage(String lastMessageID);
 

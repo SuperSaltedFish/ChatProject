@@ -36,6 +36,7 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.user.GetUserFriendsBean;
 import com.yzx.chat.network.api.user.GetUserProfileBean;
 import com.yzx.chat.network.api.user.SearchUserBean;
@@ -56,6 +57,7 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.util.VoiceRecorder;
+import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.BadgeTextView;
 import com.yzx.chat.widget.view.CarouselView;
@@ -90,23 +92,43 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-//        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-//        Call<JsonResponse<Void>> task = api.addFriend("5a2bf866f9293d1084f59b59");
+//        AuthApi api = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
+//        Call<JsonResponse<Void>> task = api.tokenVerify();
 //        task.setCallback(new BaseHttpCallback<Void>() {
 //            @Override
 //            protected void onSuccess(Void response) {
 //                LogUtil.e("onSuccess");
+//
 //            }
 //
 //            @Override
 //            protected void onFailure(String message) {
-//                    LogUtil.e("onFailure");
+//                LogUtil.e("onFailure");
 //            }
 //        });
 //        NetworkExecutor.getInstance().submit(task);
 
 
+//        Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+//            @Override
+//            public boolean queueIdle() {
+//                new Alerter(TestActivity.this,R.layout.item_conversation_single).show();
+//                return false;
+//            }
+//        });
+    }
+
+    Alerter mAlerter;
+
+    public void onClick(View v) {
+        if (mAlerter == null) {
+            mAlerter = new Alerter(TestActivity.this, R.layout.test);
+        }
+        mAlerter.show();
+    }
+
+    public void onClick2(View v) {
+        mAlerter.hide();
     }
 
     private void testRSA() {
