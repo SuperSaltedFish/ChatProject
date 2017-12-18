@@ -3,6 +3,7 @@ package com.yzx.chat.widget.view;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.view.Gravity;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.Space;
 
 import com.yzx.chat.util.LogUtil;
 
@@ -26,13 +29,16 @@ public class Alerter {
 
     private static int sStatusBarHeight;
 
-    private FrameLayout mRootLayout;
+    private LinearLayout mRootLayout;
+    private Space mOutsideSpace;
     private View mContentView;
-    private WeakReference<Activity> mActivityWeakReference;
+    private Activity mActivity;
     private Animation mSlideInAnimation;
     private Animation mSlideOutAnimation;
+    private OnShowAndHideListener mOnShowAndHideListener;
 
     private boolean isShow;
+    private boolean isCanceledOnTouchOutside;
 
 
     public Alerter(Activity activity, @LayoutRes int resID) {
@@ -40,11 +46,14 @@ public class Alerter {
             throw new NullPointerException("activity is null");
         }
 
-        mActivityWeakReference = new WeakReference<>(activity);
-        mRootLayout = new FrameLayout(activity);
+        mActivity = activity;
+        mRootLayout = new LinearLayout(activity);
+        mRootLayout.setOrientation(LinearLayout.VERTICAL);
         mRootLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mRootLayout.setPadding(0, getStatusBarHeight(activity), 0, 0);
         mContentView = activity.getLayoutInflater().inflate(resID, mRootLayout, true);
+        mOutsideSpace = new Space(activity);
+        mRootLayout.addView(mOutsideSpace, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
         mSlideInAnimation = new TranslateAnimation(0, 0, 0, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);
         mSlideOutAnimation = new TranslateAnimation(0, 0, 0, 0, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, -1);
@@ -53,33 +62,47 @@ public class Alerter {
         mSlideInAnimation.setInterpolator(new OvershootInterpolator(1));
         mSlideOutAnimation.setInterpolator(new AnticipateInterpolator(1));
 
-
-        mRootLayout.setOnClickListener(new View.OnClickListener() {
+        mOutsideSpace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtil.e("ddwadawd");
+                if (isCanceledOnTouchOutside) {
+                    hide();
+                }
             }
         });
+
     }
 
     public void show() {
         if (isShow) {
             return;
         }
-        Activity activity = mActivityWeakReference.get();
-        if (activity != null) {
-            ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-            decorView.addView(mRootLayout);
-            mContentView.startAnimation(mSlideInAnimation);
-            isShow = true;
-        }
+        ViewGroup decorView = (ViewGroup) mActivity.getWindow().getDecorView();
+        decorView.addView(mRootLayout);
+        mSlideInAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (mOnShowAndHideListener != null) {
+                    mOnShowAndHideListener.onShow();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mContentView.startAnimation(mSlideInAnimation);
+        isShow = true;
     }
 
     public void hide() {
         if (!isShow) {
-            return;
-        }
-        if (mActivityWeakReference.get() == null) {
             return;
         }
         isShow = false;
@@ -91,10 +114,10 @@ public class Alerter {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                Activity activity = mActivityWeakReference.get();
-                if (activity != null) {
-                    ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-                    decorView.removeView(mRootLayout);
+                ViewGroup decorView = (ViewGroup) mActivity.getWindow().getDecorView();
+                decorView.removeView(mRootLayout);
+                if (mOnShowAndHideListener != null) {
+                    mOnShowAndHideListener.onHide();
                 }
             }
 
@@ -110,10 +133,19 @@ public class Alerter {
         return isShow;
     }
 
-    public void setCanceledOnTouchOutside(boolean isEnable) {
-
+    public <T extends View> T findViewById(@IdRes int id) {
+        return mContentView.findViewById(id);
     }
 
+    public Alerter setCanceledOnTouchOutside(boolean isEnable) {
+        isCanceledOnTouchOutside = isEnable;
+        mOutsideSpace.setClickable(isEnable);
+        return this;
+    }
+
+    public void setOnShowAndHideListener(OnShowAndHideListener listener) {
+        mOnShowAndHideListener = listener;
+    }
 
     private static int getStatusBarHeight(Context context) {
         if (sStatusBarHeight == 0) {
@@ -123,5 +155,11 @@ public class Alerter {
             }
         }
         return sStatusBarHeight;
+    }
+
+    public interface OnShowAndHideListener {
+        void onShow();
+
+        void onHide();
     }
 }

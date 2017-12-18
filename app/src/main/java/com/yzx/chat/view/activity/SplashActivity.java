@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +12,7 @@ import com.yzx.chat.presenter.SplashPresenter;
 
 public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter> implements SplashContract.View {
 
-    private boolean isInit;
+    private static int PERMISSIONS_REQUEST_CODE = 1;
 
     @Override
     protected int getLayoutID() {
@@ -21,19 +22,13 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestPermissionsInCompatMode(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (!isInit) {
-            isInit = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mPresenter.init();
-                }
-            }, 1000);
+    public void onRequestPermissionsSuccess(int requestCode) {
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            mPresenter.init();
         }
     }
 
@@ -44,15 +39,15 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     @Override
     public void startLoginActivity() {
-        startActivity(new Intent(this,LoginActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 
     @Override
     public void startHomeActivity() {
-        startActivity(new Intent(this,HomeActivity.class));
+        startActivity(new Intent(this, HomeActivity.class));
         finish();
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.listener.ResendMessageListener;
 
@@ -152,6 +153,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     public void setLoadMoreHint(String hint) {
         mLoadMoreHint = hint;
+        if(isEnableLoadMore){
+            notifyItemChanged(getItemCount()-1);
+        }
     }
 
     private int getPosition(int position) {

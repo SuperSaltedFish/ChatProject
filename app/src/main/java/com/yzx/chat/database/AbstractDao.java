@@ -29,7 +29,7 @@ public abstract class AbstractDao<T> {
     }
 
     public T loadByKey(String... keyValues) {
-        if(keyValues==null||keyValues.length==0){
+        if (keyValues == null || keyValues.length == 0) {
             return null;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
@@ -44,7 +44,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean insert(T entity) {
-        if(entity==null){
+        if (entity == null) {
             return false;
         }
         ContentValues values = toContentValues(entity, new ContentValues());
@@ -57,7 +57,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean insertAll(Iterable<T> entityIterable) {
-        if(entityIterable==null){
+        if (entityIterable == null) {
             return false;
         }
         boolean result = true;
@@ -84,7 +84,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean replace(T entity) {
-        if(entity==null){
+        if (entity == null) {
             return false;
         }
         ContentValues values = toContentValues(entity, new ContentValues());
@@ -97,7 +97,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean replaceAll(Iterable<T> entityIterable) {
-        if(entityIterable==null){
+        if (entityIterable == null) {
             return false;
         }
         boolean result = true;
@@ -124,7 +124,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean update(T entity) {
-        if(entity==null){
+        if (entity == null) {
             return false;
         }
         ContentValues values = toContentValues(entity, new ContentValues());
@@ -138,7 +138,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean updateAll(Iterable<T> entityIterable) {
-        if(entityIterable==null){
+        if (entityIterable == null) {
             return false;
         }
         boolean result = true;
@@ -165,7 +165,7 @@ public abstract class AbstractDao<T> {
     }
 
     public boolean delete(T entity) {
-        if(entity==null){
+        if (entity == null) {
             return false;
         }
         boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
@@ -173,17 +173,17 @@ public abstract class AbstractDao<T> {
         return result;
     }
 
-    public boolean deleteByKey(String ...keyValue) {
-        if(keyValue==null||keyValue.length==0){
+    public boolean deleteByKey(String... keyValue) {
+        if (keyValue == null || keyValue.length == 0) {
             return false;
         }
-        boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(),keyValue) > 0;
+        boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), keyValue) > 0;
         mHelper.closeWritableDatabase();
         return result;
     }
 
     public boolean deleteAll(Iterable<T> entityIterable) {
-        if(entityIterable==null){
+        if (entityIterable == null) {
             return false;
         }
         boolean result = true;
@@ -206,14 +206,21 @@ public abstract class AbstractDao<T> {
         return result;
     }
 
+    public void cleanTable(){
+        SQLiteDatabase database = mHelper.openWritableDatabase();
+        database.execSQL("delete from "+getTableName());
+        mHelper.closeWritableDatabase();
+    }
+
     public boolean isExist(T entity) {
-        if(entity==null){
+        if (entity == null) {
             return false;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), toWhereArgsOfKey(entity), null, null, null,null);
+        Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), toWhereArgsOfKey(entity), null, null, null, null);
         boolean result = (cursor.getCount() > 0);
         cursor.close();
+        mHelper.closeReadableDatabase();
         return result;
     }
 

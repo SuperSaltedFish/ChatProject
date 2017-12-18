@@ -14,6 +14,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +37,7 @@ import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.listener.ResendMessageListener;
+import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
@@ -79,7 +84,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
 
+    private Alerter mAlerter;
+    private Animation mAlerterIconAnimation;
+
     private List<EMMessage> mMessageList;
+    private String mNeedResendMessageID;
     private int[] mEmojis;
 
     private int mKeyBoardHeight;
@@ -140,16 +149,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         mRvChatView.setItemAnimator(new NoAnimations());
-//        mRvChatView.getItemAnimator().setAddDuration(0);
-//        mRvChatView.getItemAnimator().setChangeDuration(0);
-//        mRvChatView.getItemAnimator().setMoveDuration(0);
-//        mRvChatView.getItemAnimator().setRemoveDuration(0);
-//        ((SimpleItemAnimator) mRvChatView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
         mAdapter.setResendMessageListener(mResendMessageListener);
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
+
+        setAlerter();
 
         setEmotionPanel();
 
@@ -162,6 +168,55 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
 
     }
+
+    private void setAlerter() {
+        mAlerter = new Alerter(this, R.layout.alert_dialog_chat);
+        final Button btnResend = mAlerter.findViewById(R.id.ChatActivity_mBtnResend);
+        final Button btnCancel = mAlerter.findViewById(R.id.ChatActivity_mBtnCancel);
+        final ImageView ivIcon = mAlerter.findViewById(R.id.ChatActivity_mIvIcon);
+        mAlerterIconAnimation = new ScaleAnimation(1.0f, 0.8f, 1.0f, 0.8f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mAlerterIconAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        mAlerterIconAnimation.setDuration(1000);
+        mAlerterIconAnimation.setRepeatCount(Animation.INFINITE);
+        mAlerterIconAnimation.setRepeatMode(Animation.REVERSE);
+
+        btnResend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAlerter.hide();
+                EMMessage message = mPresenter.resendMessage(mNeedResendMessageID);
+                if (message != null) {
+                    for (int i = 0, size = mMessageList.size(); i < size; i++) {
+                        if (message == mMessageList.get(i)) {
+                            updateMessageState(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAlerter.hide();
+            }
+        });
+
+        mAlerter.setCanceledOnTouchOutside(true);
+        mAlerter.setOnShowAndHideListener(new Alerter.OnShowAndHideListener() {
+            @Override
+            public void onShow() {
+                ivIcon.startAnimation(mAlerterIconAnimation);
+            }
+
+            @Override
+            public void onHide() {
+                mAlerterIconAnimation.cancel();
+            }
+        });
+    }
+
 
     private void setEmotionPanel() {
         EmojiRecyclerview emojiRecyclerview = new EmojiRecyclerview(this);
@@ -391,6 +446,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mAlerterIconAnimation.cancel();
         mMessageList = null;
     }
 
@@ -460,7 +516,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private final ResendMessageListener mResendMessageListener = new ResendMessageListener() {
         @Override
         public void resendMessage(String messageID) {
-            LogUtil.e(messageID);
+            mNeedResendMessageID = messageID;
+            mAlerter.show();
         }
     };
 

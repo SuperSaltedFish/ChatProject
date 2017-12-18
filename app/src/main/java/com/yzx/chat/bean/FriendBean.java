@@ -3,6 +3,7 @@ package com.yzx.chat.bean;
 
 import android.text.TextUtils;
 
+import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.PinYinUtil;
 
 /**
@@ -37,7 +38,7 @@ public class FriendBean {
 
 
     public String getFriendOf() {
-        return friendOf;
+        return IdentityManager.getInstance().getUserID();
     }
 
     public void setFriendOf(String friendOf) {

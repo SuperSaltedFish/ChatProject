@@ -29,7 +29,7 @@ public class ChatContract {
 
         void init(String conversationID);
 
-        void resendMessage(String messageID);
+        EMMessage resendMessage(String messageID);
 
         void sendTextMessage(String message);
 

@@ -59,10 +59,9 @@ public class SharePreferenceManager {
 
     public static class IdentityPreferences {
         private static final String PREFERENCES_NAME_IDENTITY = "Identity";
-        private static final String IDENTITY_KEY_RSA_Secret_Key = "RSASecretKey";
         private static final String IDENTITY_KEY_AES_Secret_Key = "AESSecretKey";
         private static final String IDENTITY_KEY_Token = "Token";
-        private static final String IDENTITY_KEY_DEVICE_ID = "DeviceID";
+        private static final String IDENTITY_KEY_USER_ID = "UserID";
 
         private SharedPreferences mPreferences;
 
@@ -71,13 +70,11 @@ public class SharePreferenceManager {
         }
 
         public void clear() {
-            String deviceID = getDeviceID();
             mPreferences.edit().clear().apply();
-            putDeviceID(deviceID);
         }
 
-        public boolean putRSAKey(String value) {
-            return mPreferences.edit().putString(IDENTITY_KEY_RSA_Secret_Key, value).commit();
+        public boolean putUserID(String value) {
+            return mPreferences.edit().putString(IDENTITY_KEY_USER_ID, value).commit();
         }
 
         public boolean putAESKey(String value) {
@@ -88,12 +85,8 @@ public class SharePreferenceManager {
             return mPreferences.edit().putString(IDENTITY_KEY_Token, value).commit();
         }
 
-        public boolean putDeviceID(String value) {
-           return mPreferences.edit().putString(IDENTITY_KEY_DEVICE_ID, value).commit();
-        }
-
-        public String getRSAKey() {
-            return mPreferences.getString(IDENTITY_KEY_RSA_Secret_Key, null);
+        public String getUserID() {
+            return mPreferences.getString(IDENTITY_KEY_USER_ID, null);
         }
 
         public String getAESKey() {
@@ -103,15 +96,12 @@ public class SharePreferenceManager {
         public String getToken() {
             return mPreferences.getString(IDENTITY_KEY_Token, null);
         }
-
-        public String getDeviceID() {
-            return mPreferences.getString(IDENTITY_KEY_DEVICE_ID, null);
-        }
     }
 
     public static class ConfigurePreferences {
         private static final String PREFERENCES_NAME_CONFIGURE = "Configure";
         private static final String CONFIGURE_KEY_KEY_BOARD_HEIGHT = "KeyBoardHeight";
+        private static final String CONFIGURE_KEY_DEVICE_ID = "DeviceID";
 
         private SharedPreferences mPreferences;
 
@@ -125,6 +115,14 @@ public class SharePreferenceManager {
 
         public int getKeyBoardHeight() {
             return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT, 0);
+        }
+
+        public boolean putDeviceID(String value) {
+            return mPreferences.edit().putString(CONFIGURE_KEY_DEVICE_ID, value).commit();
+        }
+
+        public String getDeviceID() {
+            return mPreferences.getString(CONFIGURE_KEY_DEVICE_ID, null);
         }
     }
 }

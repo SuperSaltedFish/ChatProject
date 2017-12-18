@@ -53,9 +53,9 @@
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+            <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -121,7 +121,7 @@
         <!-- 以下为环信 -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="qq244546875#superchat" />
+            android:value="jokerdemo#im-node" />
         <!-- 声明SDK所需的service SDK核心功能 -->
         <service
             android:name="com.hyphenate.chat.EMChatService"

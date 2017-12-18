@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="104dp"
+    android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:background="@color/theme_main_color_dark">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/ChatActivity_mIvIcon"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:src="@drawable/ic_send_fail"
         android:tint="#ffffff"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -23,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/ChatActivity_mTvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -31,54 +28,54 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:text="重发信息"
+        android:text="@string/AlertDialogChat_Title"
         android:textColor="@color/text_main_color_white"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvContent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvIcon"
+        app:layout_constraintTop_toTopOf="@+id/ChatActivity_mIvIcon"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/ChatActivity_mTvContent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:text="是否选择重新dddddddddddddddddddddddddddddd发送这条信息?"
+        android:text="@string/AlertDialogChat_Content"
         android:textColor="@color/text_main_color_white_alpha"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ChatActivity_mIvIcon"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintStart_toStartOf="@+id/ChatActivity_mTvTitle"
+        app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mTvTitle" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/ChatActivity_mBtnResend"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="@null"
-        android:text="重新发送"
+        android:text="@string/AlertDialogChat_Resend"
         android:textColor="@color/text_main_color_white"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvIcon" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/ChatActivity_mBtnCancel"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="@null"
-        android:text="取消"
+        android:text="@string/AlertDialogChat_Cancel"
         android:textColor="@color/text_main_color_white"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintTop_toTopOf="@+id/button" />
+        app:layout_constraintBottom_toBottomOf="@+id/ChatActivity_mBtnResend"
+        app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mBtnResend"
+        app:layout_constraintTop_toTopOf="@+id/ChatActivity_mBtnResend" />
 
 
 </android.support.constraint.ConstraintLayout>

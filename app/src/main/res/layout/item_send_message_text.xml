@@ -12,7 +12,7 @@
         android:id="@+id/ChatMessageAdapter_mIvMessageState"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:padding="3dp" />
+        android:padding="2dp" />
 
     <android.support.text.emoji.widget.EmojiTextView
         android:id="@+id/ChatMessageAdapter_mTvTextContent"

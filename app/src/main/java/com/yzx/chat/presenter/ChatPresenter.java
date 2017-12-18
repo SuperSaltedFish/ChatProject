@@ -70,6 +70,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (count < Constants.CHAT_MESSAGE_PAGE_SIZE) {
             List<EMMessage> dbMessageList = conversation.loadMoreMsgFromDB(messageList.get(0).getMsgId(), Constants.CHAT_MESSAGE_PAGE_SIZE - count);
             dbMessageList.addAll(messageList);
+            if(dbMessageList.size()<Constants.CHAT_MESSAGE_PAGE_SIZE){
+                mHasMoreMessage = false;
+            }
             mChatView.showNewMessage(dbMessageList);
         } else {
             mChatView.showNewMessage(messageList);
@@ -77,8 +80,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public void resendMessage(String messageID) {
-
+    public EMMessage resendMessage(String messageID) {
+       return mChatManager.resendMessage(messageID);
     }
 
 
