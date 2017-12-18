@@ -217,8 +217,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     public void updateContactListView(DiffUtil.DiffResult diffResult, List<FriendBean> newFriendList) {
-        diffResult.dispatchUpdatesTo(mAdapter);
         mFriendList.clear();
         mFriendList.addAll(newFriendList);
+        diffResult.dispatchUpdatesTo(mAdapter);
     }
 }

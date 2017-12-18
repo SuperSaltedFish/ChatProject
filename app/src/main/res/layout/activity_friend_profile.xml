@@ -18,8 +18,8 @@
 
             <ImageView
                 android:id="@+id/FriendProfileActivity_mIvBack"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="start|center_vertical"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_back" />
@@ -34,6 +34,13 @@
                 android:textColor="@color/text_main_color_white"
                 android:textSize="18sp" />
 
+            <ImageView
+                android:id="@+id/FriendProfileActivity_mIvEdit"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_edit" />
 
         </FrameLayout>
 
@@ -58,7 +65,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginStart="8dp"
             android:layout_toEndOf="@+id/FriendProfileActivity_mIvAvatar"
-            android:layout_toStartOf="@+id/FriendProfileActivity_mIvEdit"
+            android:layout_toStartOf="@+id/FriendProfileActivity_mIvChat"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -84,7 +91,7 @@
         </LinearLayout>
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:id="@+id/FriendProfileActivity_mIvEdit"
+            android:id="@+id/FriendProfileActivity_mIvChat"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_alignParentEnd="true"

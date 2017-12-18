@@ -86,26 +86,50 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         return -1;
     }
 
-    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            if (mFriendList != null&&mFriendList.size()!=0) {
-                String identity;
-                String abbreviation;
-                String currentIdentity = null;
-                for (int i = 0, length = mFriendList.size(); i < length; i++) {
-                    abbreviation = mFriendList.get(i).getAbbreviation();
-                    if (abbreviation != null) {
-                        identity = abbreviation.substring(0, 1);
-                        if (!identity.equals(currentIdentity)) {
-                            mIdentitySparseArray.append(i, identity.toUpperCase().intern());
-                            currentIdentity = identity;
-                        }
+    private void resetLetter(){
+        if (mFriendList != null&&mFriendList.size()!=0) {
+            String identity;
+            String abbreviation;
+            String currentIdentity = null;
+            for (int i = 0, length = mFriendList.size(); i < length; i++) {
+                abbreviation = mFriendList.get(i).getAbbreviation();
+                if (abbreviation != null) {
+                    identity = abbreviation.substring(0, 1);
+                    if (!identity.equals(currentIdentity)) {
+                        mIdentitySparseArray.append(i, identity.toUpperCase().intern());
+                        currentIdentity = identity;
                     }
                 }
             }
         }
+    }
 
+    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            resetLetter();
+        }
+
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            resetLetter();
+        }
+
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            resetLetter();
+        }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+            resetLetter();
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            resetLetter();
+        }
     };
 
     static abstract class ItemView extends RecyclerView.ViewHolder {
