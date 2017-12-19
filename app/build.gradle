@@ -17,6 +17,7 @@ android {
         }
     }
     useLibrary 'org.apache.http.legacy'
+
 }
 
 
@@ -30,11 +31,11 @@ dependencies {
     implementation 'com.android.support:support-emoji:27.0.2'
     implementation 'com.android.support:support-emoji-bundled:27.0.2'
 
-    implementation 'com.hyphenate:hyphenate-sdk-lite:3.3.5'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     implementation 'com.ashokvarma.android:bottom-navigation-bar:2.0.3'
     implementation 'com.github.bumptech.glide:glide:4.4.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     //    debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
+    implementation files('libs/Rong_IMLib.jar')
 }

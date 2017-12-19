@@ -2,28 +2,22 @@ package com.yzx.chat.tool;
 
 
 import android.content.Context;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
-import com.hyphenate.EMCallBack;
-import com.hyphenate.EMConnectionListener;
-import com.hyphenate.EMContactListener;
-import com.hyphenate.EMMessageListener;
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMOptions;
-import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.util.LogUtil;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Message;
+import io.rong.imlib.model.MessageContent;
+import io.rong.message.ContactNotificationMessage;
+import io.rong.message.GroupNotificationMessage;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -34,11 +28,8 @@ public class ChatClientManager {
 
     private static ChatClientManager sManager;
 
-    public static void init(Context context) {
-        EMOptions options = new EMOptions();
-        options.setAcceptInvitationAlways(false);
-        EMClient.getInstance().init(context.getApplicationContext(), options);
-        EMClient.getInstance().setDebugMode(true);
+    public static void init(Context appContext, String imAppKey) {
+        RongIMClient.init(appContext, imAppKey);
         sManager = new ChatClientManager();
     }
 
@@ -50,7 +41,7 @@ public class ChatClientManager {
     }
 
 
-    private EMClient mEMClient;
+    private RongIMClient mRongIMClient;
     private Map<OnMessageReceiveListener, String> mMessageListenerMap;
     private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
     private List<ContactListener> mContactListenerList;
@@ -67,9 +58,13 @@ public class ChatClientManager {
         mMessageSendStateChangeListenerMap = new HashMap<>();
         mContactListenerList = new LinkedList<>();
         mUnreadCountChangeListenerList = new LinkedList<>();
-        mConnectionListenerList= new LinkedList<>();
+        mConnectionListenerList = new LinkedList<>();
 
         mContactDao = DBManager.getInstance().getContactDao();
+        mRongIMClient = RongIMClient.getInstance();
+
+        RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
+
         mEMClient = EMClient.getInstance();
 
         mEMClient.addConnectionListener(mEMConnectionListener);
@@ -179,13 +174,13 @@ public class ChatClientManager {
         mEMClient.chatManager().sendMessage(message);
     }
 
-    public EMMessage resendMessage(String messageID){
-       EMMessage message =  mEMClient.chatManager().getMessage(messageID);
-       if(message!=null){
-           message.setStatus(EMMessage.Status.INPROGRESS);
-           sendMessage(message);
-       }
-       return message;
+    public EMMessage resendMessage(String messageID) {
+        EMMessage message = mEMClient.chatManager().getMessage(messageID);
+        if (message != null) {
+            message.setStatus(EMMessage.Status.INPROGRESS);
+            sendMessage(message);
+        }
+        return message;
     }
 
 
@@ -206,73 +201,45 @@ public class ChatClientManager {
     private final EMConnectionListener mEMConnectionListener = new EMConnectionListener() {
         @Override
         public void onConnected() {
-            for(ConnectionListener listener:mConnectionListenerList){
+            for (ConnectionListener listener : mConnectionListenerList) {
                 listener.onConnected();
             }
         }
 
         @Override
         public void onDisconnected(int errorCode) {
-            for(ConnectionListener listener:mConnectionListenerList){
+            for (ConnectionListener listener : mConnectionListenerList) {
                 listener.onDisconnected(errorCode);
             }
         }
     };
 
-
-    private final EMMessageListener mEMMessageListener = new EMMessageListener() {
+    private final  RongIMClient.OnReceiveMessageListener mOnReceiveMessageListener = new RongIMClient.OnReceiveMessageListener() {
         @Override
-        public void onMessageReceived(List<EMMessage> messages) {
-            String conversationID;
+        public boolean onReceived(Message message, int i) {
+            if(mMessageListenerMap.size()==0){
+                return false;
+            }
+
             OnMessageReceiveListener listener;
-            List<EMMessage> filterMessage;
+            String conversationID = message.getTargetId();
+            MessageContent messageContent = message.getContent();
+
+
             for (Map.Entry<OnMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
                 conversationID = entry.getValue();
                 listener = entry.getKey();
                 if (listener == null) {
-                    return;
+                    continue;
                 }
-                if (TextUtils.isEmpty(conversationID)) {
+                if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
                     listener.onMessageReceived(messages);
-                } else {
-                    filterMessage = new LinkedList<>();
-                    for (EMMessage message : messages) {
-                        if (conversationID.equals(message.conversationId())) {
-                            filterMessage.add(message);
-                        }
-                    }
-                    if (filterMessage.size() != 0) {
-                        listener.onMessageReceived(filterMessage);
-                    }
                 }
             }
-        }
-
-        @Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageRead(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageDelivered(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageRecalled(List<EMMessage> messages) {
-
-        }
-
-        @Override
-        public void onMessageChanged(EMMessage message, Object change) {
-
+            return true;
         }
     };
+
 
 
     private final EMContactListener mEMContactListener = new EMContactListener() {
