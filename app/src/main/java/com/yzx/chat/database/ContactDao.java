@@ -25,6 +25,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
     private static final String COLUMN_NAME_Reason = "Reason";
     private static final String COLUMN_NAME_Remind = "Remind";
     private static final String COLUMN_NAME_Time = "Time";
+
     private static final int COLUMN_INDEX_UserTo = 0;
     private static final int COLUMN_INDEX_UserFrom = 1;
     private static final int COLUMN_INDEX_Type = 2;

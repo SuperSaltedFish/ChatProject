@@ -78,8 +78,8 @@ public class SplashPresenter implements SplashContract.Presenter {
 
             @Override
             protected void onFailure(String message) {
-                isSuccess = false;
-                mSplashView.startLoginActivity();
+                isSuccess = true;
+               // mSplashView.startLoginActivity();
             }
 
             @Override

@@ -1,6 +1,7 @@
 package com.yzx.chat.bean;
 
 import android.support.annotation.IntDef;
+import android.text.TextUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,7 +19,9 @@ public class ConversationBean {
 
     private int mConversationType;
 
-    private String mName;
+    private String mNickname;
+    private String mRemarkName;
+    private String mUserID;
     private String mConversationID;
     private String mLastMsgContent;
     private long mLastMsgTime;
@@ -39,11 +42,35 @@ public class ConversationBean {
     }
 
     public String getName() {
-        return mName;
+        if (TextUtils.isEmpty(mRemarkName)) {
+            return mNickname;
+        } else {
+            return mRemarkName;
+        }
     }
 
-    public void setName(String name) {
-        mName = name;
+    public String getNickname() {
+        return mNickname;
+    }
+
+    public void setNickname(String nickname) {
+        mNickname = nickname;
+    }
+
+    public String getRemarkName() {
+        return mRemarkName;
+    }
+
+    public void setRemarkName(String remarkName) {
+        mRemarkName = remarkName;
+    }
+
+    public String getUserID() {
+        return mUserID;
+    }
+
+    public void setUserID(String userID) {
+        mUserID = userID;
     }
 
     public String getConversationID() {

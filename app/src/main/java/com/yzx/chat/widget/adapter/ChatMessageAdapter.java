@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
+import android.media.MediaPlayer;
 import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +25,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.listener.ResendMessageListener;
 
@@ -272,11 +274,29 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static class VoiceSendMessageHolder extends SendMessageHolder {
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
+        private VoicePlayer mVoicePlayer;
 
         VoiceSendMessageHolder(View itemView, View.OnClickListener resendClickListener) {
             super(itemView, resendClickListener);
             mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
             mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
+            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
+            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mVoicePlayer.play((String) v.getTag(), new VoicePlayer.OnPlayStateChangeListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+                }
+            });
         }
 
         @Override
@@ -291,6 +311,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             } else {
                 mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
             }
+            mFlPlayLayout.setTag(voiceBody.getLocalUrl());
         }
     }
 

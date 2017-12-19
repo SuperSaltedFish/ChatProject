@@ -17,13 +17,14 @@ import java.util.List;
 
 public class FriendDao extends AbstractDao<FriendBean> {
 
-    private static final String TABLE_NAME = "Friend";
+    protected static final String TABLE_NAME = "Friend";
 
-    private static final String COLUMN_NAME_FriendOf = "FriendOf";
+    public static final String COLUMN_NAME_FriendOf = "FriendOf";
     private static final String COLUMN_NAME_UserID = "UserID";
-    private static final String COLUMN_NAME_Nickname = "Nickname";
+    public static final String COLUMN_NAME_Nickname = "Nickname";
     private static final String COLUMN_NAME_Avatar = "Avatar";
-    private static final String COLUMN_NAME_RemarkName = "RemarkName";
+    public static final String COLUMN_NAME_RemarkName = "RemarkName";
+
     private static final int COLUMN_INDEX_FriendOf = 0;
     private static final int COLUMN_INDEX_UserID = 1;
     private static final int COLUMN_INDEX_Nickname = 2;
@@ -41,14 +42,14 @@ public class FriendDao extends AbstractDao<FriendBean> {
                     + ")";
 
 
-    public List<FriendBean> loadAllFriend(String friendOf){
-        if(TextUtils.isEmpty(friendOf)){
+    public List<FriendBean> loadAllFriend(String friendOf) {
+        if (TextUtils.isEmpty(friendOf)) {
             return null;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_FriendOf + "=?", new String[]{friendOf});
         List<FriendBean> contactList = new ArrayList<>(cursor.getCount());
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
         cursor.close();
@@ -56,13 +57,13 @@ public class FriendDao extends AbstractDao<FriendBean> {
         return contactList;
     }
 
-    public void loadAllFriendTo(List<FriendBean> dataList,String friendOf){
-        if(TextUtils.isEmpty(friendOf)){
-            return ;
+    public void loadAllFriendTo(List<FriendBean> dataList, String friendOf) {
+        if (TextUtils.isEmpty(friendOf)) {
+            return;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_FriendOf + "=?", new String[]{friendOf});
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             dataList.add(toEntity(cursor));
         }
         cursor.close();

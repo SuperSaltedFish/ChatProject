@@ -3,6 +3,7 @@ package com.yzx.chat.tool;
 import android.content.Context;
 
 import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.database.ConversationDao;
 import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.database.FriendDao;
 import com.yzx.chat.database.UserDao;
@@ -60,6 +61,15 @@ public class DBManager {
         if (dao == null) {
             dao = mDBHelper.getDaoInstance(new FriendDao());
             mDaoInstanceMap.put(FriendDao.class, dao);
+        }
+        return dao;
+    }
+
+    public ConversationDao getConversationDao() {
+        ConversationDao dao = (ConversationDao) mDaoInstanceMap.get(ConversationDao.class);
+        if (dao == null) {
+            dao = mDBHelper.getDaoInstance(new ConversationDao());
+            mDaoInstanceMap.put(ConversationDao.class, dao);
         }
         return dao;
     }

@@ -25,7 +25,6 @@ import java.security.PublicKey;
 
 public class TestActivity extends BaseCompatActivity {
 
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
