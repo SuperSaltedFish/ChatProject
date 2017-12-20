@@ -1,9 +1,8 @@
 package com.yzx.chat.widget.adapter;
 
-import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,23 +13,22 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMTextMessageBody;
-import com.hyphenate.chat.EMVoiceMessageBody;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.configure.Constants;
 
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.view.activity.ChatActivity;
-import com.yzx.chat.widget.listener.ResendMessageListener;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
+
+import io.rong.imlib.model.Message;
+import io.rong.message.TextMessage;
+import io.rong.message.VoiceMessage;
 
 
 /**
@@ -46,14 +44,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int TYPE_SEND_MESSAGE_VOICE = 3;
     private static final int TYPE_RECEIVE_MESSAGE_VOICE = 4;
 
-    private List<EMMessage> mMessageList;
+    private List<Message> mMessageList;
     private String mLoadMoreHint;
+    private boolean isEnable;
 
-    private ResendMessageListener mResendMessageListener;
+    private OnResendItemClickListener mOnResendItemClickListener;
 
-    private boolean isEnableLoadMore;
-
-    public ChatMessageAdapter(List<EMMessage> messageList) {
+    public ChatMessageAdapter(List<Message> messageList) {
         mMessageList = messageList;
     }
 
@@ -61,11 +58,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     public MessageHolder getViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_SEND_MESSAGE_TEXT:
-                return new TextSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false), mIvResendClickListener);
+                return new TextSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false));
             case TYPE_RECEIVE_MESSAGE_TEXT:
                 return new TextReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
             case TYPE_SEND_MESSAGE_VOICE:
-                return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false), mIvResendClickListener);
+                return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
             case TYPE_RECEIVE_MESSAGE_VOICE:
                 return new VoiceReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
             case TYPE_LOAD_MORE:
@@ -78,15 +75,42 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageHolder holder, int position) {
-        if (isEnableLoadMore && getItemCount() - 1 == position) {
-            holder.setDate(null);
-            LoadMoreHolder loadMoreHolder = (LoadMoreHolder) holder;
-            loadMoreHolder.mTvHintContent.setText(mLoadMoreHint);
+        if (position == getItemCount() - 1) {
+            if (mLoadMoreHint == null || !isEnable) {
+                holder.itemView.setVisibility(View.GONE);
+            } else {
+                LoadMoreHolder loadMoreHolder = (LoadMoreHolder) holder;
+                loadMoreHolder.mTvHintContent.setText(mLoadMoreHint);
+                holder.itemView.setVisibility(View.VISIBLE);
+            }
         } else {
-            holder.setDate(mMessageList.get(getPosition(position)));
+            if (holder instanceof SendMessageHolder) {
+                ((SendMessageHolder) holder).setOnResendItemClickListener(mOnResendItemClickListener);
+            }
+            holder.setDate(mMessageList.get(position));
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return mMessageList == null ? 0 : mMessageList.size() + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == getItemCount() - 1) {
+            return TYPE_LOAD_MORE;
+        }
+        Message message = mMessageList.get(position);
+        switch (message.getObjectName()) {
+            case "RC:TxtMsg":
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? TYPE_SEND_MESSAGE_TEXT : TYPE_RECEIVE_MESSAGE_TEXT;
+            case "RC:VcMsg":
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? TYPE_SEND_MESSAGE_VOICE : TYPE_RECEIVE_MESSAGE_VOICE;
+            default:
+                throw new NoSuchElementException("unknown type");
+        }
+    }
 
     @Override
     public void onViewDetachedFromWindow(MessageHolder holder) {
@@ -99,83 +123,34 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    @Override
-    public int getItemCount() {
-        if (mMessageList == null)
-            return 0;
-        int size = mMessageList.size();
-        if (size < Constants.CHAT_MESSAGE_PAGE_SIZE) {
-            isEnableLoadMore = false;
-            return size;
-        } else {
-            isEnableLoadMore = true;
-            return size + 1;
-        }
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (isEnableLoadMore && position == getItemCount() - 1) {
-            return TYPE_LOAD_MORE;
-        }
-        EMMessage message = mMessageList.get(getPosition(position));
-        if (message.direct() == EMMessage.Direct.RECEIVE) {
-            switch (message.getType()) {
-                case TXT:
-                    return TYPE_RECEIVE_MESSAGE_TEXT;
-                case VOICE:
-                    return TYPE_RECEIVE_MESSAGE_VOICE;
-                default:
-                    throw new RuntimeException("unknown type");
-            }
-        } else {
-            switch (message.getType()) {
-                case TXT:
-                    return TYPE_SEND_MESSAGE_TEXT;
-                case VOICE:
-                    return TYPE_SEND_MESSAGE_VOICE;
-                default:
-                    throw new RuntimeException("unknown type");
-            }
-        }
-    }
-
-    private final View.OnClickListener mIvResendClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (mResendMessageListener != null) {
-                mResendMessageListener.resendMessage((String) v.getTag());
-            }
-        }
-    };
-
-    public void setResendMessageListener(ResendMessageListener resendMessageListener) {
-        mResendMessageListener = resendMessageListener;
-    }
-
-    public void setLoadMoreHint(String hint) {
+    public void showLoadMoreHint(String hint) {
         mLoadMoreHint = hint;
-        if(isEnableLoadMore){
-            notifyItemChanged(getItemCount()-1);
-        }
+        notifyItemChanged(getItemCount() - 1);
     }
 
-    private int getPosition(int position) {
-        return mMessageList.size() - position - 1;
+    public void hideLoadMoreHint() {
+        mLoadMoreHint = null;
+        notifyItemChanged(getItemCount() - 1);
+    }
+
+    public void enableLoadMoreHint(boolean isEnable) {
+        this.isEnable = isEnable;
+    }
+
+    public void setOnResendItemClickListener(OnResendItemClickListener onResendItemClickListener) {
+        mOnResendItemClickListener = onResendItemClickListener;
     }
 
     static abstract class MessageHolder extends RecyclerView.ViewHolder {
-        protected String mMessageID;
+        Message mMessage;
 
         MessageHolder(View itemView) {
             super(itemView);
         }
 
         @CallSuper
-        public void setDate(EMMessage message) {
-            if (message != null) {
-                mMessageID = message.getMsgId();
-            }
+        public void setDate(Message message) {
+            mMessage = message;
         }
 
     }
@@ -194,24 +169,26 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         private ImageView mIvMessageState;
         private CircularProgressDrawable mProgressDrawable;
-        private View.OnClickListener mResendClickListener;
+        private OnResendItemClickListener mOnResendItemClickListener;
 
-        SendMessageHolder(View itemView, View.OnClickListener resendClickListener) {
+        SendMessageHolder(View itemView) {
             super(itemView);
-            mResendClickListener = resendClickListener;
             mIvMessageState = itemView.findViewById(R.id.ChatMessageAdapter_mIvMessageState);
         }
 
-        @Override
-        public void setDate(EMMessage message) {
-            super.setDate(message);
-            setMessageState(message.status());
+        public void setOnResendItemClickListener(OnResendItemClickListener onResendItemClickListener) {
+            mOnResendItemClickListener = onResendItemClickListener;
         }
 
-        private void setMessageState(EMMessage.Status state) {
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            setMessageState(message.getSentStatus());
+        }
+
+        private void setMessageState(Message.SentStatus state) {
             mIvMessageState.setOnClickListener(null);
-            mIvMessageState.setTag(mMessageID);
-            if (state == EMMessage.Status.INPROGRESS) {
+            if (state == Message.SentStatus.SENDING) {
                 if (mProgressDrawable == null) {
                     mProgressDrawable = new CircularProgressDrawable(itemView.getContext());
                     mProgressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
@@ -227,14 +204,20 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                     mProgressDrawable = null;
                 }
                 switch (state) {
-                    case CREATE:
-                    case FAIL:
+                    case FAILED:
+                    case CANCELED:
                         mIvMessageState.setImageResource(R.drawable.ic_send_fail);
-                        mIvMessageState.setOnClickListener(mResendClickListener);
+                        mIvMessageState.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (mOnResendItemClickListener != null) {
+                                    mOnResendItemClickListener.onResendItemClick(getAdapterPosition(),mMessage);
+                                }
+                            }
+                        });
                         break;
-                    case SUCCESS:
+                    default:
                         mIvMessageState.setImageDrawable(null);
-                        break;
                 }
             }
         }
@@ -244,15 +227,16 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static class TextSendMessageHolder extends SendMessageHolder {
         private TextView mTvTextContent;
 
-        TextSendMessageHolder(View itemView, View.OnClickListener resendClickListener) {
-            super(itemView, resendClickListener);
+        TextSendMessageHolder(View itemView) {
+            super(itemView);
             mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
         }
 
         @Override
-        public void setDate(EMMessage message) {
+        public void setDate(Message message) {
             super.setDate(message);
-            mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
+            TextMessage textMessage = (TextMessage) message.getContent();
+            mTvTextContent.setText(textMessage.getContent());
         }
     }
 
@@ -265,9 +249,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(EMMessage message) {
+        public void setDate(Message message) {
             super.setDate(message);
-            mTvTextContent.setText((((EMTextMessageBody) message.getBody()).getMessage()));
+            TextMessage textMessage = (TextMessage) message.getContent();
+            mTvTextContent.setText(textMessage.getContent());
         }
     }
 
@@ -276,34 +261,36 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         private FrameLayout mFlPlayLayout;
         private VoicePlayer mVoicePlayer;
 
-        VoiceSendMessageHolder(View itemView, View.OnClickListener resendClickListener) {
-            super(itemView, resendClickListener);
+        private Uri mVoiceUri;
+
+        VoiceSendMessageHolder(View itemView) {
+            super(itemView);
             mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
             mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
-            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
-            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mVoicePlayer.play((String) v.getTag(), new VoicePlayer.OnPlayStateChangeListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-                }
-            });
+//            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
+//            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mVoicePlayer.play((String) v.getTag(), new VoicePlayer.OnPlayStateChangeListener() {
+//                        @Override
+//                        public void onCompletion(MediaPlayer mediaPlayer) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//
+//                        }
+//                    });
+//                }
+//            });
         }
 
         @Override
-        public void setDate(EMMessage message) {
+        public void setDate(Message message) {
             super.setDate(message);
-            EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
-            int timeLength_ms = voiceBody.getLength() * 1000;
+            VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
+            int timeLength_ms = voiceMessage.getDuration() * 1000;
             mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
             int rowWidth = mFlPlayLayout.getMinimumWidth();
             if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
@@ -311,13 +298,15 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             } else {
                 mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
             }
-            mFlPlayLayout.setTag(voiceBody.getLocalUrl());
+            mVoiceUri = voiceMessage.getUri();
         }
     }
 
     private static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
+
+        private Uri mVoiceUri;
 
         VoiceReceiveMessageHolder(View itemView) {
             super(itemView);
@@ -326,10 +315,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(EMMessage message) {
+        public void setDate(Message message) {
             super.setDate(message);
-            EMVoiceMessageBody voiceBody = (EMVoiceMessageBody) message.getBody();
-            int timeLength_ms = voiceBody.getLength() * 1000;
+            VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
+            int timeLength_ms = voiceMessage.getDuration() * 1000;
             mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
             int rowWidth = mFlPlayLayout.getMinimumWidth();
             if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
@@ -337,6 +326,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             } else {
                 mFlPlayLayout.setMinimumWidth((int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION)));
             }
+            mVoiceUri = voiceMessage.getUri();
+
         }
     }
 
@@ -348,6 +339,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mTvHintContent = itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
         }
+    }
+
+    public interface OnResendItemClickListener {
+        void onResendItemClick(int position,Message message);
     }
 
 }

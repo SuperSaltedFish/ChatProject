@@ -22,9 +22,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryManager;
@@ -36,7 +36,6 @@ import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
-import com.yzx.chat.widget.listener.ResendMessageListener;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
@@ -50,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
 
 /**
  * Created by YZX on 2017年06月03日.
@@ -90,8 +90,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private Animation mAlerterIconAnimation;
 
     private Conversation mConversation;
-    private List<EMMessage> mMessageList;
-    private String mNeedResendMessageID;
+    private List<Message> mMessageList;
+    private Message mNeedResendMessage;
     private int[] mEmojis;
 
     private int mKeyBoardHeight;
@@ -154,7 +154,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setItemAnimator(new NoAnimations());
 
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
-        mAdapter.setResendMessageListener(mResendMessageListener);
+        mAdapter.setOnResendItemClickListener(mOnResendItemClickListener);
 
         mIvSendMessage.setOnClickListener(mSendMesClickListener);
 
@@ -187,15 +187,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onClick(View v) {
                 mAlerter.hide();
-                EMMessage message = mPresenter.resendMessage(mNeedResendMessageID);
-                if (message != null) {
-                    for (int i = 0, size = mMessageList.size(); i < size; i++) {
-                        if (message == mMessageList.get(i)) {
-                            updateMessageState(i);
-                            break;
-                        }
-                    }
-                }
+                mMessageList.remove(mNeedResendMessage);
+                mNeedResendMessage.setMessageId(0);
+                mPresenter.resendMessage(mNeedResendMessage);
             }
         });
 
@@ -508,18 +502,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 return;
             }
             if (mPresenter.hasMoreMessage()) {
-                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
-                mPresenter.loadMoreMessage(mMessageList.get(0).getMsgId());
+                mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
+                mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
             } else {
-                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+                mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
             }
         }
     };
 
-    private final ResendMessageListener mResendMessageListener = new ResendMessageListener() {
+    private final ChatMessageAdapter.OnResendItemClickListener mOnResendItemClickListener = new ChatMessageAdapter.OnResendItemClickListener() {
         @Override
-        public void resendMessage(String messageID) {
-            mNeedResendMessageID = messageID;
+        public void onResendItemClick(int position,Message message) {
+            mNeedResendMessage = message;
             mAlerter.show();
         }
     };
@@ -531,47 +525,48 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void showNewMessage(EMMessage message) {
-        mMessageList.add(message);
+    public void addNewMessage(Message message) {
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, 1);
         }
+        mMessageList.add(message);
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
-    public void showNewMessage(List<EMMessage> messageList) {
-        mMessageList.addAll(messageList);
+    public void addNewMessage(List<Message> messageList) {
         if (mMessageList.size() == 0) {
+            if (messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
+                mAdapter.enableLoadMoreHint(false);
+            }
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, messageList.size());
         }
+        mMessageList.addAll(messageList);
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
-    public void showMoreMessage(List<EMMessage> messageList, boolean isHasMoreMessage) {
+    public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
             mMessageList.addAll(0, messageList);
             mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
         }
         if (!isHasMoreMessage) {
-            mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+            mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+            mAdapter.notifyItemChanged(mMessageList.size());
+        } else if (messageList == null) {
+            mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_LoadFail));
             mAdapter.notifyItemChanged(mMessageList.size());
         }
     }
 
     @Override
-    public void updateMessageState(int position) {
+    public void updateMessage(int position) {
         mAdapter.notifyItemChanged(mMessageList.size() - position - 1);
-    }
-
-    @Override
-    public List<EMMessage> getAllMessage() {
-        return mMessageList;
     }
 
 }

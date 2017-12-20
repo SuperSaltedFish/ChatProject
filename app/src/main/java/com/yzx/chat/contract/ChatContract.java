@@ -1,12 +1,12 @@
 package com.yzx.chat.contract;
 
-import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
 
 /**
  * Created by YZX on 2017年11月10日.
@@ -15,15 +15,14 @@ import io.rong.imlib.model.Conversation;
 
 public class ChatContract {
     public interface View extends BaseView<Presenter> {
-        void showNewMessage(EMMessage message);
+        void addNewMessage(Message message);
 
-        void showNewMessage(List<EMMessage> messageList);
+        void addNewMessage(List<Message> messageList);
 
-        void showMoreMessage(List<EMMessage> messageList, boolean isHasMoreMessage);
+        void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage);
 
-        void updateMessageState(int position);
+        void updateMessage(int position);
 
-        List<EMMessage> getAllMessage();
     }
 
 
@@ -31,13 +30,13 @@ public class ChatContract {
 
         void init(Conversation conversation);
 
-        EMMessage resendMessage(String messageID);
+        void resendMessage(Message message);
 
         void sendTextMessage(String message);
 
         void sendVoiceMessage(String filePath, int timeLength);
 
-        void loadMoreMessage(String lastMessageID);
+        void loadMoreMessage(int lastMessageID);
 
         boolean isLoadingMore();
 

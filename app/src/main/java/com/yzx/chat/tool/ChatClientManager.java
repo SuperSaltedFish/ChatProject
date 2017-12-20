@@ -98,17 +98,13 @@ public class ChatClientManager {
     }
 
 
-    public void sendMessage(EMMessage message) {
-        message.setMessageStatusCallback(new MessageSendCallBack(message));
-        mEMClient.chatManager().sendMessage(message);
+    public void sendMessage(Message message) {
+        mRongIMClient.sendMessage(message,null,null,mSendMessageCallback);
     }
 
-    public EMMessage resendMessage(String messageID) {
-        EMMessage message = mEMClient.chatManager().getMessage(messageID);
-        if (message != null) {
-            message.setStatus(EMMessage.Status.INPROGRESS);
-            sendMessage(message);
-        }
+    public Message resendMessage(int messageID) {
+        Message message = mRongIMClient.getMessage(messageID);
+
         return message;
     }
 
@@ -152,7 +148,6 @@ public class ChatClientManager {
     private final RongIMClient.OnReceiveMessageListener mOnReceiveMessageListener = new RongIMClient.OnReceiveMessageListener() {
         @Override
         public boolean onReceived(Message message, int i) {
-            MessageContent messageContent = message.getContent();
             switch (message.getObjectName()) {
                 case "RC:TxtMsg":
                 case "RC:VcMsg":
@@ -168,12 +163,12 @@ public class ChatClientManager {
                             continue;
                         }
                         if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
-                            chatListener.onChatMessageReceived(messageContent);
+                            chatListener.onChatMessageReceived(message);
                         }
                     }
                     break;
                 case "RC:RC:ContactNtf":
-                    ContactNotificationMessage contactMessage = (ContactNotificationMessage) messageContent;
+                    ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
                     ContactBean bean = new ContactBean();
                     bean.setUserTo(contactMessage.getTargetUserId());
                     bean.setUserFrom(contactMessage.getSourceUserId());
@@ -314,7 +309,7 @@ public class ChatClientManager {
 
 
     public interface OnChatMessageReceiveListener {
-        void onChatMessageReceived(MessageContent messages);
+        void onChatMessageReceived(Message message);
     }
 
     public interface OnContactMessageReceiveListener {
