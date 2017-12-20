@@ -1,6 +1,6 @@
 package com.yzx.chat.presenter;
 
-import com.hyphenate.chat.EMClient;
+import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
@@ -13,10 +13,13 @@ import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.rong.imlib.RongIMClient;
 
 /**
  * Created by YZX on 2017年11月04日.
@@ -47,19 +50,36 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void init() {
-        if (IdentityManager.getInstance().isLogged() && EMClient.getInstance().isLoggedInBefore()) {
+        if (IdentityManager.getInstance().isLogged()) {
             initIMServer();
             initHTTPServer();
         } else {
             mSplashView.startLoginActivity();
         }
-
     }
 
     private void initIMServer() {
-        NetworkUtil.cancelTask(mInitAsyncTask);
-        mInitAsyncTask = new InitAsyncTask(SplashPresenter.this);
-        mInitAsyncTask.execute();
+        ChatClientManager.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
+            @Override
+            public void onTokenIncorrect() {
+                AndroidUtil.showToast(R.string.SplashPresenter_TokenIncorrect);
+                mSplashView.startLoginActivity();
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                if (mTaskCount.decrementAndGet() == 0) {
+                    mSplashView.startHomeActivity();
+                }
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtil.e(errorCode.getMessage());
+                AndroidUtil.showToast(R.string.SplashPresenter_LoginFailInIMSDK);
+                mSplashView.startLoginActivity();
+            }
+        });
     }
 
     private void initHTTPServer() {
@@ -79,7 +99,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             @Override
             protected void onFailure(String message) {
                 isSuccess = true;
-               // mSplashView.startLoginActivity();
+                // mSplashView.startLoginActivity();
             }
 
             @Override

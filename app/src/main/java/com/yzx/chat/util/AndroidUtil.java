@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.widget.Toast;
 
 import com.yzx.chat.configure.AppApplication;
 
@@ -81,6 +82,14 @@ public class AndroidUtil {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 spVal, sAppContext.getResources().getDisplayMetrics());
 
+    }
+
+    public static void showToast(String content) {
+        Toast.makeText(sAppContext, content, Toast.LENGTH_LONG).show();
+    }
+
+    public static void showToast(@StringRes int resID) {
+        Toast.makeText(sAppContext, sAppContext.getString(resID), Toast.LENGTH_LONG).show();
     }
 
 }

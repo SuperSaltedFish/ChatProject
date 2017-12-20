@@ -14,12 +14,12 @@ public class ContactBean {
 //
     public static final String CONTACT_TYPE_ADDED = "Added";
     public static final String CONTACT_TYPE_DELETED = "Deleted";
-    public static final String CONTACT_TYPE_INVITED = "Invited";
+    public static final String CONTACT_TYPE_REQUEST = "Invited";
     public static final String CONTACT_TYPE_ACCEPTED = "Accepted";
     public static final String CONTACT_TYPE_DECLINED = "Declined";
     public static final String CONTACT_TYPE_INITIATE = "Initiate";
 
-    @StringDef({CONTACT_TYPE_ADDED, CONTACT_TYPE_DELETED, CONTACT_TYPE_INVITED, CONTACT_TYPE_ACCEPTED, CONTACT_TYPE_DECLINED,CONTACT_TYPE_INITIATE})
+    @StringDef({CONTACT_TYPE_ADDED, CONTACT_TYPE_DELETED, CONTACT_TYPE_REQUEST, CONTACT_TYPE_ACCEPTED, CONTACT_TYPE_DECLINED,CONTACT_TYPE_INITIATE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContactType {
     }

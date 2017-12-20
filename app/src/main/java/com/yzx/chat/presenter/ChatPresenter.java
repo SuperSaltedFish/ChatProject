@@ -13,6 +13,9 @@ import com.yzx.chat.util.NetworkUtil;
 
 import java.util.List;
 
+import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
+
 /**
  * Created by YZX on 2017年11月10日.
  * 每一个不曾起舞的日子,都是对生命的辜负.
@@ -20,19 +23,17 @@ import java.util.List;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
-    private static String sToChatName;
+    public static String sConversationID;
 
     private ChatContract.View mChatView;
     private Handler mHandler;
     private LoadMoreTask mLoadMoreTask;
     private ChatClientManager mChatManager;
 
+    private Conversation mConversation;
     private boolean mHasMoreMessage;
     private boolean mIsLoadingMore;
 
-    public static String getConversationID() {
-        return sToChatName;
-    }
 
     @Override
     public void attachView(ChatContract.View view) {
@@ -44,7 +45,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void detachView() {
         NetworkUtil.cancelTask(mLoadMoreTask);
-        mChatManager.removeOnMessageReceiveListener(mOnMessageReceiveListener);
+        mChatManager.removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mChatManager.removeOnMessageSendStateChangeListener(mSendStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
@@ -53,39 +54,29 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public void init(String conversationID) {
-        sToChatName = conversationID;
+    public void init(Conversation conversation) {
+        mConversation = conversation;
+        sConversationID = mConversation.getTargetId();
         mHasMoreMessage = true;
         mIsLoadingMore = false;
-        mChatManager.addOnMessageReceiveListener(mOnMessageReceiveListener, conversationID);
-        mChatManager.addOnMessageSendStateChangeListener(mSendStateChangeListener, conversationID);
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(conversationID);
-        if(conversation==null){
+        mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
+        mChatManager.addOnMessageSendStateChangeListener(mSendStateChangeListener, sConversationID);
+        mChatManager.clearConversationUnreadStatus(mConversation.getConversationType(), mConversation.getTargetId());
+        List<Message> messageList = mChatManager.getHistoryMessages(mConversation.getConversationType(), mConversation.getTargetId(), -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
+        if (messageList == null || messageList.size() == 0) {
             mHasMoreMessage = false;
             return;
         }
-        mChatManager.setMessageUnreadCount(mChatManager.getMessageUnreadCount() - conversation.getUnreadMsgCount());
-        conversation.markAllMessagesAsRead();
-        List<EMMessage> messageList = conversation.getAllMessages();
-        int count = messageList.size();
-        if (count == 0) {
-            return;
+
+        if (messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
+            mHasMoreMessage = false;
         }
-        if (count < Constants.CHAT_MESSAGE_PAGE_SIZE) {
-            List<EMMessage> dbMessageList = conversation.loadMoreMsgFromDB(messageList.get(0).getMsgId(), Constants.CHAT_MESSAGE_PAGE_SIZE - count);
-            dbMessageList.addAll(messageList);
-            if(dbMessageList.size()<Constants.CHAT_MESSAGE_PAGE_SIZE){
-                mHasMoreMessage = false;
-            }
-            mChatView.showNewMessage(dbMessageList);
-        } else {
-            mChatView.showNewMessage(messageList);
-        }
+        mChatView.showNewMessage(messageList);
     }
 
     @Override
     public EMMessage resendMessage(String messageID) {
-       return mChatManager.resendMessage(messageID);
+        return mChatManager.resendMessage(messageID);
     }
 
 
@@ -151,9 +142,9 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
 
-    private final ChatClientManager.OnMessageReceiveListener mOnMessageReceiveListener = new ChatClientManager.OnMessageReceiveListener() {
+    private final ChatClientManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatClientManager.OnChatMessageReceiveListener() {
         @Override
-        public void onMessageReceived(final List<EMMessage> messages) {
+        public void onChatMessageReceived(final List<EMMessage> messages) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

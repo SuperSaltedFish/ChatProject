@@ -66,11 +66,14 @@
     <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
     <string name="EMMessageUtil_VoiceInfo">[语音信息]</string>
     <string name="EMMessageUtil_VideoInfo">[视频信息]</string>
+    <string name="EMMessageUtil_EmotionInfo">[表情]</string>
     <string name="EMMessageUtil_FileInfo">[文件信息]</string>
     <string name="AlertDialogChat_Title">重发提示</string>
     <string name="AlertDialogChat_Content">，该消息此前发送失败,是否选择重新发送这条信息?</string>
     <string name="AlertDialogChat_Cancel">取消发送</string>
     <string name="AlertDialogChat_Resend">重新发送</string>
-    <string name="LoginPresenter_LoginFailInEMSDK">登录聊天服务器失败，请稍后再试！</string>
+
+    <string name="SplashPresenter_TokenIncorrect">签名过期，请尝试重新登录！</string>
+    <string name="SplashPresenter_LoginFailInIMSDK">登录聊天服务器失败，请尝试重新登录！</string>
 
 </resources>

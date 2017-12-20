@@ -9,6 +9,8 @@ import com.yzx.chat.bean.ConversationBean;
 
 import java.util.List;
 
+import io.rong.imlib.model.Conversation;
+
 /**
  * Created by YZX on 2017年11月06日.
  * 每一个不曾起舞的日子 都是对生命的辜负
@@ -17,16 +19,15 @@ import java.util.List;
 public class ConversationContract {
 
     public interface View extends BaseView<Presenter> {
-        List<ConversationBean> getOldConversationList();
 
-        void updateListView(DiffUtil.DiffResult diffResult, List<ConversationBean> newConversationList);
-        void updateListViewByPosition(int position,ConversationBean newBean);
+        void updateListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList);
+        void updateListViewByPosition(int position,Conversation newBean);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void refreshAllConversations(List<ConversationBean> oldConversationList);
+        void refreshAllConversations();
 
-        void refreshSingleConversation(String conversationID);
+        void refreshSingleConversation(Conversation conversation);
     }
 }

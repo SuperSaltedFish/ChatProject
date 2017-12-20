@@ -19,6 +19,6 @@ public class Constants {
     public static final String DEVICE_ID_ALIAS = "DeviceID";
 
 
-    public static final int CHAT_MESSAGE_PAGE_SIZE = 20;
+    public static final int CHAT_MESSAGE_PAGE_SIZE = 16;
 
 }

@@ -7,8 +7,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.hyphenate.EMCallBack;
-import com.hyphenate.chat.EMClient;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.UserBean;
@@ -22,6 +20,7 @@ import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
+import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
@@ -35,6 +34,7 @@ import com.yzx.chat.util.RSAUtil;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Created by YZX on 2017年10月20日.
@@ -60,15 +60,13 @@ public class LoginPresenter implements LoginContract.Presenter {
     private IdentityManager mIDManager;
     private Handler mHandler;
 
-    private String mTempSavePassword;
-
     public LoginPresenter() {
         mAuthApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
         mIDManager = IdentityManager.getInstance();
         mGson = new GsonBuilder().serializeNulls().create();
         mHandler = new Handler(Looper.myLooper());
 
-        EMClient.getInstance().logout(true);
+        ChatClientManager.getInstance().logout();
         mIDManager.clearAuthenticationData();
         sHttpExecutor.cleanAllTask();
         NetworkAsyncTask.cleanAllTask();
@@ -96,14 +94,12 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login(String username, String password, String verifyCode) {
-        mTempSavePassword = password;
         initLoginCall(username, password, verifyCode);
         sHttpExecutor.submit(mLoginCall);
     }
 
     @Override
     public void register(String username, String password, String nickname, String verifyCode) {
-        mTempSavePassword = password;
         initRegisterCall(username, password, nickname, verifyCode);
         sHttpExecutor.submit(mRegisterCall);
     }
@@ -211,7 +207,12 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(LoginRegisterBean response) {
                 if (saveVerifyInfo(response)) {
-                    loginEMSDK();
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLoginView.verifySuccess();
+                        }
+                    });
                 } else {
                     onFailure(AndroidUtil.getString(R.string.Server_Error));
                 }
@@ -247,7 +248,12 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(LoginRegisterBean response) {
                 if (saveVerifyInfo(response)) {
-                    loginEMSDK();
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLoginView.verifySuccess();
+                        }
+                    });
                 } else {
                     onFailure(AndroidUtil.getString(R.string.Server_Error));
                 }
@@ -295,44 +301,6 @@ public class LoginPresenter implements LoginContract.Presenter {
             return false;
         }
         return true;
-    }
-
-    private void loginEMSDK() {
-        EMClient.getInstance().login(mIDManager.getUserID(), mTempSavePassword, new EMCallBack() {
-            @Override
-            public void onSuccess() {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLoginView.verifySuccess();
-                    }
-                });
-            }
-
-            @Override
-            public void onError(int code, String error) {
-                LogUtil.e(error+",userID="+mIDManager.getUserID());
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (mCurrVerifyType) {
-                            case VERIFY_TYPE_NONE:
-                                mLoginView.loginFailure(AndroidUtil.getString(R.string.LoginPresenter_LoginFailInEMSDK));
-                                break;
-                            case VERIFY_TYPE_LOGIN:
-                            case VERIFY_TYPE_REGISTER:
-                                mLoginView.verifyFailure(AndroidUtil.getString(R.string.LoginPresenter_LoginFailInEMSDK));
-                                break;
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-
-            }
-        });
     }
 
     private final HttpDataFormatAdapter mRSADataFormatAdapter = new HttpDataFormatAdapter() {

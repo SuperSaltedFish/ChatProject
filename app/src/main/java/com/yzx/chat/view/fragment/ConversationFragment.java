@@ -1,15 +1,12 @@
 package com.yzx.chat.view.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,13 +18,14 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2017年06月03日.
@@ -45,7 +43,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private Toolbar mToolbar;
     private HomeOverflowPopupWindow mOverflowPopupWindow;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
-    private List<ConversationBean> mConversationList;
+    private List<Conversation> mConversationList;
 
     @Override
     protected int getLayoutID() {
@@ -81,23 +79,23 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     protected void onFirstVisible() {
-        mPresenter.refreshAllConversations(mConversationList);
+        mPresenter.refreshAllConversations();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != ACTIVITY_REQUEST_CODE||resultCode!=ChatActivity.ACTIVITY_RESPONSE_CODE) {
+        if (requestCode != ACTIVITY_REQUEST_CODE || resultCode != ChatActivity.ACTIVITY_RESPONSE_CODE) {
             super.onActivityResult(requestCode, resultCode, data);
-        }else {
-            if(data!=null) {
-                String conversationID = data.getStringExtra(ChatActivity.INTENT_CONVERSATION_ID);
-                if(!TextUtils.isEmpty(conversationID)){
-                    mPresenter.refreshSingleConversation(conversationID);
-                }else {
-                    LogUtil.e("conversationID is Empty");
+        } else {
+            if (data != null) {
+                Conversation conversation = data.getParcelableExtra(ChatActivity.INTENT_EXTRA_CONVERSATION);
+                if (conversation!=null) {
+                    mPresenter.refreshSingleConversation(conversation);
+                } else {
+                    LogUtil.e("Conversation is null");
                 }
-            }else {
-                LogUtil.e("Intent is Empty");
+            } else {
+                LogUtil.e("Intent is null");
             }
         }
     }
@@ -124,9 +122,8 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    String conversationID = mConversationList.get(position).getConversationID();
                     Intent intent = new Intent(mContext, ChatActivity.class);
-                    intent.putExtra(ChatActivity.INTENT_CONVERSATION_ID, conversationID);
+                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position));
                     ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
                     startActivityForResult(intent, ACTIVITY_REQUEST_CODE, compat.toBundle());
 
@@ -144,20 +141,15 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
 
     @Override
-    public List<ConversationBean> getOldConversationList() {
-        return mConversationList;
-    }
-
-    @Override
-    public void updateListView(DiffUtil.DiffResult diffResult, List<ConversationBean> newConversationList) {
+    public void updateListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
         diffResult.dispatchUpdatesTo(mAdapter);
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
     }
 
     @Override
-    public void updateListViewByPosition(int position, ConversationBean newBean) {
-        mConversationList.set(position,newBean);
+    public void updateListViewByPosition(int position, Conversation conversation) {
+        mConversationList.set(position, conversation);
         mAdapter.notifyItemChanged(position);
     }
 }

@@ -8,11 +8,14 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.util.DateUtil;
+import com.yzx.chat.util.IMMessageUtil;
 import com.yzx.chat.widget.view.BadgeImageView;
 
 import java.util.List;
+
+import io.rong.imlib.model.Conversation;
+import io.rong.push.RongPushClient;
 
 import static com.yzx.chat.bean.ConversationBean.SINGLE;
 import static com.yzx.chat.bean.ConversationBean.GROUP;
@@ -22,35 +25,35 @@ import static com.yzx.chat.bean.ConversationBean.GROUP;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ConversationViewHolder> {
+public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ConversationHolder> {
 
 
-    private List<ConversationBean> mConversationList;
+    private List<Conversation> mConversationList;
 
-    public ConversationAdapter(List<ConversationBean> conversationList) {
+    public ConversationAdapter(List<Conversation> conversationList) {
         mConversationList = conversationList;
     }
 
 
     @Override
-    public ConversationViewHolder getViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == SINGLE) {
-            return new SingleViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_single, parent, false));
+    public ConversationHolder getViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == RongPushClient.ConversationType.PRIVATE.getValue()) {
+            return new SingleHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_single, parent, false));
         } else {
-            return new GroupViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_group, parent, false));
+            return new GroupHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_group, parent, false));
         }
     }
 
     @Override
-    public void bindDataToViewHolder(ConversationViewHolder holder, int position) {
-        ConversationBean conversation = mConversationList.get(position);
-        holder.mTvName.setText(conversation.getName());
-        holder.mTvLastRecord.setText(conversation.getLastMsgContent());
-        holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getLastMsgTime()));
-        int unreadMsgCount = conversation.getUnreadMsgCount();
+    public void bindDataToViewHolder(ConversationHolder holder, int position) {
+        Conversation conversation = mConversationList.get(position);
+        holder.mTvName.setText(conversation.getConversationTitle());
+        holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation.getLatestMessage()));
+        holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
+        int unreadMsgCount = conversation.getUnreadMessageCount();
         switch (conversation.getConversationType()) {
-            case SINGLE:
-                SingleViewHolder singleViewHolder = (SingleViewHolder) holder;
+            case PRIVATE:
+                SingleHolder singleViewHolder = (SingleHolder) holder;
                 if (unreadMsgCount > 0) {
                     singleViewHolder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
                     singleViewHolder.mBadgeImageView.setBadgeText(unreadMsgCount);
@@ -59,19 +62,19 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
                 }
                 break;
             case GROUP:
-                GroupViewHolder groupViewHolder = (GroupViewHolder) holder;
+                GroupHolder groupViewHolder = (GroupHolder) holder;
                 break;
         }
     }
 
 
     @Override
-    public void onBindViewHolder(ConversationViewHolder holder, int position, List<Object> payloads) {
+    public void onBindViewHolder(ConversationHolder holder, int position, List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
     }
 
     @Override
-    public void onViewRecycled(ConversationViewHolder holder) {
+    public void onViewRecycled(ConversationHolder holder) {
         super.onViewRecycled(holder);
     }
 
@@ -85,10 +88,10 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public int getItemViewType(int position) {
-        return mConversationList.get(position).getConversationType();
+        return mConversationList.get(position).getConversationType().getValue();
     }
 
-    static abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
+    static abstract class ConversationHolder extends RecyclerView.ViewHolder {
 
         private int mConversationType;
 
@@ -96,7 +99,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         TextView mTvLastRecord;
         TextView mTvTime;
 
-        ConversationViewHolder(View itemView, int conversationType) {
+        ConversationHolder(View itemView, int conversationType) {
             super(itemView);
             mConversationType = conversationType;
 
@@ -108,11 +111,11 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     }
 
-    private final static class SingleViewHolder extends ConversationViewHolder {
+    private final static class SingleHolder extends ConversationHolder {
 
         BadgeImageView mBadgeImageView;
 
-        SingleViewHolder(View itemView) {
+        SingleHolder(View itemView) {
             super(itemView, SINGLE);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
             mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastMessage);
@@ -121,11 +124,11 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         }
     }
 
-    private final static class GroupViewHolder extends ConversationViewHolder {
+    private final static class GroupHolder extends ConversationHolder {
 
         BadgeImageView mBadgeImageView;
 
-        GroupViewHolder(View itemView) {
+        GroupHolder(View itemView) {
             super(itemView, GROUP);
             mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
             mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastMessage);

@@ -49,6 +49,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.rong.imlib.model.Conversation;
+
 /**
  * Created by YZX on 2017年06月03日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
@@ -66,7 +68,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
 
-    public static final String INTENT_CONVERSATION_ID = "ConversationID";
+    public static final String INTENT_EXTRA_CONVERSATION = "ConversationID";
 
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
@@ -87,6 +89,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private Alerter mAlerter;
     private Animation mAlerterIconAnimation;
 
+    private Conversation mConversation;
     private List<EMMessage> mMessageList;
     private String mNeedResendMessageID;
     private int[] mEmojis;
@@ -131,9 +134,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setData(Intent intent) {
-        String conversationID = intent.getStringExtra(INTENT_CONVERSATION_ID);
-        setTitle(conversationID);
-        mPresenter.init(conversationID);
+        mConversation = intent.getParcelableExtra(INTENT_EXTRA_CONVERSATION);
+        setTitle(mConversation.getConversationTitle());
+        mPresenter.init(mConversation);
     }
 
     private void setView() {

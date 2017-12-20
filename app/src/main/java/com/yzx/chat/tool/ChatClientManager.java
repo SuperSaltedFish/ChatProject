@@ -13,11 +13,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.ContactNotificationMessage;
-import io.rong.message.GroupNotificationMessage;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -42,132 +43,60 @@ public class ChatClientManager {
 
 
     private RongIMClient mRongIMClient;
-    private Map<OnMessageReceiveListener, String> mMessageListenerMap;
+    private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
     private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
-    private List<ContactListener> mContactListenerList;
-    private List<UnreadCountChangeListener> mUnreadCountChangeListenerList;
-    private List<ConnectionListener> mConnectionListenerList;
+    private List<OnContactMessageReceiveListener> mOnContactMessageReceiveListenerList;
+    private List<onConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
 
     private ContactDao mContactDao;
 
-    private volatile int mMessageUnreadCount;
-    private volatile int mContactUnreadCount;
 
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
         mMessageSendStateChangeListenerMap = new HashMap<>();
-        mContactListenerList = new LinkedList<>();
-        mUnreadCountChangeListenerList = new LinkedList<>();
-        mConnectionListenerList = new LinkedList<>();
+        mOnContactMessageReceiveListenerList = new LinkedList<>();
+        mOnConnectionStateChangeListenerList = new LinkedList<>();
 
         mContactDao = DBManager.getInstance().getContactDao();
         mRongIMClient = RongIMClient.getInstance();
 
         RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
-
-        mEMClient = EMClient.getInstance();
-
-        mEMClient.addConnectionListener(mEMConnectionListener);
-        mEMClient.chatManager().addMessageListener(mEMMessageListener);
-        mEMClient.contactManager().setContactListener(mEMContactListener);
+        RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
     }
 
-    public void addOnMessageReceiveListener(OnMessageReceiveListener listener, String conversationID) {
-        if (!mMessageListenerMap.containsKey(listener)) {
-            mMessageListenerMap.put(listener, conversationID);
-        }
+    public void login(String token, RongIMClient.ConnectCallback callback) {
+        RongIMClient.connect(token, callback);
     }
 
-    public void removeOnMessageReceiveListener(OnMessageReceiveListener listener) {
-        mMessageListenerMap.remove(listener);
+    public void logout() {
+        mRongIMClient.logout();
     }
 
-
-    public void addContactListener(ContactListener listener) {
-        if (!mContactListenerList.contains(listener)) {
-            mContactListenerList.add(listener);
-        }
+    public List<Conversation> getAllConversations() {
+        return mRongIMClient.getConversationList();
     }
 
-    public void removeContactListener(ContactListener listener) {
-        mContactListenerList.remove(listener);
+    public Conversation getConversation(Conversation.ConversationType type, String targetId) {
+        return mRongIMClient.getConversation(type, targetId);
+    }
+
+    public void clearConversationUnreadStatus(Conversation.ConversationType type, String conversationID) {
+        mRongIMClient.clearMessagesUnreadStatus(type, conversationID);
     }
 
 
-    public void addOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener, String conversationID) {
-        if (!mMessageSendStateChangeListenerMap.containsKey(listener)) {
-            mMessageSendStateChangeListenerMap.put(listener, conversationID);
-        }
+    public List<Message> getHistoryMessages(Conversation.ConversationType type, String conversationID, int oldestMessageId, int count) {
+        return mRongIMClient.getHistoryMessages(type, conversationID, oldestMessageId, count);
     }
 
-    public void removeOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
-        mMessageSendStateChangeListenerMap.remove(listener);
-    }
-
-    public void addConnectionListener(ConnectionListener listener) {
-        if (!mConnectionListenerList.contains(listener)) {
-            mConnectionListenerList.add(listener);
-        }
-    }
-
-    public void removeConnectionListener(ConnectionListener listener) {
-        mConnectionListenerList.remove(listener);
-    }
-
-    public void addUnreadCountChangeListener(UnreadCountChangeListener listener) {
-        if (!mUnreadCountChangeListenerList.contains(listener)) {
-            mUnreadCountChangeListenerList.add(listener);
-        }
-    }
-
-    public void removeUnreadCountChangeListener(UnreadCountChangeListener listener) {
-        mUnreadCountChangeListenerList.remove(listener);
-    }
-
-    public synchronized void setMessageUnreadCount(int messageUnreadCount) {
-        if (mMessageUnreadCount != messageUnreadCount) {
-            for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
-                listener.onMessageUnreadCountChange(messageUnreadCount);
-            }
-        }
-        mMessageUnreadCount = messageUnreadCount;
-    }
-
-    public synchronized void updateContactUnreadCount() {
-        int contactUnreadCount = mContactDao.loadRemindCount();
-        if (mContactUnreadCount != contactUnreadCount) {
-            for (UnreadCountChangeListener listener : mUnreadCountChangeListenerList) {
-                listener.onContactUnreadCountChange(contactUnreadCount);
-            }
-        }
-        mContactUnreadCount = contactUnreadCount;
-    }
-
-    public synchronized void makeAllContactAsRead() {
-        mContactDao.makeAllRemindAsNoRemind(IdentityManager.getInstance().getUserID());
-        updateContactUnreadCount();
-    }
-
-    public int getMessageUnreadCount() {
-        return mMessageUnreadCount;
-    }
-
-    public int getContactUnreadCount() {
-        return mContactUnreadCount;
-    }
-
-    public void loadAllConversationsAndGroups() {
-        mEMClient.chatManager().loadAllConversations();
-        mEMClient.groupManager().loadAllGroups();
+    public void asyncGetHistoryMessages(Conversation.ConversationType type, String conversationID, int oldestMessageId, int count, RongIMClient.ResultCallback<List<Message>> callback) {
+        mRongIMClient.getHistoryMessages(type, conversationID, oldestMessageId, count, callback);
     }
 
     public EMConversation getSingleConversation(String conversationID) {
         return mEMClient.chatManager().getConversation(conversationID);
     }
 
-    public Map<String, EMConversation> getAllConversations() {
-        return mEMClient.chatManager().getAllConversations();
-    }
 
     public void sendMessage(EMMessage message) {
         message.setMessageStatusCallback(new MessageSendCallBack(message));
@@ -198,123 +127,180 @@ public class ChatClientManager {
         mEMClient.contactManager().addContact(contactID, reason);
     }
 
-    private final EMConnectionListener mEMConnectionListener = new EMConnectionListener() {
-        @Override
-        public void onConnected() {
-            for (ConnectionListener listener : mConnectionListenerList) {
-                listener.onConnected();
-            }
-        }
+    private final RongIMClient.ConnectionStatusListener mConnectionStatusListener = new RongIMClient.ConnectionStatusListener() {
+
+        private boolean isConnected;
 
         @Override
-        public void onDisconnected(int errorCode) {
-            for (ConnectionListener listener : mConnectionListenerList) {
-                listener.onDisconnected(errorCode);
+        public void onChanged(ConnectionStatus connectionStatus) {
+            boolean isConnectionSuccess;
+            isConnectionSuccess = connectionStatus == ConnectionStatus.CONNECTED;
+            if (isConnected == isConnectionSuccess) {
+                return;
+            }
+            isConnected = isConnectionSuccess;
+            for (onConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
+                if (isConnected) {
+                    listener.onConnected();
+                } else {
+                    listener.onDisconnected(connectionStatus.getMessage());
+                }
             }
         }
     };
 
-    private final  RongIMClient.OnReceiveMessageListener mOnReceiveMessageListener = new RongIMClient.OnReceiveMessageListener() {
+    private final RongIMClient.OnReceiveMessageListener mOnReceiveMessageListener = new RongIMClient.OnReceiveMessageListener() {
         @Override
         public boolean onReceived(Message message, int i) {
-            if(mMessageListenerMap.size()==0){
-                return false;
-            }
-
-            OnMessageReceiveListener listener;
-            String conversationID = message.getTargetId();
             MessageContent messageContent = message.getContent();
-
-
-            for (Map.Entry<OnMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
-                conversationID = entry.getValue();
-                listener = entry.getKey();
-                if (listener == null) {
-                    continue;
-                }
-                if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
-                    listener.onMessageReceived(messages);
-                }
+            switch (message.getObjectName()) {
+                case "RC:TxtMsg":
+                case "RC:VcMsg":
+                    if (mMessageListenerMap.size() == 0) {
+                        return false;
+                    }
+                    OnChatMessageReceiveListener chatListener;
+                    String conversationID;
+                    for (Map.Entry<OnChatMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
+                        conversationID = entry.getValue();
+                        chatListener = entry.getKey();
+                        if (chatListener == null) {
+                            continue;
+                        }
+                        if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
+                            chatListener.onChatMessageReceived(messageContent);
+                        }
+                    }
+                    break;
+                case "RC:RC:ContactNtf":
+                    ContactNotificationMessage contactMessage = (ContactNotificationMessage) messageContent;
+                    ContactBean bean = new ContactBean();
+                    bean.setUserTo(contactMessage.getTargetUserId());
+                    bean.setUserFrom(contactMessage.getSourceUserId());
+                    bean.setReason(contactMessage.getMessage());
+                    bean.setRemind(true);
+                    bean.setTime((int) (message.getReceivedTime() / 1000));
+                    switch (contactMessage.getOperation()) {
+                        case ContactNotificationMessage.CONTACT_OPERATION_REQUEST:
+                            bean.setType(ContactBean.CONTACT_TYPE_REQUEST);
+                            break;
+                        case ContactNotificationMessage.CONTACT_OPERATION_ACCEPT_RESPONSE:
+                            bean.setType(ContactBean.CONTACT_TYPE_ACCEPTED);
+                            break;
+                        case ContactNotificationMessage.CONTACT_OPERATION_REJECT_RESPONSE:
+                            bean.setType(ContactBean.CONTACT_TYPE_DECLINED);
+                            break;
+                    }
+                    mContactDao.replace(bean);
+                    for (OnContactMessageReceiveListener contactListener : mOnContactMessageReceiveListenerList) {
+                        contactListener.onContactMessageReceive(contactMessage);
+                    }
+                    break;
             }
+
             return true;
         }
     };
 
-
-
-    private final EMContactListener mEMContactListener = new EMContactListener() {
+    private final IRongCallback.ISendMessageCallback mSendMessageCallback = new IRongCallback.ISendMessageCallback() {
         @Override
-        public void onContactAdded(String username) {
+        public void onAttached(Message message) {
 
         }
 
         @Override
-        public void onContactDeleted(String username) {
+        public void onSuccess(Message message) {
 
         }
 
         @Override
-        public void onContactInvited(String username, String reason) {
-            ContactBean bean = new ContactBean();
-            bean.setUserTo(IdentityManager.getInstance().getUserID());
-            bean.setUserFrom(username);
-            bean.setType(ContactBean.CONTACT_TYPE_INVITED);
-            bean.setReason(reason);
-            bean.setRemind(true);
-            bean.setTime((int) (System.currentTimeMillis() / 1000));
-            mContactDao.replace(bean);
-            updateContactUnreadCount();
-        }
-
-        @Override
-        public void onFriendRequestAccepted(String username) {
-
-        }
-
-        @Override
-        public void onFriendRequestDeclined(String username) {
+        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
 
         }
     };
 
-    private class MessageSendCallBack implements EMCallBack {
 
-        private EMMessage mEMMessage;
+//    private class MessageSendCallBack implements EMCallBack {
+//
+//        private EMMessage mEMMessage;
+//
+//        MessageSendCallBack(EMMessage message) {
+//            mEMMessage = message;
+//        }
+//
+//        @Override
+//        public void onSuccess() {
+//            String conversationID = mEMMessage.conversationId();
+//            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+//                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+//                    entry.getKey().onSendSuccess(mEMMessage);
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void onError(int code, String error) {
+//            LogUtil.e(error);
+//            String conversationID = mEMMessage.conversationId();
+//            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+//                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+//                    entry.getKey().onSendFail(mEMMessage);
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void onProgress(int progress, String status) {
+//            String conversationID = mEMMessage.conversationId();
+//            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+//                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+//                    entry.getKey().onSendProgress(mEMMessage, progress);
+//                }
+//            }
+//        }
+//    }
 
-        MessageSendCallBack(EMMessage message) {
-            mEMMessage = message;
+
+    public void addOnMessageReceiveListener(OnChatMessageReceiveListener listener, String conversationID) {
+        if (!mMessageListenerMap.containsKey(listener)) {
+            mMessageListenerMap.put(listener, conversationID);
         }
+    }
 
-        @Override
-        public void onSuccess() {
-            String conversationID = mEMMessage.conversationId();
-            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
-                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendSuccess(mEMMessage);
-                }
-            }
-        }
+    public void removeOnMessageReceiveListener(OnChatMessageReceiveListener listener) {
+        mMessageListenerMap.remove(listener);
+    }
 
-        @Override
-        public void onError(int code, String error) {
-            LogUtil.e(error);
-            String conversationID = mEMMessage.conversationId();
-            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
-                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendFail(mEMMessage);
-                }
-            }
-        }
 
-        @Override
-        public void onProgress(int progress, String status) {
-            String conversationID = mEMMessage.conversationId();
-            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
-                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendProgress(mEMMessage, progress);
-                }
-            }
+    public void addContactListener(OnContactMessageReceiveListener listener) {
+        if (!mOnContactMessageReceiveListenerList.contains(listener)) {
+            mOnContactMessageReceiveListenerList.add(listener);
         }
+    }
+
+    public void removeContactListener(OnContactMessageReceiveListener listener) {
+        mOnContactMessageReceiveListenerList.remove(listener);
+    }
+
+
+    public void addOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener, String conversationID) {
+        if (!mMessageSendStateChangeListenerMap.containsKey(listener)) {
+            mMessageSendStateChangeListenerMap.put(listener, conversationID);
+        }
+    }
+
+    public void removeOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
+        mMessageSendStateChangeListenerMap.remove(listener);
+    }
+
+    public void addConnectionListener(onConnectionStateChangeListener listener) {
+        if (!mOnConnectionStateChangeListenerList.contains(listener)) {
+            mOnConnectionStateChangeListenerList.add(listener);
+        }
+    }
+
+    public void removeConnectionListener(onConnectionStateChangeListener listener) {
+        mOnConnectionStateChangeListenerList.remove(listener);
     }
 
     public interface OnMessageSendStateChangeListener {
@@ -327,12 +313,12 @@ public class ChatClientManager {
     }
 
 
-    public interface OnMessageReceiveListener {
-        void onMessageReceived(List<EMMessage> messages);
+    public interface OnChatMessageReceiveListener {
+        void onChatMessageReceived(MessageContent messages);
     }
 
-    public interface ContactListener {
-        void onContactInvited(String userID, String reason);
+    public interface OnContactMessageReceiveListener {
+        void onContactMessageReceive(ContactNotificationMessage message);
     }
 
     public interface UnreadCountChangeListener {
@@ -341,11 +327,11 @@ public class ChatClientManager {
         void onContactUnreadCountChange(int unreadCount);
     }
 
-    public interface ConnectionListener {
+    public interface onConnectionStateChangeListener {
 
         void onConnected();
 
-        void onDisconnected(int errorCode);
+        void onDisconnected(String reason);
 
     }
 }
