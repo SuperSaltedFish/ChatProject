@@ -502,17 +502,17 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 return;
             }
             if (mPresenter.hasMoreMessage()) {
-                mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
+                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
                 mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
             } else {
-                mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
             }
         }
     };
 
     private final ChatMessageAdapter.OnResendItemClickListener mOnResendItemClickListener = new ChatMessageAdapter.OnResendItemClickListener() {
         @Override
-        public void onResendItemClick(int position,Message message) {
+        public void onResendItemClick(int position, Message message) {
             mNeedResendMessage = message;
             mAlerter.show();
         }
@@ -538,9 +538,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void addNewMessage(List<Message> messageList) {
         if (mMessageList.size() == 0) {
-            if (messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
-                mAdapter.enableLoadMoreHint(false);
-            }
+            mAdapter.enableLoadMoreHint(messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE);
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, messageList.size());
@@ -556,17 +554,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
         }
         if (!isHasMoreMessage) {
-            mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
-            mAdapter.notifyItemChanged(mMessageList.size());
+            mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
         } else if (messageList == null) {
-            mAdapter.showLoadMoreHint(getString(R.string.LoadMoreHint_LoadFail));
-            mAdapter.notifyItemChanged(mMessageList.size());
+            mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_LoadFail));
         }
     }
 
     @Override
     public void updateMessage(int position) {
-        mAdapter.notifyItemChanged(mMessageList.size() - position - 1);
+        mAdapter.notifyItemChanged(position);
     }
 
 }

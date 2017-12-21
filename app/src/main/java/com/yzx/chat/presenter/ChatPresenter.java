@@ -3,9 +3,6 @@ package com.yzx.chat.presenter;
 import android.net.Uri;
 import android.os.Handler;
 
-import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.chat.EMMessage;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.tool.ChatClientManager;
@@ -49,7 +46,6 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void detachView() {
         mChatManager.removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mChatManager.removeOnMessageSendStateChangeListener(mSendStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
         mHandler = null;
@@ -63,7 +59,6 @@ public class ChatPresenter implements ChatContract.Presenter {
         mHasMoreMessage = true;
         mIsLoadingMore = false;
         mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
-        mChatManager.addOnMessageSendStateChangeListener(mSendStateChangeListener, sConversationID);
         mChatManager.clearConversationUnreadStatus(mConversation.getConversationType(), mConversation.getTargetId());
         List<Message> messageList = mChatManager.getHistoryMessages(mConversation.getConversationType(), mConversation.getTargetId(), -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         if (messageList == null || messageList.size() == 0) {
@@ -114,7 +109,7 @@ public class ChatPresenter implements ChatContract.Presenter {
                     @Override
                     public void onError(RongIMClient.ErrorCode errorCode) {
                         LogUtil.e(errorCode.getMessage());
-                        loadMoreComplete(messages);
+                        loadMoreComplete(null);
                     }
                 });
     }
@@ -178,7 +173,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ChatClientManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatClientManager.OnChatMessageReceiveListener() {
 
         @Override
-        public void onChatMessageReceived(Message message) {
+        public void onChatMessageReceived(Message message, int untreatedCount) {
             loadNewComplete(message);
         }
     };

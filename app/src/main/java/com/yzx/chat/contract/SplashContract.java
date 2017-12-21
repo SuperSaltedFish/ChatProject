@@ -22,7 +22,7 @@ public class SplashContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void init();
+        void init(boolean isAlreadyLoggedIM);
 
     }
 }

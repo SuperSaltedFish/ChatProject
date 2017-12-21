@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
+import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 
 /**
@@ -106,8 +107,10 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private final ChatClientManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatClientManager.OnChatMessageReceiveListener() {
         @Override
-        public void onChatMessageReceived(MessageContent messages) {
-            refreshAllConversations();
+        public void onChatMessageReceived(Message message, int untreatedCount) {
+            if (untreatedCount == 0) {
+                refreshAllConversations();
+            }
         }
     };
 
@@ -123,10 +126,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             synchronized (ConversationPresenter.class) {
                 ChatClientManager chatManager = ChatClientManager.getInstance();
                 List<Conversation> oldConversationList = oldConversation[0];
-                List<Conversation> newConversationList = chatManager.getAllConversations();
-                for(Conversation conversation:newConversationList){
-                    if(conversation.getTargetId().equals(ChatPresenter.sConversationID)){
-                        chatManager.clearConversationUnreadStatus(conversation.getConversationType(),conversation.getTargetId());
+                List<Conversation> newConversationList = chatManager.getAllConversations(Conversation.ConversationType.PRIVATE);
+                if (newConversationList == null) {
+                    return null;
+                }
+                for (Conversation conversation : newConversationList) {
+                    if (conversation.getTargetId().equals(ChatPresenter.sConversationID)) {
+                        chatManager.clearConversationUnreadStatus(conversation.getConversationType(), conversation.getTargetId());
                         conversation.setUnreadMessageCount(0);
                     }
                 }
@@ -160,7 +166,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         @Override
         protected void onPostExecute(DiffUtil.DiffResult diffResult, ConversationPresenter lifeDependentObject) {
             super.onPostExecute(diffResult, lifeDependentObject);
-            lifeDependentObject.refreshComplete(diffResult);
+            if (diffResult != null) {
+                lifeDependentObject.refreshComplete(diffResult);
+            }
         }
     }
 

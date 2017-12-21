@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.hyphenate.chat.EMClient;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 

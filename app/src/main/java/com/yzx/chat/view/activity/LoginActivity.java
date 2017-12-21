@@ -502,7 +502,9 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
-                LoginActivity.this.startActivity(new Intent(LoginActivity.this, SplashActivity.class));
+                Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                intent.putExtra(SplashActivity.INTENT_EXTRA_LOGGED, true);
+                LoginActivity.this.startActivity(intent);
                 LoginActivity.this.finish();
             }
         });
@@ -534,5 +536,10 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     public void verifyFailure(String reason) {
         startProgressAnim(mBtnVerify, mPbVerifyProgress, false, null);
         showError(mTvVerifyHint, reason);
+    }
+
+    @Override
+    public void reLogin() {
+        jumpToLoginPager();
     }
 }

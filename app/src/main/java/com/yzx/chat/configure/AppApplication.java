@@ -50,7 +50,7 @@ public class AppApplication extends Application {
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 
-            ChatClientManager.init(this);
+            ChatClientManager.init(this,Constants.RONG_CLOUD_APP_KEY);
         }
     }
 

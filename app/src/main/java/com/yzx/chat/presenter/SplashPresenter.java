@@ -28,7 +28,6 @@ import io.rong.imlib.RongIMClient;
 public class SplashPresenter implements SplashContract.Presenter {
     //
     private SplashContract.View mSplashView;
-    private InitAsyncTask mInitAsyncTask;
     private Call<JsonResponse<Void>> mTokenVerify;
     private Call<JsonResponse<GetUserFriendsBean>> mGetUserFriendsTask;
 
@@ -42,24 +41,27 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void detachView() {
-        NetworkUtil.cancelTask(mInitAsyncTask);
         NetworkUtil.cancelCall(mTokenVerify);
         NetworkUtil.cancelCall(mGetUserFriendsTask);
         mSplashView = null;
     }
 
     @Override
-    public void init() {
+    public void init(boolean isAlreadyLoggedIM) {
         if (IdentityManager.getInstance().isLogged()) {
-            initIMServer();
+            if (isAlreadyLoggedIM) {
+                mTaskCount.decrementAndGet();
+            } else {
+                initIMServer();
+            }
             initHTTPServer();
-        } else {
+        }else {
             mSplashView.startLoginActivity();
         }
     }
 
     private void initIMServer() {
-        ChatClientManager.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
+        ChatClientManager.getInstance().login("nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8", new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 AndroidUtil.showToast(R.string.SplashPresenter_TokenIncorrect);
@@ -99,7 +101,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             @Override
             protected void onFailure(String message) {
                 isSuccess = true;
-                // mSplashView.startLoginActivity();
+                //mSplashView.startLoginActivity();
             }
 
             @Override
@@ -131,40 +133,5 @@ public class SplashPresenter implements SplashContract.Presenter {
 
         sHttpExecutor.submit(mTokenVerify, mGetUserFriendsTask);
     }
-
-
-    private void initIMServerSuccess() {
-        if (mTaskCount.decrementAndGet() == 0) {
-            mSplashView.startHomeActivity();
-        }
-    }
-
-    private void initFail(String error) {
-        mSplashView.error(error);
-    }
-
-    private static class InitAsyncTask extends NetworkAsyncTask<SplashPresenter, Void, String> {
-
-        InitAsyncTask(SplashPresenter lifeCycleDependence) {
-            super(lifeCycleDependence);
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            ChatClientManager.getInstance().loadAllConversationsAndGroups();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result, SplashPresenter lifeDependentObject) {
-            super.onPostExecute(result, lifeDependentObject);
-            if (result == null) {
-                lifeDependentObject.initIMServerSuccess();
-            } else {
-                lifeDependentObject.initFail(result);
-            }
-        }
-    }
-
 
 }

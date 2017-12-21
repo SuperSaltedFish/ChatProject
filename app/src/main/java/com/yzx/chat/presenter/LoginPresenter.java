@@ -35,6 +35,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.rong.imlib.RongIMClient;
+
 
 /**
  * Created by YZX on 2017年10月20日.
@@ -207,12 +209,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(LoginRegisterBean response) {
                 if (saveVerifyInfo(response)) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mLoginView.verifySuccess();
-                        }
-                    });
+                    loginIMServer();
                 } else {
                     onFailure(AndroidUtil.getString(R.string.Server_Error));
                 }
@@ -248,12 +245,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(LoginRegisterBean response) {
                 if (saveVerifyInfo(response)) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mLoginView.verifySuccess();
-                        }
-                    });
+                    loginIMServer();
                 } else {
                     onFailure(AndroidUtil.getString(R.string.Server_Error));
                 }
@@ -301,6 +293,45 @@ public class LoginPresenter implements LoginContract.Presenter {
             return false;
         }
         return true;
+    }
+
+    private void loginIMServer(){
+        ChatClientManager.getInstance().login("vuNS8hVy5mg9v9CM8LqaHWlT2wHP2YVp33Lk8A3VC9QH5N7j1f+EUao2ggyEZ99OnTaNuZXGLaRJFKbDTGkadclqiJH/vVZJ", new RongIMClient.ConnectCallback() {
+            @Override
+            public void onTokenIncorrect() {
+                LogUtil.e("onTokenIncorrect");
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginView.reLogin();
+                        mLoginView.loginFailure(AndroidUtil.getString(R.string.SplashPresenter_LoginFailInIMSDK));
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginView.verifySuccess();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtil.e(errorCode.getMessage());
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLoginView.reLogin();
+                        mLoginView.loginFailure(AndroidUtil.getString(R.string.SplashPresenter_LoginFailInIMSDK));
+                    }
+                });
+
+            }
+        });
     }
 
     private final HttpDataFormatAdapter mRSADataFormatAdapter = new HttpDataFormatAdapter() {

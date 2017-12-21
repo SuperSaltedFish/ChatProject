@@ -14,6 +14,8 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     private static int PERMISSIONS_REQUEST_CODE = 1;
 
+    public static final String INTENT_EXTRA_LOGGED = "isAlreadyLoggedIM";
+
     @Override
     protected int getLayoutID() {
         return 0;
@@ -28,7 +30,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     @Override
     public void onRequestPermissionsSuccess(int requestCode) {
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            mPresenter.init();
+            mPresenter.init(getIntent().getBooleanExtra(INTENT_EXTRA_LOGGED,false));
         }
     }
 

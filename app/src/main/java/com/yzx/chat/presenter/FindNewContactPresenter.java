@@ -3,7 +3,6 @@ package com.yzx.chat.presenter;
 import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
-import com.hyphenate.exceptions.HyphenateException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.base.DiffCalculate;
@@ -179,23 +178,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
 
         @Override
         protected String doInBackground(String... params) {
-            try {
-                String contactID = params[0];
-                String reason = params[1];
-                ChatClientManager.getInstance().requestAddContact(contactID, reason);
-                ContactDao contactDao = DBManager.getInstance().getContactDao();
-                ContactBean bean = new ContactBean();
-                bean.setUserTo(IdentityManager.getInstance().getUserID());
-                bean.setUserFrom(contactID);
-                bean.setType(ContactBean.CONTACT_TYPE_INITIATE);
-                bean.setReason(reason);
-                bean.setRemind(true);
-                bean.setTime((int) (System.currentTimeMillis() / 1000));
-                contactDao.replace(bean);
-                return null;
-            } catch (HyphenateException e) {
-                e.printStackTrace();
-            }
+
             return AndroidUtil.getString(R.string.FindNewContactPresenter_AddFriendFail);
         }
 

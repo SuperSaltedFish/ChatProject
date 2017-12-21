@@ -10,7 +10,6 @@ import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 
 import java.util.ArrayList;
@@ -36,12 +35,10 @@ public class ContactPresenter implements ContactContract.Presenter {
         mContactView = view;
         mHandler = new Handler();
         mFriendList = new ArrayList<>(128);
-        ChatClientManager.getInstance().addUnreadCountChangeListener(mUnreadCountChangeListener);
     }
 
     @Override
     public void detachView() {
-        ChatClientManager.getInstance().removeUnreadCountChangeListener(mUnreadCountChangeListener);
         NetworkUtil.cancelTask(mLoadUnreadCountTask);
         NetworkUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
@@ -145,7 +142,6 @@ public class ContactPresenter implements ContactContract.Presenter {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            ChatClientManager.getInstance().updateContactUnreadCount();
             return null;
         }
 

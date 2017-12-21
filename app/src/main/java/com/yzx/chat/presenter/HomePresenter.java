@@ -20,13 +20,11 @@ public class HomePresenter implements HomeContract.Presenter {
         mHomeView = view;
         mHandler = new Handler();
         mChatClientManager = ChatClientManager.getInstance();
-        mChatClientManager.addUnreadCountChangeListener(mUnreadCountChangeListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
-        mChatClientManager.removeUnreadCountChangeListener(mUnreadCountChangeListener);
         mHomeView = null;
         mChatClientManager = null;
         mHandler = null;
@@ -56,7 +54,6 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
-        mHomeView.updateMessageUnreadBadge(mChatClientManager.getMessageUnreadCount());
-        mHomeView.updateContactUnreadBadge(mChatClientManager.getContactUnreadCount());
+
     }
 }

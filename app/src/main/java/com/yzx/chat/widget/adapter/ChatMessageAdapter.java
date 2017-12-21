@@ -123,16 +123,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    public void showLoadMoreHint(String hint) {
+    public void setLoadMoreHint(String hint) {
         mLoadMoreHint = hint;
-        notifyItemChanged(getItemCount() - 1);
+  //      notifyItemChanged(getItemCount() - 1);
     }
-
-    public void hideLoadMoreHint() {
-        mLoadMoreHint = null;
-        notifyItemChanged(getItemCount() - 1);
-    }
-
+    
     public void enableLoadMoreHint(boolean isEnable) {
         this.isEnable = isEnable;
     }

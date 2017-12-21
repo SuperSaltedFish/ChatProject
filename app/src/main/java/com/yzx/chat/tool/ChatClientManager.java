@@ -6,7 +6,6 @@ import android.text.TextUtils;
 
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
-import com.yzx.chat.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,7 +16,6 @@ import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
-import io.rong.imlib.model.MessageContent;
 import io.rong.message.ContactNotificationMessage;
 
 /**
@@ -76,6 +74,10 @@ public class ChatClientManager {
         return mRongIMClient.getConversationList();
     }
 
+    public List<Conversation> getAllConversations(Conversation.ConversationType... type) {
+        return mRongIMClient.getConversationList(type);
+    }
+
     public Conversation getConversation(Conversation.ConversationType type, String targetId) {
         return mRongIMClient.getConversation(type, targetId);
     }
@@ -93,34 +95,8 @@ public class ChatClientManager {
         mRongIMClient.getHistoryMessages(type, conversationID, oldestMessageId, count, callback);
     }
 
-    public EMConversation getSingleConversation(String conversationID) {
-        return mEMClient.chatManager().getConversation(conversationID);
-    }
-
-
     public void sendMessage(Message message) {
-        mRongIMClient.sendMessage(message,null,null,mSendMessageCallback);
-    }
-
-    public Message resendMessage(int messageID) {
-        Message message = mRongIMClient.getMessage(messageID);
-
-        return message;
-    }
-
-
-    public List<EMMessage> loadMoreMessage(String conversationID, String startMessageID, int count) {
-        EMConversation conversation = mEMClient.chatManager().getConversation(conversationID);
-        if (conversation == null) {
-            return null;
-        } else {
-            return conversation.loadMoreMsgFromDB(startMessageID, count);
-        }
-    }
-
-
-    public void requestAddContact(String contactID, String reason) throws HyphenateException {
-        mEMClient.contactManager().addContact(contactID, reason);
+        mRongIMClient.sendMessage(message, null, null, mSendMessageCallback);
     }
 
     private final RongIMClient.ConnectionStatusListener mConnectionStatusListener = new RongIMClient.ConnectionStatusListener() {
@@ -163,7 +139,7 @@ public class ChatClientManager {
                             continue;
                         }
                         if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
-                            chatListener.onChatMessageReceived(message);
+                            chatListener.onChatMessageReceived(message, i);
                         }
                     }
                     break;
@@ -300,16 +276,16 @@ public class ChatClientManager {
 
     public interface OnMessageSendStateChangeListener {
 
-        void onSendProgress(EMMessage message, int progress);
-
-        void onSendSuccess(EMMessage message);
-
-        void onSendFail(EMMessage message);
+//        void onSendProgress(EMMessage message, int progress);
+//
+//        void onSendSuccess(EMMessage message);
+//
+//        void onSendFail(EMMessage message);
     }
 
 
     public interface OnChatMessageReceiveListener {
-        void onChatMessageReceived(Message message);
+        void onChatMessageReceived(Message message, int untreatedCount);
     }
 
     public interface OnContactMessageReceiveListener {
