@@ -21,7 +21,7 @@ public class ChatContract {
 
         void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage);
 
-        void updateMessage(int position);
+        void updateMessage(Message message);
 
     }
 

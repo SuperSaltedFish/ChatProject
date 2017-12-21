@@ -65,22 +65,6 @@ public class ContactPresenter implements ContactContract.Presenter {
         mContactView.updateContactListView(diffResult,mFriendList);
     }
 
-    private final ChatClientManager.UnreadCountChangeListener mUnreadCountChangeListener = new ChatClientManager.UnreadCountChangeListener() {
-        @Override
-        public void onMessageUnreadCountChange(int unreadCount) {
-
-        }
-
-        @Override
-        public void onContactUnreadCountChange(final int unreadCount) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mContactView.updateUnreadBadge(unreadCount);
-                }
-            });
-        }
-    };
 
     private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactPresenter,List<FriendBean>, DiffUtil.DiffResult> {
 

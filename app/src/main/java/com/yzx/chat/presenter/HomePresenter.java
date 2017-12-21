@@ -30,27 +30,6 @@ public class HomePresenter implements HomeContract.Presenter {
         mHandler = null;
     }
 
-    private final ChatClientManager.UnreadCountChangeListener mUnreadCountChangeListener = new ChatClientManager.UnreadCountChangeListener() {
-        @Override
-        public void onMessageUnreadCountChange(final int unreadCount) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mHomeView.updateMessageUnreadBadge(unreadCount);
-                }
-            });
-        }
-
-        @Override
-        public void onContactUnreadCountChange(final int unreadCount) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mHomeView.updateContactUnreadBadge(unreadCount);
-                }
-            });
-        }
-    };
 
     @Override
     public void loadUnreadCount() {

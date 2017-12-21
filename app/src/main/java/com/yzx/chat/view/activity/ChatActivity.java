@@ -92,6 +92,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private Conversation mConversation;
     private List<Message> mMessageList;
     private Message mNeedResendMessage;
+    private int mNeedResendPosition;
     private int[] mEmojis;
 
     private int mKeyBoardHeight;
@@ -187,8 +188,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onClick(View v) {
                 mAlerter.hide();
+                mAdapter.notifyItemRemoved(mNeedResendPosition);
                 mMessageList.remove(mNeedResendMessage);
-                mNeedResendMessage.setMessageId(0);
                 mPresenter.resendMessage(mNeedResendMessage);
             }
         });
@@ -513,6 +514,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private final ChatMessageAdapter.OnResendItemClickListener mOnResendItemClickListener = new ChatMessageAdapter.OnResendItemClickListener() {
         @Override
         public void onResendItemClick(int position, Message message) {
+            mNeedResendPosition = position;
             mNeedResendMessage = message;
             mAlerter.show();
         }
@@ -526,12 +528,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     public void addNewMessage(Message message) {
+        mMessageList.add(0,message);
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, 1);
         }
-        mMessageList.add(message);
         mRvChatView.scrollToPosition(0);
     }
 
@@ -543,14 +545,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         } else {
             mAdapter.notifyItemRangeInserted(0, messageList.size());
         }
-        mMessageList.addAll(messageList);
+        mMessageList.addAll(0,messageList);
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
-            mMessageList.addAll(0, messageList);
+            mMessageList.addAll(messageList);
             mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
         }
         if (!isHasMoreMessage) {
@@ -561,8 +563,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void updateMessage(int position) {
-        mAdapter.notifyItemChanged(position);
+    public void updateMessage(Message message) {
+        int position = mMessageList.indexOf(message);
+        if(position>=0) {
+            mAdapter.notifyItemChanged(position);
+            mMessageList.set(0,message);
+        }else {
+            LogUtil.e("update message fail");
+        }
     }
 
 }

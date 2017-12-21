@@ -70,7 +70,7 @@
     <string name="EMMessageUtil_EmotionInfo">[表情]</string>
     <string name="EMMessageUtil_FileInfo">[文件信息]</string>
     <string name="AlertDialogChat_Title">重发提示</string>
-    <string name="AlertDialogChat_Content">，该消息此前发送失败,是否选择重新发送这条信息?</string>
+    <string name="AlertDialogChat_Content">该消息此前发送失败,是否选择重新发送这条信息?</string>
     <string name="AlertDialogChat_Cancel">取消发送</string>
     <string name="AlertDialogChat_Resend">重新发送</string>
 

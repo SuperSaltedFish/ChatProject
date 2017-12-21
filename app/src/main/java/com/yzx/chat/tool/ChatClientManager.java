@@ -176,60 +176,34 @@ public class ChatClientManager {
     private final IRongCallback.ISendMessageCallback mSendMessageCallback = new IRongCallback.ISendMessageCallback() {
         @Override
         public void onAttached(Message message) {
-
+            String conversationID = message.getTargetId();
+            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onSendProgress(message);
+                }
+            }
         }
 
         @Override
         public void onSuccess(Message message) {
-
+            String conversationID = message.getTargetId();
+            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onSendSuccess(message);
+                }
+            }
         }
 
         @Override
         public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-
+            String conversationID = message.getTargetId();
+            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onSendFail(message);
+                }
+            }
         }
     };
-
-
-//    private class MessageSendCallBack implements EMCallBack {
-//
-//        private EMMessage mEMMessage;
-//
-//        MessageSendCallBack(EMMessage message) {
-//            mEMMessage = message;
-//        }
-//
-//        @Override
-//        public void onSuccess() {
-//            String conversationID = mEMMessage.conversationId();
-//            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
-//                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-//                    entry.getKey().onSendSuccess(mEMMessage);
-//                }
-//            }
-//        }
-//
-//        @Override
-//        public void onError(int code, String error) {
-//            LogUtil.e(error);
-//            String conversationID = mEMMessage.conversationId();
-//            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
-//                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-//                    entry.getKey().onSendFail(mEMMessage);
-//                }
-//            }
-//        }
-//
-//        @Override
-//        public void onProgress(int progress, String status) {
-//            String conversationID = mEMMessage.conversationId();
-//            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
-//                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-//                    entry.getKey().onSendProgress(mEMMessage, progress);
-//                }
-//            }
-//        }
-//    }
 
 
     public void addOnMessageReceiveListener(OnChatMessageReceiveListener listener, String conversationID) {
@@ -276,11 +250,11 @@ public class ChatClientManager {
 
     public interface OnMessageSendStateChangeListener {
 
-//        void onSendProgress(EMMessage message, int progress);
-//
-//        void onSendSuccess(EMMessage message);
-//
-//        void onSendFail(EMMessage message);
+        void onSendProgress(Message message);
+
+        void onSendSuccess(Message message);
+
+        void onSendFail(Message message);
     }
 
 
@@ -290,12 +264,6 @@ public class ChatClientManager {
 
     public interface OnContactMessageReceiveListener {
         void onContactMessageReceive(ContactNotificationMessage message);
-    }
-
-    public interface UnreadCountChangeListener {
-        void onMessageUnreadCountChange(int unreadCount);
-
-        void onContactUnreadCountChange(int unreadCount);
     }
 
     public interface onConnectionStateChangeListener {

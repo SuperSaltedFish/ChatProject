@@ -46,6 +46,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void detachView() {
         mChatManager.removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mChatManager.removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
         mHandler = null;
@@ -59,6 +60,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mHasMoreMessage = true;
         mIsLoadingMore = false;
         mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
+        mChatManager.addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
         mChatManager.clearConversationUnreadStatus(mConversation.getConversationType(), mConversation.getTargetId());
         List<Message> messageList = mChatManager.getHistoryMessages(mConversation.getConversationType(), mConversation.getTargetId(), -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         if (messageList == null || messageList.size() == 0) {
@@ -80,7 +82,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void sendTextMessage(String content) {
-        sendMessage(TextMessage.obtain("我是消息内容"));
+        sendMessage(TextMessage.obtain(content));
     }
 
     @Override
@@ -130,7 +132,6 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private void sendMessage(Message message) {
         mChatManager.sendMessage(message);
-        mChatView.addNewMessage(message);
     }
 
     private void updateMessage(Message message) {
@@ -175,6 +176,23 @@ public class ChatPresenter implements ChatContract.Presenter {
         @Override
         public void onChatMessageReceived(Message message, int untreatedCount) {
             loadNewComplete(message);
+        }
+    };
+
+    private final ChatClientManager.OnMessageSendStateChangeListener mOnMessageSendStateChangeListener = new ChatClientManager.OnMessageSendStateChangeListener() {
+        @Override
+        public void onSendProgress(final Message message) {
+            mChatView.addNewMessage(message);
+        }
+
+        @Override
+        public void onSendSuccess(final Message message) {
+            mChatView.updateMessage(message);
+        }
+
+        @Override
+        public void onSendFail(final Message message) {
+            mChatView.updateMessage(message);
         }
     };
 

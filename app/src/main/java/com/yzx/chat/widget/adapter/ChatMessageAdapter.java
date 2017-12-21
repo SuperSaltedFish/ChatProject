@@ -19,6 +19,7 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.view.activity.ChatActivity;
 
@@ -125,7 +126,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     public void setLoadMoreHint(String hint) {
         mLoadMoreHint = hint;
-  //      notifyItemChanged(getItemCount() - 1);
+        notifyItemChanged(getItemCount() - 1);
     }
     
     public void enableLoadMoreHint(boolean isEnable) {
@@ -212,6 +213,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                         });
                         break;
                     default:
+                        LogUtil.e(state.getValue()+"");
                         mIvMessageState.setImageDrawable(null);
                 }
             }

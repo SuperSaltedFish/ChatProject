@@ -277,7 +277,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         String token = bean.getToken();
         String secretKey = bean.getSecretKey();
         UserBean userBean = bean.getUser();
-        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey)||userBean==null) {
+        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey) || userBean == null) {
             return false;
         }
         if (!mIDManager.saveUserID(userBean.getUserID())) {
@@ -295,18 +295,12 @@ public class LoginPresenter implements LoginContract.Presenter {
         return true;
     }
 
-    private void loginIMServer(){
-        ChatClientManager.getInstance().login("vuNS8hVy5mg9v9CM8LqaHWlT2wHP2YVp33Lk8A3VC9QH5N7j1f+EUao2ggyEZ99OnTaNuZXGLaRJFKbDTGkadclqiJH/vVZJ", new RongIMClient.ConnectCallback() {
+    private void loginIMServer() {
+        ChatClientManager.getInstance().login("nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8", new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 LogUtil.e("onTokenIncorrect");
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLoginView.reLogin();
-                        mLoginView.loginFailure(AndroidUtil.getString(R.string.SplashPresenter_LoginFailInIMSDK));
-                    }
-                });
+                loginIMFail();
             }
 
             @Override
@@ -322,14 +316,18 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
                 LogUtil.e(errorCode.getMessage());
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLoginView.reLogin();
-                        mLoginView.loginFailure(AndroidUtil.getString(R.string.SplashPresenter_LoginFailInIMSDK));
-                    }
-                });
+                loginIMFail();
+            }
+        });
+    }
 
+    private void loginIMFail() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mLoginView.reLogin();
+                mLoginView.loginFailure(AndroidUtil.getString(R.string.SplashPresenter_LoginFailInIMSDK));
+                mIDManager.clearAuthenticationData();
             }
         });
     }
@@ -362,7 +360,6 @@ public class LoginPresenter implements LoginContract.Presenter {
             String strData = new String(data);
             LogUtil.e("response: " + strData);
             return mGson.fromJson(strData, genericType);
-
         }
     };
 }
