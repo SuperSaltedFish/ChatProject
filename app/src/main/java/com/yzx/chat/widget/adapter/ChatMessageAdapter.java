@@ -128,7 +128,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         mLoadMoreHint = hint;
         notifyItemChanged(getItemCount() - 1);
     }
-    
+
     public void enableLoadMoreHint(boolean isEnable) {
         this.isEnable = isEnable;
     }

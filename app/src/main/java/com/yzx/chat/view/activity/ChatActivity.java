@@ -35,13 +35,14 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
-import com.yzx.chat.widget.view.NoAnimations;
+import com.yzx.chat.widget.animation.NoAnimations;
 import com.yzx.chat.widget.view.RecorderButton;
 
 import java.io.File;
@@ -153,6 +154,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         mRvChatView.setItemAnimator(new NoAnimations());
+        mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
         mAdapter.setOnResendItemClickListener(mOnResendItemClickListener);
@@ -188,8 +190,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onClick(View v) {
                 mAlerter.hide();
-                mAdapter.notifyItemRemoved(mNeedResendPosition);
                 mMessageList.remove(mNeedResendMessage);
+                mAdapter.notifyItemRemoved(mNeedResendPosition);
                 mPresenter.resendMessage(mNeedResendMessage);
             }
         });
@@ -247,6 +249,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     hintMoreInput();
                 }
                 isOpenedKeyBoard = true;
+                mRvChatView.scrollToPosition(0);
             }
 
             @Override
@@ -521,6 +524,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     };
 
 
+
+
     @Override
     public ChatContract.Presenter getPresenter() {
         return new ChatPresenter();
@@ -528,13 +533,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     public void addNewMessage(Message message) {
-        mMessageList.add(0,message);
+        mMessageList.add(0, message);
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
             mAdapter.notifyItemRangeInserted(0, 1);
         }
-        mRvChatView.scrollToPosition(0);
     }
 
     @Override
@@ -545,15 +549,17 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         } else {
             mAdapter.notifyItemRangeInserted(0, messageList.size());
         }
-        mMessageList.addAll(0,messageList);
+        mMessageList.addAll(0, messageList);
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
-            mMessageList.addAll(messageList);
             mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
+            mRvChatView.scrollToPosition(mMessageList.size() - 1);
+            mMessageList.addAll(messageList);
+            mAdapter.notifyItemChanged(mMessageList.size());
         }
         if (!isHasMoreMessage) {
             mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
@@ -565,10 +571,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void updateMessage(Message message) {
         int position = mMessageList.indexOf(message);
-        if(position>=0) {
+        if (position >= 0) {
             mAdapter.notifyItemChanged(position);
-            mMessageList.set(0,message);
-        }else {
+            mMessageList.set(0, message);
+        } else {
             LogUtil.e("update message fail");
         }
     }

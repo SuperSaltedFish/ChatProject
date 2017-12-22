@@ -28,7 +28,7 @@ import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.view.BadgeImageView;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
-import com.yzx.chat.widget.view.NoAnimations;
+import com.yzx.chat.widget.animation.NoAnimations;
 import com.yzx.chat.widget.view.SegmentedControlView;
 
 import java.util.ArrayList;

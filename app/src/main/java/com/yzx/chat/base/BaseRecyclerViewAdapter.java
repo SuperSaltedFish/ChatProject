@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.yzx.chat.util.LogUtil;
+
 /**
  * Created by YZX on 2017年08月20日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
@@ -15,6 +17,8 @@ public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder
     public Context mContext;
 
     private OnScrollToBottomListener mScrollToBottomListener;
+
+    private int mLastBindPosition;
 
     public abstract VH getViewHolder(ViewGroup parent, int viewType);
 
@@ -31,7 +35,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(VH holder, int position) {
         bindDataToViewHolder(holder, position);
-        if (mScrollToBottomListener != null&&position==getItemCount()-1) {
+        if (mScrollToBottomListener != null&&position==getItemCount()-1&&position!=mLastBindPosition) {
             holder.itemView.post(new Runnable() {
                 @Override
                 public void run() {
@@ -39,6 +43,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder
                 }
             });
         }
+        mLastBindPosition = position;
     }
 
     public void setScrollToBottomListener(OnScrollToBottomListener listener) {
