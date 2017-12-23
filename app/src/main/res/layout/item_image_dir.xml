@@ -14,7 +14,7 @@
     <TextView
         android:layout_marginStart="16dp"
         android:textSize="18sp"
-        android:textColor="@color/text_primary_color_black_alpha"
+        android:textColor="@color/text_primary_color_black"
         android:id="@+id/ImageDirAdapter_mTvDirPath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

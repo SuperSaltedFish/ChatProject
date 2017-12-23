@@ -11,7 +11,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="1px"
-        android:background="@color/separation_line_color_black_alpha"
+        android:background="@color/divider_color_black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
         android:maxLines="1"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        android:textColor="@color/text_primary_color_black_alpha"
+        android:textColor="@color/text_primary_color_black"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/ConversationAdapter_mTvSingleLastMessage"
         app:layout_constraintEnd_toStartOf="@+id/ConversationAdapter_mTvSingleTime"

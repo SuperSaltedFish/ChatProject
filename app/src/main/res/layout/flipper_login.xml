@@ -41,7 +41,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/separation_line_color_white_alpha" />
+        android:background="@color/divider_color_white" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/separation_line_color_white_alpha" />
+        android:background="@color/divider_color_white" />
 
     <TextView
         android:id="@+id/FlipperLogin_mTvLoginHint"

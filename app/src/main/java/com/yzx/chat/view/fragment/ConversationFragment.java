@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
@@ -39,6 +41,8 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     private RecyclerView mRecyclerView;
     private SmartRefreshLayout mSmartRefreshLayout;
+    private ImageView mIvEmptyHintImage;
+    private TextView mITvEmptyHintText;
     private ConversationAdapter mAdapter;
     private Toolbar mToolbar;
     private HomeOverflowPopupWindow mOverflowPopupWindow;
@@ -55,6 +59,8 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView = parentView.findViewById(R.id.ConversationFragment_mRecyclerView);
         mToolbar = parentView.findViewById(R.id.ConversationFragment_mToolbar);
         mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
+        mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
+        mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
         mOverflowPopupWindow = new HomeOverflowPopupWindow(mContext, mToolbar, R.menu.menu_home_overflow);
         mConversationList = new ArrayList<>(128);
         mAdapter = new ConversationAdapter(mConversationList);
@@ -89,7 +95,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         } else {
             if (data != null) {
                 Conversation conversation = data.getParcelableExtra(ChatActivity.INTENT_EXTRA_CONVERSATION);
-                if (conversation!=null) {
+                if (conversation != null) {
                     mPresenter.refreshSingleConversation(conversation);
                 } else {
                     LogUtil.e("Conversation is null");
@@ -97,6 +103,16 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             } else {
                 LogUtil.e("Intent is null");
             }
+        }
+    }
+
+    private void enableEmptyListHint(boolean isEnable) {
+        if (isEnable) {
+            mIvEmptyHintImage.setVisibility(View.VISIBLE);
+            mITvEmptyHintText.setVisibility(View.VISIBLE);
+        } else {
+            mIvEmptyHintImage.setVisibility(View.INVISIBLE);
+            mITvEmptyHintText.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -145,6 +161,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         diffResult.dispatchUpdatesTo(mAdapter);
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
+        enableEmptyListHint(mConversationList.size() == 0);
     }
 
     @Override

@@ -134,22 +134,6 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatManager.sendMessage(message);
     }
 
-    private void updateMessage(Message message) {
-//        List<EMMessage> messageList = mChatView.getAllMessage();
-//        for (int position = 0, length = messageList.size(); position < length; position++) {
-//            if (messageList.get(position).getMsgId().equals(message.getMsgId())) {
-//                final int finalPosition = position;
-//                mHandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mChatView.updateMessage(finalPosition);
-//                    }
-//                });
-//                break;
-//            }
-//        }
-    }
-
 
     private void loadNewComplete(final Message message) {
         mHandler.post(new Runnable() {
@@ -181,17 +165,17 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private final ChatClientManager.OnMessageSendStateChangeListener mOnMessageSendStateChangeListener = new ChatClientManager.OnMessageSendStateChangeListener() {
         @Override
-        public void onSendProgress(final Message message) {
+        public void onSendProgress(Message message) {
             mChatView.addNewMessage(message);
         }
 
         @Override
-        public void onSendSuccess(final Message message) {
+        public void onSendSuccess(Message message) {
             mChatView.updateMessage(message);
         }
 
         @Override
-        public void onSendFail(final Message message) {
+        public void onSendFail(Message message) {
             mChatView.updateMessage(message);
         }
     };

@@ -55,7 +55,7 @@
             android:layout_below="@+id/Month"
             android:gravity="center"
             android:text="16"
-            android:textColor="@color/text_primary_color_black_alpha"
+            android:textColor="@color/text_primary_color_black"
             android:textSize="27sp"/>
 
         <View
@@ -85,7 +85,7 @@
             android:gravity="center_vertical"
             android:maxLines="2"
             android:text="我是真的真的adwdwadwad真的很爱你"
-            android:textColor="@color/text_primary_color_black_alpha"
+            android:textColor="@color/text_primary_color_black"
             android:textSize="13sp"/>
 
         <com.yzx.chat.widget.view.NineGridImageView

@@ -84,9 +84,9 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mToolbar.setTitleTextColor(Color.WHITE);
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
-        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.separation_line_color_black_alpha));
+        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.divider_color_black));
         mLetterSegmentationItemDecoration.setLineWidth(1);
-        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.separation_line_color_black_alpha));
+        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.divider_color_black));
         mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
@@ -103,7 +103,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRequestBadge.setOnClickListener(mOnContactRequestBadgeClick);
 
 
-        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black_alpha));
+        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
         mSegmentedControlView

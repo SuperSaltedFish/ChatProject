@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:maxLines="1"
-        android:textColor="@color/text_primary_color_black_alpha" />
+        android:textColor="@color/text_primary_color_black" />
 
 </LinearLayout>

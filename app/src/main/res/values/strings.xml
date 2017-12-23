@@ -76,5 +76,6 @@
 
     <string name="SplashPresenter_TokenIncorrect">签名过期，请尝试重新登录！</string>
     <string name="SplashPresenter_LoginFailInIMSDK">登录聊天服务器失败，请尝试重新登录！</string>
+    <string name="ConversationFragment_EmptyListHint">暂无聊天信息</string>
 
 </resources>

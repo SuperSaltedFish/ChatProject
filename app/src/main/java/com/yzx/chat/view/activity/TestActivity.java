@@ -33,23 +33,22 @@ public class TestActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //5a3789ff2889040e1822fe88
 
-        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-        Call<JsonResponse<Void>> task = api.addFriend("5a3789ff2889040e1822fe88");
-        task.setCallback(new BaseHttpCallback<Void>() {
-            @Override
-            protected void onSuccess(Void response) {
-                LogUtil.e("onSuccess");
-
-            }
-
-            @Override
-            protected void onFailure(String message) {
-                LogUtil.e("onFailure");
-            }
-        });
-        NetworkExecutor.getInstance().submit(task);
+//        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+//        Call<JsonResponse<Void>> task = api.addFriend("5a3789ff2889040e1822fe88");
+//        task.setCallback(new BaseHttpCallback<Void>() {
+//            @Override
+//            protected void onSuccess(Void response) {
+//                LogUtil.e("onSuccess");
+//
+//            }
+//
+//            @Override
+//            protected void onFailure(String message) {
+//                LogUtil.e("onFailure");
+//            }
+//        });
+//        NetworkExecutor.getInstance().submit(task);
 
 
 //        Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {

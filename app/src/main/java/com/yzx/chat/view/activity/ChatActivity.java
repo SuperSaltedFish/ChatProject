@@ -40,9 +40,8 @@ import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
-import com.yzx.chat.widget.view.EmotionPanelRelativeLayout;
+import com.yzx.chat.widget.view.EmotionPanelLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
-import com.yzx.chat.widget.animation.NoAnimations;
 import com.yzx.chat.widget.view.RecorderButton;
 
 import java.io.File;
@@ -79,7 +78,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private EmojiEditText mEtContent;
     private LinearLayout mLlRecorderLayout;
     private KeyboardPanelSwitcher mLlInputLayout;
-    private EmotionPanelRelativeLayout mEmotionPanelLayout;
+    private EmotionPanelLayout mEmotionPanelLayout;
     private AmplitudeView mAmplitudeView;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
@@ -153,7 +152,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setLayoutManager(layoutManager);
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
-        mRvChatView.setItemAnimator(new NoAnimations());
+        // mRvChatView.setItemAnimator(new NoAnimations());
         mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
         mAdapter.setScrollToBottomListener(mScrollToBottomListener);
@@ -169,9 +168,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         setVoiceRecorder();
 
-        if (mKeyBoardHeight > 0) {
-            mEmotionPanelLayout.setHeight(mKeyBoardHeight);
-        }
 
     }
 
@@ -219,10 +215,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
 
     private void setEmotionPanel() {
+        mEmotionPanelLayout.setTabDividerDrawable(ContextCompat.getDrawable(this, R.drawable.divider_vertical_black_light));
+        if (mKeyBoardHeight > 0) {
+            mEmotionPanelLayout.setHeight(mKeyBoardHeight);
+        }
         EmojiRecyclerview emojiRecyclerview = new EmojiRecyclerview(this);
         emojiRecyclerview.setHasFixedSize(true);
         emojiRecyclerview.setEmojiData(mEmojis, 7);
         emojiRecyclerview.setEmojiSize(24);
+        emojiRecyclerview.setOverScrollMode(View.OVER_SCROLL_NEVER);
         emojiRecyclerview.setPadding((int) AndroidUtil.dip2px(8), 0, (int) AndroidUtil.dip2px(8), 0);
         emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewClickListener() {
             @Override
@@ -524,8 +525,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     };
 
 
-
-
     @Override
     public ChatContract.Presenter getPresenter() {
         return new ChatPresenter();
@@ -539,6 +538,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         } else {
             mAdapter.notifyItemRangeInserted(0, 1);
         }
+        mRvChatView.scrollToPosition(0);
     }
 
     @Override

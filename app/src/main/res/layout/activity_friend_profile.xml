@@ -279,7 +279,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="帐号"
-                    android:textColor="@color/text_primary_color_black_alpha"
+                    android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold" />
 
                 <TextView
@@ -317,7 +317,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="所在地区"
-                    android:textColor="@color/text_primary_color_black_alpha"
+                    android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold" />
 
                 <TextView
@@ -355,7 +355,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="个性签名"
-                    android:textColor="@color/text_primary_color_black_alpha"
+                    android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold" />
 
                 <TextView
@@ -395,7 +395,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="相册"
-                    android:textColor="@color/text_primary_color_black_alpha"
+                    android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold" />
 
                 <com.yzx.chat.widget.view.NineGridImageView

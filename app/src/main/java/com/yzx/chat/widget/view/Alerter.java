@@ -30,7 +30,7 @@ public class Alerter {
     private static int sStatusBarHeight;
 
     private LinearLayout mRootLayout;
-    private Space mOutsideSpace;
+    private View mOutsideSpace;
     private View mContentView;
     private Activity mActivity;
     private Animation mSlideInAnimation;
@@ -52,7 +52,7 @@ public class Alerter {
         mRootLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mRootLayout.setPadding(0, getStatusBarHeight(activity), 0, 0);
         mContentView = activity.getLayoutInflater().inflate(resID, mRootLayout, true);
-        mOutsideSpace = new Space(activity);
+        mOutsideSpace = new View(activity);
         mRootLayout.addView(mOutsideSpace, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
         mSlideInAnimation = new TranslateAnimation(0, 0, 0, 0, Animation.RELATIVE_TO_SELF, -1, Animation.RELATIVE_TO_SELF, 0);

@@ -49,68 +49,61 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
             android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ChatActivity_mIvEmoticons"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_emoticons" />
 
 
             <ImageView
                 android:id="@+id/ChatActivity_mIvMicrophone"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_margin="8dp"
-                android:padding="3dp"
+                android:layout_marginStart="8dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_microphone"
-                android:tint="@color/theme_main_color" />
-
-            <View
-                android:id="@+id/ChatActivity_mDivider"
-                android:layout_width="1px"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="12dp"
-                android:background="@color/theme_main_color" />
+                android:tint="@color/text_secondary_color_black_light" />
 
             <android.support.text.emoji.widget.EmojiEditText
                 android:id="@+id/ChatActivity_mEtContent"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@null"
                 android:hint="Input Something..."
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
+                android:maxLines="3"
+                android:minHeight="40dp"
+                android:paddingEnd="4dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingStart="4dp"
                 android:textColor="#9e000000"
-                android:textColorHint="@android:color/darker_gray"
-                android:textSize="16sp" />
-
-            <ImageView
-                android:id="@+id/ChatActivity_mIvEmoticons"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="8dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_emoticons"
-                android:tint="@color/theme_main_color" />
+                android:textColorHint="@color/text_secondary_color_black_light"
+                android:textSize="16dp" />
 
             <ImageView
                 android:id="@+id/ChatActivity_mIvSendMessage"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="8dp"
-                android:padding="2dp"
-                android:src="@drawable/ic_message_send"
-                android:tint="@color/theme_main_color" />
+                android:padding="4dp"
+                android:src="@drawable/ic_send" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/separation_line_color_black_alpha" />
+            android:background="@color/text_secondary_color_black_light" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -153,13 +146,13 @@
             </LinearLayout>
 
 
-            <com.yzx.chat.widget.view.EmotionPanelRelativeLayout
+            <com.yzx.chat.widget.view.EmotionPanelLayout
                 android:id="@+id/ChatActivity_mEmotionPanelLayout"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:visibility="gone">
 
-            </com.yzx.chat.widget.view.EmotionPanelRelativeLayout>
+            </com.yzx.chat.widget.view.EmotionPanelLayout>
         </FrameLayout>
     </com.yzx.chat.widget.view.KeyboardPanelSwitcher>
 

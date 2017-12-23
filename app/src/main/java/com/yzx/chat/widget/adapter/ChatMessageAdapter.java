@@ -213,7 +213,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                         });
                         break;
                     default:
-                        LogUtil.e(state.getValue()+"");
                         mIvMessageState.setImageDrawable(null);
                 }
             }
