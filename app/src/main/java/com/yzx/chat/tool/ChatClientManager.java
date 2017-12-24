@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
@@ -51,6 +54,8 @@ public class ChatClientManager {
     private List<onConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
     private List<OnUnreadMessageCountChangeListener> mOnUnreadMessageCountChangeListeners;
 
+    private ThreadPoolExecutor mWorkExecutor;
+
     private int mUnreadChatMessageCount;
     private int mUnreadContactMessageCount;
 
@@ -72,6 +77,12 @@ public class ChatClientManager {
 
         RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
         RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+
+        mWorkExecutor = new ThreadPoolExecutor(
+                0,
+                2,
+                30, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<Runnable>(32));
     }
 
     public void login(String token, RongIMClient.ConnectCallback callback) {
@@ -95,7 +106,21 @@ public class ChatClientManager {
     }
 
     public void clearConversationUnreadStatus(Conversation.ConversationType type, String conversationID) {
-        mRongIMClient.clearMessagesUnreadStatus(type, conversationID);
+        mRongIMClient.clearMessagesUnreadStatus(type, conversationID, new RongIMClient.ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                if (!aBoolean) {
+                    LogUtil.e("clearMessagesUnreadStatus error");
+                } else {
+                    updateChatUnreadCount();
+                }
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtil.e(errorCode.getMessage());
+            }
+        });
     }
 
 
@@ -133,7 +158,21 @@ public class ChatClientManager {
     }
 
     public void updateContactUnreadCount() {
-
+        mWorkExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (mUpdateContactUnreadCountLock) {
+                    ContactDao contactDao = DBManager.getInstance().getContactDao();
+                    int count = contactDao.loadRemindCount();
+                    if (count != mUnreadContactMessageCount) {
+                        mUnreadContactMessageCount = count;
+                        for (OnUnreadMessageCountChangeListener listener : mOnUnreadMessageCountChangeListeners) {
+                            listener.onContactMessageUnreadCountChange(mUnreadChatMessageCount);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private final RongIMClient.ConnectionStatusListener mConnectionStatusListener = new RongIMClient.ConnectionStatusListener() {
@@ -205,12 +244,10 @@ public class ChatClientManager {
                     }
                     break;
             }
-            if(i==0){
+            if (i == 0) {
                 updateChatUnreadCount();
                 updateContactUnreadCount();
             }
-
-
             return true;
         }
     };
@@ -290,13 +327,13 @@ public class ChatClientManager {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
 
-    public void addmUnreadMessageCountChangeListener(OnUnreadMessageCountChangeListener listener) {
+    public void addUnreadMessageCountChangeListener(OnUnreadMessageCountChangeListener listener) {
         if (!mOnUnreadMessageCountChangeListeners.contains(listener)) {
             mOnUnreadMessageCountChangeListeners.add(listener);
         }
     }
 
-    public void removemUnreadMessageCountChangeListener(OnUnreadMessageCountChangeListener listener) {
+    public void removeUnreadMessageCountChangeListener(OnUnreadMessageCountChangeListener listener) {
         mOnUnreadMessageCountChangeListeners.remove(listener);
     }
 

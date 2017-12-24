@@ -23,7 +23,7 @@ import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.FriendBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
-import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
+import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.view.BadgeImageView;
 import com.yzx.chat.widget.view.IndexBarView;
@@ -96,7 +96,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.setItemAnimator(new NoAnimations());
         mContactRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
-        mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
+        mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
         mContactRequestBadge.setBadgeTextPadding((int) AndroidUtil.dip2px(2));
         mContactRequestBadge.setBadgePadding(0, (int) AndroidUtil.dip2px(6), (int) AndroidUtil.dip2px(4), 0);
@@ -127,10 +127,10 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     };
 
 
-    private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {
+    private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
 
         @Override
-        public void onItemClick(int position, View itemView) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
             if (position == 0) {
 
             } else {
@@ -143,10 +143,6 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
             }
         }
 
-        @Override
-        public void onItemLongClick(int position, View itemView) {
-
-        }
 
     };
 

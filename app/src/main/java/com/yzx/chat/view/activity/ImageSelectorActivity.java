@@ -25,7 +25,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.ImageSelectAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
+import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -109,7 +109,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
         mRvImageDirList.setLayoutManager(new LinearLayoutManager(this));
         mRvImageDirList.setAdapter(mImageDirAdapter);
-        mRvImageDirList.addOnItemTouchListener(mOnRecyclerViewClickListener);
+        mRvImageDirList.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
         mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomBehavior.setSkipCollapsed(true);
@@ -223,20 +223,15 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     };
 
 
-    private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {
+    private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, View itemView) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
             if (position == 0) {
                 setAlbumFolder(null);
             } else {
                 setAlbumFolder(mImageDirPath.get(position - 1));
             }
             mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }
-
-        @Override
-        public void onItemLongClick(int position, View itemView) {
-
         }
     };
 

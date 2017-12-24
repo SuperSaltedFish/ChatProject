@@ -37,7 +37,7 @@ import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
-import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
+import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
@@ -226,9 +226,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setEmojiSize(24);
         emojiRecyclerview.setOverScrollMode(View.OVER_SCROLL_NEVER);
         emojiRecyclerview.setPadding((int) AndroidUtil.dip2px(8), 0, (int) AndroidUtil.dip2px(8), 0);
-        emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewClickListener() {
+        emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(int position, View itemView) {
+            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
                 mEtContent.getText().append(new String(Character.toChars(mEmojis[position])));
             }
         });

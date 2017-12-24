@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -21,7 +22,7 @@ import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
-import com.yzx.chat.widget.listener.OnRecyclerViewClickListener;
+import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addOnItemTouchListener(mOnRecyclerViewClickListener);
+        mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
 
     }
@@ -130,11 +131,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         }
     };
 
-    private final OnRecyclerViewClickListener mOnRecyclerViewClickListener = new OnRecyclerViewClickListener() {
-
-        @SuppressWarnings("unchecked")
+    private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(final int position, View itemView) {
+        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
@@ -142,11 +141,16 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                     intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position));
                     ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
                     startActivityForResult(intent, ACTIVITY_REQUEST_CODE, compat.toBundle());
-
                 }
             });
         }
 
+        @Override
+        public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder) {
+            PopupMenu popup = new PopupMenu(getActivity(), viewHolder.itemView);
+            popup.inflate(R.menu.menu_home_overflow);
+            popup.show();
+        }
 
     };
 
@@ -166,9 +170,13 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void updateConversationListViewByPosition(int position, Conversation conversation) {
-        mConversationList.remove(position);
-        mConversationList.add(0, conversation);
-        mAdapter.notifyItemMoved(position, 0);
+        if (position == 0) {
+            mConversationList.set(0, conversation);
+        } else {
+            mConversationList.remove(position);
+            mConversationList.add(0, conversation);
+            mAdapter.notifyItemMoved(position, 0);
+        }
         mAdapter.notifyItemChanged(0);
     }
 
