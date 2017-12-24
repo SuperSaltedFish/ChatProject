@@ -6,7 +6,9 @@ import android.text.TextUtils;
 
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.util.LogUtil;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,12 +41,21 @@ public class ChatClientManager {
         return sManager;
     }
 
+    public static final Conversation.ConversationType[] SUPPORT_CONVERSATION_TYPE =
+            {Conversation.ConversationType.PRIVATE};
 
     private RongIMClient mRongIMClient;
     private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
     private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
     private List<OnContactMessageReceiveListener> mOnContactMessageReceiveListenerList;
     private List<onConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
+    private List<OnUnreadMessageCountChangeListener> mOnUnreadMessageCountChangeListeners;
+
+    private int mUnreadChatMessageCount;
+    private int mUnreadContactMessageCount;
+
+    private final Object mUpdateChatUnreadCountLock = new Object();
+    private final Object mUpdateContactUnreadCountLock = new Object();
 
     private ContactDao mContactDao;
 
@@ -52,8 +63,9 @@ public class ChatClientManager {
     private ChatClientManager() {
         mMessageListenerMap = new HashMap<>();
         mMessageSendStateChangeListenerMap = new HashMap<>();
-        mOnContactMessageReceiveListenerList = new LinkedList<>();
-        mOnConnectionStateChangeListenerList = new LinkedList<>();
+        mOnContactMessageReceiveListenerList = Collections.synchronizedList(new LinkedList<OnContactMessageReceiveListener>());
+        mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<onConnectionStateChangeListener>());
+        mOnUnreadMessageCountChangeListeners = Collections.synchronizedList(new LinkedList<OnUnreadMessageCountChangeListener>());
 
         mContactDao = DBManager.getInstance().getContactDao();
         mRongIMClient = RongIMClient.getInstance();
@@ -97,6 +109,31 @@ public class ChatClientManager {
 
     public void sendMessage(Message message) {
         mRongIMClient.sendMessage(message, null, null, mSendMessageCallback);
+    }
+
+    public void updateChatUnreadCount() {
+        mRongIMClient.getUnreadCount(new RongIMClient.ResultCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer integer) {
+                synchronized (mUpdateChatUnreadCountLock) {
+                    if (mUnreadChatMessageCount != integer) {
+                        mUnreadChatMessageCount = integer;
+                        for (OnUnreadMessageCountChangeListener listener : mOnUnreadMessageCountChangeListeners) {
+                            listener.onChatMessageUnreadCountChange(mUnreadChatMessageCount);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtil.e(errorCode.getMessage());
+            }
+        }, SUPPORT_CONVERSATION_TYPE);
+    }
+
+    public void updateContactUnreadCount() {
+
     }
 
     private final RongIMClient.ConnectionStatusListener mConnectionStatusListener = new RongIMClient.ConnectionStatusListener() {
@@ -168,6 +205,11 @@ public class ChatClientManager {
                     }
                     break;
             }
+            if(i==0){
+                updateChatUnreadCount();
+                updateContactUnreadCount();
+            }
+
 
             return true;
         }
@@ -248,6 +290,16 @@ public class ChatClientManager {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
 
+    public void addmUnreadMessageCountChangeListener(OnUnreadMessageCountChangeListener listener) {
+        if (!mOnUnreadMessageCountChangeListeners.contains(listener)) {
+            mOnUnreadMessageCountChangeListeners.add(listener);
+        }
+    }
+
+    public void removemUnreadMessageCountChangeListener(OnUnreadMessageCountChangeListener listener) {
+        mOnUnreadMessageCountChangeListeners.remove(listener);
+    }
+
     public interface OnMessageSendStateChangeListener {
 
         void onSendProgress(Message message);
@@ -257,13 +309,18 @@ public class ChatClientManager {
         void onSendFail(Message message);
     }
 
-
     public interface OnChatMessageReceiveListener {
         void onChatMessageReceived(Message message, int untreatedCount);
     }
 
     public interface OnContactMessageReceiveListener {
         void onContactMessageReceive(ContactNotificationMessage message);
+    }
+
+    public interface OnUnreadMessageCountChangeListener {
+        void onChatMessageUnreadCountChange(int count);
+
+        void onContactMessageUnreadCountChange(int count);
     }
 
     public interface onConnectionStateChangeListener {

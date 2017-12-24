@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,13 +21,12 @@
         android:layout_marginBottom="56dp"
         android:background="@drawable/bg_shadow_top" />
 
-    <com.ashokvarma.bottomnavigation.BottomNavigationBar
+
+    <me.majiajie.pagerbottomtabstrip.PageNavigationView
         android:id="@+id/HomeActivity_mBottomNavigationBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
-        app:bnbActiveColor="@android:color/white"
-        app:bnbBackgroundColor="@color/theme_main_color"
-        app:bnbInactiveColor="#808080" />
+        android:background="@android:color/white" />
 
 </merge>

@@ -3,6 +3,7 @@ package com.yzx.chat.view.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -235,6 +236,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview, getDrawable(R.drawable.ic_moments));
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
+        mEmotionPanelLayout.setLeftMenu(getDrawable(R.drawable.ic_setting), null);
     }
 
     private void setKeyBoardSwitcherListener() {
@@ -279,7 +281,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setVoiceRecorder() {
-        mAmplitudeView.setBackgroundColor(ContextCompat.getColor(this, R.color.theme_background_color));
+        mAmplitudeView.setBackgroundColor(Color.WHITE);
         mAmplitudeView.setAmplitudeColor(ContextCompat.getColor(this, R.color.theme_main_color));
         mAmplitudeView.setMaxAmplitude(VoiceRecorder.MAX_AMPLITUDE);
         mVoiceRecorder.setMaxDuration(MAX_VOICE_RECORDER_DURATION);

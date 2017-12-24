@@ -1,24 +1,23 @@
 package com.yzx.chat.presenter;
 
 
+import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.bean.ConversationBean;
+
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.util.NetworkUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+
 
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
-import io.rong.imlib.model.MessageContent;
 
 /**
  * Created by YZX on 2017年11月06日.
@@ -32,11 +31,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private RefreshAllConversationTask mRefreshTask;
     private List<Conversation> mConversationList;
     private ChatClientManager mChatManager;
+    private Handler mHandler;
 
     @Override
     public void attachView(ConversationContract.View view) {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
+        mHandler = new Handler();
         mChatManager = ChatClientManager.getInstance();
         mChatManager.addConnectionListener(mOnConnectionStateChangeListener);
         mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
@@ -44,6 +45,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void detachView() {
+        mHandler.removeCallbacks(null);
         mChatManager.removeConnectionListener(mOnConnectionStateChangeListener);
         mChatManager.removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mConversationList.clear();
@@ -61,35 +63,37 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     @Override
-    public void refreshSingleConversation(Conversation conversation) {
-        conversation = mChatManager.getConversation(conversation.getConversationType(), conversation.getTargetId());
-        if (conversation != null) {
-            synchronized (ConversationPresenter.class) {
-                String conversationID = conversation.getTargetId();
-                Conversation temp;
-                for (int i = 0, size = mConversationList.size(); i < size; i++) {
-                    temp = mConversationList.get(i);
-                    if (temp.getTargetId().equals(conversationID)) {
-                        mConversationList.set(i, conversation);
-                        mConversationView.updateListViewByPosition(i, conversation);
-                        break;
+    public void refreshSingleConversation(Conversation.ConversationType type, String conversationID) {
+        final Conversation conversation = mChatManager.getConversation(type, conversationID);
+        if (conversationID.equals(ChatPresenter.sConversationID)) {
+            mChatManager.clearConversationUnreadStatus(conversation.getConversationType(), conversation.getTargetId());
+            conversation.setUnreadMessageCount(0);
+        }
+        for (int i = 0, size = mConversationList.size(); i < size; i++) {
+            if (mConversationList.get(i).getTargetId().equals(conversationID)) {
+                mConversationList.remove(i);
+                mConversationList.add(0, conversation);
+                final int position = i;
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConversationView.updateConversationListViewByPosition(position, conversation);
                     }
-                }
+                });
+                return;
             }
         }
+        mConversationList.add(0, conversation);
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mConversationView.addConversationView(conversation);
+            }
+        });
     }
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
-        mConversationView.updateListView(diffResult, mConversationList);
-    }
-
-    private static void sortConversationByLastChatTime(List<ConversationBean> conversationList) {
-        Collections.sort(conversationList, new Comparator<ConversationBean>() {
-            @Override
-            public int compare(ConversationBean o1, ConversationBean o2) {
-                return (int) (o2.getLastMsgTime() - o1.getLastMsgTime());
-            }
-        });
+        mConversationView.updateConversationListView(diffResult, mConversationList);
     }
 
     private final ChatClientManager.onConnectionStateChangeListener mOnConnectionStateChangeListener = new ChatClientManager.onConnectionStateChangeListener() {
@@ -108,9 +112,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private final ChatClientManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatClientManager.OnChatMessageReceiveListener() {
         @Override
         public void onChatMessageReceived(Message message, int untreatedCount) {
-            if (untreatedCount == 0) {
-                refreshAllConversations();
-            }
+            refreshSingleConversation(message.getConversationType(), message.getTargetId());
         }
     };
 
@@ -136,8 +138,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         conversation.setUnreadMessageCount(0);
                     }
                 }
-
-                //  sortConversationByLastChatTime(filterConversation);
 
                 DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<Conversation>(oldConversationList, newConversationList) {
                     @Override

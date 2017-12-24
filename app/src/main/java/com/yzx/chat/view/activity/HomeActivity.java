@@ -5,11 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 
-import com.ashokvarma.bottomnavigation.BottomNavigationBar;
-import com.ashokvarma.bottomnavigation.BottomNavigationItem;
-import com.ashokvarma.bottomnavigation.TextBadgeItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.contract.HomeContract;
@@ -19,15 +15,19 @@ import com.yzx.chat.view.fragment.ContactFragment;
 import com.yzx.chat.view.fragment.MomentsFragment;
 import com.yzx.chat.view.fragment.ProfileFragment;
 
+import me.majiajie.pagerbottomtabstrip.MaterialMode;
+import me.majiajie.pagerbottomtabstrip.NavigationController;
+import me.majiajie.pagerbottomtabstrip.PageNavigationView;
+import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
+
 public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View {
 
     private final static int REQUEST_PERMISSIONS_CAMERA = 0x1;
 
-    private BottomNavigationBar mBottomNavigationBar;
     private FragmentManager mFragmentManager;
     private Fragment[] mFragments;
-    private TextBadgeItem mChatBadge;
-    private TextBadgeItem mContactBadge;
+    private NavigationController mNavigationController;
+
 
     @Override
     protected int getLayoutID() {
@@ -43,37 +43,32 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     private void initView() {
-        mBottomNavigationBar = (BottomNavigationBar) findViewById(R.id.HomeActivity_mBottomNavigationBar);
         mFragments = new Fragment[4];
         mFragments[0] = new ConversationFragment();
         mFragments[1] = new ContactFragment();
         mFragments[2] = new MomentsFragment();
         mFragments[3] = new ProfileFragment();
         mFragmentManager = getSupportFragmentManager();
+
+        mNavigationController = ((PageNavigationView) findViewById(R.id.HomeActivity_mBottomNavigationBar)).material()
+                .addItem(R.drawable.ic_chat, getString(R.string.HomeBottomNavigationTitle_Chat))
+                .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact))
+                .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments))
+                .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile))
+                .setMode(MaterialMode.HIDE_TEXT)
+                .build();
     }
 
     private void setView() {
-        mChatBadge = new TextBadgeItem()
-                .setBackgroundColorResource(R.color.red)
-                .setTextColorResource(android.R.color.white);
-
-        mContactBadge = new TextBadgeItem()
-                .setBackgroundColorResource(R.color.red)
-                .setTextColorResource(android.R.color.white);
-
-        mBottomNavigationBar
-                .addItem(new BottomNavigationItem(R.drawable.ic_chat, R.string.HomeBottomNavigationTitle_Chat).setBadgeItem(mChatBadge))
-                .addItem(new BottomNavigationItem(R.drawable.ic_friend, R.string.HomeBottomNavigationTitle_Contact).setBadgeItem(mContactBadge))
-                .addItem(new BottomNavigationItem(R.drawable.ic_moments, R.string.HomeBottomNavigationTitle_Moments))
-                .addItem(new BottomNavigationItem(R.drawable.ic_setting, R.string.HomeBottomNavigationTitle_Profile))
-                .initialise();
-        mBottomNavigationBar.setTabSelectedListener(mOnTabSelectedListener);
+        mNavigationController.addTabItemSelectedListener(mOnTabSelectedListener);
 
         mFragmentManager.beginTransaction()
                 .add(R.id.HomeActivity_mClContent, mFragments[0], String.valueOf(0))
                 .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
                 .hide(mFragments[1])
                 .commit();
+
+
     }
 
     private void setData() {
@@ -102,51 +97,27 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     public void updateMessageUnreadBadge(int count) {
-        if (count == 0) {
-            mChatBadge.hide(false);
-        } else {
-            if (count >= 10) {
-                mChatBadge.setText(String.valueOf(count));
-            } else {
-                mChatBadge.setText(" " + count + " ");
-            }
-            mChatBadge.show(false);
-        }
+        mNavigationController.setMessageNumber(0, count);
+
     }
 
     @Override
     public void updateContactUnreadBadge(int count) {
-        if (count == 0) {
-            mContactBadge.hide(false);
-        } else {
-            if (count >= 10) {
-                mContactBadge.setText(String.valueOf(count));
-            } else {
-                mContactBadge.setText(" " + count + " ");
-            }
-            mContactBadge.show(false);
-        }
+        mNavigationController.setMessageNumber(1, count);
     }
 
-    private final BottomNavigationBar.OnTabSelectedListener mOnTabSelectedListener = new BottomNavigationBar.SimpleOnTabSelectedListener() {
+    private final OnTabItemSelectedListener mOnTabSelectedListener = new OnTabItemSelectedListener() {
         @Override
-        public void onTabSelected(int position) {
-            Fragment fragment = mFragments[position];
-            if (fragment.isVisible()) {
-                return;
-            }
-            FragmentTransaction transaction = mFragmentManager.beginTransaction();
-            if (mFragmentManager.findFragmentByTag(String.valueOf(position)) == null) {
-                transaction.add(R.id.HomeActivity_mClContent, fragment, String.valueOf(position));
-            }
-            for (Fragment temp : mFragments) {
-                if (temp != fragment) {
-                    transaction.hide(temp);
-                } else {
-                    transaction.show(temp);
-                }
-            }
-            transaction.commit();
+        public void onSelected(int index, int old) {
+            mFragmentManager.beginTransaction()
+                    .show(mFragments[index])
+                    .hide(mFragments[old])
+                    .commit();
+        }
+
+        @Override
+        public void onRepeat(int index) {
+
         }
     };
 }

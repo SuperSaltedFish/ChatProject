@@ -63,10 +63,7 @@ public class TestActivity extends BaseCompatActivity {
     Alerter mAlerter;
 
     public void onClick(View v) {
-        if (mAlerter == null) {
-            mAlerter = new Alerter(TestActivity.this, R.layout.alert_dialog_chat);
-        }
-        mAlerter.show();
+     v.setTranslationZ(13);
     }
 
     public void onClick2(View v) {

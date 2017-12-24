@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -68,7 +69,7 @@ public class EmotionPanelLayout extends FrameLayout {
         mDividerPaint = new Paint();
         mDividerPaint.setColor(Color.parseColor("#cbcfd2"));
         mDividerPaint.setStrokeWidth(1);
-        mTabItemPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, mContext.getResources().getDisplayMetrics());
+        mTabItemPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7, mContext.getResources().getDisplayMetrics());
     }
 
     private void init() {
@@ -97,7 +98,7 @@ public class EmotionPanelLayout extends FrameLayout {
         mVpMoreInput.setAdapter(mPagerAdapter);
         mVpMoreInput.addOnPageChangeListener(mOnPageChangeListener);
 
-        mTabLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        mTabLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE|LinearLayout.SHOW_DIVIDER_END);
 
         addView(mVpMoreInput);
         addView(mLlBottomLayout);
@@ -106,7 +107,7 @@ public class EmotionPanelLayout extends FrameLayout {
         mLlBottomLayout.addView(mTabScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         mLlBottomLayout.addView(mRightMenuView);
 
-        mTabScrollView.addView(mTabLayout, new HorizontalScrollView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mTabScrollView.addView(mTabLayout, new HorizontalScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 
         mEmotionPanelList = new ArrayList<>(12);
@@ -160,8 +161,8 @@ public class EmotionPanelLayout extends FrameLayout {
     }
 
     public void setTabDividerDrawable(Drawable drawable) {
-        mLlBottomLayout.setDividerDrawable(drawable);
         mTabLayout.setDividerDrawable(drawable);
+        mLlBottomLayout.setDividerDrawable(drawable);
     }
 
     @Override

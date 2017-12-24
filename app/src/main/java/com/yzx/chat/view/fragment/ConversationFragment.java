@@ -96,7 +96,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             if (data != null) {
                 Conversation conversation = data.getParcelableExtra(ChatActivity.INTENT_EXTRA_CONVERSATION);
                 if (conversation != null) {
-                    mPresenter.refreshSingleConversation(conversation);
+                    mPresenter.refreshSingleConversation(conversation.getConversationType(), conversation.getTargetId());
                 } else {
                     LogUtil.e("Conversation is null");
                 }
@@ -157,7 +157,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
 
     @Override
-    public void updateListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
+    public void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
         diffResult.dispatchUpdatesTo(mAdapter);
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
@@ -165,8 +165,16 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    public void updateListViewByPosition(int position, Conversation conversation) {
-        mConversationList.set(position, conversation);
-        mAdapter.notifyItemChanged(position);
+    public void updateConversationListViewByPosition(int position, Conversation conversation) {
+        mConversationList.remove(position);
+        mConversationList.add(0, conversation);
+        mAdapter.notifyItemMoved(position, 0);
+        mAdapter.notifyItemChanged(0);
+    }
+
+    @Override
+    public void addConversationView(Conversation conversation) {
+        mConversationList.add(0, conversation);
+        mAdapter.notifyItemInserted(0);
     }
 }

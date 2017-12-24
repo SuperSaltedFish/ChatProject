@@ -20,14 +20,18 @@ public class ConversationContract {
 
     public interface View extends BaseView<Presenter> {
 
-        void updateListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList);
-        void updateListViewByPosition(int position,Conversation newBean);
+        void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> conversationList);
+
+        void updateConversationListViewByPosition(int position, Conversation conversation);
+
+        void addConversationView(Conversation conversation);
+
     }
 
 
     public interface Presenter extends BasePresenter<View> {
         void refreshAllConversations();
 
-        void refreshSingleConversation(Conversation conversation);
+        void refreshSingleConversation(Conversation.ConversationType type, String conversationID);
     }
 }
