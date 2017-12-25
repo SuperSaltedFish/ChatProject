@@ -5,10 +5,12 @@ import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -21,9 +23,10 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.widget.adapter.ConversationMenuAdapter;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
-import com.yzx.chat.widget.view.HomeOverflowPopupWindow;
+import com.yzx.chat.widget.view.OverflowPopupMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private TextView mITvEmptyHintText;
     private ConversationAdapter mAdapter;
     private Toolbar mToolbar;
-    private HomeOverflowPopupWindow mOverflowPopupWindow;
+    private OverflowPopupMenu mOverflowPopupWindow;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private List<Conversation> mConversationList;
 
@@ -62,7 +65,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
         mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
         mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
-        mOverflowPopupWindow = new HomeOverflowPopupWindow(mContext, mToolbar, R.menu.menu_home_overflow);
+        mOverflowPopupWindow = new OverflowPopupMenu(mContext, mToolbar, R.menu.menu_home_overflow);
         mConversationList = new ArrayList<>(128);
         mAdapter = new ConversationAdapter(mConversationList);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
@@ -147,9 +150,14 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder) {
-            PopupMenu popup = new PopupMenu(getActivity(), viewHolder.itemView);
-            popup.inflate(R.menu.menu_home_overflow);
-            popup.show();
+//            ListPopupWindow window = new ListPopupWindow(mContext);
+//            window.setAdapter(new ConversationMenuAdapter());
+//            window.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+//            window.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+//            window.setAnchorView(viewHolder.itemView);
+//            window.show();
+            PopupMenu popupMenu;
+            popupMenu.in();
         }
 
     };

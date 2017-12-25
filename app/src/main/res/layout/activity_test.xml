@@ -1,81 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:divider="@drawable/divider_vertical_black_light"
-        android:showDividers="middle">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#234497"
+        android:text="11111"/>
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#ffffff"
-            android:elevation="8dp"
-            android:onClick="onClick" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#234497"
+        android:text="2222222"/>
 
-        <HorizontalScrollView
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:background="#ffffff"
-            android:elevation="8dp"
-            android:onClick="onClick" >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#234497"
+        android:text="3333333"/>
 
 
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:divider="@drawable/divider_vertical_black_light"
-                android:showDividers="middle">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="#ffffff"
-                    android:elevation="8dp"
-                    android:onClick="onClick" />
-
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="#ffffff"
-                    android:elevation="8dp"
-                    android:onClick="onClick" />
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="#ffffff"
-                    android:elevation="8dp"
-                    android:onClick="onClick" />
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="#ffffff"
-                    android:elevation="8dp"
-                    android:onClick="onClick" />
-
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
-
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="#ffffff"
-            android:elevation="8dp"
-            android:onClick="onClick" />
-
-
-    </LinearLayout>
 
 
 </LinearLayout>
