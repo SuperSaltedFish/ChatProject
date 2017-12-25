@@ -5,10 +5,11 @@
 
     <item
         android:id="@+id/HomeMenu_more"
-        android:icon="@drawable/ic_more"
-        app:showAsAction="always"
-        android:title="更多"
-        tools:ignore="AppCompatResource"/>
+        android:title="更多" />
+
+    <item
+        android:id="@+id/HomeMenu_more"
+        android:title="你好" />
 
 
 

@@ -43,7 +43,7 @@ public abstract class OnRecyclerViewItemClickListener implements OnItemTouchList
 
     public abstract void onItemClick(int position,RecyclerView.ViewHolder viewHolder);
 
-    public void onItemLongClick(int position,RecyclerView.ViewHolder viewHolder) {
+    public void onItemLongClick(int position,RecyclerView.ViewHolder viewHolder,float touchX,float touchY) {
 
     }
 
@@ -62,7 +62,7 @@ public abstract class OnRecyclerViewItemClickListener implements OnItemTouchList
             View child = mRecyclerView.findChildViewUnder(event.getX(), event.getY());
             if (child != null) {
                 RecyclerView.ViewHolder viewHolder = mRecyclerView.getChildViewHolder(child);
-                onItemLongClick(viewHolder.getAdapterPosition(),viewHolder);
+                onItemLongClick(viewHolder.getAdapterPosition(),viewHolder,event.getX(),event.getY());
             }
         }
 

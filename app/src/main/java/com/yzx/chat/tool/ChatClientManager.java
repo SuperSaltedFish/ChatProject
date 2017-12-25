@@ -219,7 +219,7 @@ public class ChatClientManager {
                         }
                     }
                     break;
-                case "RC:RC:ContactNtf":
+                case "RC:ContactNtf":
                     ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
                     ContactBean bean = new ContactBean();
                     bean.setUserTo(contactMessage.getTargetUserId());

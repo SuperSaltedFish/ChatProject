@@ -111,7 +111,7 @@ public class SplashPresenter implements SplashContract.Presenter {
         });
 
         NetworkUtil.cancelCall(mGetUserFriendsTask);
-        mGetUserFriendsTask = userApi.getUserFriends();
+        mGetUserFriendsTask = userApi.getUserContacts();
         mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserFriendsBean>() {
             @Override
             protected void onSuccess(GetUserFriendsBean response) {

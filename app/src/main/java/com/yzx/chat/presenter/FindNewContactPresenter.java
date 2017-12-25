@@ -76,22 +76,8 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
 
     @Override
     public void acceptContactRequest(final String contactID) {
-        NetworkUtil.cancelCall(mAddFriendCall);
-        mAddFriendCall = mUserApi.addFriend(contactID);
-        mAddFriendCall.setCallback(new BaseHttpCallback<Void>() {
-            @Override
-            protected void onSuccess(Void response) {
-//                ContactDao contactDao = DBManager.getInstance().getContactDao();
-//                ContactBean bean = contactDao.loadByKey(IdentityManager.getInstance().getUserID(), contactID);
-//                bean.setType(ContactBean.CONTACT_TYPE_ACCEPTED);
-//                contactDao.update(bean);
-            }
 
-            @Override
-            protected void onFailure(String message) {
 
-            }
-        }, false);
     }
 
     @Override

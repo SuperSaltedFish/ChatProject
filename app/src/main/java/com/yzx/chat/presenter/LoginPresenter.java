@@ -296,7 +296,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void loginIMServer() {
-        ChatClientManager.getInstance().login("nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8", new RongIMClient.ConnectCallback() {
+        ChatClientManager.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 LogUtil.e("onTokenIncorrect");

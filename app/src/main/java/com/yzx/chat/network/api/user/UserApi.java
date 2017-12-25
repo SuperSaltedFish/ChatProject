@@ -16,17 +16,23 @@ public interface UserApi {
     @HttpApi(RequestMethod = "POST", Path = "user/getUserProfile")
     Call<JsonResponse<GetUserProfileBean>> getUserProfile(@HttpParam("targetUserID") String userID);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/searchFriend")
+    @HttpApi(RequestMethod = "POST", Path = "user/searchUser")
     Call<JsonResponse<SearchUserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/getUserFriends")
-    Call<JsonResponse<GetUserFriendsBean>> getUserFriends();
+    @HttpApi(RequestMethod = "POST", Path = "user/getUserContacts")
+    Call<JsonResponse<GetUserFriendsBean>> getUserContacts();
 
-    @HttpApi(RequestMethod = "POST", Path = "user/addFriend")
-    Call<JsonResponse<Void>> addFriend(@HttpParam("friendID") String friendUserID);
+    @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
+    Call<JsonResponse<Void>> requestContact(@HttpParam("friendID") String friendUserID, @HttpParam("reason") String reason);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/deleteFriend")
-    Call<JsonResponse<Void>> deleteFriend(@HttpParam("friendID") String friendUserID);
+    @HttpApi(RequestMethod = "POST", Path = "user/rejectContact")
+    Call<JsonResponse<Void>> rejectContact(@HttpParam("friendID") String friendUserID, @HttpParam("reason") String reason);
+
+    @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
+    Call<JsonResponse<Void>> acceptContact(@HttpParam("friendID") String friendUserID);
+
+    @HttpApi(RequestMethod = "POST", Path = "user/deleteContact")
+    Call<JsonResponse<Void>> deleteContact(@HttpParam("friendID") String friendUserID);
 
     @HttpApi(RequestMethod = "POST", Path = "user/updateRemarkName")
     Call<JsonResponse<Void>> updateRemarkName(@HttpParam("friendID") String friendUserID,
