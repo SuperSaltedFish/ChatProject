@@ -60,4 +60,21 @@
 
     </style>
 
+
+    <style name="PopupMenuAnimation_Left_Top" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/menu_scale_in_from_left_top</item>
+    </style>
+
+    <style name="PopupMenuAnimation_Right_Top" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/menu_scale_in_from_right_top</item>
+    </style>
+
+    <style name="PopupMenuAnimation_Left_Bottom" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/menu_scale_in_from_left_bottom</item>
+    </style>
+
+    <style name="PopupMenuAnimation_Right_Bottom" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/menu_scale_in_from_right_bottom</item>
+    </style>
+
 </resources>

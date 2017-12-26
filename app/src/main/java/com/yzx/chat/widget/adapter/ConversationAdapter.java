@@ -46,6 +46,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public void bindDataToViewHolder(ConversationHolder holder, int position) {
+        position = position%2;
         Conversation conversation = mConversationList.get(position);
         holder.mTvName.setText(conversation.getConversationTitle());
         holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation.getLatestMessage()));
@@ -83,11 +84,12 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         if (mConversationList == null) {
             return 0;
         }
-        return mConversationList.size();
+        return mConversationList.size()*6;
     }
 
     @Override
     public int getItemViewType(int position) {
+        position = position%2;
         return mConversationList.get(position).getConversationType().getValue();
     }
 

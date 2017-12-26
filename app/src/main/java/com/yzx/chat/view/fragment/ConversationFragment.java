@@ -5,20 +5,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.PopupMenuCompat;
-import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ListPopupWindow;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -30,7 +24,6 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.widget.adapter.ConversationMenuAdapter;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
@@ -82,7 +75,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     protected void setView() {
         mToolbar.setTitle("微信");
         mToolbar.inflateMenu(R.menu.menu_home_top);
-        mToolbar.setOnMenuItemClickListener(onOptionsItemSelectedListener);
+        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -97,8 +90,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     private void setOverflowMenu() {
-        mConversationMenu.setWidth((int) AndroidUtil.dip2px(154));
-        mConversationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_main_color)));
+        mConversationMenu.setWidth((int) AndroidUtil.dip2px(128));
+        mConversationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color)));
+        mConversationMenu.setElevation(AndroidUtil.dip2px(2));
     }
 
     @Override
@@ -134,7 +128,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         }
     }
 
-    private final Toolbar.OnMenuItemClickListener onOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {
+    private final Toolbar.OnMenuItemClickListener mOnOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
@@ -163,22 +157,34 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         }
 
         @Override
-        public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder,float touchX,float touchY) {
-            View anchorView = viewHolder.itemView;
-            
-            if(AndroidUtil.getScreenWidth()/2>touchX){
-                mConversationMenu.setDropDownGravity(Gravity.END);
-                mConversationMenu.setHorizontalOffset((int) -(AndroidUtil.getScreenWidth()-touchX-mConversationMenu.getWidth()));
-            }else {
-                mConversationMenu.setDropDownGravity(Gravity.START);
-                mConversationMenu.setHorizontalOffset((int) (touchX-mConversationMenu.getWidth()));
-            }
+        public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
+//            mConversationMenu.inflate(R.menu.menu_home_top);
+//            View anchor = viewHolder.itemView;
+//            int menuWidth = mConversationMenu.getWidth();
+//            int offsetY = -(anchor.getHeight()-(int) touchY%viewHolder.itemView.getHeight());
+//            int offsetX;
+//            if (touchX > AndroidUtil.getScreenWidth() / 2) {
+//                offsetX = (int) touchX - menuWidth;
+//                if (mRecyclerView.getHeight() >touchY) {
+//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Top);
+//                } else {
+//                    offsetY -= menuHeight;
+//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Bottom);
+//                }
+//            } else {
+//                offsetX = (int) touchX;
+//                if (mRecyclerView.getHeight() >touchY) {
+//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Top);
+//                } else {
+//                    offsetY -= menuHeight;
+//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Bottom);
+//                }
+//            }
+//            mConversationMenu.showAsDropDown(anchor,  offsetX, offsetY);
 
-            mConversationMenu.inflate(R.menu.menu_home_top);
-            mConversationMenu.setAnchorView(anchorView);
-            mConversationMenu.setVerticalOffset((int) (touchY-anchorView.getTop()));
-            mConversationMenu.show();
-
+            PopupMenu popupMenu = new PopupMenu(mContext,viewHolder.itemView);
+            popupMenu.inflate(R.menu.menu_home_overflow);
+            popupMenu.show();
         }
 
     };

@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -25,9 +27,10 @@ import com.yzx.chat.R;
  */
 
 @SuppressLint("RestrictedApi")
-public class OverflowPopupMenu extends ListPopupWindow {
+public class OverflowPopupMenu extends PopupWindow {
 
     private Context mContext;
+    private ListView mMenuListView;
     private MenuBuilder mMenuBuilder;
 
     public OverflowPopupMenu(@NonNull Context context) {
@@ -37,15 +40,17 @@ public class OverflowPopupMenu extends ListPopupWindow {
     public OverflowPopupMenu(@NonNull Context context, @MenuRes int menuRes) {
         super(context);
         mContext = context;
+        mMenuListView = new ListView(mContext);
+        mMenuListView.setDivider(null);
+        mMenuListView.setAdapter(OverflowPopupMenuAdapter);
+        this.setContentView(mMenuListView);
+        this.setOutsideTouchable(false);
+        this.setFocusable(true);
 //        this.setAnchorView(anchorView);
 //        this.setDropDownGravity(Gravity.END);
 //        this.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.theme_main_color)));
 //        this.setHorizontalOffset(-(int) AndroidUtil.dip2px(16));
 //        this.setWidth((int) AndroidUtil.dip2px(176));
-        this.setOverlapAnchor(true);
-        this.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        this.setModal(true);
-        this.setAdapter(OverflowPopupMenuAdapter);
         if (menuRes > 0) {
             inflate(menuRes);
         }
@@ -58,7 +63,7 @@ public class OverflowPopupMenu extends ListPopupWindow {
         OverflowPopupMenuAdapter.notifyDataSetChanged();
     }
 
-    private final BaseAdapter OverflowPopupMenuAdapter  = new BaseAdapter() {
+    private final BaseAdapter OverflowPopupMenuAdapter = new BaseAdapter() {
         @Override
         public int getCount() {
             return mMenuBuilder == null ? 0 : mMenuBuilder.size();
@@ -82,12 +87,16 @@ public class OverflowPopupMenu extends ListPopupWindow {
             }
             MenuHolder menuHolder = (MenuHolder) convertView.getTag();
             MenuItem menuItem = mMenuBuilder.getItem(position);
-            menuHolder.mIvIcon.setImageDrawable(menuItem.getIcon());
+            if (menuItem.getIcon() == null) {
+                menuHolder.mIvIcon.setVisibility(View.GONE);
+            } else {
+                menuHolder.mIvIcon.setVisibility(View.VISIBLE);
+                menuHolder.mIvIcon.setImageDrawable(menuItem.getIcon());
+            }
             menuHolder.mTvTitle.setText(menuItem.getTitle());
             return convertView;
         }
     };
-
 
 
     private final static class MenuHolder {
