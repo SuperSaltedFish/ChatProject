@@ -92,6 +92,12 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         });
     }
 
+    @Override
+    public void setTop(Conversation.ConversationType type, String conversationID, boolean isTop) {
+        mChatManager.setTop(type, conversationID, isTop);
+        refreshAllConversations();
+    }
+
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
         mConversationView.updateConversationListView(diffResult, mConversationList);
     }

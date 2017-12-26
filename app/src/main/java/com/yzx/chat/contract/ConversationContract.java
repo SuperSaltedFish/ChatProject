@@ -33,5 +33,7 @@ public class ConversationContract {
         void refreshAllConversations();
 
         void refreshSingleConversation(Conversation.ConversationType type, String conversationID);
+
+        void setTop(Conversation.ConversationType type, String conversationID,boolean isTop);
     }
 }

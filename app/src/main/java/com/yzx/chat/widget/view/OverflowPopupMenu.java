@@ -2,23 +2,25 @@ package com.yzx.chat.widget.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.IdRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.widget.ListPopupWindow;
-import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
+import com.yzx.chat.util.AndroidUtil;
 
 
 /**
@@ -32,6 +34,11 @@ public class OverflowPopupMenu extends PopupWindow {
     private Context mContext;
     private ListView mMenuListView;
     private MenuBuilder mMenuBuilder;
+    private OnMenuItemClickListener mOnMenuItemClickListener;
+
+    private int mItemPadding;
+    private int mItemHeight;
+    private int mTextColor;
 
     public OverflowPopupMenu(@NonNull Context context) {
         this(context, 0);
@@ -42,28 +49,81 @@ public class OverflowPopupMenu extends PopupWindow {
         mContext = context;
         mMenuListView = new ListView(mContext);
         mMenuListView.setDivider(null);
-        mMenuListView.setAdapter(OverflowPopupMenuAdapter);
+        mMenuListView.setOnItemClickListener(mOnItemClickListener);
+        mMenuListView.setAdapter(mPopupMenuAdapter);
         this.setContentView(mMenuListView);
         this.setOutsideTouchable(false);
         this.setFocusable(true);
-//        this.setAnchorView(anchorView);
-//        this.setDropDownGravity(Gravity.END);
-//        this.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.theme_main_color)));
-//        this.setHorizontalOffset(-(int) AndroidUtil.dip2px(16));
-//        this.setWidth((int) AndroidUtil.dip2px(176));
         if (menuRes > 0) {
             inflate(menuRes);
         }
+        mItemPadding = (int) AndroidUtil.dip2px(8);
+        mItemHeight = (int) AndroidUtil.dip2px(48);
+        mTextColor = AndroidUtil.getColor(R.color.text_primary_color_black);
     }
 
 
     public void inflate(@MenuRes int menuRes) {
         mMenuBuilder = new MenuBuilder(mContext);
         new SupportMenuInflater(mContext).inflate(menuRes, mMenuBuilder);
-        OverflowPopupMenuAdapter.notifyDataSetChanged();
     }
 
-    private final BaseAdapter OverflowPopupMenuAdapter = new BaseAdapter() {
+    public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
+        mOnMenuItemClickListener = listener;
+    }
+
+    public int getHeight() {
+        return mMenuBuilder == null ? 0 : mMenuBuilder.size() * mItemHeight;
+    }
+
+    public MenuItem findMenuById(@IdRes int menuId) {
+        return mMenuBuilder.findItem(menuId);
+    }
+
+    public void notifyDataSetChanged() {
+        mPopupMenuAdapter.notifyDataSetChanged();
+    }
+
+    private MenuHolder createHolder() {
+        LinearLayout rootLayout = new LinearLayout(mContext);
+        rootLayout.setOrientation(LinearLayout.VERTICAL);
+        rootLayout.setPadding(mItemPadding, mItemPadding, mItemPadding, mItemPadding);
+        rootLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight));
+        rootLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+        ImageView itemIcon = new ImageView(mContext);
+
+        TextView itemText = new TextView(mContext);
+        itemText.setGravity(Gravity.CENTER_VERTICAL);
+        itemText.setTextColor(mTextColor);
+
+        rootLayout.addView(itemIcon);
+        rootLayout.addView(itemText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        MenuHolder holder = new MenuHolder();
+        holder.mLlRootLayout = rootLayout;
+        holder.mIvIcon = itemIcon;
+        holder.mTvTitle = itemText;
+        return holder;
+
+    }
+
+    private final AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (mOnMenuItemClickListener != null) {
+                mOnMenuItemClickListener.onMenuItemClick(position, mMenuBuilder.getItem(position).getItemId());
+            }
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            });
+        }
+    };
+
+    private final BaseAdapter mPopupMenuAdapter = new BaseAdapter() {
         @Override
         public int getCount() {
             return mMenuBuilder == null ? 0 : mMenuBuilder.size();
@@ -82,8 +142,9 @@ public class OverflowPopupMenu extends PopupWindow {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_home_overflow, parent, false);
-                convertView.setTag(new MenuHolder(convertView));
+                MenuHolder holder = createHolder();
+                convertView = holder.mLlRootLayout;
+                convertView.setTag(holder);
             }
             MenuHolder menuHolder = (MenuHolder) convertView.getTag();
             MenuItem menuItem = mMenuBuilder.getItem(position);
@@ -93,6 +154,7 @@ public class OverflowPopupMenu extends PopupWindow {
                 menuHolder.mIvIcon.setVisibility(View.VISIBLE);
                 menuHolder.mIvIcon.setImageDrawable(menuItem.getIcon());
             }
+            menuHolder.mIvIcon.setImageDrawable(menuItem.getIcon());
             menuHolder.mTvTitle.setText(menuItem.getTitle());
             return convertView;
         }
@@ -102,10 +164,10 @@ public class OverflowPopupMenu extends PopupWindow {
     private final static class MenuHolder {
         ImageView mIvIcon;
         TextView mTvTitle;
+        LinearLayout mLlRootLayout;
+    }
 
-        MenuHolder(View itemView) {
-            mIvIcon = itemView.findViewById(R.id.HomeMenuAdapter_mIvIcon);
-            mTvTitle = itemView.findViewById(R.id.HomeMenuAdapter_mTvTitle);
-        }
+    public interface OnMenuItemClickListener {
+        void onMenuItemClick(int position, @IdRes int menuID);
     }
 }

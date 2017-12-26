@@ -136,6 +136,10 @@ public class ChatClientManager {
         mRongIMClient.sendMessage(message, null, null, mSendMessageCallback);
     }
 
+    public void setTop(Conversation.ConversationType type, String conversationID, boolean isTop) {
+        mRongIMClient.setConversationToTop(type, conversationID, isTop);
+    }
+
     public void updateChatUnreadCount() {
         mRongIMClient.getUnreadCount(new RongIMClient.ResultCallback<Integer>() {
             @Override

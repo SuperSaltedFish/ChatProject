@@ -7,7 +7,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -74,7 +73,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     protected void setView() {
         mToolbar.setTitle("微信");
-        mToolbar.inflateMenu(R.menu.menu_home_top);
+        mToolbar.inflateMenu(R.menu.menu_conversation_overflow);
         mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -93,6 +92,22 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationMenu.setWidth((int) AndroidUtil.dip2px(128));
         mConversationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color)));
         mConversationMenu.setElevation(AndroidUtil.dip2px(2));
+        mConversationMenu.inflate(R.menu.menu_conversation_overflow);
+        mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
+            @Override
+            public void onMenuItemClick(int position, int menuID) {
+                Conversation conversation = mConversationList.get((Integer) mRecyclerView.getTag());
+                switch (menuID) {
+                    case R.id.ConversationMenu_Top:
+                        mPresenter.setTop(conversation.getConversationType(), conversation.getTargetId(), !conversation.isTop());
+                        break;
+                    case R.id.ConversationMenu_Delect:
+                        break;
+                    case R.id.ConversationMenu_Clean:
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -132,11 +147,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.HomeMenu_more:
-                    //mOverflowPopupWindow.show();
-                    break;
-                default:
-                    return false;
+
             }
             return true;
         }
@@ -158,33 +169,35 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
-//            mConversationMenu.inflate(R.menu.menu_home_top);
-//            View anchor = viewHolder.itemView;
-//            int menuWidth = mConversationMenu.getWidth();
-//            int offsetY = -(anchor.getHeight()-(int) touchY%viewHolder.itemView.getHeight());
-//            int offsetX;
-//            if (touchX > AndroidUtil.getScreenWidth() / 2) {
-//                offsetX = (int) touchX - menuWidth;
-//                if (mRecyclerView.getHeight() >touchY) {
-//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Top);
-//                } else {
-//                    offsetY -= menuHeight;
-//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Bottom);
-//                }
-//            } else {
-//                offsetX = (int) touchX;
-//                if (mRecyclerView.getHeight() >touchY) {
-//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Top);
-//                } else {
-//                    offsetY -= menuHeight;
-//                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Bottom);
-//                }
-//            }
-//            mConversationMenu.showAsDropDown(anchor,  offsetX, offsetY);
-
-            PopupMenu popupMenu = new PopupMenu(mContext,viewHolder.itemView);
-            popupMenu.inflate(R.menu.menu_home_overflow);
-            popupMenu.show();
+            if (mConversationList.get(position).isTop()) {
+                mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle("取消置顶");
+            } else {
+                mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle("聊天置顶");
+            }
+            View anchor = viewHolder.itemView;
+            int menuWidth = mConversationMenu.getWidth();
+            int menuHeight = mConversationMenu.getHeight();
+            int offsetY = -(anchor.getHeight() - (int) touchY % viewHolder.itemView.getHeight());
+            int offsetX;
+            if (touchX > AndroidUtil.getScreenWidth() / 2) {
+                offsetX = (int) touchX - menuWidth;
+                if (mRecyclerView.getHeight() / 2 > touchY) {
+                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Top);
+                } else {
+                    offsetY -= menuHeight;
+                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Bottom);
+                }
+            } else {
+                offsetX = (int) touchX;
+                if (mRecyclerView.getHeight() / 2 > touchY) {
+                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Top);
+                } else {
+                    offsetY -= menuHeight;
+                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Bottom);
+                }
+            }
+            mRecyclerView.setTag(position);
+            mConversationMenu.showAsDropDown(anchor, offsetX, offsetY);
         }
 
     };
@@ -201,6 +214,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
         enableEmptyListHint(mConversationList.size() == 0);
+        mConversationMenu.dismiss();
     }
 
     @Override
@@ -213,11 +227,13 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             mAdapter.notifyItemMoved(position, 0);
         }
         mAdapter.notifyItemChanged(0);
+        mConversationMenu.dismiss();
     }
 
     @Override
     public void addConversationView(Conversation conversation) {
         mConversationList.add(0, conversation);
         mAdapter.notifyItemInserted(0);
+        mConversationMenu.dismiss();
     }
 }

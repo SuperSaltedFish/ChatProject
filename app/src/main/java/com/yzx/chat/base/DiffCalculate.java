@@ -35,11 +35,11 @@ public abstract class DiffCalculate<T> extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return isItemEquals(mOldData.get(oldItemPosition), mNewData.get(oldItemPosition));
+        return isItemEquals(mOldData.get(oldItemPosition), mNewData.get(newItemPosition));
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return isContentsEquals(mOldData.get(oldItemPosition), mNewData.get(oldItemPosition));
+        return isContentsEquals(mOldData.get(oldItemPosition), mNewData.get(newItemPosition));
     }
 }
