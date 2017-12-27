@@ -3,13 +3,13 @@
 
     <item
         android:id="@+id/ConversationMenu_Top"
-        android:title="置顶聊天" />
+        android:title="@string/ConversationMenu_Top" />
 
     <item
         android:id="@+id/ConversationMenu_Clean"
-        android:title="清空聊天记录" />
+        android:title="@string/ConversationMenu_Clean" />
 
     <item
         android:id="@+id/ConversationMenu_Remove"
-        android:title="删除该聊天" />
+        android:title="@string/ConversationMenu_Remove" />
 </menu>

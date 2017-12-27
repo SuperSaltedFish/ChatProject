@@ -2,8 +2,10 @@ package com.yzx.chat.util;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -62,6 +64,11 @@ public class AndroidUtil {
     public static int getColor(@ColorRes int resID) {
         return ContextCompat.getColor(sAppContext, resID);
     }
+
+    public static Drawable getDrawable(@DrawableRes int resID) {
+        return ContextCompat.getDrawable(sAppContext, resID);
+    }
+
 
     public static float dip2px(float dpValue) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,

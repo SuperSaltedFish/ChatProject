@@ -71,7 +71,7 @@ public class VoicePlayer {
         } catch (IOException e) {
             e.printStackTrace();
             if (mOnPlayStateChangeListener != null) {
-                mOnPlayStateChangeListener.onError();
+                mOnPlayStateChangeListener.onError(e.toString());
             }
         }
     }
@@ -107,6 +107,6 @@ public class VoicePlayer {
     public interface OnPlayStateChangeListener {
         void onCompletion(MediaPlayer mediaPlayer);
 
-        void onError();
+        void onError(String error);
     }
 }

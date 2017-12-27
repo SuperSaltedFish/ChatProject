@@ -60,8 +60,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     public static final int ACTIVITY_RESPONSE_CODE = 10000;
 
-    public static final int MAX_VOICE_RECORDER_DURATION = 60 * 1000;
-    private static final int MIN_VOICE_RECORDER_DURATION = 1000;
+    public static final int MAX_VOICE_RECORDER_DURATION = 60 * 999;
+    private static final int MIN_VOICE_RECORDER_DURATION = 800;
 
     private static final int MORE_INPUT_TYPE_NONE = 0;
     private static final int MORE_INPUT_TYPE_EMOTICONS = 1;
@@ -294,12 +294,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (duration < MIN_VOICE_RECORDER_DURATION) {
                     mVoiceRecorder.cancelAndDelete();
                     showToast(getString(R.string.ChatActivity_VoiceRecorderVeryShort));
-                }
-                if (new File(filePath).exists()) {
-                    mPresenter.sendVoiceMessage(filePath, (int) (duration / 1000));
+                } else if (new File(filePath).exists()) {
+                    mPresenter.sendVoiceMessage(filePath, (int) Math.ceil(duration / 1000.0));
                 } else {
                     showToast(getString(R.string.ChatActivity_VoiceRecorderFail));
                 }
+
                 resetVoiceState();
             }
 

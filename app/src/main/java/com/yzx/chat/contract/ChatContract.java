@@ -34,7 +34,7 @@ public class ChatContract {
 
         void sendTextMessage(String message);
 
-        void sendVoiceMessage(String filePath, int timeLength);
+        void sendVoiceMessage(String filePath, int timeLengthSec);
 
         void loadMoreMessage(int lastMessageID);
 

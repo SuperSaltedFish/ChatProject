@@ -1,10 +1,13 @@
 package com.yzx.chat.widget.adapter;
 
+import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -207,7 +210,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                             @Override
                             public void onClick(View v) {
                                 if (mOnResendItemClickListener != null) {
-                                    mOnResendItemClickListener.onResendItemClick(getAdapterPosition(),mMessage);
+                                    mOnResendItemClickListener.onResendItemClick(getAdapterPosition(), mMessage);
                                 }
                             }
                         });
@@ -263,23 +266,26 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
             mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
-//            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
-//            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    mVoicePlayer.play((String) v.getTag(), new VoicePlayer.OnPlayStateChangeListener() {
-//                        @Override
-//                        public void onCompletion(MediaPlayer mediaPlayer) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onError() {
-//
-//                        }
-//                    });
-//                }
-//            });
+            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
+            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mVoiceUri == null || TextUtils.isEmpty(mVoiceUri.getPath())) {
+                        return;
+                    }
+                    mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            LogUtil.e("play voice error:" + error);
+                        }
+                    });
+                }
+            });
         }
 
         @Override
@@ -301,13 +307,41 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
+        private VoicePlayer mVoicePlayer;
+        private ImageView mIvPlayIcon;
+        private AnimationDrawable mPlayAnimation;
 
         private Uri mVoiceUri;
 
         VoiceReceiveMessageHolder(View itemView) {
             super(itemView);
             mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
+            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
             mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
+            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
+            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_receive);
+            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
+            mIvPlayIcon.setImageDrawable(mPlayAnimation);
+            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mVoiceUri == null || TextUtils.isEmpty(mVoiceUri.getPath())) {
+                        return;
+                    }
+                    mPlayAnimation.start();
+                    mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            mPlayAnimation.stop();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            LogUtil.e("play voice error:" + error);
+                        }
+                    });
+                }
+            });
         }
 
         @Override
@@ -338,7 +372,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     public interface OnResendItemClickListener {
-        void onResendItemClick(int position,Message message);
+        void onResendItemClick(int position, Message message);
     }
 
 }

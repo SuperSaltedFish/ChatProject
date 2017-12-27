@@ -61,7 +61,7 @@
     <string name="ChatActivity_UpCancelSend">松手取消发送</string>
     <string name="ChatActivity_VoiceRecorderHint">按住后说话</string>
     <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍后再试！</string>
-    <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短，取消发送</string>
+    <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短</string>
 
     <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
     <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
@@ -78,5 +78,9 @@
     <string name="SplashPresenter_LoginFailInIMSDK">登录聊天服务器失败，请尝试重新登录！</string>
     <string name="ConversationFragment_EmptyListHint">暂无聊天信息</string>
     <string name="EMMessageUtil_Draft">[草稿]</string>
+    <string name="ConversationMenu_Top">置顶聊天</string>
+    <string name="ConversationMenu_Clean">清空聊天记录</string>
+    <string name="ConversationMenu_Remove">删除会话</string>
+    <string name="ConversationMenu_CancelTop">取消置顶</string>
 
 </resources>

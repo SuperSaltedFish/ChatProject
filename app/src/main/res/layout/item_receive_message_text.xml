@@ -24,6 +24,6 @@
         android:paddingEnd="20dp"
         android:paddingStart="20dp"
         android:paddingTop="16dp"
-        android:textColor="#9e000000" />
+        android:textColor="@color/text_primary_color_black" />
 
 </LinearLayout>

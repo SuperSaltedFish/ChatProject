@@ -103,7 +103,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                         mPresenter.setConversationToTop(conversation, !conversation.isTop());
                         break;
                     case R.id.ConversationMenu_Remove:
-                        mPresenter.removeConversation(index,conversation);
+                        mPresenter.removeConversation(index, conversation);
                         break;
                     case R.id.ConversationMenu_Clean:
                         mPresenter.clearChatMessages(conversation);
@@ -173,9 +173,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
             if (mConversationList.get(position).isTop()) {
-                mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle("取消置顶");
+                mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_CancelTop);
             } else {
-                mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle("聊天置顶");
+                mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_Top);
             }
             View anchor = viewHolder.itemView;
             int menuWidth = mConversationMenu.getWidth();

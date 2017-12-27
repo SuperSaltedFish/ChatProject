@@ -86,9 +86,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public void sendVoiceMessage(String filePath, int timeLength) {
-        VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLength / 1000);
-        sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLength / 1000));
+    public void sendVoiceMessage(String filePath, int timeLengthSec) {
+        sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLengthSec));
     }
 
     @Override
