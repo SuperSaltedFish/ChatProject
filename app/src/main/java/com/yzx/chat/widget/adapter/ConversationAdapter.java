@@ -48,7 +48,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
     public void bindDataToViewHolder(ConversationHolder holder, int position) {
         Conversation conversation = mConversationList.get(position);
         holder.mTvName.setText(conversation.getConversationTitle());
-        holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation.getLatestMessage()));
+        holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
         int unreadMsgCount = conversation.getUnreadMessageCount();
         switch (conversation.getConversationType()) {

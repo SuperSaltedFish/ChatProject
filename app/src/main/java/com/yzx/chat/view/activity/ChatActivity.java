@@ -139,6 +139,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mConversation = intent.getParcelableExtra(INTENT_EXTRA_CONVERSATION);
         setTitle(mConversation.getConversationTitle());
         mPresenter.init(mConversation);
+        String draft = mConversation.getDraft();
+        if (!TextUtils.isEmpty(draft)) {
+            mEtContent.setText(draft);
+        }
     }
 
     private void setView() {
@@ -236,7 +240,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview, getDrawable(R.drawable.ic_moments));
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
-        mEmotionPanelLayout.setLeftMenu(getDrawable(R.drawable.ic_setting), null);
     }
 
     private void setKeyBoardSwitcherListener() {
@@ -461,6 +464,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             hintMoreInput();
             return;
         }
+        mPresenter.saveMessageDraft(mEtContent.getText().toString());
         setResult(ACTIVITY_RESPONSE_CODE, getIntent());
         finish();
         overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);

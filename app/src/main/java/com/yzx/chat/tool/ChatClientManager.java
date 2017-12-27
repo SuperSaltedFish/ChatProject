@@ -105,8 +105,8 @@ public class ChatClientManager {
         return mRongIMClient.getConversation(type, targetId);
     }
 
-    public void clearConversationUnreadStatus(Conversation.ConversationType type, String conversationID) {
-        mRongIMClient.clearMessagesUnreadStatus(type, conversationID, new RongIMClient.ResultCallback<Boolean>() {
+    public void clearConversationUnreadStatus(Conversation conversation) {
+        mRongIMClient.clearMessagesUnreadStatus(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (!aBoolean) {
@@ -124,21 +124,34 @@ public class ChatClientManager {
     }
 
 
-    public List<Message> getHistoryMessages(Conversation.ConversationType type, String conversationID, int oldestMessageId, int count) {
-        return mRongIMClient.getHistoryMessages(type, conversationID, oldestMessageId, count);
+    public List<Message> getHistoryMessages(Conversation conversation, int oldestMessageId, int count) {
+        return mRongIMClient.getHistoryMessages(conversation.getConversationType(), conversation.getTargetId(), oldestMessageId, count);
     }
 
-    public void asyncGetHistoryMessages(Conversation.ConversationType type, String conversationID, int oldestMessageId, int count, RongIMClient.ResultCallback<List<Message>> callback) {
-        mRongIMClient.getHistoryMessages(type, conversationID, oldestMessageId, count, callback);
+    public void asyncGetHistoryMessages(Conversation conversation, int oldestMessageId, int count, RongIMClient.ResultCallback<List<Message>> callback) {
+        mRongIMClient.getHistoryMessages(conversation.getConversationType(), conversation.getTargetId(), oldestMessageId, count, callback);
+    }
+
+    public void asyncDeleteChatMessages(Conversation conversation,RongIMClient.ResultCallback<Boolean> callback){
+        mRongIMClient.deleteMessages(conversation.getConversationType(), conversation.getTargetId(), callback);
     }
 
     public void sendMessage(Message message) {
         mRongIMClient.sendMessage(message, null, null, mSendMessageCallback);
     }
 
-    public void setTop(Conversation.ConversationType type, String conversationID, boolean isTop) {
-        mRongIMClient.setConversationToTop(type, conversationID, isTop);
+    public void asyncSetConversationTop(Conversation conversation, boolean isTop,RongIMClient.ResultCallback<Boolean> callback) {
+        mRongIMClient.setConversationToTop(conversation.getConversationType(), conversation.getTargetId(), isTop,callback);
     }
+
+    public void asyncRemoveConversation(Conversation conversation,RongIMClient.ResultCallback<Boolean> callback){
+        mRongIMClient.removeConversation(conversation.getConversationType(), conversation.getTargetId(), callback);
+    }
+
+    public void saveMessageDraft(Conversation conversation,String draft){
+        mRongIMClient.saveTextMessageDraft(conversation.getConversationType(), conversation.getTargetId(),draft);
+    }
+
 
     public void updateChatUnreadCount() {
         mRongIMClient.getUnreadCount(new RongIMClient.ResultCallback<Integer>() {

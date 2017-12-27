@@ -10,6 +10,6 @@
         android:title="清空聊天记录" />
 
     <item
-        android:id="@+id/ConversationMenu_Delect"
+        android:id="@+id/ConversationMenu_Remove"
         android:title="删除该聊天" />
 </menu>

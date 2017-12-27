@@ -42,5 +42,7 @@ public class ChatContract {
 
         boolean hasMoreMessage();
 
+        void saveMessageDraft(String draft);
+
     }
 }

@@ -22,9 +22,7 @@ public class ConversationContract {
 
         void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> conversationList);
 
-        void updateConversationListViewByPosition(int position, Conversation conversation);
-
-        void addConversationView(Conversation conversation);
+        void removeConversationItem(int position,Conversation conversation);
 
     }
 
@@ -32,8 +30,10 @@ public class ConversationContract {
     public interface Presenter extends BasePresenter<View> {
         void refreshAllConversations();
 
-        void refreshSingleConversation(Conversation.ConversationType type, String conversationID);
+        void setConversationToTop(Conversation conversation, boolean isTop);
 
-        void setTop(Conversation.ConversationType type, String conversationID,boolean isTop);
+        void removeConversation(int position,Conversation conversation);
+
+        void clearChatMessages(Conversation conversation);
     }
 }

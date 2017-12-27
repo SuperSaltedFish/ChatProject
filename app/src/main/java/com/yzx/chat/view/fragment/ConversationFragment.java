@@ -96,14 +96,17 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(int position, int menuID) {
-                Conversation conversation = mConversationList.get((Integer) mRecyclerView.getTag());
+                int index = (int) mRecyclerView.getTag();
+                Conversation conversation = mConversationList.get(index);
                 switch (menuID) {
                     case R.id.ConversationMenu_Top:
-                        mPresenter.setTop(conversation.getConversationType(), conversation.getTargetId(), !conversation.isTop());
+                        mPresenter.setConversationToTop(conversation, !conversation.isTop());
                         break;
-                    case R.id.ConversationMenu_Delect:
+                    case R.id.ConversationMenu_Remove:
+                        mPresenter.removeConversation(index,conversation);
                         break;
                     case R.id.ConversationMenu_Clean:
+                        mPresenter.clearChatMessages(conversation);
                         break;
                 }
             }
@@ -123,7 +126,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             if (data != null) {
                 Conversation conversation = data.getParcelableExtra(ChatActivity.INTENT_EXTRA_CONVERSATION);
                 if (conversation != null) {
-                    mPresenter.refreshSingleConversation(conversation.getConversationType(), conversation.getTargetId());
+                    mPresenter.refreshAllConversations();
                 } else {
                     LogUtil.e("Conversation is null");
                 }
@@ -217,23 +220,26 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationMenu.dismiss();
     }
 
-    @Override
-    public void updateConversationListViewByPosition(int position, Conversation conversation) {
-        if (position == 0) {
-            mConversationList.set(0, conversation);
-        } else {
-            mConversationList.remove(position);
-            mConversationList.add(0, conversation);
-            mAdapter.notifyItemMoved(position, 0);
-        }
-        mAdapter.notifyItemChanged(0);
-        mConversationMenu.dismiss();
-    }
 
     @Override
-    public void addConversationView(Conversation conversation) {
-        mConversationList.add(0, conversation);
-        mAdapter.notifyItemInserted(0);
-        mConversationMenu.dismiss();
+    public void removeConversationItem(int position, Conversation conversation) {
+        int removePosition = -1;
+        if (mConversationList.size() > position && mConversationList.get(position).getTargetId().equals(conversation.getTargetId())) {
+            removePosition = position;
+        } else {
+            for (int i = 0, size = mConversationList.size(); i < size; i++) {
+                if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
+                    removePosition = i;
+                    break;
+                }
+            }
+        }
+        if (removePosition >= 0) {
+            mConversationList.remove(removePosition);
+            mAdapter.notifyItemRemoved(removePosition);
+            enableEmptyListHint(mConversationList.size() == 0);
+        } else {
+            LogUtil.e("remove conversation fail from ui");
+        }
     }
 }

@@ -61,8 +61,8 @@ public class ChatPresenter implements ChatContract.Presenter {
         mIsLoadingMore = false;
         mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mChatManager.addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
-        mChatManager.clearConversationUnreadStatus(mConversation.getConversationType(), mConversation.getTargetId());
-        List<Message> messageList = mChatManager.getHistoryMessages(mConversation.getConversationType(), mConversation.getTargetId(), -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
+        mChatManager.clearConversationUnreadStatus(mConversation);
+        List<Message> messageList = mChatManager.getHistoryMessages(mConversation, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         if (messageList == null || messageList.size() == 0) {
             mHasMoreMessage = false;
             return;
@@ -95,8 +95,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void loadMoreMessage(int lastMessageID) {
         mIsLoadingMore = true;
         mChatManager.asyncGetHistoryMessages(
-                mConversation.getConversationType(),
-                mConversation.getTargetId(),
+                mConversation,
                 lastMessageID,
                 Constants.CHAT_MESSAGE_PAGE_SIZE,
                 new RongIMClient.ResultCallback<List<Message>>() {
@@ -124,6 +123,11 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public boolean hasMoreMessage() {
         return mHasMoreMessage;
+    }
+
+    @Override
+    public void saveMessageDraft(String draft) {
+        mChatManager.saveMessageDraft(mConversation, draft);
     }
 
     private void sendMessage(MessageContent messageContent) {

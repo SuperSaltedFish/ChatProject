@@ -1,8 +1,15 @@
 package com.yzx.chat.util;
 
 
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+
 import com.yzx.chat.R;
 
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.FileMessage;
 import io.rong.message.ImageMessage;
@@ -17,22 +24,32 @@ import io.rong.message.VoiceMessage;
  */
 
 public class IMMessageUtil {
-    public static String getMessageDigest(MessageContent message) {
-        if (message instanceof TextMessage) {
-            TextMessage textMessage = (TextMessage) message;
-            return textMessage.getContent();
-        } else if (message instanceof VoiceMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_VoiceInfo);
-        } else if (message instanceof ImageMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_ImageInfo);
-        } else if (message instanceof LocationMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_LocationInfo);
-        } else if (message instanceof StickerMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_EmotionInfo);
-        } else if (message instanceof FileMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_FileInfo);
+    public static CharSequence getMessageDigest(Conversation conversation) {
+        if (conversation == null) {
+            return "";
         }
-        return "";
+        if (!TextUtils.isEmpty(conversation.getDraft())) {
+            String hint = AndroidUtil.getString(R.string.EMMessageUtil_Draft);
+            SpannableString spannableStr = new SpannableString(hint + " " + conversation.getDraft());
+            spannableStr.setSpan(new ForegroundColorSpan(Color.RED), 0, hint.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            return spannableStr;
+        } else {
+            MessageContent message = conversation.getLatestMessage();
+            if (message instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) message;
+                return textMessage.getContent();
+            } else if (message instanceof VoiceMessage) {
+                return AndroidUtil.getString(R.string.EMMessageUtil_VoiceInfo);
+            } else if (message instanceof ImageMessage) {
+                return AndroidUtil.getString(R.string.EMMessageUtil_ImageInfo);
+            } else if (message instanceof LocationMessage) {
+                return AndroidUtil.getString(R.string.EMMessageUtil_LocationInfo);
+            } else if (message instanceof StickerMessage) {
+                return AndroidUtil.getString(R.string.EMMessageUtil_EmotionInfo);
+            } else if (message instanceof FileMessage) {
+                return AndroidUtil.getString(R.string.EMMessageUtil_FileInfo);
+            }
+            return "";
+        }
     }
-
 }
