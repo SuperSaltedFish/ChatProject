@@ -4,6 +4,7 @@ package com.yzx.chat.view.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -14,6 +15,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
@@ -33,6 +36,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -236,7 +240,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 mEtContent.getText().append(new String(Character.toChars(mEmojis[position])));
             }
         });
-
 
         mEmotionPanelLayout.addEmotionPanelPage(emojiRecyclerview, getDrawable(R.drawable.ic_moments));
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
@@ -449,6 +452,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mEtContent.clearFocus();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoicePlayer.getInstance(this).stop();
+    }
 
     @Override
     protected void onDestroy() {

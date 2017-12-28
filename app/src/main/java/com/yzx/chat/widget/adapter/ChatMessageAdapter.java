@@ -1,6 +1,7 @@
 package com.yzx.chat.widget.adapter;
 
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.CallSuper;
@@ -259,6 +260,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
         private VoicePlayer mVoicePlayer;
+        private AnimationDrawable mPlayAnimation;
 
         private Uri mVoiceUri;
 
@@ -273,14 +275,16 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                     if (mVoiceUri == null || TextUtils.isEmpty(mVoiceUri.getPath())) {
                         return;
                     }
+                    mPlayAnimation.start();
                     mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
-
+                            mPlayAnimation.stop();
                         }
 
                         @Override
                         public void onError(String error) {
+                            mPlayAnimation.stop();
                             LogUtil.e("play voice error:" + error);
                         }
                     });
@@ -293,7 +297,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super.setDate(message);
             VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
             int timeLength_ms = voiceMessage.getDuration() * 1000;
-            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
             int rowWidth = mFlPlayLayout.getMinimumWidth();
             if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
                 mFlPlayLayout.setMinimumWidth(2 * rowWidth);
@@ -310,6 +314,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         private VoicePlayer mVoicePlayer;
         private ImageView mIvPlayIcon;
         private AnimationDrawable mPlayAnimation;
+        private Drawable mDefaultIcon;
 
         private Uri mVoiceUri;
 
@@ -320,23 +325,29 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
             mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
             mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_receive);
+            mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_receive_play3);
             mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
-            mIvPlayIcon.setImageDrawable(mPlayAnimation);
+            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
+            mIvPlayIcon.setImageDrawable(mDefaultIcon);
             mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mVoiceUri == null || TextUtils.isEmpty(mVoiceUri.getPath())) {
                         return;
                     }
+                    mIvPlayIcon.setImageDrawable(mPlayAnimation);
                     mPlayAnimation.start();
                     mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
                             mPlayAnimation.stop();
+                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
                         }
 
                         @Override
                         public void onError(String error) {
+                            mPlayAnimation.stop();
+                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
                             LogUtil.e("play voice error:" + error);
                         }
                     });
@@ -349,7 +360,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super.setDate(message);
             VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
             int timeLength_ms = voiceMessage.getDuration() * 1000;
-            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d'", timeLength_ms / 1000));
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
             int rowWidth = mFlPlayLayout.getMinimumWidth();
             if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
                 mFlPlayLayout.setMinimumWidth(2 * rowWidth);
