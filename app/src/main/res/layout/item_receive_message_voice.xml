@@ -15,15 +15,16 @@
         android:id="@+id/ChatAdapter_mFlPlayLayout"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-
-        android:minWidth="120dp">
+        android:background="@drawable/bg_chat_item_recv"
+        android:minWidth="80dp">
 
         <ImageView
             android:id="@+id/ChatMessageAdapter_mIvPlayIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="start|center_vertical"
-            android:gravity="center_vertical" />
+            android:padding="3dp"
+            android:layout_marginStart="2dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="start|center_vertical" />
 
     </FrameLayout>
 

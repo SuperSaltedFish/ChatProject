@@ -3,7 +3,6 @@
     android:id="@+id/ChatAdapter_mFlRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="8dp"
     android:layout_marginStart="56dp"
     android:gravity="end|center_vertical"
     android:orientation="horizontal">
@@ -22,10 +21,7 @@
         android:background="@drawable/bg_chat_item_send"
         android:gravity="center_vertical"
         android:minHeight="56dp"
-        android:paddingBottom="16dp"
-        android:paddingEnd="20dp"
-        android:paddingStart="20dp"
-        android:paddingTop="16dp"
+        android:padding="16dp"
         android:textColor="@color/text_main_color_white_alpha"
         android:textSize="16sp" />
 
