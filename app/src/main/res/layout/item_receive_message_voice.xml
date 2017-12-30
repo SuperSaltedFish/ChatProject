@@ -20,19 +20,28 @@
 
         <ImageView
             android:id="@+id/ChatMessageAdapter_mIvPlayIcon"
-            android:padding="3dp"
-            android:layout_marginStart="2dp"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_gravity="start|center_vertical" />
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="2dp"
+            android:padding="3dp" />
+
+        <TextView
+            android:id="@+id/ChatAdapter_mTvVoiceTimeLength"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center_vertical"
+            android:gravity="center_vertical"
+            android:paddingEnd="8dp"
+            android:textColor="@color/text_primary_color_black" />
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/ChatAdapter_mTvVoiceTimeLength"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:gravity="center_vertical" />
+    <com.yzx.chat.widget.view.CircleImageView
+        android:id="@+id/ChatAdapter_mIvListenedState"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:background="@color/red" />
 
 
 </LinearLayout>

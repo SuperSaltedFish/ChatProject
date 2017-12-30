@@ -140,6 +140,15 @@ public class ChatClientManager {
         mRongIMClient.sendMessage(message, null, null, mSendMessageCallback);
     }
 
+    public void setVoiceMessageAsListened(Message message){
+        Message.ReceivedStatus status = message.getReceivedStatus();
+        if(status.isListened()){
+            return;
+        }
+        status.setListened();
+        mRongIMClient.setMessageReceivedStatus(message.getMessageId(),status,null);
+    }
+
     public void asyncSetConversationTop(Conversation conversation, boolean isTop,RongIMClient.ResultCallback<Boolean> callback) {
         mRongIMClient.setConversationToTop(conversation.getConversationType(), conversation.getTargetId(), isTop,callback);
     }

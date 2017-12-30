@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewFlipper
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/LoginActivity_mVfPageSwitch"
-    android:inAnimation="@anim/view_flipper_in_right"
-    android:outAnimation="@anim/view_flipper_out_left"
-    tools:context=".view.activity.LoginActivity">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/flipper_login"/>
+    <ImageView
+        android:id="@+id/LoginActivity_mIvBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="-240px"
+        android:layout_marginStart="-240px"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_login" />
 
-    <include layout="@layout/flipper_register"/>
 
-    <include layout="@layout/flipper_verify"/>
+    <ViewFlipper
+        android:id="@+id/LoginActivity_mVfPageSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inAnimation="@anim/view_flipper_in_right"
+        android:outAnimation="@anim/view_flipper_out_left"
+        tools:context=".view.activity.LoginActivity">
 
 
-</ViewFlipper>
+        <include layout="@layout/flipper_login" />
+
+        <include layout="@layout/flipper_register" />
+
+        <include layout="@layout/flipper_verify" />
+
+
+    </ViewFlipper>
+</merge>

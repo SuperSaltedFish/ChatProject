@@ -42,6 +42,8 @@ public class ChatContract {
 
         boolean hasMoreMessage();
 
+        void setVoiceMessageAsListened(Message message);
+
         void saveMessageDraft(String draft);
 
     }

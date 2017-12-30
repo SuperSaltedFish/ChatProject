@@ -4,7 +4,7 @@ package com.yzx.chat.view.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -15,8 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.SurfaceView;
-import android.view.TextureView;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
@@ -147,6 +145,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (!TextUtils.isEmpty(draft)) {
             mEtContent.setText(draft);
         }
+
     }
 
     private void setView() {
@@ -154,6 +153,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mIvSendMessage.setOnClickListener(mSendMesClickListener);
+
+        setChatRecyclerViewAndAdapter();
+
+        setAlerter();
+
+        setEmotionPanel();
+
+        setKeyBoardSwitcherListener();
+
+        setVoiceRecorder();
+
+
+    }
+
+    private void setChatRecyclerViewAndAdapter() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setStackFromEnd(true);
@@ -164,18 +179,33 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         // mRvChatView.setItemAnimator(new NoAnimations());
         mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
-        mAdapter.setScrollToBottomListener(mScrollToBottomListener);
-        mAdapter.setOnResendItemClickListener(mOnResendItemClickListener);
+        mAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
+            @Override
+            public void OnScrollToBottom() {
+                if (mPresenter.isLoadingMore()) {
+                    return;
+                }
+                if (mPresenter.hasMoreMessage()) {
+                    mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
+                    mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
+                } else {
+                    mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+                }
+            }
+        });
+        mAdapter.setMessageCallback(new ChatMessageAdapter.MessageCallback() {
+            @Override
+            public void resendMessage(int position, Message message) {
+                mNeedResendPosition = position;
+                mNeedResendMessage = message;
+                mAlerter.show();
+            }
 
-        mIvSendMessage.setOnClickListener(mSendMesClickListener);
-
-        setAlerter();
-
-        setEmotionPanel();
-
-        setKeyBoardSwitcherListener();
-
-        setVoiceRecorder();
+            @Override
+            public void setVoiceMessageAsListened(Message message) {
+                mPresenter.setVoiceMessageAsListened(message);
+            }
+        });
 
 
     }
@@ -511,30 +541,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
             mEtContent.setText(null);
             mPresenter.sendTextMessage(message);
-        }
-    };
-
-    private final BaseRecyclerViewAdapter.OnScrollToBottomListener mScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
-        @Override
-        public void OnScrollToBottom() {
-            if (mPresenter.isLoadingMore()) {
-                return;
-            }
-            if (mPresenter.hasMoreMessage()) {
-                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
-                mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
-            } else {
-                mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
-            }
-        }
-    };
-
-    private final ChatMessageAdapter.OnResendItemClickListener mOnResendItemClickListener = new ChatMessageAdapter.OnResendItemClickListener() {
-        @Override
-        public void onResendItemClick(int position, Message message) {
-            mNeedResendPosition = position;
-            mNeedResendMessage = message;
-            mAlerter.show();
         }
     };
 

@@ -14,12 +14,11 @@ import java.io.IOException;
 
 public class VoicePlayer {
 
-    private static final String TAG = "ConcurrentMediaPlayer";
-
     private static VoicePlayer sVoicePlayer;
 
     private AudioManager mAudioManager;
     private MediaPlayer mMediaPlayer;
+    private String mCurrentPlayPath;
 
     private OnPlayStateChangeListener mOnPlayStateChangeListener;
 
@@ -34,61 +33,85 @@ public class VoicePlayer {
         return sVoicePlayer;
     }
 
-    public MediaPlayer getPlayer() {
-        return mMediaPlayer;
+    private VoicePlayer(Context cxt) {
+        Context baseContext = cxt.getApplicationContext();
+        mAudioManager = (AudioManager) baseContext.getSystemService(Context.AUDIO_SERVICE);
+        initMediaPlayer();
+    }
+
+    private void initMediaPlayer() {
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (mOnPlayStateChangeListener != null) {
+                    mOnPlayStateChangeListener.onCompletion(mp, false);
+                }
+                reset();
+            }
+        });
+        mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                if (mOnPlayStateChangeListener != null) {
+                    mOnPlayStateChangeListener.onError("MediaPlayerError, what=" + what + ",extra=" + extra);
+                }
+                reset();
+                return true;
+            }
+        });
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mMediaPlayer.start();
+                if (mOnPlayStateChangeListener != null) {
+                    mOnPlayStateChangeListener.onStartPlay();
+                }
+            }
+        });
+    }
+
+    private void reset() {
+        mMediaPlayer.reset();
+        mOnPlayStateChangeListener = null;
+        mCurrentPlayPath = null;
+    }
+
+    public void play(String path, OnPlayStateChangeListener listener) {
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
+        stop();
+        mOnPlayStateChangeListener = listener;
+        mCurrentPlayPath = path;
+        setSpeaker(true);
+        try {
+            mMediaPlayer.setDataSource(path);
+            mMediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (mOnPlayStateChangeListener != null) {
+                mOnPlayStateChangeListener.onError(e.toString());
+                reset();
+            }
+        }
+    }
+
+    public void stop() {
+        boolean isNeedStop = mMediaPlayer.isPlaying();
+        mMediaPlayer.stop();
+        if (mOnPlayStateChangeListener != null) {
+            mOnPlayStateChangeListener.onCompletion(mMediaPlayer, isNeedStop);
+        }
+        reset();
     }
 
     public boolean isPlaying() {
         return mMediaPlayer.isPlaying();
     }
 
-
-    public void play(String uri, OnPlayStateChangeListener listener) {
-        if(TextUtils.isEmpty(uri)){
-            return;
-        }
-        if (mMediaPlayer.isPlaying()) {
-            stop();
-        } else {
-            mMediaPlayer.reset();
-        }
-
-        mOnPlayStateChangeListener = listener;
-
-        try {
-            setSpeaker(true);
-            mMediaPlayer.setDataSource(uri);
-            mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    stop();
-
-                    mOnPlayStateChangeListener = null;
-                }
-            });
-            mMediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-            if (mOnPlayStateChangeListener != null) {
-                mOnPlayStateChangeListener.onError(e.toString());
-            }
-        }
-    }
-
-    public void stop() {
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-
-        if (mOnPlayStateChangeListener != null) {
-            mOnPlayStateChangeListener.onCompletion(mMediaPlayer);
-        }
-    }
-
-    private VoicePlayer(Context cxt) {
-        Context baseContext = cxt.getApplicationContext();
-        mAudioManager = (AudioManager) baseContext.getSystemService(Context.AUDIO_SERVICE);
-        mMediaPlayer = new MediaPlayer();
+    public String getCurrentPlayPath() {
+        return mCurrentPlayPath;
     }
 
     private void setSpeaker(boolean speakerOn) {
@@ -105,7 +128,9 @@ public class VoicePlayer {
     }
 
     public interface OnPlayStateChangeListener {
-        void onCompletion(MediaPlayer mediaPlayer);
+        void onStartPlay();
+
+        void onCompletion(MediaPlayer mediaPlayer, boolean isStop);
 
         void onError(String error);
     }

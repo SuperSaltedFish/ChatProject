@@ -9,8 +9,6 @@
         <item name="colorControlNormal">@android:color/white</item>
         <item name="android:textColorSecondary">@color/text_secondary_color_black</item>
         <item name="android:textColorPrimary">@color/text_primary_color_black</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowBackground">@color/theme_background_color</item>
     </style>
 
@@ -20,8 +18,6 @@
         <item name="colorAccent">@color/theme_main_color</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
     </style>
 
     <style name="TransparentStatusBarLightTheme" parent="DefaultLightTheme">
@@ -37,7 +33,7 @@
     </style>
 
     <style name="LoginTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/bg_register</item>
+        <item name="android:windowBackground">@null</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="colorPrimary">@color/theme_main_color</item>

@@ -11,10 +11,12 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -53,7 +55,10 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     private TextView mTvRegisterHint;
     private TextView mTvVerifyHint;
     private ImageButton mIBtnRegisterBack;
-    private ImageButton mBtnVerifyBack;
+    private ImageButton mIBtnVerifyBack;
+    private ImageView mIvBackground;
+
+    private Animation mTranslateAnimation;
 
     private boolean isDisableInput;
     private boolean isAllowResendVerifyCode;
@@ -94,7 +99,9 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mTvRegisterHint = (TextView) findViewById(R.id.FlipperRegister_mTvRegisterHint);
         mTvVerifyHint = (TextView) findViewById(R.id.FlipperVerify_mTvVerifyHint);
         mIBtnRegisterBack = (ImageButton) findViewById(R.id.FlipperRegister_mIBtnRegisterBack);
-        mBtnVerifyBack = (ImageButton) findViewById(R.id.FlipperVerify_mIBtnVerifyBack);
+        mIBtnVerifyBack = (ImageButton) findViewById(R.id.FlipperVerify_mIBtnVerifyBack);
+        mIvBackground = (ImageView) findViewById(R.id.LoginActivity_mIvBackground);
+        mTranslateAnimation = AnimationUtils.loadAnimation(this, R.anim.bg_translate_anim);
     }
 
     private void setView() {
@@ -103,7 +110,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mBtnVerify.setOnClickListener(mOnBtnVerifyClick);
         mBtnResend.setOnClickListener(mOnBtnResendClick);
         mIBtnRegisterBack.setOnClickListener(mOnIBtnBackClick);
-        mBtnVerifyBack.setOnClickListener(mOnIBtnBackClick);
+        mIBtnVerifyBack.setOnClickListener(mOnIBtnBackClick);
         mBtnJumpToRegister.setOnClickListener(mOnBtnJumpToRegisterClick);
         mBtnJumpToRegister.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
         mBtnJumpToLogin.setOnClickListener(mOnBtnJumpToLoginClick);
@@ -115,7 +122,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mEtRegisterConfirm.addTextChangedListener(mTextWatcher);
         mEtRegisterNickname.addTextChangedListener(mTextWatcher);
         mEtVerifyCode.addTextChangedListener(mTextWatcher);
-
+        mIvBackground.startAnimation(mTranslateAnimation);
     }
 
     @Override
@@ -126,6 +133,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mTranslateAnimation.cancel();
         mVerifyCountDown.cancel();
     }
 

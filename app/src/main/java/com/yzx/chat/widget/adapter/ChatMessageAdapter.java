@@ -43,17 +43,11 @@ import io.rong.message.VoiceMessage;
 
 public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageHolder> {
 
-    private static final int TYPE_LOAD_MORE = 0;
-    private static final int TYPE_SEND_MESSAGE_TEXT = 1;
-    private static final int TYPE_RECEIVE_MESSAGE_TEXT = 2;
-    private static final int TYPE_SEND_MESSAGE_VOICE = 3;
-    private static final int TYPE_RECEIVE_MESSAGE_VOICE = 4;
-
     private List<Message> mMessageList;
     private String mLoadMoreHint;
     private boolean isEnable;
 
-    private OnResendItemClickListener mOnResendItemClickListener;
+    private MessageCallback mMessageCallback;
 
     public ChatMessageAdapter(List<Message> messageList) {
         mMessageList = messageList;
@@ -62,15 +56,15 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     @Override
     public MessageHolder getViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_SEND_MESSAGE_TEXT:
+            case MessageHolder.HOLDER_TYPE_SEND_MESSAGE_TEXT:
                 return new TextSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false));
-            case TYPE_RECEIVE_MESSAGE_TEXT:
+            case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
                 return new TextReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
-            case TYPE_SEND_MESSAGE_VOICE:
+            case MessageHolder.HOLDER_TYPE_SEND_MESSAGE_VOICE:
                 return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
-            case TYPE_RECEIVE_MESSAGE_VOICE:
+            case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                 return new VoiceReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
-            case TYPE_LOAD_MORE:
+            case MessageHolder.HOLDER_TYPE_LOAD_MORE:
                 return new LoadMoreHolder(LayoutInflater.from(mContext).inflate(R.layout.view_load_more, parent, false));
             default:
                 return null;
@@ -80,7 +74,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageHolder holder, int position) {
-        if (position == getItemCount() - 1) {
+        if (holder.mHolderType == MessageHolder.HOLDER_TYPE_LOAD_MORE) {
             if (mLoadMoreHint == null || !isEnable) {
                 holder.itemView.setVisibility(View.GONE);
             } else {
@@ -89,9 +83,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 holder.itemView.setVisibility(View.VISIBLE);
             }
         } else {
-            if (holder instanceof SendMessageHolder) {
-                ((SendMessageHolder) holder).setOnResendItemClickListener(mOnResendItemClickListener);
-            }
+            holder.setMessageCallback(mMessageCallback);
             holder.setDate(mMessageList.get(position));
         }
     }
@@ -104,14 +96,14 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     @Override
     public int getItemViewType(int position) {
         if (position == getItemCount() - 1) {
-            return TYPE_LOAD_MORE;
+            return MessageHolder.HOLDER_TYPE_LOAD_MORE;
         }
         Message message = mMessageList.get(position);
         switch (message.getObjectName()) {
             case "RC:TxtMsg":
-                return message.getMessageDirection() == Message.MessageDirection.SEND ? TYPE_SEND_MESSAGE_TEXT : TYPE_RECEIVE_MESSAGE_TEXT;
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_TEXT : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT;
             case "RC:VcMsg":
-                return message.getMessageDirection() == Message.MessageDirection.SEND ? TYPE_SEND_MESSAGE_VOICE : TYPE_RECEIVE_MESSAGE_VOICE;
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_VOICE : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE;
             default:
                 throw new NoSuchElementException("unknown type");
         }
@@ -137,15 +129,246 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         this.isEnable = isEnable;
     }
 
-    public void setOnResendItemClickListener(OnResendItemClickListener onResendItemClickListener) {
-        mOnResendItemClickListener = onResendItemClickListener;
+    public void setMessageCallback(MessageCallback messageCallback) {
+        mMessageCallback = messageCallback;
     }
+
+    private static class TextSendMessageHolder extends SendMessageHolder {
+        private TextView mTvTextContent;
+
+        TextSendMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_SEND_MESSAGE_TEXT);
+            mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
+        }
+
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            TextMessage textMessage = (TextMessage) message.getContent();
+            mTvTextContent.setText(textMessage.getContent());
+        }
+    }
+
+    private static class TextReceiveMessageHolder extends ReceiveMessageHolder {
+        private EmojiTextView mTvTextContent;
+
+        TextReceiveMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_RECEIVE_MESSAGE_TEXT);
+            mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
+        }
+
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            TextMessage textMessage = (TextMessage) message.getContent();
+            mTvTextContent.setText(textMessage.getContent());
+        }
+    }
+
+    private static class VoiceSendMessageHolder extends SendMessageHolder {
+        private TextView mTvVoiceTimeLength;
+        private FrameLayout mFlPlayLayout;
+        private ImageView mIvPlayIcon;
+        private VoicePlayer mVoicePlayer;
+        private AnimationDrawable mPlayAnimation;
+        private Drawable mDefaultIcon;
+
+        private Uri mVoiceUri;
+
+        VoiceSendMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_SEND_MESSAGE_VOICE);
+            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
+            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
+            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
+            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
+            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_send);
+            mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_sent_play3);
+            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_main_color_white));
+            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.text_main_color_white));
+            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mVoiceUri == null) {
+                        return;
+                    }
+                    String path = mVoiceUri.getPath();
+                    if (TextUtils.isEmpty(path) || path.equals(mVoicePlayer.getCurrentPlayPath())) {
+                        return;
+                    }
+                    mIvPlayIcon.setImageDrawable(mPlayAnimation);
+                    mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
+                        @Override
+                        public void onStartPlay() {
+                            mPlayAnimation.start();
+                            mMessageCallback.setVoiceMessageAsListened(mMessage);
+                        }
+
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer, boolean isStop) {
+                            reset();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            LogUtil.e(error);
+                            reset();
+                        }
+
+                        private void reset() {
+                            mPlayAnimation.stop();
+                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
+                        }
+                    });
+                }
+            });
+        }
+
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
+            int timeLength_ms = voiceMessage.getDuration() * 1000;
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
+            int rowWidth = mFlPlayLayout.getMinimumWidth();
+            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+                rowWidth = 2 * rowWidth;
+            } else {
+                rowWidth = (int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
+            }
+            ViewGroup.LayoutParams layoutParams = mFlPlayLayout.getLayoutParams();
+            layoutParams.width = rowWidth;
+            mFlPlayLayout.setLayoutParams(layoutParams);
+            mVoiceUri = voiceMessage.getUri();
+
+            if (mVoicePlayer.isPlaying() && mVoicePlayer.getCurrentPlayPath().equals(mVoiceUri.getPath())) {
+                mIvPlayIcon.setImageDrawable(mPlayAnimation);
+                mPlayAnimation.start();
+            } else {
+                mPlayAnimation.stop();
+                mIvPlayIcon.setImageDrawable(mDefaultIcon);
+            }
+        }
+    }
+
+    private static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
+        private TextView mTvVoiceTimeLength;
+        private FrameLayout mFlPlayLayout;
+        private VoicePlayer mVoicePlayer;
+        private ImageView mIvPlayIcon;
+        private ImageView mIvListenedState;
+        private AnimationDrawable mPlayAnimation;
+        private Drawable mDefaultIcon;
+
+        private Uri mVoiceUri;
+
+        VoiceReceiveMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_RECEIVE_MESSAGE_VOICE);
+            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
+            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
+            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
+            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
+            mIvListenedState = itemView.findViewById(R.id.ChatAdapter_mIvListenedState);
+            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_receive);
+            mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_receive_play3);
+            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
+            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
+            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mVoiceUri == null) {
+                        return;
+                    }
+                    String path = mVoiceUri.getPath();
+                    if (TextUtils.isEmpty(path) || path.equals(mVoicePlayer.getCurrentPlayPath())) {
+                        return;
+                    }
+                    mIvPlayIcon.setImageDrawable(mPlayAnimation);
+                    mPlayAnimation.start();
+                    mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
+                        @Override
+                        public void onStartPlay() {
+                            mPlayAnimation.start();
+                            mMessageCallback.setVoiceMessageAsListened(mMessage);
+                            setListenedState(true);
+                        }
+
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer, boolean isStop) {
+                            reset();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            LogUtil.e(error);
+                            reset();
+                        }
+
+                        private void reset() {
+                            mPlayAnimation.stop();
+                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
+                        }
+                    });
+                }
+            });
+        }
+
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
+            int timeLength_ms = voiceMessage.getDuration() * 1000;
+            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
+            int rowWidth = mFlPlayLayout.getMinimumWidth();
+            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+                rowWidth = 2 * rowWidth;
+            } else {
+                rowWidth = (int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
+            }
+            ViewGroup.LayoutParams layoutParams = mFlPlayLayout.getLayoutParams();
+            layoutParams.width = rowWidth;
+            mFlPlayLayout.setLayoutParams(layoutParams);
+            mVoiceUri = voiceMessage.getUri();
+
+            if (mVoicePlayer.isPlaying() && mVoicePlayer.getCurrentPlayPath().equals(mVoiceUri.getPath())) {
+                mIvPlayIcon.setImageDrawable(mPlayAnimation);
+                mPlayAnimation.start();
+            } else {
+                mPlayAnimation.stop();
+                mIvPlayIcon.setImageDrawable(mDefaultIcon);
+            }
+            setListenedState(message.getReceivedStatus().isListened());
+        }
+
+        private void setListenedState(boolean isListened) {
+            mIvListenedState.setVisibility(isListened ? View.INVISIBLE : View.VISIBLE);
+        }
+
+    }
+
+    private static class LoadMoreHolder extends MessageHolder {
+        TextView mTvHintContent;
+
+        LoadMoreHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_LOAD_MORE);
+            mTvHintContent = itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
+        }
+    }
+
 
     static abstract class MessageHolder extends RecyclerView.ViewHolder {
         Message mMessage;
+        MessageCallback mMessageCallback;
+        int mHolderType;
 
-        MessageHolder(View itemView) {
+        static final int HOLDER_TYPE_LOAD_MORE = 0;
+        static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
+        static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
+        static final int HOLDER_TYPE_SEND_MESSAGE_VOICE = 3;
+        static final int HOLDER_TYPE_RECEIVE_MESSAGE_VOICE = 4;
+
+        MessageHolder(View itemView, int type) {
             super(itemView);
+            mHolderType = type;
         }
 
         @CallSuper
@@ -153,32 +376,32 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mMessage = message;
         }
 
+        public void setMessageCallback(MessageCallback messageCallback) {
+            mMessageCallback = messageCallback;
+        }
     }
 
     static abstract class ReceiveMessageHolder extends MessageHolder {
-        private ImageView mIvAvatar;
+        ImageView mIvAvatar;
 
-        ReceiveMessageHolder(View itemView) {
-            super(itemView);
+        ReceiveMessageHolder(View itemView, int type) {
+            super(itemView, type);
             mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
             GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
         }
+
     }
 
     static abstract class SendMessageHolder extends MessageHolder {
 
         private ImageView mIvMessageState;
         private CircularProgressDrawable mProgressDrawable;
-        private OnResendItemClickListener mOnResendItemClickListener;
 
-        SendMessageHolder(View itemView) {
-            super(itemView);
+        SendMessageHolder(View itemView, int type) {
+            super(itemView, type);
             mIvMessageState = itemView.findViewById(R.id.ChatMessageAdapter_mIvMessageState);
         }
 
-        public void setOnResendItemClickListener(OnResendItemClickListener onResendItemClickListener) {
-            mOnResendItemClickListener = onResendItemClickListener;
-        }
 
         @Override
         public void setDate(Message message) {
@@ -210,8 +433,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                         mIvMessageState.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (mOnResendItemClickListener != null) {
-                                    mOnResendItemClickListener.onResendItemClick(getAdapterPosition(), mMessage);
+                                if (mMessageCallback != null) {
+                                    mMessageCallback.resendMessage(getAdapterPosition(), mMessage);
                                 }
                             }
                         });
@@ -221,186 +444,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 }
             }
         }
-
-    }
-
-    private static class TextSendMessageHolder extends SendMessageHolder {
-        private TextView mTvTextContent;
-
-        TextSendMessageHolder(View itemView) {
-            super(itemView);
-            mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
-        }
-
-        @Override
-        public void setDate(Message message) {
-            super.setDate(message);
-            TextMessage textMessage = (TextMessage) message.getContent();
-            mTvTextContent.setText(textMessage.getContent());
-        }
-    }
-
-    private static class TextReceiveMessageHolder extends ReceiveMessageHolder {
-        private EmojiTextView mTvTextContent;
-
-        TextReceiveMessageHolder(View itemView) {
-            super(itemView);
-            mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
-        }
-
-        @Override
-        public void setDate(Message message) {
-            super.setDate(message);
-            TextMessage textMessage = (TextMessage) message.getContent();
-            mTvTextContent.setText(textMessage.getContent());
-        }
-    }
-
-    private static class VoiceSendMessageHolder extends SendMessageHolder {
-        private TextView mTvVoiceTimeLength;
-        private FrameLayout mFlPlayLayout;
-        private ImageView mIvPlayIcon;
-        private VoicePlayer mVoicePlayer;
-        private AnimationDrawable mPlayAnimation;
-        private Drawable mDefaultIcon;
-
-        private Uri mVoiceUri;
-
-        VoiceSendMessageHolder(View itemView) {
-            super(itemView);
-            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
-            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
-            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
-            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
-            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_send);
-            mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_sent_play3);
-            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_main_color_white));
-            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.text_main_color_white));
-            mIvPlayIcon.setImageDrawable(mDefaultIcon);
-            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mVoiceUri == null || TextUtils.isEmpty(mVoiceUri.getPath())) {
-                        return;
-                    }
-                    mIvPlayIcon.setImageDrawable(mPlayAnimation);
-                    mPlayAnimation.start();
-                    mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            mPlayAnimation.stop();
-                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            mPlayAnimation.stop();
-                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
-                            LogUtil.e("play voice error:" + error);
-                        }
-                    });
-                }
-            });
-        }
-
-        @Override
-        public void setDate(Message message) {
-            super.setDate(message);
-            VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
-            int timeLength_ms = voiceMessage.getDuration() * 1000;
-            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
-            int rowWidth = mFlPlayLayout.getMinimumWidth();
-            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
-                rowWidth = 2 * rowWidth;
-            } else {
-                rowWidth = (int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
-            }
-            ViewGroup.LayoutParams layoutParams = mFlPlayLayout.getLayoutParams();
-            layoutParams.width = rowWidth;
-            mFlPlayLayout.setLayoutParams(layoutParams);
-            mVoiceUri = voiceMessage.getUri();
-        }
-    }
-
-    private static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
-        private TextView mTvVoiceTimeLength;
-        private FrameLayout mFlPlayLayout;
-        private VoicePlayer mVoicePlayer;
-        private ImageView mIvPlayIcon;
-        private AnimationDrawable mPlayAnimation;
-        private Drawable mDefaultIcon;
-
-        private Uri mVoiceUri;
-
-        VoiceReceiveMessageHolder(View itemView) {
-            super(itemView);
-            mTvVoiceTimeLength = itemView.findViewById(R.id.ChatAdapter_mTvVoiceTimeLength);
-            mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
-            mFlPlayLayout = itemView.findViewById(R.id.ChatAdapter_mFlPlayLayout);
-            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
-            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_receive);
-            mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_receive_play3);
-            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
-            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.text_primary_color_black));
-            mIvPlayIcon.setImageDrawable(mDefaultIcon);
-            mFlPlayLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mVoiceUri == null || TextUtils.isEmpty(mVoiceUri.getPath())) {
-                        return;
-                    }
-                    mIvPlayIcon.setImageDrawable(mPlayAnimation);
-                    mPlayAnimation.start();
-                    mVoicePlayer.play(mVoiceUri.getPath(), new VoicePlayer.OnPlayStateChangeListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            mPlayAnimation.stop();
-                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            mPlayAnimation.stop();
-                            mIvPlayIcon.setImageDrawable(mDefaultIcon);
-                            LogUtil.e("play voice error:" + error);
-                        }
-                    });
-                }
-            });
-        }
-
-        @Override
-        public void setDate(Message message) {
-            super.setDate(message);
-            VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
-            int timeLength_ms = voiceMessage.getDuration() * 1000;
-            mTvVoiceTimeLength.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
-            int rowWidth = mFlPlayLayout.getMinimumWidth();
-            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
-                rowWidth = 2 * rowWidth;
-            } else {
-                rowWidth = (int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
-            }
-            ViewGroup.LayoutParams layoutParams = mFlPlayLayout.getLayoutParams();
-            layoutParams.width = rowWidth;
-            mFlPlayLayout.setLayoutParams(layoutParams);
-            mVoiceUri = voiceMessage.getUri();
-
-        }
     }
 
 
-    private static class LoadMoreHolder extends MessageHolder {
-        TextView mTvHintContent;
+    public interface MessageCallback {
+        void resendMessage(int position, Message message);
 
-        LoadMoreHolder(View itemView) {
-            super(itemView);
-            mTvHintContent = itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
-        }
-    }
-
-    public interface OnResendItemClickListener {
-        void onResendItemClick(int position, Message message);
+        void setVoiceMessageAsListened(Message message);
     }
 
 }

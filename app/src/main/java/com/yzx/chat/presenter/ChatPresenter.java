@@ -125,6 +125,11 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
+    public void setVoiceMessageAsListened(Message message) {
+        mChatManager.setVoiceMessageAsListened(message);
+    }
+
+    @Override
     public void saveMessageDraft(String draft) {
         mChatManager.saveMessageDraft(mConversation, draft);
     }
