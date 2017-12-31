@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.FriendBean;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
@@ -26,10 +26,10 @@ import java.util.List;
 
 public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemView> {
 
-    private List<FriendBean> mFriendList;
+    private List<ContactBean> mFriendList;
     private SparseArray<String> mIdentitySparseArray;
 
-    public ContactAdapter(List<FriendBean> friendList) {
+    public ContactAdapter(List<ContactBean> friendList) {
         mFriendList = friendList;
         mIdentitySparseArray = new SparseArray<>(32);
         registerAdapterDataObserver(mDataObserver);
@@ -57,8 +57,8 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
             } else {
                 holder.itemView.setTag(null);
             }
-            FriendBean friendBean = mFriendList.get(position);
-            friendHolder.mTvName.setText(friendBean.getNicknameOrRemarkName());
+            ContactBean contactBean = mFriendList.get(position);
+            friendHolder.mTvName.setText(contactBean.getNicknameOrRemarkName());
             GlideUtil.loadCircleFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
         }
     }
@@ -159,12 +159,12 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
 
     private static class ItemSearchView extends ItemView {
 
-        private List<FriendBean> mFriendList;
+        private List<ContactBean> mFriendList;
         private ContactSearchAdapter mSearchAdapter;
 
         AutoCompleteTextView mSearchView;
 
-        ItemSearchView(View itemView, List<FriendBean> friendList) {
+        ItemSearchView(View itemView, List<ContactBean> friendList) {
             super(itemView);
             mFriendList = friendList;
             initView();
@@ -186,8 +186,8 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         private final AdapterView.OnItemClickListener mOnSearchItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FriendBean friendBean = mSearchAdapter.getFriendBeanByPosition(position);
-                mSearchView.setText(friendBean.getNicknameOrRemarkName());
+                ContactBean contactBean = mSearchAdapter.getFriendBeanByPosition(position);
+                mSearchView.setText(contactBean.getNicknameOrRemarkName());
             }
         };
     }

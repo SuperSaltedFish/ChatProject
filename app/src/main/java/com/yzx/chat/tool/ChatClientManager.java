@@ -4,8 +4,8 @@ package com.yzx.chat.tool;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.bean.ContactMessageBean;
+import com.yzx.chat.database.ContactMessageDao;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.Collections;
@@ -62,7 +62,7 @@ public class ChatClientManager {
     private final Object mUpdateChatUnreadCountLock = new Object();
     private final Object mUpdateContactUnreadCountLock = new Object();
 
-    private ContactDao mContactDao;
+    private ContactMessageDao mContactMessageDao;
 
 
     private ChatClientManager() {
@@ -72,7 +72,7 @@ public class ChatClientManager {
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<onConnectionStateChangeListener>());
         mOnUnreadMessageCountChangeListeners = Collections.synchronizedList(new LinkedList<OnUnreadMessageCountChangeListener>());
 
-        mContactDao = DBManager.getInstance().getContactDao();
+        mContactMessageDao = DBManager.getInstance().getContactMessageDao();
         mRongIMClient = RongIMClient.getInstance();
 
         RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
@@ -188,8 +188,8 @@ public class ChatClientManager {
             @Override
             public void run() {
                 synchronized (mUpdateContactUnreadCountLock) {
-                    ContactDao contactDao = DBManager.getInstance().getContactDao();
-                    int count = contactDao.loadRemindCount();
+                    ContactMessageDao contactMessageDao = DBManager.getInstance().getContactMessageDao();
+                    int count = contactMessageDao.loadRemindCount();
                     if (count != mUnreadContactMessageCount) {
                         mUnreadContactMessageCount = count;
                         for (OnUnreadMessageCountChangeListener listener : mOnUnreadMessageCountChangeListeners) {
@@ -247,7 +247,7 @@ public class ChatClientManager {
                     break;
                 case "RC:ContactNtf":
                     ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
-                    ContactBean bean = new ContactBean();
+                    ContactMessageBean bean = new ContactMessageBean();
                     bean.setUserTo(contactMessage.getTargetUserId());
                     bean.setUserFrom(contactMessage.getSourceUserId());
                     bean.setReason(contactMessage.getMessage());
@@ -255,16 +255,16 @@ public class ChatClientManager {
                     bean.setTime((int) (message.getReceivedTime() / 1000));
                     switch (contactMessage.getOperation()) {
                         case ContactNotificationMessage.CONTACT_OPERATION_REQUEST:
-                            bean.setType(ContactBean.CONTACT_TYPE_REQUEST);
+                            bean.setType(ContactMessageBean.CONTACT_TYPE_REQUEST);
                             break;
                         case ContactNotificationMessage.CONTACT_OPERATION_ACCEPT_RESPONSE:
-                            bean.setType(ContactBean.CONTACT_TYPE_ACCEPTED);
+                            bean.setType(ContactMessageBean.CONTACT_TYPE_ACCEPTED);
                             break;
                         case ContactNotificationMessage.CONTACT_OPERATION_REJECT_RESPONSE:
-                            bean.setType(ContactBean.CONTACT_TYPE_DECLINED);
+                            bean.setType(ContactMessageBean.CONTACT_TYPE_DECLINED);
                             break;
                     }
-                    mContactDao.replace(bean);
+                    mContactMessageDao.replace(bean);
                     for (OnContactMessageReceiveListener contactListener : mOnContactMessageReceiveListenerList) {
                         contactListener.onContactMessageReceive(contactMessage);
                     }

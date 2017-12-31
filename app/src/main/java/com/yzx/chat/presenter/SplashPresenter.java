@@ -2,12 +2,12 @@ package com.yzx.chat.presenter;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
-import com.yzx.chat.network.api.user.GetUserFriendsBean;
+import com.yzx.chat.network.api.user.GetUserContactsBean;
 import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.ChatClientManager;
@@ -17,6 +17,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.rong.imlib.RongIMClient;
@@ -29,7 +30,7 @@ public class SplashPresenter implements SplashContract.Presenter {
     //
     private SplashContract.View mSplashView;
     private Call<JsonResponse<Void>> mTokenVerify;
-    private Call<JsonResponse<GetUserFriendsBean>> mGetUserFriendsTask;
+    private Call<JsonResponse<GetUserContactsBean>> mGetUserFriendsTask;
 
     private AtomicInteger mTaskCount;
 
@@ -55,8 +56,14 @@ public class SplashPresenter implements SplashContract.Presenter {
                 initIMServer();
             }
             initHTTPServer();
-        }else {
+        } else {
             mSplashView.startLoginActivity();
+        }
+    }
+
+    private void initComplete() {
+        if (mTaskCount.decrementAndGet() == 0) {
+            mSplashView.startHomeActivity();
         }
     }
 
@@ -70,16 +77,26 @@ public class SplashPresenter implements SplashContract.Presenter {
 
             @Override
             public void onSuccess(String s) {
-                if (mTaskCount.decrementAndGet() == 0) {
-                    mSplashView.startHomeActivity();
-                }
+                initComplete();
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
                 LogUtil.e(errorCode.getMessage());
-                AndroidUtil.showToast(R.string.SplashPresenter_LoginFailInIMSDK);
-                mSplashView.startLoginActivity();
+                switch (errorCode) {
+                    case RC_CONN_ID_REJECT:
+                    case RC_CONN_USER_OR_PASSWD_ERROR:
+                    case RC_CONN_NOT_AUTHRORIZED:
+                    case RC_CONN_PACKAGE_NAME_INVALID:
+                    case RC_CONN_APP_BLOCKED_OR_DELETED:
+                    case RC_CONN_USER_BLOCKED:
+                    case RC_DISCONN_KICK:
+                        AndroidUtil.showToast(R.string.SplashPresenter_LoginFailInIMSDK);
+                        mSplashView.startLoginActivity();
+                        break;
+                    default:
+                        initComplete();
+                }
             }
         });
     }
@@ -112,14 +129,23 @@ public class SplashPresenter implements SplashContract.Presenter {
 
         NetworkUtil.cancelCall(mGetUserFriendsTask);
         mGetUserFriendsTask = userApi.getUserContacts();
-        mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserFriendsBean>() {
+        mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserContactsBean>() {
             @Override
-            protected void onSuccess(GetUserFriendsBean response) {
-                DBManager.getInstance().getFriendDao().cleanTable();
-                DBManager.getInstance().getFriendDao().insertAll(response.getFriends());
-                if (mTaskCount.decrementAndGet() == 0) {
-                    mSplashView.startHomeActivity();
+            protected void onSuccess(GetUserContactsBean response) {
+                DBManager.getInstance().getContactDao().cleanTable();
+                List<ContactBean> contactBeans = response.getContacts();
+                if (contactBeans != null) {
+                    String myID = IdentityManager.getInstance().getUserID();
+                    for (ContactBean bean : contactBeans) {
+                        bean.setContactOf(myID);
+                    }
+                    if (!DBManager.getInstance().getContactDao().insertAll(contactBeans)) {
+                        LogUtil.e("insertAll contact error");
+                    }
+                }else {
+                    LogUtil.e("response.getContacts() is null");
                 }
+                initComplete();
             }
 
             @Override

@@ -21,7 +21,7 @@ import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.FriendProfileActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.bean.FriendBean;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.util.AnimationUtil;
@@ -55,7 +55,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private LinearLayoutManager mLinearLayoutManager;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
-    private List<FriendBean> mFriendList;
+    private List<ContactBean> mFriendList;
 
 
     @Override
@@ -212,7 +212,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     }
 
     @Override
-    public void updateContactListView(DiffUtil.DiffResult diffResult, List<FriendBean> newFriendList) {
+    public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList) {
         mFriendList.clear();
         mFriendList.addAll(newFriendList);
         diffResult.dispatchUpdatesTo(mAdapter);

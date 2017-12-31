@@ -2,7 +2,7 @@ package com.yzx.chat.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ContactMessageBean;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class FindNewContactContract {
 
 
     public interface Presenter extends BasePresenter<View> {
-        void loadContactRequest(List<ContactBean> mOldContactList);
+        void loadContactRequest(List<ContactMessageBean> mOldContactList);
         void requestAddContact(String contactID,String reason);
         void acceptContactRequest(String contactID);
         void searchUser(String nicknameOrTelephone);

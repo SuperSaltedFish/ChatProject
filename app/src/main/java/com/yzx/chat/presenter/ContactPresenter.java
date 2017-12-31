@@ -4,10 +4,9 @@ import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.bean.FriendBean;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.network.chat.NetworkAsyncTask;
-import com.yzx.chat.tool.ChatClientManager;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.NetworkUtil;
@@ -27,7 +26,7 @@ public class ContactPresenter implements ContactContract.Presenter {
     private ContactContract.View mContactView;
     private RefreshAllContactsTask mRefreshContactsTask;
     private LoadUnreadCountTask mLoadUnreadCountTask;
-    private List<FriendBean> mFriendList;
+    private List<ContactBean> mFriendList;
     private Handler mHandler;
 
     @Override
@@ -50,7 +49,7 @@ public class ContactPresenter implements ContactContract.Presenter {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void refreshAllContact(List<FriendBean> oldData) {
+    public void refreshAllContact(List<ContactBean> oldData) {
         NetworkUtil.cancelTask(mLoadUnreadCountTask);
         mLoadUnreadCountTask = new LoadUnreadCountTask();
         mLoadUnreadCountTask.execute();
@@ -66,19 +65,19 @@ public class ContactPresenter implements ContactContract.Presenter {
     }
 
 
-    private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactPresenter,List<FriendBean>, DiffUtil.DiffResult> {
+    private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactPresenter,List<ContactBean>, DiffUtil.DiffResult> {
 
         RefreshAllContactsTask(ContactPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
         @Override
-        protected DiffUtil.DiffResult doInBackground(List<FriendBean>[] lists) {
+        protected DiffUtil.DiffResult doInBackground(List<ContactBean>[] lists) {
             lists[1].clear();
-            DBManager.getInstance().getFriendDao().loadAllFriendTo(lists[1], IdentityManager.getInstance().getUserID());
-            Collections.sort(lists[1], new Comparator<FriendBean>() {
+            DBManager.getInstance().getContactDao().loadAllContactsTo(lists[1], IdentityManager.getInstance().getUserID());
+            Collections.sort(lists[1], new Comparator<ContactBean>() {
                 @Override
-                public int compare(FriendBean o1, FriendBean o2) {
+                public int compare(ContactBean o1, ContactBean o2) {
                     if (o2 != null && o1 != null) {
                         return o1.getAbbreviation().compareTo(o2.getAbbreviation());
                     } else {
@@ -87,14 +86,14 @@ public class ContactPresenter implements ContactContract.Presenter {
                 }
             });
 
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<FriendBean>(lists[0], lists[1]) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactBean>(lists[0], lists[1]) {
                 @Override
-                public boolean isItemEquals(FriendBean oldItem, FriendBean newItem) {
-                    return oldItem.getFriendOf().equals(newItem.getFriendOf()) && oldItem.getUserID().equals(newItem.getUserID());
+                public boolean isItemEquals(ContactBean oldItem, ContactBean newItem) {
+                    return oldItem.getContactOf().equals(newItem.getContactOf()) && oldItem.getUserID().equals(newItem.getUserID());
                 }
 
                 @Override
-                public boolean isContentsEquals(FriendBean oldItem, FriendBean newItem) {
+                public boolean isContentsEquals(ContactBean oldItem, ContactBean newItem) {
                     if (!oldItem.getAvatar().equals(newItem.getAvatar())) {
                         return false;
                     }

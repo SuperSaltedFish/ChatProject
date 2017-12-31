@@ -50,12 +50,12 @@ public class ConversationDao extends AbstractDao<ConversationBean> {
             COLUMN_NAME_LastMsgContent,
             COLUMN_NAME_LastMsgTime,
             COLUMN_NAME_UnreadMsgCount,
-            FriendDao.COLUMN_NAME_Nickname,
-            FriendDao.COLUMN_NAME_RemarkName,
+            ContactDao.COLUMN_NAME_Nickname,
+            ContactDao.COLUMN_NAME_RemarkName,
             TABLE_NAME,
-            FriendDao.TABLE_NAME,
+            ContactDao.TABLE_NAME,
             TABLE_NAME, COLUMN_NAME_UserID,
-            FriendDao.TABLE_NAME, FriendDao.COLUMN_NAME_FriendOf,
+            ContactDao.TABLE_NAME, ContactDao.COLUMN_NAME_ContactOf,
             TABLE_NAME, COLUMN_NAME_UserID);
 
     public ConversationBean loadSingleConversation(String userID, String conversation) {

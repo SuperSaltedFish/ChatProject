@@ -6,9 +6,9 @@ import android.support.v7.util.DiffUtil;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ContactMessageBean;
 import com.yzx.chat.contract.FindNewContactContract;
-import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.database.ContactMessageDao;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.SearchUserBean;
 import com.yzx.chat.network.api.user.UserApi;
@@ -40,7 +40,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
     private ChatClientManager mChatManager;
     private Handler mHandler;
 
-    private List<ContactBean> mContactList;
+    private List<ContactMessageBean> mContactList;
 
     @Override
     public void attachView(FindNewContactContract.View view) {
@@ -61,7 +61,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loadContactRequest(List<ContactBean> mOldContactList) {
+    public void loadContactRequest(List<ContactMessageBean> mOldContactList) {
         NetworkUtil.cancelTask(mLoadContactRequestTask);
         mLoadContactRequestTask = new LoadContactRequestTask(this);
         mLoadContactRequestTask.execute(mOldContactList, mContactList);
@@ -109,27 +109,27 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
 
     }
 
-    private static class LoadContactRequestTask extends NetworkAsyncTask<FindNewContactPresenter, List<ContactBean>, DiffUtil.DiffResult> {
+    private static class LoadContactRequestTask extends NetworkAsyncTask<FindNewContactPresenter, List<ContactMessageBean>, DiffUtil.DiffResult> {
 
         LoadContactRequestTask(FindNewContactPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
         @Override
-        protected DiffUtil.DiffResult doInBackground(List<ContactBean>[] lists) {
-            ContactDao dao = DBManager.getInstance().getContactDao();
-            List<ContactBean> newList = lists[1];
+        protected DiffUtil.DiffResult doInBackground(List<ContactMessageBean>[] lists) {
+            ContactMessageDao dao = DBManager.getInstance().getContactMessageDao();
+            List<ContactMessageBean> newList = lists[1];
             newList.clear();
             newList.addAll(dao.loadAllContactInfo(IdentityManager.getInstance().getUserID()));
 
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactBean>(lists[0], newList) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactMessageBean>(lists[0], newList) {
                 @Override
-                public boolean isItemEquals(ContactBean oldItem, ContactBean newItem) {
+                public boolean isItemEquals(ContactMessageBean oldItem, ContactMessageBean newItem) {
                     return oldItem.getUserFrom().equals(newItem.getUserFrom());
                 }
 
                 @Override
-                public boolean isContentsEquals(ContactBean oldItem, ContactBean newItem) {
+                public boolean isContentsEquals(ContactMessageBean oldItem, ContactMessageBean newItem) {
                     if (oldItem.isRemind() != newItem.isRemind()) {
                         return false;
                     }

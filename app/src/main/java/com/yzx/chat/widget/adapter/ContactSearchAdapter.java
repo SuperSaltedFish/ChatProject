@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
-import com.yzx.chat.bean.FriendBean;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.ArrayList;
@@ -23,15 +23,15 @@ import java.util.List;
 
 public class ContactSearchAdapter extends BaseAdapter implements Filterable {
 
-    private List<FriendBean> mFriendList;
+    private List<ContactBean> mFriendList;
     private Filter mFriendFilter;
 
-    public ContactSearchAdapter(List<FriendBean> friendBeanList) {
-        mFriendList = new ArrayList<>(friendBeanList.size() + 3);
-        mFriendFilter = new FriendFilter(friendBeanList);
+    public ContactSearchAdapter(List<ContactBean> contactBeanList) {
+        mFriendList = new ArrayList<>(contactBeanList.size() + 3);
+        mFriendFilter = new FriendFilter(contactBeanList);
     }
 
-    public FriendBean getFriendBeanByPosition(int position){
+    public ContactBean getFriendBeanByPosition(int position){
         if(position<mFriendList.size()){
             return mFriendList.get(position);
         }
@@ -55,8 +55,8 @@ public class ContactSearchAdapter extends BaseAdapter implements Filterable {
             convertView.setTag(new ItemViewHolder(convertView));
         }
         ItemViewHolder viewHolder = (ItemViewHolder) convertView.getTag();
-        FriendBean friendBean = mFriendList.get(position);
-        viewHolder.mTvName.setText(friendBean.getNicknameOrRemarkName());
+        ContactBean contactBean = mFriendList.get(position);
+        viewHolder.mTvName.setText(contactBean.getNicknameOrRemarkName());
         GlideUtil.loadCircleFromUrl(parent.getContext(), viewHolder.mIvHeadImage, R.drawable.temp_head_image);
         return convertView;
     }
@@ -89,11 +89,11 @@ public class ContactSearchAdapter extends BaseAdapter implements Filterable {
     }
 
     private class FriendFilter extends Filter {
-        private List<FriendBean> mAllFriendList;
-        private List<FriendBean> mFilterFriendList;
+        private List<ContactBean> mAllFriendList;
+        private List<ContactBean> mFilterFriendList;
         private FilterResults mResults;
 
-        FriendFilter(List<FriendBean> allFriendList) {
+        FriendFilter(List<ContactBean> allFriendList) {
             mAllFriendList = allFriendList;
             mFilterFriendList = new ArrayList<>(allFriendList.size() + 3);
             mResults = new FilterResults();
@@ -104,7 +104,7 @@ public class ContactSearchAdapter extends BaseAdapter implements Filterable {
             mFilterFriendList.clear();
             if (constraint != null) {
                 constraint = constraint.toString().toLowerCase();
-                for (FriendBean friend : mAllFriendList) {
+                for (ContactBean friend : mAllFriendList) {
                     if (friend.getNicknameOrRemarkName().contains(constraint) || friend.getAbbreviation().contains(constraint)) {
                         mFilterFriendList.add(friend);
                     }

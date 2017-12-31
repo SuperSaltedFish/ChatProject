@@ -20,7 +20,7 @@ public interface UserApi {
     Call<JsonResponse<SearchUserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
 
     @HttpApi(RequestMethod = "POST", Path = "user/getUserContacts")
-    Call<JsonResponse<GetUserFriendsBean>> getUserContacts();
+    Call<JsonResponse<GetUserContactsBean>> getUserContacts();
 
     @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
     Call<JsonResponse<Void>> requestContact(@HttpParam("friendID") String friendUserID, @HttpParam("reason") String reason);

@@ -1,82 +1,80 @@
 package com.yzx.chat.bean;
 
-import android.support.annotation.StringDef;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import android.text.TextUtils;
+
+import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.util.PinYinUtil;
 
 /**
- * Created by YZX on 2017年11月17日.
- * 每一个不曾起舞的日子,都是对生命的辜负.
+ * Created by YZX on 2017年07月01日.
+ * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
 public class ContactBean {
-//
-    public static final String CONTACT_TYPE_ADDED = "Added";
-    public static final String CONTACT_TYPE_DELETED = "Deleted";
-    public static final String CONTACT_TYPE_REQUEST = "Invited";
-    public static final String CONTACT_TYPE_ACCEPTED = "Accepted";
-    public static final String CONTACT_TYPE_DECLINED = "Declined";
-    public static final String CONTACT_TYPE_INITIATE = "Initiate";
 
-    @StringDef({CONTACT_TYPE_ADDED, CONTACT_TYPE_DELETED, CONTACT_TYPE_REQUEST, CONTACT_TYPE_ACCEPTED, CONTACT_TYPE_DECLINED,CONTACT_TYPE_INITIATE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ContactType {
+    private String contactOf;
+    private String userID;
+    private String nickname;
+    private String remarkName;
+    private String avatar;
+
+    private String abbreviation;
+
+    public String getNicknameOrRemarkName(){
+       return TextUtils.isEmpty(remarkName)?nickname:remarkName;
     }
 
-    private String userTo;
-    private String userFrom;
-    private String type;
-    private String reason;
-    private boolean isRemind;
-    private int time;
-
-    public String getUserTo() {
-        return userTo;
+    public String getAbbreviation(){
+        if(TextUtils.isEmpty(abbreviation)){
+             abbreviation = PinYinUtil.getPinYinAbbreviation(getNicknameOrRemarkName(),false);
+        }
+        return abbreviation;
     }
 
-    public void setUserTo(String userTo) {
-        this.userTo = userTo;
+
+
+
+
+
+    public String getContactOf() {
+        return IdentityManager.getInstance().getUserID();
     }
 
-    public String getUserFrom() {
-        return userFrom;
+    public void setContactOf(String contactOf) {
+        this.contactOf = contactOf;
     }
 
-    public void setUserFrom(String userFrom) {
-        this.userFrom = userFrom;
+    public String getUserID() {
+        return userID;
     }
 
-    @ContactType
-    public String getType() {
-        return type;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
-    public void setType(@ContactType String type) {
-        this.type = type;
+    public String getNickname() {
+        return nickname;
     }
 
-    public String getReason() {
-        return reason;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public String getRemarkName() {
+        return remarkName;
     }
 
-    public boolean isRemind() {
-        return isRemind;
+    public void setRemarkName(String remarkName) {
+        this.remarkName = remarkName;
     }
 
-    public void setRemind(boolean remind) {
-        isRemind = remind;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public int getTime() {
-        return time;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public void setTime(int time) {
-        this.time = time;
-    }
 }
