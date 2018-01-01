@@ -12,11 +12,11 @@ import com.yzx.chat.database.ContactMessageDao;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.SearchUserBean;
 import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.NetworkUtil;
@@ -37,7 +37,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
     private Call<JsonResponse<Void>> mAddFriendCall;
     private Call<JsonResponse<SearchUserBean>> mSearchUserCall;
     private UserApi mUserApi;
-    private ChatClientManager mChatManager;
+    private IMClient mChatManager;
     private Handler mHandler;
 
     private List<ContactMessageBean> mContactList;
@@ -46,7 +46,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
     public void attachView(FindNewContactContract.View view) {
         mFindNewContactContractView = view;
         mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-        mChatManager = ChatClientManager.getInstance();
+        mChatManager = IMClient.getInstance();
         mHandler = new Handler();
         mContactList = new ArrayList<>(32);
     }

@@ -71,7 +71,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
 
-    public static final String INTENT_EXTRA_CONVERSATION = "ConversationID";
+    public static final String INTENT_EXTRA_CONVERSATION = "Conversation";
 
     private RecyclerView mRvChatView;
     private Toolbar mToolbar;
@@ -503,7 +503,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             return;
         }
         mPresenter.saveMessageDraft(mEtContent.getText().toString());
-        setResult(ACTIVITY_RESPONSE_CODE, getIntent());
         finish();
         overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
     }

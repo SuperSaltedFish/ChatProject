@@ -58,8 +58,8 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
                 holder.itemView.setTag(null);
             }
             ContactBean contactBean = mFriendList.get(position);
-            friendHolder.mTvName.setText(contactBean.getNicknameOrRemarkName());
-            GlideUtil.loadCircleFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
+            friendHolder.mTvName.setText(contactBean.getName());
+            GlideUtil.loadFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
         }
     }
 
@@ -187,7 +187,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ContactBean contactBean = mSearchAdapter.getFriendBeanByPosition(position);
-                mSearchView.setText(contactBean.getNicknameOrRemarkName());
+                mSearchView.setText(contactBean.getName());
             }
         };
     }

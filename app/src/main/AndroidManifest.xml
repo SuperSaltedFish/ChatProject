@@ -68,7 +68,7 @@
             android:theme="@style/BaseDarkTheme">
 
         </activity>
-        <activity android:name=".view.activity.FriendProfileActivity">
+        <activity android:name=".view.activity.ContactProfileActivity">
 
         </activity>
 

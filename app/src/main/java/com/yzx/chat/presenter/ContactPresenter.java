@@ -6,7 +6,8 @@ import android.support.v7.util.DiffUtil;
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactContract;
-import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.NetworkUtil;
@@ -26,14 +27,14 @@ public class ContactPresenter implements ContactContract.Presenter {
     private ContactContract.View mContactView;
     private RefreshAllContactsTask mRefreshContactsTask;
     private LoadUnreadCountTask mLoadUnreadCountTask;
-    private List<ContactBean> mFriendList;
+    private List<ContactBean> mContactList;
     private Handler mHandler;
 
     @Override
     public void attachView(ContactContract.View view) {
         mContactView = view;
         mHandler = new Handler();
-        mFriendList = new ArrayList<>(128);
+        mContactList = new ArrayList<>(128);
     }
 
     @Override
@@ -42,8 +43,8 @@ public class ContactPresenter implements ContactContract.Presenter {
         NetworkUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mHandler.removeCallbacksAndMessages(null);
-        mFriendList.clear();
-        mFriendList = null;
+        mContactList.clear();
+        mContactList = null;
         mHandler = null;
     }
 
@@ -56,16 +57,16 @@ public class ContactPresenter implements ContactContract.Presenter {
 
         NetworkUtil.cancelTask(mRefreshContactsTask);
         mRefreshContactsTask = new RefreshAllContactsTask(this);
-        mRefreshContactsTask.execute(oldData, mFriendList);
+        mRefreshContactsTask.execute(oldData, mContactList);
 
     }
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
-        mContactView.updateContactListView(diffResult,mFriendList);
+        mContactView.updateContactListView(diffResult, mContactList);
     }
 
 
-    private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactPresenter,List<ContactBean>, DiffUtil.DiffResult> {
+    private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactPresenter, List<ContactBean>, DiffUtil.DiffResult> {
 
         RefreshAllContactsTask(ContactPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
@@ -73,8 +74,10 @@ public class ContactPresenter implements ContactContract.Presenter {
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ContactBean>[] lists) {
-            lists[1].clear();
-            DBManager.getInstance().getContactDao().loadAllContactsTo(lists[1], IdentityManager.getInstance().getUserID());
+            List<ContactBean> newList = lists[1];
+            newList.clear();
+            newList.addAll(IMClient.getInstance().contactManager().getAllContacts());
+
             Collections.sort(lists[1], new Comparator<ContactBean>() {
                 @Override
                 public int compare(ContactBean o1, ContactBean o2) {
@@ -89,7 +92,7 @@ public class ContactPresenter implements ContactContract.Presenter {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactBean>(lists[0], lists[1]) {
                 @Override
                 public boolean isItemEquals(ContactBean oldItem, ContactBean newItem) {
-                    return oldItem.getContactOf().equals(newItem.getContactOf()) && oldItem.getUserID().equals(newItem.getUserID());
+                    return oldItem.getUserID().equals(newItem.getUserID());
                 }
 
                 @Override
@@ -117,7 +120,7 @@ public class ContactPresenter implements ContactContract.Presenter {
         }
     }
 
-    private static class LoadUnreadCountTask extends NetworkAsyncTask<Void,Void, Void> {
+    private static class LoadUnreadCountTask extends NetworkAsyncTask<Void, Void, Void> {
 
         LoadUnreadCountTask() {
             super(null);

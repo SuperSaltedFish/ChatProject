@@ -18,7 +18,7 @@ import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.view.activity.FindNewContactActivity;
-import com.yzx.chat.view.activity.FriendProfileActivity;
+import com.yzx.chat.view.activity.ContactProfileActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactBean;
@@ -55,7 +55,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private LinearLayoutManager mLinearLayoutManager;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
-    private List<ContactBean> mFriendList;
+    private List<ContactBean> mContactList;
 
 
     @Override
@@ -74,8 +74,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
         mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
-        mFriendList = new ArrayList<>(128);
-        mAdapter = new ContactAdapter(mFriendList);
+        mContactList = new ArrayList<>(128);
+        mAdapter = new ContactAdapter(mContactList);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected void onFirstVisible() {
-        mPresenter.refreshAllContact(mFriendList);
+        mPresenter.refreshAllContact(mContactList);
     }
 
     private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
@@ -130,14 +130,16 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
 
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
             if (position == 0) {
 
             } else {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        mContext.startActivity(new Intent(mContext, FriendProfileActivity.class));
+                        Intent intent =new Intent(mContext, ContactProfileActivity.class);
+                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, mContactList.get(position-1));
+                        mContext.startActivity(intent);
                     }
                 });
             }
@@ -213,8 +215,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList) {
-        mFriendList.clear();
-        mFriendList.addAll(newFriendList);
+        mContactList.clear();
+        mContactList.addAll(newFriendList);
         diffResult.dispatchUpdatesTo(mAdapter);
     }
 }

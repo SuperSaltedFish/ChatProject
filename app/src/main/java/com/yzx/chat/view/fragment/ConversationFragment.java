@@ -19,7 +19,6 @@ import com.yzx.chat.R;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.view.activity.ChatActivity;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
@@ -39,8 +38,6 @@ import io.rong.imlib.model.Conversation;
 public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View {
 
     public static final String TAG = ConversationFragment.class.getSimpleName();
-
-    private static final int ACTIVITY_REQUEST_CODE = 10000;
 
     private RecyclerView mRecyclerView;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -103,7 +100,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                         mPresenter.setConversationToTop(conversation, !conversation.isTop());
                         break;
                     case R.id.ConversationMenu_Remove:
-                        mPresenter.removeConversation(index, conversation);
+                        mPresenter.removeConversation(conversation);
                         break;
                     case R.id.ConversationMenu_Clean:
                         mPresenter.clearChatMessages(conversation);
@@ -116,24 +113,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     protected void onFirstVisible() {
         mPresenter.refreshAllConversations();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != ACTIVITY_REQUEST_CODE || resultCode != ChatActivity.ACTIVITY_RESPONSE_CODE) {
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            if (data != null) {
-                Conversation conversation = data.getParcelableExtra(ChatActivity.INTENT_EXTRA_CONVERSATION);
-                if (conversation != null) {
-                    mPresenter.refreshAllConversations();
-                } else {
-                    LogUtil.e("Conversation is null");
-                }
-            } else {
-                LogUtil.e("Intent is null");
-            }
-        }
     }
 
     private void enableEmptyListHint(boolean isEnable) {
@@ -165,7 +144,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                     Intent intent = new Intent(mContext, ChatActivity.class);
                     intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position));
                     ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
-                    startActivityForResult(intent, ACTIVITY_REQUEST_CODE, compat.toBundle());
+                    startActivity(intent, compat.toBundle());
                 }
             });
         }
@@ -222,24 +201,13 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
 
     @Override
-    public void removeConversationItem(int position, Conversation conversation) {
-        int removePosition = -1;
-        if (mConversationList.size() > position && mConversationList.get(position).getTargetId().equals(conversation.getTargetId())) {
-            removePosition = position;
-        } else {
-            for (int i = 0, size = mConversationList.size(); i < size; i++) {
-                if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
-                    removePosition = i;
-                    break;
-                }
+    public void removeConversationItem(Conversation conversation) {
+        for (int i = 0, size = mConversationList.size(); i < size; i++) {
+            if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
+                mConversationList.remove(i);
+                mAdapter.notifyItemRemoved(i);
+                break;
             }
-        }
-        if (removePosition >= 0) {
-            mConversationList.remove(removePosition);
-            mAdapter.notifyItemRemoved(removePosition);
-            enableEmptyListHint(mConversationList.size() == 0);
-        } else {
-            LogUtil.e("remove conversation fail from ui");
         }
     }
 }

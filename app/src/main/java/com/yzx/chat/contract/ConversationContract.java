@@ -22,7 +22,7 @@ public class ConversationContract {
 
         void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> conversationList);
 
-        void removeConversationItem(int position,Conversation conversation);
+        void removeConversationItem(Conversation conversation);
 
     }
 
@@ -32,7 +32,7 @@ public class ConversationContract {
 
         void setConversationToTop(Conversation conversation, boolean isTop);
 
-        void removeConversation(int position,Conversation conversation);
+        void removeConversation(Conversation conversation);
 
         void clearChatMessages(Conversation conversation);
     }

@@ -3,7 +3,9 @@ package com.yzx.chat.presenter;
 import android.os.Handler;
 
 import com.yzx.chat.contract.HomeContract;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.ChatManager;
+import com.yzx.chat.network.chat.ContactManager;
+import com.yzx.chat.network.chat.IMClient;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -13,34 +15,35 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View mHomeView;
     private Handler mHandler;
-    private ChatClientManager mChatClientManager;
+    private IMClient mIMClient;
 
     @Override
     public void attachView(HomeContract.View view) {
         mHomeView = view;
         mHandler = new Handler();
-        mChatClientManager = ChatClientManager.getInstance();
-        mChatClientManager.addUnreadMessageCountChangeListener(mOnUnreadCountChangeListener);
+        mIMClient = IMClient.getInstance();
+        mIMClient.chatManager().addChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
+        mIMClient.contactManager().addContactMessageUnreadCountChangeListener(mOnContactMessageUnreadCountChangeListener);
     }
 
     @Override
     public void detachView() {
-        mChatClientManager.removeUnreadMessageCountChangeListener(mOnUnreadCountChangeListener);
+        mIMClient.chatManager().removeChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
+        mIMClient.contactManager().removeContactMessageUnreadCountChangeListener(mOnContactMessageUnreadCountChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
-        mChatClientManager = null;
+        mIMClient = null;
         mHandler = null;
     }
 
 
     @Override
     public void loadUnreadCount() {
-        mChatClientManager.updateChatUnreadCount();
-        mChatClientManager.updateContactUnreadCount();
+        mIMClient.chatManager().updateChatUnreadCount();
+        mIMClient.contactManager().updateContactUnreadCount();
     }
 
-    private final ChatClientManager.OnUnreadMessageCountChangeListener mOnUnreadCountChangeListener = new ChatClientManager.OnUnreadMessageCountChangeListener() {
-
+    private final ChatManager.OnChatMessageUnreadCountChangeListener mOnChatMessageUnreadCountChangeListener = new ChatManager.OnChatMessageUnreadCountChangeListener() {
         @Override
         public void onChatMessageUnreadCountChange(final int count) {
             mHandler.post(new Runnable() {
@@ -50,7 +53,9 @@ public class HomePresenter implements HomeContract.Presenter {
                 }
             });
         }
+    };
 
+    private final ContactManager.OnContactMessageUnreadCountChangeListener mOnContactMessageUnreadCountChangeListener = new ContactManager.OnContactMessageUnreadCountChangeListener() {
         @Override
         public void onContactMessageUnreadCountChange(final int count) {
             mHandler.post(new Runnable() {

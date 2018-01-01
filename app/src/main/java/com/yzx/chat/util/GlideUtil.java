@@ -27,6 +27,7 @@ public class GlideUtil {
         GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .dontAnimate()
                 .format(DecodeFormat.PREFER_RGB_565)
                 .into(view);
     }
@@ -56,7 +57,7 @@ public class GlideUtil {
     }
 
     public static void clear(Context context, ImageView view) {
-            GlideApp.with(context).clear(view);
+        GlideApp.with(context).clear(view);
 
     }
 

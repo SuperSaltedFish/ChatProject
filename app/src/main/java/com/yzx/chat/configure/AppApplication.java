@@ -6,11 +6,9 @@ import android.content.Context;
 import android.support.text.emoji.EmojiCompat;
 import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 
-import com.yzx.chat.broadcast.NetworkStateReceive;
 import com.yzx.chat.tool.ActivityTool;
 import com.yzx.chat.tool.DirectoryManager;
-import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.tool.SharePreferenceManager;
@@ -50,7 +48,7 @@ public class AppApplication extends Application {
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 
-            ChatClientManager.init(this,Constants.RONG_CLOUD_APP_KEY);
+            IMClient.init(this,Constants.RONG_CLOUD_APP_KEY);
         }
     }
 

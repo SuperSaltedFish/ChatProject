@@ -1,6 +1,5 @@
 package com.yzx.chat.util;
 
-import com.yzx.chat.network.chat.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 
 /**

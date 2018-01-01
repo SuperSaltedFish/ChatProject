@@ -1,5 +1,7 @@
 package com.yzx.chat.presenter;
 
+import android.os.Handler;
+
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
@@ -10,7 +12,7 @@ import com.yzx.chat.network.api.user.GetUserContactsBean;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.AndroidUtil;
@@ -63,12 +65,18 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     private void initComplete() {
         if (mTaskCount.decrementAndGet() == 0) {
-            mSplashView.startHomeActivity();
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mSplashView.startHomeActivity();
+                }
+            });
         }
     }
 
     private void initIMServer() {
-        ChatClientManager.getInstance().login("nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8", new RongIMClient.ConnectCallback() {
+        //"nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8"
+        IMClient.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 AndroidUtil.showToast(R.string.SplashPresenter_TokenIncorrect);
@@ -134,17 +142,18 @@ public class SplashPresenter implements SplashContract.Presenter {
             protected void onSuccess(GetUserContactsBean response) {
                 DBManager.getInstance().getContactDao().cleanTable();
                 List<ContactBean> contactBeans = response.getContacts();
+                String myID = IdentityManager.getInstance().getUserID();
                 if (contactBeans != null) {
-                    String myID = IdentityManager.getInstance().getUserID();
                     for (ContactBean bean : contactBeans) {
                         bean.setContactOf(myID);
                     }
                     if (!DBManager.getInstance().getContactDao().insertAll(contactBeans)) {
                         LogUtil.e("insertAll contact error");
                     }
-                }else {
+                } else {
                     LogUtil.e("response.getContacts() is null");
                 }
+                IMClient.getInstance().contactManager().loadAllContact(myID);
                 initComplete();
             }
 

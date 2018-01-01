@@ -2,10 +2,12 @@ package com.yzx.chat.presenter;
 
 import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
@@ -29,7 +31,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private ChatContract.View mChatView;
     private Handler mHandler;
-    private ChatClientManager mChatManager;
+    private IMClient mIMClient;
 
     private Conversation mConversation;
     private boolean mHasMoreMessage;
@@ -40,13 +42,13 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void attachView(ChatContract.View view) {
         mChatView = view;
         mHandler = new Handler();
-        mChatManager = ChatClientManager.getInstance();
+        mIMClient = IMClient.getInstance();
     }
 
     @Override
     public void detachView() {
-        mChatManager.removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mChatManager.removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
+        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
         mHandler = null;
@@ -59,10 +61,12 @@ public class ChatPresenter implements ChatContract.Presenter {
         sConversationID = mConversation.getTargetId();
         mHasMoreMessage = true;
         mIsLoadingMore = false;
-        mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
-        mChatManager.addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
-        mChatManager.clearConversationUnreadStatus(mConversation);
-        List<Message> messageList = mChatManager.getHistoryMessages(mConversation, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
+        mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
+        mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
+        if (mConversation.getUnreadMessageCount() != 0) {
+            mIMClient.conversationManager().clearConversationUnreadStatus(mConversation);
+        }
+        List<Message> messageList = mIMClient.chatManager().getHistoryMessages(mConversation, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         if (messageList == null || messageList.size() == 0) {
             mHasMoreMessage = false;
             return;
@@ -93,7 +97,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void loadMoreMessage(int lastMessageID) {
         mIsLoadingMore = true;
-        mChatManager.asyncGetHistoryMessages(
+        mIMClient.chatManager().asyncGetHistoryMessages(
                 mConversation,
                 lastMessageID,
                 Constants.CHAT_MESSAGE_PAGE_SIZE,
@@ -126,12 +130,16 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void setVoiceMessageAsListened(Message message) {
-        mChatManager.setVoiceMessageAsListened(message);
+        mIMClient.chatManager().setVoiceMessageAsListened(message);
     }
 
     @Override
     public void saveMessageDraft(String draft) {
-        mChatManager.saveMessageDraft(mConversation, draft);
+        String oldDraft = mConversation.getDraft();
+        if ((TextUtils.isEmpty(draft)&&TextUtils.isEmpty(oldDraft))||draft.equals(oldDraft)) {
+            return;
+        }
+        mIMClient.conversationManager().saveConversationDraft(mConversation, draft);
     }
 
     private void sendMessage(MessageContent messageContent) {
@@ -139,7 +147,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     private void sendMessage(Message message) {
-        mChatManager.sendMessage(message);
+        mIMClient.chatManager().sendMessage(message);
     }
 
 
@@ -163,7 +171,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
 
-    private final ChatClientManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatClientManager.OnChatMessageReceiveListener() {
+    private final ChatManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatManager.OnChatMessageReceiveListener() {
 
         @Override
         public void onChatMessageReceived(Message message, int untreatedCount) {
@@ -171,7 +179,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
     };
 
-    private final ChatClientManager.OnMessageSendStateChangeListener mOnMessageSendStateChangeListener = new ChatClientManager.OnMessageSendStateChangeListener() {
+    private final ChatManager.OnMessageSendStateChangeListener mOnMessageSendStateChangeListener = new ChatManager.OnMessageSendStateChangeListener() {
         @Override
         public void onSendProgress(Message message) {
             mChatView.addNewMessage(message);

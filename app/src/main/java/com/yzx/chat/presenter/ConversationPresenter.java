@@ -7,9 +7,12 @@ import android.text.TextUtils;
 
 import com.yzx.chat.base.DiffCalculate;
 
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ConversationContract;
-import com.yzx.chat.network.chat.NetworkAsyncTask;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.ConversationManager;
+import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.network.chat.ChatManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 
@@ -33,7 +36,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<Conversation> mConversationList;
-    private ChatClientManager mChatManager;
+    private IMClient mChatManager;
     private Handler mHandler;
 
     @Override
@@ -41,16 +44,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
         mHandler = new Handler();
-        mChatManager = ChatClientManager.getInstance();
+        mChatManager = IMClient.getInstance();
         mChatManager.addConnectionListener(mOnConnectionStateChangeListener);
-        mChatManager.addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mChatManager.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mChatManager.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
         mChatManager.removeConnectionListener(mOnConnectionStateChangeListener);
-        mChatManager.removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mChatManager.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mChatManager.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
@@ -60,6 +65,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @SuppressWarnings("unchecked")
     @Override
     public void refreshAllConversations() {
+        LogUtil.e("refreshAllConversations");
         NetworkUtil.cancelTask(mRefreshTask);
         mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList);
@@ -67,73 +73,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void setConversationToTop(Conversation conversation, boolean isTop) {
-        mChatManager.asyncSetConversationTop(conversation, isTop, new RongIMClient.ResultCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                if (aBoolean) {
-                    refreshAllConversations();
-                } else {
-                    LogUtil.e("setConversationTop  fail");
-                }
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
-            }
-        });
+        mChatManager.conversationManager().setConversationTop(conversation, isTop);
     }
 
 
     @Override
-    public void removeConversation(final int position, final Conversation conversation) {
-        mChatManager.asyncRemoveConversation(conversation, new RongIMClient.ResultCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                if (aBoolean) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mConversationList.size() > position && mConversationList.get(position).getTargetId().equals(conversation.getTargetId())) {
-                                mConversationList.remove(position);
-                                mConversationView.removeConversationItem(position, conversation);
-                            } else {
-                                for (int i = 0, size = mConversationList.size(); i < size; i++) {
-                                    if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
-                                        mConversationList.remove(i);
-                                        mConversationView.removeConversationItem(i, conversation);
-                                        return;
-                                    }
-                                }
-                                LogUtil.e("delete conversation fail from presenter");
-                            }
-                        }
-                    });
-                } else {
-                    LogUtil.e("delete conversation fail");
-                }
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
-            }
-        });
+    public void removeConversation(Conversation conversation) {
+        mChatManager.conversationManager().removeConversation(conversation);
     }
 
     @Override
     public void clearChatMessages(Conversation conversation) {
-        mChatManager.asyncDeleteChatMessages(conversation, new RongIMClient.ResultCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                refreshAllConversations();
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
-            }
-        });
+        mChatManager.conversationManager().clearAllConversationMessages(conversation);
     }
 
 
@@ -141,7 +92,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView.updateConversationListView(diffResult, mConversationList);
     }
 
-    private final ChatClientManager.onConnectionStateChangeListener mOnConnectionStateChangeListener = new ChatClientManager.onConnectionStateChangeListener() {
+    private final IMClient.onConnectionStateChangeListener mOnConnectionStateChangeListener = new IMClient.onConnectionStateChangeListener() {
 
         @Override
         public void onConnected() {
@@ -154,12 +105,43 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
-    private final ChatClientManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatClientManager.OnChatMessageReceiveListener() {
+    private final ChatManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatManager.OnChatMessageReceiveListener() {
         @Override
         public void onChatMessageReceived(Message message, int untreatedCount) {
             if (untreatedCount == 0) {
                 refreshAllConversations();
             }
+        }
+    };
+
+    private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
+        @Override
+        public void onConversationStateChange(final Conversation conversation, int typeCode) {
+            switch (typeCode) {
+                case ConversationManager.UPDATE_TYPE_REMOVE:
+                    synchronized (ConversationPresenter.class) {
+                        for (int i = 0, size = mConversationList.size(); i < size; i++) {
+                            if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
+                                mConversationList.remove(i);
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mConversationView.removeConversationItem(conversation);
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case ConversationManager.UPDATE_TYPE_CLEAR_UNREAD_STATUS:
+                case ConversationManager.UPDATE_TYPE_SAVE_DRAFT:
+                case ConversationManager.UPDATE_TYPE_SET_TOP:
+                case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
+                    refreshAllConversations();
+                    break;
+            }
+            LogUtil.e("Conversation change,code: " + typeCode);
         }
     };
 
@@ -172,50 +154,59 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<Conversation>[] oldConversation) {
-            ChatClientManager chatManager = ChatClientManager.getInstance();
-            List<Conversation> oldConversationList = oldConversation[0];
-            List<Conversation> newConversationList = chatManager.getAllConversations(Conversation.ConversationType.PRIVATE);
-            if (newConversationList == null) {
-                return null;
-            }
-            for (Conversation conversation : newConversationList) {
-                if (conversation.getTargetId().equals(ChatPresenter.sConversationID)) {
-                    chatManager.clearConversationUnreadStatus(conversation);
-                    conversation.setUnreadMessageCount(0);
+            synchronized (ConversationPresenter.class) {
+                IMClient chatManager = IMClient.getInstance();
+                List<Conversation> oldConversationList = oldConversation[0];
+                List<Conversation> newConversationList = chatManager.conversationManager().getAllConversations(Conversation.ConversationType.PRIVATE);
+                if (newConversationList == null) {
+                    return null;
                 }
-            }
+                String conversationID;
+                ContactBean contactBean;
+                for (Conversation conversation : newConversationList) {
+                    conversationID = conversation.getTargetId();
+                    if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
+                        chatManager.conversationManager().clearConversationUnreadStatus(conversation);
+                        conversation.setUnreadMessageCount(0);
+                    }
+                    contactBean = chatManager.contactManager().getContact(conversationID);
+                    if (contactBean != null) {
+                        conversation.setConversationTitle(contactBean.getName());
+                    }
+                }
 
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<Conversation>(oldConversationList, newConversationList) {
-                @Override
-                public boolean isItemEquals(Conversation oldItem, Conversation newItem) {
-                    return oldItem.getTargetId().equals(newItem.getTargetId());
-                }
+                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<Conversation>(oldConversationList, newConversationList) {
+                    @Override
+                    public boolean isItemEquals(Conversation oldItem, Conversation newItem) {
+                        return oldItem.getTargetId().equals(newItem.getTargetId());
+                    }
 
-                @Override
-                public boolean isContentsEquals(Conversation oldItem, Conversation newItem) {
-                    if (oldItem.getSentTime() != newItem.getSentTime()) {
-                        return false;
+                    @Override
+                    public boolean isContentsEquals(Conversation oldItem, Conversation newItem) {
+                        if (oldItem.getSentTime() != newItem.getSentTime()) {
+                            return false;
+                        }
+                        if (oldItem.getUnreadMessageCount() != newItem.getUnreadMessageCount()) {
+                            return false;
+                        }
+                        if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
+                            return false;
+                        }
+                        String oldDraft = oldItem.getDraft();
+                        String newDraft = newItem.getDraft();
+                        if ((TextUtils.isEmpty(oldDraft) && !TextUtils.isEmpty(newDraft)) || (!TextUtils.isEmpty(oldDraft) && TextUtils.isEmpty(newDraft))) {
+                            return false;
+                        }
+                        if ((!TextUtils.isEmpty(oldDraft) && !TextUtils.isEmpty(newDraft)) && !oldDraft.equals(newDraft)) {
+                            return false;
+                        }
+                        return true;
                     }
-                    if (oldItem.getUnreadMessageCount() != newItem.getUnreadMessageCount()) {
-                        return false;
-                    }
-                    if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
-                        return false;
-                    }
-                    String oldDraft = oldItem.getDraft();
-                    String newDraft = newItem.getDraft();
-                    if((TextUtils.isEmpty(oldDraft)&&!TextUtils.isEmpty(newDraft))||(!TextUtils.isEmpty(oldDraft)&&TextUtils.isEmpty(newDraft))){
-                        return false;
-                    }
-                    if((!TextUtils.isEmpty(oldDraft)&&!TextUtils.isEmpty(newDraft))&&!oldDraft.equals(newDraft)){
-                        return false;
-                    }
-                    return true;
-                }
-            }, true);
-            oldConversationList.clear();
-            oldConversationList.addAll(newConversationList);
-            return diffResult;
+                }, true);
+                oldConversationList.clear();
+                oldConversationList.addAll(newConversationList);
+                return diffResult;
+            }
         }
 
         @Override

@@ -17,10 +17,10 @@ import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.GetSecretKeyBean;
 import com.yzx.chat.network.api.auth.LoginRegisterBean;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
-import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
-import com.yzx.chat.tool.ChatClientManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
@@ -68,7 +68,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         mGson = new GsonBuilder().serializeNulls().create();
         mHandler = new Handler(Looper.myLooper());
 
-        ChatClientManager.getInstance().logout();
+        IMClient.getInstance().logout();
         mIDManager.clearAuthenticationData();
         sHttpExecutor.cleanAllTask();
         NetworkAsyncTask.cleanAllTask();
@@ -296,7 +296,8 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void loginIMServer() {
-        ChatClientManager.getInstance().login("nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8", new RongIMClient.ConnectCallback() {
+        //nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8
+        IMClient.getInstance().login(mIDManager.getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 LogUtil.e("onTokenIncorrect");

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import com.yzx.chat.network.chat.NetworkAsyncTask;
+import com.yzx.chat.util.NetworkAsyncTask;
 
 /**
  * Created by YZX on 2017年12月15日.
