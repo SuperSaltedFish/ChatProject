@@ -64,8 +64,6 @@ import io.rong.imlib.model.Message;
  */
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
 
-    public static final int ACTIVITY_RESPONSE_CODE = 10000;
-
     public static final int MAX_VOICE_RECORDER_DURATION = 60 * 999;
     private static final int MIN_VOICE_RECORDER_DURATION = 800;
 
