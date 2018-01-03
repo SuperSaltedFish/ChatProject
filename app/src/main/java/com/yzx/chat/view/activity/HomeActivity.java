@@ -1,11 +1,9 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -52,7 +50,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         mFragmentManager = getSupportFragmentManager();
 
         mNavigationController = ((PageNavigationView) findViewById(R.id.HomeActivity_mBottomNavigationBar)).material()
-                .addItem(R.drawable.ic_chat, getString(R.string.HomeBottomNavigationTitle_Chat))
+                .addItem(R.drawable.ic_conversation, getString(R.string.HomeBottomNavigationTitle_Chat))
                 .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact))
                 .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments))
                 .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile))

@@ -38,10 +38,10 @@
 
 
     <com.yzx.chat.widget.view.KeyboardPanelSwitcher
-        android:background="@android:color/white"
         android:id="@+id/ChatActivity_mLlInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -91,13 +91,15 @@
                 android:textColorHint="@color/text_secondary_color_black_light"
                 android:textSize="16dp" />
 
-            <ImageView
-                android:id="@+id/ChatActivity_mIvSendMessage"
+
+            <ImageSwitcher
+                android:id="@+id/ChatActivity_mIsvSendMessage"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="8dp"
-                android:padding="4dp"
-                android:src="@drawable/ic_send" />
+                android:inAnimation="@anim/anim_fade_in"
+                android:outAnimation="@anim/anim_fade_out"
+                android:padding="4dp" />
 
         </LinearLayout>
 
@@ -106,47 +108,55 @@
             android:layout_height="1px"
             android:background="@color/text_secondary_color_black_light" />
 
-            <LinearLayout
-                android:id="@+id/ChatActivity_mLlRecorderLayout"
+        <LinearLayout
+            android:id="@+id/ChatActivity_mLlRecorderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.yzx.chat.widget.view.AmplitudeView
+                android:id="@+id/ChatActivity_mAmplitudeView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="48dp"
+                android:layout_marginStart="48dp" />
+
+            <com.yzx.chat.widget.view.RecorderButton
+                android:id="@+id/ChatActivity_mBtnRecorder"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:background="@color/theme_main_color"
+                android:padding="20dp"
+                android:src="@drawable/ic_microphone" />
+
+            <TextView
+                android:id="@+id/ChatActivity_mTvRecorderHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:text="按住说话"
+                android:textSize="16sp" />
 
-                <com.yzx.chat.widget.view.AmplitudeView
-                    android:id="@+id/ChatActivity_mAmplitudeView"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="48dp"
-                    android:layout_marginStart="48dp" />
-
-                <com.yzx.chat.widget.view.RecorderButton
-                    android:id="@+id/ChatActivity_mBtnRecorder"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:background="@color/theme_main_color"
-                    android:padding="20dp"
-                    android:src="@drawable/ic_microphone" />
-
-                <TextView
-                    android:id="@+id/ChatActivity_mTvRecorderHint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text="按住说话"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
+        </LinearLayout>
 
 
-            <com.yzx.chat.widget.view.EmotionPanelLayout
-                android:id="@+id/ChatActivity_mEmotionPanelLayout"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:visibility="gone"/>
+        <com.yzx.chat.widget.view.EmotionPanelLayout
+            android:id="@+id/ChatActivity_mEmotionPanelLayout"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone" />
+
+        <TableLayout
+            android:id="@+id/ChatActivity_mTlOtherPanelLayout"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:visibility="gone">
+
+        </TableLayout>
 
     </com.yzx.chat.widget.view.KeyboardPanelSwitcher>
 

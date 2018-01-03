@@ -50,7 +50,7 @@ public class NotifyManager {
         mLaunchPendingIntent = PendingIntent.getActivity(context, ID_NOTIFICATION, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         mDefaultNotifyBuilder = new Notification.Builder(AppApplication.getAppContext())
-                .setSmallIcon(R.drawable.ic_chat)
+                .setSmallIcon(R.drawable.ic_conversation)
                 .setColor(AndroidUtil.getColor(R.color.theme_main_color))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
