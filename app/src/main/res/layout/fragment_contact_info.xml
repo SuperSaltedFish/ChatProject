@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="个人信息"
+            android:textSize="12sp" />
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/FriendProfileActivity_mIvIconAccount"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_sex_man"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelAccount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:maxLines="1"
+                android:text="帐号"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentAccount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentAccount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="244546875@qq.com"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelAccount" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="24dp"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconAccount" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/FriendProfileActivity_mIvIconLocation"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_location"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:maxLines="1"
+                android:text="所在地区"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentLocation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="广东 珠海"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelLocation" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="24dp"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLocation" />
+        </android.support.constraint.ConstraintLayout>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/FriendProfileActivity_mIvIconDateOfBirth"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_date_of_birth"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelDateOfBirth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:maxLines="1"
+                android:text="出生日期"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentDateOfBirth"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDateOfBirth"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentDateOfBirth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="2017年12月32号"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDateOfBirth"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelDateOfBirth" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="24dp"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDateOfBirth" />
+        </android.support.constraint.ConstraintLayout>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/FriendProfileActivity_mIvIconLabel"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_label"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:maxLines="1"
+                android:text="我的标签"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="程序员 屌丝一个 废人"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelLabel" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="24dp"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel" />
+        </android.support.constraint.ConstraintLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical"
+            android:text="聊天信息"
+            android:textSize="12sp" />
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelTop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="置顶"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentTop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentTop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="消息将始终显示在会话列表顶部"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelTop" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Switch
+                android:id="@+id/FriendProfileActivity_mSwitchTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelRemind"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="消息免打扰"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentRemind"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentRemind"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="收到聊天信息时没有提示音以及消息提示"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelRemind" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Switch
+                android:id="@+id/FriendProfileActivity_mSwitchRemind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelClearMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="清空聊天记录"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentClearMessage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentClearMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="清空本地聊天记录（不可恢复）"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelClearMessage" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelSearchMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="查找聊天记录"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentSearchMessage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentSearchMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="根据关键字查找与之相关的聊天记录"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelSearchMessage" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvLabelReport"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="举报"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentReport"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/FriendProfileActivity_mTvContentReport"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="举报该用户的非法行为"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelReport" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

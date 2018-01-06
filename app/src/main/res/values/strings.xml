@@ -8,10 +8,9 @@
         <item name="Setting">Setting</item>
     </string-array>
 
-    <string-array name="ProfilePagerTitle">
-        <item name="Album">相册</item>
-        <item name="Collection">收藏</item>
-        <item name="Setting">设置</item>
+    <string-array name="ContactProfilePagerTitle">
+        <item name="information">信息</item>
+        <item name="moments">动态</item>
     </string-array>
 
     <string name="PermissionDialog_Help">无法使用该功能</string>
