@@ -8,20 +8,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp">
 
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
             android:text="个人信息"
             android:textSize="12sp" />
 
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <ImageView
                 android:id="@+id/FriendProfileActivity_mIvIconAccount"
@@ -71,7 +79,12 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <ImageView
                 android:id="@+id/FriendProfileActivity_mIvIconLocation"
@@ -121,7 +134,12 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <ImageView
                 android:id="@+id/FriendProfileActivity_mIvIconDateOfBirth"
@@ -171,7 +189,12 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <ImageView
                 android:id="@+id/FriendProfileActivity_mIvIconLabel"
@@ -224,13 +247,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:gravity="center_vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
             android:text="聊天信息"
             android:textSize="12sp" />
 
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvLabelTop"
@@ -278,7 +305,9 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvLabelRemind"
@@ -326,7 +355,12 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvLabelClearMessage"
@@ -367,7 +401,12 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvLabelSearchMessage"
@@ -406,7 +445,12 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <TextView
                 android:id="@+id/FriendProfileActivity_mTvLabelReport"

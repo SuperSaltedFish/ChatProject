@@ -6,7 +6,7 @@
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:background="@color/theme_main_color_dark">
+    android:background="@color/colorPrimaryDark">
 
     <ImageView
         android:id="@+id/ChatActivity_mIvIcon"

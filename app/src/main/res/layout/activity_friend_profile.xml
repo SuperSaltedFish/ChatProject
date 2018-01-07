@@ -9,7 +9,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#222f42">
+        android:background="@color/colorPrimary">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -21,9 +21,10 @@
                 android:id="@+id/FriendProfileActivity_mToolbar"
                 android:layout_width="0dp"
                 android:layout_height="?actionBarSize"
-                app:popupTheme="@style/ActionBarPopupTheme"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:popupTheme="@style/ActionBarPopupTheme"
+                app:titleTextColor="@android:color/white" />
 
             <com.yzx.chat.widget.view.CircleImageView
                 android:id="@+id/FriendProfileActivity_mIvAvatar"
@@ -40,9 +41,9 @@
             <com.yzx.chat.widget.view.CircleImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="#272dd7"
-                android:padding="10dp"
+                android:background="@color/colorAccent"
                 android:elevation="2dp"
+                android:padding="10dp"
                 android:src="@drawable/ic_voice_call"
                 app:layout_constraintBottom_toBottomOf="@+id/FriendProfileActivity_mIvAvatar"
                 app:layout_constraintEnd_toStartOf="@+id/FriendProfileActivity_mIvAvatar"
@@ -50,9 +51,10 @@
                 app:layout_constraintTop_toTopOf="@+id/FriendProfileActivity_mIvAvatar" />
 
             <com.yzx.chat.widget.view.CircleImageView
+                android:id="@+id/FriendProfileActivity_mIvStartChat"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="#0fe275"
+                android:background="@color/green"
                 android:elevation="2dp"
                 android:padding="10dp"
                 android:src="@drawable/ic_chat"
@@ -93,9 +95,9 @@
             android:id="@+id/FriendProfileActivity_mTabLayout"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            app:tabIndicatorColor="#3eb1cc"
+            app:tabIndicatorColor="@color/colorAccent_light"
             app:tabIndicatorHeight="4dp"
-            app:tabSelectedTextColor="#3eb1cc"
+            app:tabSelectedTextColor="@color/colorAccent_light"
             app:tabTextColor="#aaaaaa" />
 
     </android.support.design.widget.AppBarLayout>

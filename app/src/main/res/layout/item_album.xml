@@ -15,7 +15,7 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:background="@color/theme_main_color"/>
+            android:background="@color/colorAccent"/>
 
     </FrameLayout>
 

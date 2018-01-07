@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentTop="true"
-        android:background="@color/theme_main_color"/>
+        android:background="@color/colorAccent"/>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/MomentsFragment_mSmartRefreshLayout"
@@ -62,7 +62,7 @@
                     android:layout_height="24dp"
                     android:gravity="center"
                     android:text="4251"
-                    android:textColor="@color/theme_main_color"
+                    android:textColor="@color/colorAccent"
                     android:textSize="22sp"
                     android:textStyle="bold"/>
 
@@ -101,7 +101,7 @@
                     android:layout_height="24dp"
                     android:gravity="center"
                     android:text="19876"
-                    android:textColor="@color/theme_main_color"
+                    android:textColor="@color/colorAccent"
                     android:textSize="22sp"
                     android:textStyle="bold"/>
 

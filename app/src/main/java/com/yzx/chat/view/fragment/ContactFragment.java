@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
@@ -107,7 +108,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
         mSegmentedControlView
-                .setColors(Color.WHITE, ContextCompat.getColor(mContext, R.color.theme_main_color))
+                .setColors(Color.WHITE, ContextCompat.getColor(mContext, R.color.colorPrimary))
                 .setItems(new String[]{"好友", "群组"})
                 .setDefaultSelectedPosition(0)
                 .setStretch(true)
@@ -137,9 +138,10 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent =new Intent(mContext, ContactProfileActivity.class);
-                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, mContactList.get(position-1));
-                        mContext.startActivity(intent);
+                        Intent intent = new Intent(mContext, ContactProfileActivity.class);
+                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, mContactList.get(position - 1));
+                        ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
+                        startActivity(intent, compat.toBundle());
                     }
                 });
             }

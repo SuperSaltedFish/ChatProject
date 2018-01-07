@@ -417,7 +417,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                     mProgressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
                     mProgressDrawable.setArrowEnabled(false);
                     mProgressDrawable.setStrokeWidth(AndroidUtil.dip2px(1));
-                    mProgressDrawable.setColorSchemeColors(AndroidUtil.getColor(R.color.theme_main_color));
+                    mProgressDrawable.setColorSchemeColors(AndroidUtil.getColor(R.color.colorAccent));
                     mIvMessageState.setImageDrawable(mProgressDrawable);
                 }
                 mProgressDrawable.start();

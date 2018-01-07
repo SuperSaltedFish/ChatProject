@@ -18,7 +18,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginBottom="12dp"
         android:layout_marginTop="12dp"
-        android:background="@color/theme_main_color"/>
+        android:background="@color/colorAccent"/>
 
     <TextView
         android:id="@+id/ConversationAdapter_mTvName"

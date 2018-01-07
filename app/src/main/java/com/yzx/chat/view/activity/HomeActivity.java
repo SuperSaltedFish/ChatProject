@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -50,10 +51,10 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         mFragmentManager = getSupportFragmentManager();
 
         mNavigationController = ((PageNavigationView) findViewById(R.id.HomeActivity_mBottomNavigationBar)).material()
-                .addItem(R.drawable.ic_conversation, getString(R.string.HomeBottomNavigationTitle_Chat))
-                .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact))
-                .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments))
-                .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile))
+                .addItem(R.drawable.ic_conversation, getString(R.string.HomeBottomNavigationTitle_Chat), ContextCompat.getColor(this,R.color.colorAccent))
+                .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this,R.color.colorAccent))
+                .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this,R.color.colorAccent))
+                .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this,R.color.colorAccent))
                 .setMode(MaterialMode.HIDE_TEXT)
                 .build();
     }
@@ -64,7 +65,9 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         mFragmentManager.beginTransaction()
                 .add(R.id.HomeActivity_mClContent, mFragments[0], String.valueOf(0))
                 .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
+                .add(R.id.HomeActivity_mClContent, mFragments[2], String.valueOf(2))
                 .hide(mFragments[1])
+                .hide(mFragments[2])
                 .commit();
 
 

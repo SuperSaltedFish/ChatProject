@@ -2,11 +2,14 @@ package com.yzx.chat.util;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleableRes;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -67,6 +70,10 @@ public class AndroidUtil {
 
     public static Drawable getDrawable(@DrawableRes int resID) {
         return ContextCompat.getDrawable(sAppContext, resID);
+    }
+
+    public static TypedArray obtainStyledAttributes(@StyleableRes int[] resID) {
+        return sAppContext.obtainStyledAttributes(resID);
     }
 
 

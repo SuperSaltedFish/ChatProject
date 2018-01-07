@@ -1,106 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yzx.chat.widget.view.RoundRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="4dp"
+    android:background="#ffffff"
+    android:elevation="1dp"
+    android:minHeight="56dp"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp">
 
-    <FrameLayout
-        android:id="@+id/line"
-        android:layout_width="56dp"
-        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/Month"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:text="11月"
+        android:textSize="13sp" />
 
-        <View
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="?android:attr/listDivider"/>
+    <TextView
+        android:id="@+id/day"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/Month"
+        android:gravity="center"
+        android:text="16"
+        android:textColor="@color/text_primary_color_black"
+        android:textSize="27sp" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/temp3"/>
+    <View
+        android:id="@+id/temp"
+        android:layout_width="1px"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/day"
+        android:layout_alignTop="@+id/Month"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/Month"
+        android:background="@android:color/darker_gray" />
 
-    </FrameLayout>
-
-
-    <com.yzx.chat.widget.view.RoundRelativeLayout
+    <TextView
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="8dp"
-        android:background="#ffffff"
-        android:elevation="1dp"
-        android:minHeight="56dp"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp">
+        android:layout_alignBottom="@+id/day"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/Month"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/temp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="3"
+        android:text="其实我只不过是一个文字罢了，无非就是想测试一下文字而已！现有一共有3行文字,文字太多就会显示省略号，看吧看看"
+        android:textColor="@color/text_primary_color_black"
+        android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/Month"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:gravity="center"
-            android:text="11月"
-            android:textSize="13sp"/>
-
-        <TextView
-            android:id="@+id/day"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/Month"
-            android:gravity="center"
-            android:text="16"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="27sp"/>
-
-        <View
-            android:id="@+id/temp"
-            android:layout_width="1px"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/day"
-            android:layout_alignTop="@+id/Month"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_toEndOf="@+id/Month"
-            android:background="@android:color/darker_gray"/>
-
-        <TextView
-            android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/day"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/Month"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_toEndOf="@+id/temp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="2"
-            android:text="我是真的真的adwdwadwad真的很爱你"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="13sp"/>
-
-        <com.yzx.chat.widget.view.NineGridImageView
-            android:id="@+id/HistoryMomentsAdapter_mNineGridImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/content"
-            android:layout_alignStart="@+id/content"
-            android:layout_below="@+id/content"
-            android:layout_marginEnd="24dp"/>
+    <com.yzx.chat.widget.view.NineGridImageView
+        android:id="@+id/HistoryMomentsAdapter_mNineGridImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/content"
+        android:layout_alignStart="@+id/content"
+        android:layout_marginTop="2dp"
+        android:layout_below="@+id/content"
+        android:layout_marginEnd="24dp" />
 
 
-    </com.yzx.chat.widget.view.RoundRelativeLayout>
+</com.yzx.chat.widget.view.RoundRelativeLayout>
 
-
-</LinearLayout>
 
 

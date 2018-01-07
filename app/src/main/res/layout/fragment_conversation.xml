@@ -8,7 +8,7 @@
         android:id="@+id/ConversationFragment_mToolbar"
         android:layout_width="0dp"
         android:layout_height="?actionBarSize"
-        android:background="@color/theme_main_color"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

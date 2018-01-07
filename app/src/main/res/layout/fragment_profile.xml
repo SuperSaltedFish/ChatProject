@@ -57,7 +57,7 @@
             android:layout_toEndOf="@+id/temp1"
             android:gravity="center_vertical"
             android:text="Email"
-            android:textColor="@color/theme_main_color"
+            android:textColor="@color/colorAccent"
             android:textSize="13sp"/>
 
         <TextView
@@ -89,7 +89,7 @@
             android:layout_toEndOf="@+id/temp2"
             android:gravity="center_vertical"
             android:text="Email"
-            android:textColor="@color/theme_main_color"
+            android:textColor="@color/colorAccent"
             android:textSize="13sp"/>
 
         <TextView
@@ -122,7 +122,7 @@
             android:layout_toEndOf="@+id/temp3"
             android:gravity="center_vertical"
             android:text="Email"
-            android:textColor="@color/theme_main_color"
+            android:textColor="@color/colorAccent"
             android:textSize="13sp"/>
 
         <TextView

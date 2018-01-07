@@ -70,7 +70,10 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
 
     @Override
     public int getItemCount() {
-        return mFriendList == null ? 0 : mFriendList.size()+1;
+        if (mFriendList == null || mFriendList.size() == 0) {
+            return 0;
+        }
+        return mFriendList.size() + 1;
     }
 
     @Override
@@ -86,8 +89,8 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         return -1;
     }
 
-    private void resetLetter(){
-        if (mFriendList != null&&mFriendList.size()!=0) {
+    private void resetLetter() {
+        if (mFriendList != null && mFriendList.size() != 0) {
             String identity;
             String abbreviation;
             String currentIdentity = null;

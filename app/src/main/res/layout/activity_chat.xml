@@ -10,7 +10,7 @@
         android:id="@+id/ChatActivity_mToolbar"
         android:layout_width="0dp"
         android:layout_height="?actionBarSize"
-        android:background="@color/theme_main_color"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -128,7 +128,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center"
-                android:background="@color/theme_main_color"
+                android:background="@color/colorAccent"
                 android:padding="20dp"
                 android:src="@drawable/ic_microphone" />
 

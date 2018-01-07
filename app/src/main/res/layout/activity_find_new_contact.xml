@@ -12,14 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         app:title="新的联系人"
-        android:background="@color/theme_main_color"
+        android:background="@color/colorAccent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/theme_main_color">
+        android:background="@color/colorAccent">
 
         <com.yzx.chat.widget.view.RoundFrameLayout
             android:layout_width="match_parent"
@@ -55,7 +55,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/theme_main_color"
+        android:background="@color/colorAccent"
         android:gravity="center">
 
         <com.yzx.chat.widget.view.BadgeTextView

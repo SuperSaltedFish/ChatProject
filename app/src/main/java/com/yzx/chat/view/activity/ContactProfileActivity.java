@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -21,11 +22,13 @@ public class ContactProfileActivity extends BaseCompatActivity {
 
     public static final String INTENT_EXTRA_CONTACT = "Contact";
 
-    private ImageView mIvChat;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
+    private ImageView mIvStartChat;
     private ContactProfilePagerAdapter mPagerAdapter;
     private Toolbar mToolbar;
+
+    private ContactBean mContactBean;
 
     @Override
     protected int getLayoutID() {
@@ -35,15 +38,19 @@ public class ContactProfileActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
+        if(mContactBean==null){
+            finish();
+        }
         initView();
         setView();
     }
 
     private void initView() {
-//        mIvChat = findViewById(R.id.FriendProfileActivity_mIvChat);
         mTabLayout = findViewById(R.id.FriendProfileActivity_mTabLayout);
         mViewPager = findViewById(R.id.FriendProfileActivity_mViewPager);
         mToolbar = findViewById(R.id.FriendProfileActivity_mToolbar);
+        mIvStartChat = findViewById(R.id.FriendProfileActivity_mIvStartChat);
         mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle));
     }
 
@@ -51,31 +58,46 @@ public class ContactProfileActivity extends BaseCompatActivity {
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(null);
+        setTitle(mContactBean.getName());
 
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-//        mIvChat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ContactBean bean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-//                Intent intent = new Intent(ContactProfileActivity.this,ChatActivity.class);
-//                Conversation conversation = new Conversation();
-//                conversation.setConversationType(Conversation.ConversationType.PRIVATE);
-//                conversation.setTargetId(bean.getUserID());
-//                conversation.setConversationTitle(bean.getName());
-//                intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION,conversation);
-//                startActivity(intent);
-//                finish();
-//            }
-//        });
+        mIvStartChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ContactProfileActivity.this,ChatActivity.class);
+                Conversation conversation = new Conversation();
+                conversation.setConversationType(Conversation.ConversationType.PRIVATE);
+                conversation.setTargetId(mContactBean.getUserID());
+                conversation.setConversationTitle(mContactBean.getName());
+                intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION,conversation);
+                startActivity(intent);
+                finish();
+            }
+        });
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_contact_profile,menu);
+        getMenuInflater().inflate(R.menu.menu_contact_profile, menu);
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
+    }
 }

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="theme_main_color">#5179f3</color>
+    <color name="colorAccent">#5179f3</color>
 
-    <color name="theme_main_color_light">#a2a9f7</color>
+    <color name="colorAccent_light">#a2a9f7</color>
 
-    <color name="theme_main_color_dark">#1b2839</color>
+    <color name="colorPrimary">#222f42</color>
+
+    <color name="colorPrimaryDark">#1b2839</color>
+
+
 
     <color name="text_primary_color_black">#af000000</color>
 
@@ -33,4 +37,5 @@
 
 
     <color name="red">#FD5B5C</color>
+    <color name="green">#00cd76</color>
 </resources>

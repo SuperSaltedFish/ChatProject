@@ -374,7 +374,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void setVoiceRecorder() {
         mAmplitudeView.setBackgroundColor(Color.WHITE);
-        mAmplitudeView.setAmplitudeColor(ContextCompat.getColor(this, R.color.theme_main_color));
+        mAmplitudeView.setAmplitudeColor(ContextCompat.getColor(this, R.color.colorAccent));
         mAmplitudeView.setMaxAmplitude(VoiceRecorder.MAX_AMPLITUDE);
         mVoiceRecorder.setMaxDuration(MAX_VOICE_RECORDER_DURATION);
         mVoiceRecorder.setOnRecorderStateListener(new VoiceRecorder.OnRecorderStateListener() {

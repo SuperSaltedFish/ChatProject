@@ -51,7 +51,7 @@ public class NotifyManager {
 
         mDefaultNotifyBuilder = new Notification.Builder(AppApplication.getAppContext())
                 .setSmallIcon(R.drawable.ic_conversation)
-                .setColor(AndroidUtil.getColor(R.color.theme_main_color))
+                .setColor(AndroidUtil.getColor(R.color.colorAccent))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
     }
