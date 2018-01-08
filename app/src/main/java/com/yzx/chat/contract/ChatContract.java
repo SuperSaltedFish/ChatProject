@@ -23,6 +23,8 @@ public class ChatContract {
 
         void updateMessage(Message message);
 
+        void enableLoadMoreHint(boolean isEnable);
+
     }
 
 

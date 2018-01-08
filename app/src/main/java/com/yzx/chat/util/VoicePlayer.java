@@ -99,7 +99,9 @@ public class VoicePlayer {
 
     public void stop() {
         boolean isNeedStop = mMediaPlayer.isPlaying();
-        mMediaPlayer.stop();
+        if (isNeedStop) {
+            mMediaPlayer.stop();
+        }
         if (mOnPlayStateChangeListener != null) {
             mOnPlayStateChangeListener.onCompletion(mMediaPlayer, isNeedStop);
         }

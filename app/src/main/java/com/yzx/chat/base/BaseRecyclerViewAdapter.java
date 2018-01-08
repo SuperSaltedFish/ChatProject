@@ -19,10 +19,12 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         extends RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseViewHolder> {
 
     private static final int HOLDER_TYPE_HEADER = -1;
+    private static final int HOLDER_TYPE_FOOTER = -2;
 
     public Context mContext;
 
     private View mHeaderView;
+    private View mFooterView;
 
     private OnScrollToBottomListener mScrollToBottomListener;
 
@@ -34,7 +36,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
     public abstract int getViewHolderCount();
 
-    public  int getViewHolderType(int position){
+    public int getViewHolderType(int position) {
         return super.getItemViewType(position);
     }
 
@@ -45,22 +47,24 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
         if (viewType == HOLDER_TYPE_HEADER) {
             return new BaseViewHolder(mHeaderView);
-        } else {
-            return getViewHolder(parent, viewType);
         }
+        if (viewType == HOLDER_TYPE_FOOTER) {
+            return new BaseViewHolder(mFooterView);
+        }
+        return getViewHolder(parent, viewType);
     }
 
     @Override
     public final void onBindViewHolder(BaseViewHolder holder, int position) {
-        if(mHeaderView!=null){
-            if(position!=0){
-                bindDataToViewHolder((VH) holder, position-1);
+        if (mHeaderView != null) {
+            if (position != 0) {
+                bindDataToViewHolder((VH) holder, position - 1);
             }
-        }else {
+        } else if (mFooterView == null || position != getItemCount()-1) {
             bindDataToViewHolder((VH) holder, position);
         }
 
-        if (mScrollToBottomListener != null&&position==getItemCount()-1&&position!=mLastBindPosition) {
+        if (mScrollToBottomListener != null && position == getItemCount() - 1 && position != mLastBindPosition) {
             holder.itemView.post(new Runnable() {
                 @Override
                 public void run() {
@@ -74,26 +78,58 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     @Override
     public final int getItemCount() {
         int count = getViewHolderCount();
-        if (mHeaderView == null) {
-            return count;
-        } else {
-            return count + 1;
+        if (mHeaderView != null) {
+            count++;
         }
+        if (mFooterView != null) {
+            count++;
+        }
+        return count;
     }
 
     @Override
     public final int getItemViewType(int position) {
-        if (mHeaderView == null) {
-            return getViewHolderType(position);
-        } else if (position == 0) {
+        if (mHeaderView != null && position == 0) {
             return HOLDER_TYPE_HEADER;
-        } else {
+        }
+        if (mFooterView != null && position == getItemCount() - 1) {
+            return HOLDER_TYPE_FOOTER;
+        }
+        if (mHeaderView != null) {
             return getViewHolderType(position - 1);
+        } else {
+            return getViewHolderType(position);
         }
     }
 
     public void addHeaderView(View headerView) {
+        if (mHeaderView == null && headerView != null) {
+            notifyItemInserted(0);
+        } else if (mHeaderView != null && headerView == null) {
+            notifyItemRemoved(0);
+        } else if (mHeaderView != null && headerView != null && mHeaderView != headerView) {
+            notifyItemChanged(0);
+        }
         mHeaderView = headerView;
+    }
+
+    public boolean isHasHeaderView() {
+        return mHeaderView != null;
+    }
+
+    public void addFooterView(View footerView) {
+        if (mFooterView == null && footerView != null) {
+            notifyItemInserted(getItemCount());
+        } else if (mFooterView != null && footerView == null) {
+            notifyItemRemoved(getItemCount());
+        } else if (mFooterView != null && footerView != null && mFooterView != footerView) {
+            notifyItemChanged(getItemCount());
+        }
+        mFooterView = footerView;
+    }
+
+    public boolean isHasFooterView() {
+        return mFooterView != null;
     }
 
     public void setScrollToBottomListener(OnScrollToBottomListener listener) {
@@ -101,19 +137,67 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     }
 
     public final void notifyItemRangeInsertedEx(int positionStart, int itemCount) {
-        this.notifyItemRangeInserted(positionStart, itemCount);
+        if (mHeaderView == null) {
+            this.notifyItemRangeInserted(positionStart, itemCount);
+        } else {
+            this.notifyItemRangeInserted(positionStart + 1, itemCount);
+        }
     }
 
     public final void notifyItemRangeRemovedEx(int positionStart, int itemCount) {
-        this.notifyItemRangeRemoved(positionStart, itemCount);
+        if (mHeaderView == null) {
+            this.notifyItemRangeRemoved(positionStart, itemCount);
+        } else {
+            this.notifyItemRangeRemoved(positionStart + 1, itemCount);
+        }
     }
 
     public final void notifyItemMovedEx(int fromPosition, int toPosition) {
-        this.notifyItemMoved(fromPosition, toPosition);
+        if (mHeaderView == null) {
+            this.notifyItemMoved(fromPosition, toPosition);
+        } else {
+            this.notifyItemMoved(fromPosition + 1, toPosition);
+        }
+    }
+
+    public final void notifyItemRangeChangedEx(int positionStart, int itemCount) {
+        if (mHeaderView == null) {
+            this.notifyItemRangeChanged(positionStart, itemCount);
+        } else {
+            this.notifyItemRangeChanged(positionStart + 1, itemCount);
+        }
     }
 
     public final void notifyItemRangeChangedEx(int positionStart, int itemCount, Object payload) {
-        this.notifyItemRangeChanged(positionStart, itemCount, payload);
+        if (mHeaderView == null) {
+            this.notifyItemRangeChanged(positionStart, itemCount, payload);
+        } else {
+            this.notifyItemRangeChanged(positionStart + 1, itemCount, payload);
+        }
+    }
+
+    public final void notifyItemInsertedEx(int position) {
+        if (mHeaderView == null) {
+            this.notifyItemInserted(position);
+        } else {
+            this.notifyItemInserted(position + 1);
+        }
+    }
+
+    public final void notifyItemChangedEx(int position) {
+        if (mHeaderView == null) {
+            this.notifyItemChanged(position);
+        } else {
+            this.notifyItemChanged(position + 1);
+        }
+    }
+
+    public final void notifyItemRemovedEx(int position) {
+        if (mHeaderView == null) {
+            this.notifyItemRemoved(position);
+        } else {
+            this.notifyItemRemoved(position + 1);
+        }
     }
 
     public interface OnScrollToBottomListener {

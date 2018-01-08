@@ -3,6 +3,7 @@ package com.yzx.chat.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -39,7 +40,7 @@ public class ContactProfileActivity extends BaseCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-        if(mContactBean==null){
+        if (mContactBean == null) {
             finish();
         }
         initView();
@@ -65,13 +66,14 @@ public class ContactProfileActivity extends BaseCompatActivity {
         mIvStartChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ContactProfileActivity.this,ChatActivity.class);
+                Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
                 Conversation conversation = new Conversation();
                 conversation.setConversationType(Conversation.ConversationType.PRIVATE);
                 conversation.setTargetId(mContactBean.getUserID());
                 conversation.setConversationTitle(mContactBean.getName());
-                intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION,conversation);
-                startActivity(intent);
+                intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+                ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(ContactProfileActivity.this, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
+                startActivity(intent, compat.toBundle());
                 finish();
             }
         });

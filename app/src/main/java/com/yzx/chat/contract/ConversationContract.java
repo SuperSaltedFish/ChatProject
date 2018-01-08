@@ -24,6 +24,8 @@ public class ConversationContract {
 
         void removeConversationItem(Conversation conversation);
 
+        void enableDisconnectionHint(boolean isEnable);
+
     }
 
 
@@ -35,5 +37,7 @@ public class ConversationContract {
         void removeConversation(Conversation conversation);
 
         void clearChatMessages(Conversation conversation);
+
+        boolean isConnected();
     }
 }

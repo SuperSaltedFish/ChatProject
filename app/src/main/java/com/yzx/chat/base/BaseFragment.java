@@ -48,10 +48,10 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mContext = getActivity();
         if (mParentView == null) {
-            initPresenter();
             mParentView = inflater.inflate(getLayoutID(), container, false);
             init(mParentView);
             setView();
+            initPresenter();
         }
         return mParentView;
     }

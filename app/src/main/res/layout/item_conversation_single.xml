@@ -39,7 +39,7 @@
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:textColor="@color/text_primary_color_black"
-        android:textSize="18sp"
+        android:textSize="17sp"
         app:layout_constraintBottom_toTopOf="@+id/ConversationAdapter_mTvSingleLastMessage"
         app:layout_constraintEnd_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
         app:layout_constraintStart_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"

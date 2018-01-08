@@ -13,7 +13,7 @@
         android:background="@color/divider_color_black" />
 
     <TextView
-        android:id="@+id/LoadMoreView_mTvHintContent"
+        android:id="@+id/LoadMoreView_mTvLoadMoreHint"
         android:layout_width="wrap_content"
         android:minWidth="0dp"
         android:layout_height="match_parent"

@@ -160,6 +160,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             @Override
             protected void onFailure(String message) {
                 LogUtil.e(message);
+                IMClient.getInstance().contactManager().loadAllContact(IdentityManager.getInstance().getUserID());
                 if (mTaskCount.decrementAndGet() == 0) {
                     mSplashView.startHomeActivity();
                 }

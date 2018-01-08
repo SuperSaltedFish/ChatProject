@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="#fedadc"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/ic_send_fail" />
+
+    <TextView
+        android:includeFontPadding="false"
+        android:layout_width="match_parent"
+        android:textSize="14sp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:text="你已经进入了没有网络的异次元空间！" />
+
+</LinearLayout>

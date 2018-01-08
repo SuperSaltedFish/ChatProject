@@ -1,16 +1,20 @@
 package com.yzx.chat.view.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,6 +49,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private TextView mITvEmptyHintText;
     private ConversationAdapter mAdapter;
     private Toolbar mToolbar;
+    private View mHeaderView;
     private OverflowPopupMenu mConversationMenu;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private List<Conversation> mConversationList;
@@ -61,6 +66,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
         mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
         mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
+        mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_conversation_header, (ViewGroup) parentView, false);
         mConversationMenu = new OverflowPopupMenu(mContext);
         mConversationList = new ArrayList<>(128);
         mAdapter = new ConversationAdapter(mConversationList);
@@ -82,7 +88,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
 
         setOverflowMenu();
-
     }
 
     private void setOverflowMenu() {
@@ -142,7 +147,11 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                 @Override
                 public void run() {
                     Intent intent = new Intent(mContext, ChatActivity.class);
-                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position));
+                    if (!mAdapter.isHasHeaderView()) {
+                        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position));
+                    } else if (position != 0) {
+                        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position - 1));
+                    } else return;
                     ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
                     startActivity(intent, compat.toBundle());
                 }
@@ -151,6 +160,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
+            if (mAdapter.isHasHeaderView()) {
+                position--;
+            }
             if (mConversationList.get(position).isTop()) {
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_CancelTop);
             } else {
@@ -192,7 +204,27 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
-        diffResult.dispatchUpdatesTo(mAdapter);
+        diffResult.dispatchUpdatesTo(new ListUpdateCallback() {
+            @Override
+            public void onInserted(int position, int count) {
+                mAdapter.notifyItemRangeInsertedEx(position, count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                mAdapter.notifyItemRangeRemovedEx(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                mAdapter.notifyItemMovedEx(fromPosition, toPosition);
+            }
+
+            @Override
+            public void onChanged(int position, int count, Object payload) {
+                mAdapter.notifyItemRangeChangedEx(position, count, payload);
+            }
+        });
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
         enableEmptyListHint(mConversationList.size() == 0);
@@ -209,5 +241,17 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                 break;
             }
         }
+        enableEmptyListHint(mConversationList.size() == 0);
     }
+
+    @Override
+    public void enableDisconnectionHint(boolean isEnable) {
+        if (isEnable) {
+            mAdapter.addHeaderView(mHeaderView);
+        } else {
+            mAdapter.addHeaderView(null);
+        }
+    }
+
+
 }

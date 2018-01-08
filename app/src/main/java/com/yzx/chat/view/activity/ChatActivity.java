@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -87,6 +88,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private EmotionPanelLayout mEmotionPanelLayout;
     private AmplitudeView mAmplitudeView;
     private TableLayout mTlOtherPanelLayout;
+    private View mHeaderView;
+    private TextView mTvLoadMoreHint;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
     private VoiceRecorder mVoiceRecorder;
@@ -136,6 +139,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mTlOtherPanelLayout = findViewById(R.id.ChatActivity_mTlOtherPanelLayout);
+        mHeaderView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) mToolbar.getParent(), false);
+        mTvLoadMoreHint = mHeaderView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
@@ -145,6 +150,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void setData(Intent intent) {
         mConversation = intent.getParcelableExtra(INTENT_EXTRA_CONVERSATION);
+        if (mConversation == null) {
+            finish();
+            return;
+        }
         setTitle(mConversation.getConversationTitle());
         mPresenter.init(mConversation);
         String draft = mConversation.getDraft();
@@ -192,10 +201,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     return;
                 }
                 if (mPresenter.hasMoreMessage()) {
-                    mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_Loading));
+                    mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_Loading));
                     mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
                 } else {
-                    mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+                    mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
                 }
             }
         });
@@ -266,7 +275,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             public void onClick(View v) {
                 mAlerter.hide();
                 mMessageList.remove(mNeedResendMessage);
-                mAdapter.notifyItemRemoved(mNeedResendPosition);
+                mAdapter.notifyItemRemovedEx(mNeedResendPosition);
                 mPresenter.resendMessage(mNeedResendMessage);
             }
         });
@@ -479,7 +488,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 hintMoreInput();
             } else if (mLlRecorderLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_MICROPHONE) {
                 showSoftKeyboard(mEtContent);
-            } else if (mTlOtherPanelLayout.getVisibility() == View.VISIBLE&&mode==MORE_INPUT_TYPE_OTHER) {
+            } else if (mTlOtherPanelLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_OTHER) {
                 hintMoreInput();
             } else {
                 hintMoreInput();
@@ -589,7 +598,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (mMessageList.size() == 0) {
             mAdapter.notifyDataSetChanged();
         } else {
-            mAdapter.notifyItemRangeInserted(0, 1);
+            mAdapter.notifyItemRangeInsertedEx(0, 1);
         }
         mRvChatView.scrollToPosition(0);
     }
@@ -597,10 +606,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void addNewMessage(List<Message> messageList) {
         if (mMessageList.size() == 0) {
-            mAdapter.enableLoadMoreHint(messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE);
             mAdapter.notifyDataSetChanged();
         } else {
-            mAdapter.notifyItemRangeInserted(0, messageList.size());
+            mAdapter.notifyItemRangeInsertedEx(0, messageList.size());
         }
         mMessageList.addAll(0, messageList);
         mRvChatView.scrollToPosition(0);
@@ -609,15 +617,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
-            mAdapter.notifyItemRangeInserted(mMessageList.size(), messageList.size());
+            mAdapter.notifyItemRangeInsertedEx(mMessageList.size(), messageList.size());
             mRvChatView.scrollToPosition(mMessageList.size() - 1);
             mMessageList.addAll(messageList);
-            mAdapter.notifyItemChanged(mMessageList.size());
+            mAdapter.notifyItemChangedEx(mMessageList.size());
         }
         if (!isHasMoreMessage) {
-            mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_NoMore));
+            mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
         } else if (messageList == null) {
-            mAdapter.setLoadMoreHint(getString(R.string.LoadMoreHint_LoadFail));
+            mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_LoadFail));
         }
     }
 
@@ -625,10 +633,19 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public void updateMessage(Message message) {
         int position = mMessageList.indexOf(message);
         if (position >= 0) {
-            mAdapter.notifyItemChanged(position);
-            mMessageList.set(0, message);
+            mAdapter.notifyItemChangedEx(position);
+            mMessageList.set(position, message);
         } else {
-            LogUtil.e("update message fail");
+            LogUtil.e("update message fail in UI");
+        }
+    }
+
+    @Override
+    public void enableLoadMoreHint(boolean isEnable) {
+        if (isEnable) {
+            mAdapter.addFooterView(mHeaderView);
+        } else {
+            mAdapter.addFooterView(null);
         }
     }
 

@@ -36,6 +36,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private Conversation mConversation;
     private boolean mHasMoreMessage;
     private boolean mIsLoadingMore;
+    private boolean mIsConversationStateChange;
 
 
     @Override
@@ -75,6 +76,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
             mHasMoreMessage = false;
         }
+        mChatView.enableLoadMoreHint(mHasMoreMessage);
         mChatView.addNewMessage(messageList);
     }
 
@@ -136,7 +138,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void saveMessageDraft(String draft) {
         String oldDraft = mConversation.getDraft();
-        if ((TextUtils.isEmpty(draft)&&TextUtils.isEmpty(oldDraft))||draft.equals(oldDraft)) {
+        if (((TextUtils.isEmpty(draft) && TextUtils.isEmpty(oldDraft)) || draft.equals(oldDraft)) && !mIsConversationStateChange) {
             return;
         }
         mIMClient.conversationManager().saveConversationDraft(mConversation, draft);
@@ -176,6 +178,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         @Override
         public void onChatMessageReceived(Message message, int untreatedCount) {
             loadNewComplete(message);
+            mIsConversationStateChange = true;
         }
     };
 
@@ -183,6 +186,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         @Override
         public void onSendProgress(Message message) {
             mChatView.addNewMessage(message);
+            mIsConversationStateChange = true;
         }
 
         @Override

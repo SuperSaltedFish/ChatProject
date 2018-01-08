@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
@@ -36,7 +35,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<Conversation> mConversationList;
-    private IMClient mChatManager;
+    private IMClient mChatClient;
     private Handler mHandler;
 
     @Override
@@ -44,18 +43,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
         mHandler = new Handler();
-        mChatManager = IMClient.getInstance();
-        mChatManager.addConnectionListener(mOnConnectionStateChangeListener);
-        mChatManager.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
-        mChatManager.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        mChatClient = IMClient.getInstance();
+        mChatClient.addConnectionListener(mOnConnectionStateChangeListener);
+        mChatClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mChatClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
-        mChatManager.removeConnectionListener(mOnConnectionStateChangeListener);
-        mChatManager.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mChatManager.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
+        mChatClient.removeConnectionListener(mOnConnectionStateChangeListener);
+        mChatClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mChatClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
@@ -73,18 +72,23 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void setConversationToTop(Conversation conversation, boolean isTop) {
-        mChatManager.conversationManager().setConversationTop(conversation, isTop);
+        mChatClient.conversationManager().setConversationTop(conversation, isTop);
     }
 
 
     @Override
     public void removeConversation(Conversation conversation) {
-        mChatManager.conversationManager().removeConversation(conversation);
+        mChatClient.conversationManager().removeConversation(conversation);
     }
 
     @Override
     public void clearChatMessages(Conversation conversation) {
-        mChatManager.conversationManager().clearAllConversationMessages(conversation);
+        mChatClient.conversationManager().clearAllConversationMessages(conversation);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return mChatClient.isConnected();
     }
 
 
@@ -93,15 +97,23 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     private final IMClient.onConnectionStateChangeListener mOnConnectionStateChangeListener = new IMClient.onConnectionStateChangeListener() {
+        private boolean isConnected = true;
 
         @Override
         public void onConnected() {
-            refreshAllConversations();
+            if (!isConnected) {
+                isConnected = true;
+                refreshAllConversations();
+                mConversationView.enableDisconnectionHint(false);
+            }
         }
 
         @Override
         public void onDisconnected(String reason) {
-
+            if (isConnected) {
+                isConnected = false;
+                mConversationView.enableDisconnectionHint(true);
+            }
         }
     };
 
@@ -119,6 +131,10 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         public void onConversationStateChange(final Conversation conversation, int typeCode) {
             switch (typeCode) {
                 case ConversationManager.UPDATE_TYPE_REMOVE:
+                    if(conversation.getUnreadMessageCount()!=0){
+                        mChatClient.conversationManager().clearConversationUnreadStatus(conversation);
+                        return;
+                    }
                     synchronized (ConversationPresenter.class) {
                         for (int i = 0, size = mConversationList.size(); i < size; i++) {
                             if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {

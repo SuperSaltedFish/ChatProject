@@ -64,8 +64,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
             case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                 return new VoiceReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
-            case MessageHolder.HOLDER_TYPE_LOAD_MORE:
-                return new LoadMoreHolder(LayoutInflater.from(mContext).inflate(R.layout.view_load_more, parent, false));
             default:
                 return null;
         }
@@ -74,30 +72,17 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageHolder holder, int position) {
-        if (holder.mHolderType == MessageHolder.HOLDER_TYPE_LOAD_MORE) {
-            if (mLoadMoreHint == null || !isEnable) {
-                holder.itemView.setVisibility(View.GONE);
-            } else {
-                LoadMoreHolder loadMoreHolder = (LoadMoreHolder) holder;
-                loadMoreHolder.mTvHintContent.setText(mLoadMoreHint);
-                holder.itemView.setVisibility(View.VISIBLE);
-            }
-        } else {
-            holder.setMessageCallback(mMessageCallback);
-            holder.setDate(mMessageList.get(position));
-        }
+        holder.setMessageCallback(mMessageCallback);
+        holder.setDate(mMessageList.get(position));
     }
 
     @Override
     public int getViewHolderCount() {
-        return mMessageList == null ? 0 : mMessageList.size() + 1;
+        return mMessageList == null ? 0 : mMessageList.size() ;
     }
 
     @Override
     public int getViewHolderType(int position) {
-        if (position == getItemCount() - 1) {
-            return MessageHolder.HOLDER_TYPE_LOAD_MORE;
-        }
         Message message = mMessageList.get(position);
         switch (message.getObjectName()) {
             case "RC:TxtMsg":
@@ -118,16 +103,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 sendMessageHolder.mProgressDrawable.stop();
             }
         }
-    }
-
-
-    public void setLoadMoreHint(String hint) {
-        mLoadMoreHint = hint;
-        notifyItemChanged(getItemCount() - 1);
-    }
-
-    public void enableLoadMoreHint(boolean isEnable) {
-        this.isEnable = isEnable;
     }
 
     public void setMessageCallback(MessageCallback messageCallback) {
@@ -346,22 +321,12 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     }
 
-    private static class LoadMoreHolder extends MessageHolder {
-        TextView mTvHintContent;
-
-        LoadMoreHolder(View itemView) {
-            super(itemView, HOLDER_TYPE_LOAD_MORE);
-            mTvHintContent = itemView.findViewById(R.id.LoadMoreView_mTvHintContent);
-        }
-    }
-
 
     static abstract class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         Message mMessage;
         MessageCallback mMessageCallback;
         int mHolderType;
 
-        static final int HOLDER_TYPE_LOAD_MORE = 0;
         static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
         static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
         static final int HOLDER_TYPE_SEND_MESSAGE_VOICE = 3;

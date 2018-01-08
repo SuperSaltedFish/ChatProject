@@ -67,6 +67,10 @@ public class IMClient {
         mRongIMClient.logout();
     }
 
+    public boolean isConnected() {
+        return mRongIMClient.getCurrentConnectionStatus() == RongIMClient.ConnectionStatusListener.ConnectionStatus.CONNECTED;
+    }
+
     public ChatManager chatManager() {
         return mChatManager;
     }
@@ -82,6 +86,11 @@ public class IMClient {
     public void addConnectionListener(onConnectionStateChangeListener listener) {
         if (!mOnConnectionStateChangeListenerList.contains(listener)) {
             mOnConnectionStateChangeListenerList.add(listener);
+            if (isConnected()) {
+                listener.onConnected();
+            } else {
+                listener.onDisconnected(mRongIMClient.getCurrentConnectionStatus().getMessage());
+            }
         }
     }
 
