@@ -89,12 +89,12 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     @Override
-    public int getItemCount() {
+    public int getViewHolderCount() {
         return mMessageList == null ? 0 : mMessageList.size() + 1;
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getViewHolderType(int position) {
         if (position == getItemCount() - 1) {
             return MessageHolder.HOLDER_TYPE_LOAD_MORE;
         }
@@ -110,7 +110,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     @Override
-    public void onViewDetachedFromWindow(MessageHolder holder) {
+    public void onViewDetachedFromWindow(BaseViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
         if (holder instanceof SendMessageHolder) {
             SendMessageHolder sendMessageHolder = (SendMessageHolder) holder;
@@ -119,6 +119,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             }
         }
     }
+
 
     public void setLoadMoreHint(String hint) {
         mLoadMoreHint = hint;
@@ -355,7 +356,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
 
-    static abstract class MessageHolder extends RecyclerView.ViewHolder {
+    static abstract class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         Message mMessage;
         MessageCallback mMessageCallback;
         int mHolderType;

@@ -69,9 +69,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     protected void setView() {
-        mToolbar.setTitle("微信");
-        mToolbar.inflateMenu(R.menu.menu_conversation_overflow);
-        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);
+        mToolbar.setTitle(R.string.app_name);
+//        mToolbar.inflateMenu(R.menu.menu_conversation_overflow);
+//        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

@@ -18,16 +18,16 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class AlbumAdapter extends BaseRecyclerViewAdapter<AlbumAdapter.ItemView> {
+public class AlbumAdapter extends BaseRecyclerViewAdapter<AlbumAdapter.AlbumHolder> {
 
 
     @Override
-    public ItemView getViewHolder(ViewGroup parent, int viewType) {
-        return new ItemView(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_album,parent,false));
+    public AlbumHolder getViewHolder(ViewGroup parent, int viewType) {
+        return new AlbumHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_album,parent,false));
     }
 
     @Override
-    public void bindDataToViewHolder(ItemView holder, int position) {
+    public void bindDataToViewHolder(AlbumHolder holder, int position) {
         List<String> s = new ArrayList<>();
         for (int i = 0; i < position; i++) {
             s.add(new String("" + i));
@@ -44,9 +44,10 @@ public class AlbumAdapter extends BaseRecyclerViewAdapter<AlbumAdapter.ItemView>
     }
 
     @Override
-    public int getItemCount() {
+    public int getViewHolderCount() {
         return 10;
     }
+
 
     private final NineGridImageView.OnItemClickListener mOnItemClickListener = new NineGridImageView.OnItemClickListener() {
         @Override
@@ -55,12 +56,12 @@ public class AlbumAdapter extends BaseRecyclerViewAdapter<AlbumAdapter.ItemView>
         }
     };
 
-    final static class ItemView extends RecyclerView.ViewHolder {
+    final static class AlbumHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         NineGridImageView mNineGridImageView;
         View mDivisionLine;
 
-        ItemView(View itemView) {
+        AlbumHolder(View itemView) {
             super(itemView);
             initView();
         }

@@ -1,6 +1,5 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +25,12 @@ public class NewContactAdapter extends BaseRecyclerViewAdapter<NewContactAdapter
     }
 
     @Override
-    public int getItemCount() {
+    public int getViewHolderCount() {
         return 12;
     }
 
-    static class NewContactHolder extends RecyclerView.ViewHolder {
+
+    static class NewContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
 
         NewContactHolder(View itemView) {

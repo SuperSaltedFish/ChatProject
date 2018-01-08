@@ -15,6 +15,7 @@
 
 
     <ViewFlipper
+        android:fitsSystemWindows="true"
         android:id="@+id/LoginActivity_mVfPageSwitch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

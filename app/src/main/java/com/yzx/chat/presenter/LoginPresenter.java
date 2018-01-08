@@ -178,6 +178,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                 if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
                     if (response.isSkipVerify()) {
                         mCurrVerifyType = VERIFY_TYPE_NONE;
+                    }else {
+                        AndroidUtil.showToast(response.getVerifyCode());
                     }
                     mLoginView.inputLoginVerifyCode(response.isSkipVerify());
                 } else {

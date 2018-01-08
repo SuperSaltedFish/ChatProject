@@ -64,12 +64,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
     }
 
     @Override
-    public void onViewRecycled(ItemView holder) {
-        super.onViewRecycled(holder);
-    }
-
-    @Override
-    public int getItemCount() {
+    public int getViewHolderCount() {
         if (mFriendList == null || mFriendList.size() == 0) {
             return 0;
         }
@@ -77,7 +72,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getViewHolderType(int position) {
         return position;
     }
 
@@ -135,7 +130,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         }
     };
 
-    static abstract class ItemView extends RecyclerView.ViewHolder {
+    static abstract class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         ItemView(View itemView) {
             super(itemView);

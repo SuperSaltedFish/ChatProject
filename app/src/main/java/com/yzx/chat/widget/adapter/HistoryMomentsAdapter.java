@@ -46,11 +46,12 @@ public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMoment
     }
 
     @Override
-    public int getItemCount() {
+    public int getViewHolderCount() {
         return 10;
     }
 
-    final static class ItemView extends RecyclerView.ViewHolder {
+
+    final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         NineGridImageView mNineGridImageView;
 

@@ -51,16 +51,11 @@ public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapt
         GlideUtil.loadFromUrl(mContext, holder.mIvImage, String.format("file://%s", mImagePathList.get(position)));
     }
 
-
     @Override
-    public void onViewRecycled(ItemView holder) {
-        super.onViewRecycled(holder);
-    }
-
-    @Override
-    public int getItemCount() {
+    public int getViewHolderCount() {
         return mImagePathList == null ? 0 : mImagePathList.size();
     }
+
 
     private void onSelectChange(int position, boolean isSelect) {
         mCheckedStateArray.put(position, isSelect);
@@ -81,7 +76,7 @@ public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapt
     };
 
 
-    final class ItemView extends RecyclerView.ViewHolder {
+    final class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         ImageView mIvImage;
         CheckBox mCbSelected;

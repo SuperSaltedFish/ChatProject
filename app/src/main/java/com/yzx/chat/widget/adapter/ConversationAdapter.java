@@ -1,6 +1,5 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,31 +66,18 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         }
     }
 
-
     @Override
-    public void onBindViewHolder(ConversationHolder holder, int position, List<Object> payloads) {
-        super.onBindViewHolder(holder, position, payloads);
+    public int getViewHolderCount() {
+       return mConversationList == null?0:mConversationList.size();
     }
 
     @Override
-    public void onViewRecycled(ConversationHolder holder) {
-        super.onViewRecycled(holder);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mConversationList == null) {
-            return 0;
-        }
-        return mConversationList.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
+    public int getViewHolderType(int position) {
         return mConversationList.get(position).getConversationType().getValue();
     }
 
-    static abstract class ConversationHolder extends RecyclerView.ViewHolder {
+
+    static abstract class ConversationHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         private int mConversationType;
 
