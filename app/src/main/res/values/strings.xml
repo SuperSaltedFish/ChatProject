@@ -81,5 +81,6 @@
     <string name="ConversationMenu_Clean">清空聊天记录</string>
     <string name="ConversationMenu_Remove">删除会话</string>
     <string name="ConversationMenu_CancelTop">取消置顶</string>
+    <string name="ContactMenu_UpdateRemarkName">修改备注名称</string>
 
 </resources>

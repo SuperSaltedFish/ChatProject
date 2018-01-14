@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:layout_marginStart="8dp"
-    android:background="?android:attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp">
 
     <ImageView
         android:id="@+id/ContactAdapter_mIvHeadImage"

@@ -37,43 +37,27 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == 0) {
-            return new ItemSearchView(LayoutInflater.from(mContext).inflate(R.layout.item_contact_search, parent, false), mFriendList);
-        } else {
-            return new ItemContactView(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
-        }
+        return new ItemContactView(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
+
     }
 
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
-        if (position == 0) {
-
+        ItemContactView friendHolder = (ItemContactView) holder;
+        String identity = mIdentitySparseArray.get(position);
+        if (identity != null) {
+            holder.itemView.setTag(identity);
         } else {
-            position--;
-            ItemContactView friendHolder = (ItemContactView) holder;
-            String identity = mIdentitySparseArray.get(position);
-            if (identity != null) {
-                holder.itemView.setTag(identity);
-            } else {
-                holder.itemView.setTag(null);
-            }
-            ContactBean contactBean = mFriendList.get(position);
-            friendHolder.mTvName.setText(contactBean.getName());
-            GlideUtil.loadFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
+            holder.itemView.setTag(null);
         }
+        ContactBean contactBean = mFriendList.get(position);
+        friendHolder.mTvName.setText(contactBean.getName());
+        GlideUtil.loadFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
     }
 
     @Override
     public int getViewHolderCount() {
-        if (mFriendList == null || mFriendList.size() == 0) {
-            return 0;
-        }
-        return mFriendList.size() + 1;
-    }
-
-    @Override
-    public int getViewHolderType(int position) {
-        return position;
+        return mFriendList == null ? 0 : mFriendList.size();
     }
 
     public int findPositionByLetter(String letter) {
@@ -152,42 +136,6 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
             mTvName = (TextView) itemView.findViewById(R.id.ContactAdapter_mTvName);
             mIvHeadImage = (ImageView) itemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
         }
-    }
-
-
-    private static class ItemSearchView extends ItemView {
-
-        private List<ContactBean> mFriendList;
-        private ContactSearchAdapter mSearchAdapter;
-
-        AutoCompleteTextView mSearchView;
-
-        ItemSearchView(View itemView, List<ContactBean> friendList) {
-            super(itemView);
-            mFriendList = friendList;
-            initView();
-            setView();
-
-        }
-
-        private void initView() {
-            mSearchView = (AutoCompleteTextView) itemView.findViewById(R.id.ContactAdapter_mSearchView);
-            mSearchAdapter = new ContactSearchAdapter(mFriendList);
-        }
-
-        private void setView() {
-            mSearchView.setAdapter(mSearchAdapter);
-            mSearchView.setOnItemClickListener(mOnSearchItemClickListener);
-            mSearchView.setDropDownVerticalOffset((int) AndroidUtil.dip2px(8));
-        }
-
-        private final AdapterView.OnItemClickListener mOnSearchItemClickListener = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ContactBean contactBean = mSearchAdapter.getFriendBeanByPosition(position);
-                mSearchView.setText(contactBean.getName());
-            }
-        };
     }
 
 }

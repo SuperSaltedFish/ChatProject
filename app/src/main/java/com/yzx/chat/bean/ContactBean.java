@@ -13,7 +13,7 @@ import com.yzx.chat.util.PinYinUtil;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ContactBean implements Parcelable{
+public class ContactBean implements Parcelable {
 
     private String contactOf;
     private String userID;
@@ -23,20 +23,28 @@ public class ContactBean implements Parcelable{
 
     private String abbreviation;
 
-    public String getName(){
-       return TextUtils.isEmpty(remarkName)?nickname:remarkName;
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ContactBean)) {
+            return false;
+        }
+        ContactBean bean = (ContactBean) obj;
+        if (TextUtils.isEmpty(bean.getUserID()) || TextUtils.isEmpty(userID)) {
+            return false;
+        }
+        return userID.equals(bean.getUserID());
     }
 
-    public String getAbbreviation(){
-        if(TextUtils.isEmpty(abbreviation)){
-             abbreviation = PinYinUtil.getPinYinAbbreviation(getName(),false);
+    public String getName() {
+        return TextUtils.isEmpty(remarkName) ? nickname : remarkName;
+    }
+
+    public String getAbbreviation() {
+        if (TextUtils.isEmpty(abbreviation)) {
+            abbreviation = PinYinUtil.getPinYinAbbreviation(getName(), false);
         }
         return abbreviation;
     }
-
-
-
-
 
 
     public String getContactOf() {

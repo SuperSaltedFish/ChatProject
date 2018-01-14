@@ -87,11 +87,15 @@ public class ConversationManager {
     }
 
     public void removeConversation(final Conversation conversation) {
+        final boolean isUpdateUnreadState = conversation.getUnreadMessageCount() > 0;
         mRongIMClient.removeConversation(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
                     callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
+                    if (isUpdateUnreadState) {
+                        mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    }
                 } else {
                     LogUtil.e("removeConversation fail");
                 }
@@ -123,13 +127,18 @@ public class ConversationManager {
     }
 
     public void clearAllConversationMessages(final Conversation conversation) {
+        final boolean isUpdateUnreadState = conversation.getUnreadMessageCount() > 0;
         mRongIMClient.deleteMessages(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                if (!aBoolean) {
+                if (aBoolean) {
+                    callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
+                    if (isUpdateUnreadState) {
+                        mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    }
+                } else {
                     LogUtil.e("clearAllConversationMessages fail");
                 }
-                callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
             }
 
             @Override

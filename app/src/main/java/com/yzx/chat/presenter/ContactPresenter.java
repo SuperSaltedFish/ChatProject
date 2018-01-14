@@ -3,10 +3,15 @@ package com.yzx.chat.presenter;
 import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
+import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactContract;
+import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
@@ -30,11 +35,15 @@ public class ContactPresenter implements ContactContract.Presenter {
     private List<ContactBean> mContactList;
     private Handler mHandler;
 
+    private UserApi mUserApi;
+    private Call<JsonResponse<Void>> mUpdateRemarkNameCall;
+
     @Override
     public void attachView(ContactContract.View view) {
         mContactView = view;
         mHandler = new Handler();
         mContactList = new ArrayList<>(128);
+        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
     }
 
     @Override
@@ -59,6 +68,25 @@ public class ContactPresenter implements ContactContract.Presenter {
         mRefreshContactsTask = new RefreshAllContactsTask(this);
         mRefreshContactsTask.execute(oldData, mContactList);
 
+    }
+
+    @Override
+    public void updateRemarkName(final ContactBean contactBean, final String newRemarkName) {
+        NetworkUtil.cancelCall(mUpdateRemarkNameCall);
+        mUpdateRemarkNameCall = mUserApi.updateRemarkName(contactBean.getUserID(), newRemarkName);
+        mUpdateRemarkNameCall.setCallback(new BaseHttpCallback<Void>() {
+            @Override
+            protected void onSuccess(Void response) {
+                contactBean.setRemarkName(newRemarkName);
+                IMClient.getInstance().contactManager().updateContact(contactBean);
+                mContactView.updateContact(contactBean);
+            }
+
+            @Override
+            protected void onFailure(String message) {
+
+            }
+        });
     }
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {

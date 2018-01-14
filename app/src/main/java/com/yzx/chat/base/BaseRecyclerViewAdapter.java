@@ -3,12 +3,8 @@ package com.yzx.chat.base;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
-import com.yzx.chat.util.LogUtil;
 
 /**
  * Created by YZX on 2017年08月20日.
@@ -208,6 +204,35 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
         public BaseViewHolder(View itemView) {
             super(itemView);
+        }
+    }
+
+    public static class ListUpdateCallback implements android.support.v7.util.ListUpdateCallback{
+
+        private BaseRecyclerViewAdapter mAdapter;
+
+        public ListUpdateCallback(BaseRecyclerViewAdapter adapter) {
+            mAdapter = adapter;
+        }
+
+        @Override
+        public void onInserted(int position, int count) {
+            mAdapter.notifyItemRangeInsertedEx(position, count);
+        }
+
+        @Override
+        public void onRemoved(int position, int count) {
+            mAdapter.notifyItemRangeRemovedEx(position, count);
+        }
+
+        @Override
+        public void onMoved(int fromPosition, int toPosition) {
+            mAdapter.notifyItemMovedEx(fromPosition, toPosition);
+        }
+
+        @Override
+        public void onChanged(int position, int count, Object payload) {
+            mAdapter.notifyItemRangeChangedEx(position, count, payload);
         }
     }
 

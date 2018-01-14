@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.presenter.ConversationPresenter;
 import com.yzx.chat.util.AndroidUtil;
@@ -28,6 +29,7 @@ import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
+import com.yzx.chat.widget.view.OverflowMenuShowHelper;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
 
 import java.util.ArrayList;
@@ -163,35 +165,14 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             if (mAdapter.isHasHeaderView()) {
                 position--;
             }
+            mRecyclerView.setTag(position);
             if (mConversationList.get(position).isTop()) {
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_CancelTop);
             } else {
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_Top);
             }
-            View anchor = viewHolder.itemView;
-            int menuWidth = mConversationMenu.getWidth();
-            int menuHeight = mConversationMenu.getHeight();
-            int offsetY = -(anchor.getHeight() - (int) touchY % viewHolder.itemView.getHeight());
-            int offsetX;
-            if (touchX > AndroidUtil.getScreenWidth() / 2) {
-                offsetX = (int) touchX - menuWidth;
-                if (mRecyclerView.getHeight() / 2 > touchY) {
-                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Top);
-                } else {
-                    offsetY -= menuHeight;
-                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Bottom);
-                }
-            } else {
-                offsetX = (int) touchX;
-                if (mRecyclerView.getHeight() / 2 > touchY) {
-                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Top);
-                } else {
-                    offsetY -= menuHeight;
-                    mConversationMenu.setAnimationStyle(R.style.PopupMenuAnimation_Left_Bottom);
-                }
-            }
-            mRecyclerView.setTag(position);
-            mConversationMenu.showAsDropDown(anchor, offsetX, offsetY);
+
+            OverflowMenuShowHelper.show(viewHolder.itemView, mConversationMenu, mRecyclerView.getHeight(), (int) touchX, (int) touchY);
         }
 
     };
@@ -204,27 +185,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
-        diffResult.dispatchUpdatesTo(new ListUpdateCallback() {
-            @Override
-            public void onInserted(int position, int count) {
-                mAdapter.notifyItemRangeInsertedEx(position, count);
-            }
-
-            @Override
-            public void onRemoved(int position, int count) {
-                mAdapter.notifyItemRangeRemovedEx(position, count);
-            }
-
-            @Override
-            public void onMoved(int fromPosition, int toPosition) {
-                mAdapter.notifyItemMovedEx(fromPosition, toPosition);
-            }
-
-            @Override
-            public void onChanged(int position, int count, Object payload) {
-                mAdapter.notifyItemRangeChangedEx(position, count, payload);
-            }
-        });
+        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
         enableEmptyListHint(mConversationList.size() == 0);

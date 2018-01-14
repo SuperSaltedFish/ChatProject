@@ -17,6 +17,9 @@ public class ContactContract {
 
     public interface View extends BaseView<Presenter> {
         void updateUnreadBadge(int unreadCount);
+
+        void updateContact(ContactBean contactBean);
+
         void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList);
     }
 
@@ -24,5 +27,6 @@ public class ContactContract {
     public interface Presenter extends BasePresenter<View> {
         void refreshAllContact(List<ContactBean> oldData);
 
+        void updateRemarkName(ContactBean contactBean, String newRemarkName);
     }
 }
