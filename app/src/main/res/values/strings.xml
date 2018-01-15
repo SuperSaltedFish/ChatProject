@@ -82,5 +82,7 @@
     <string name="ConversationMenu_Remove">删除会话</string>
     <string name="ConversationMenu_CancelTop">取消置顶</string>
     <string name="ContactMenu_UpdateRemarkName">修改备注名称</string>
+    <string name="RemarkInfoActivity_Save">保存</string>
+    <string name="RemarkInfoActivity_Title">备注信息</string>
 
 </resources>
