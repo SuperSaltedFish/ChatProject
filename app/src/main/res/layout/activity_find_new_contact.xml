@@ -10,7 +10,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/FindNewContactActivity_mToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="48dp"
         app:title="新的联系人"
         android:background="@color/colorAccent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>

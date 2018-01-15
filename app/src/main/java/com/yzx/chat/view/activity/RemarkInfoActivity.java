@@ -5,6 +5,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.util.LogUtil;
 
 /**
  * Created by YZX on 2018年01月15日.
@@ -13,7 +15,10 @@ import com.yzx.chat.base.BaseCompatActivity;
 
 public class RemarkInfoActivity extends BaseCompatActivity {
 
+    public static final String INTENT_EXTRA_CONTACT = "Contact";
+
     private Toolbar mToolbar;
+    private ContactBean mContactBean;
 
 
     @Override
@@ -26,6 +31,7 @@ public class RemarkInfoActivity extends BaseCompatActivity {
         super.onCreate(savedInstanceState);
         init();
         setView();
+        setData();
     }
 
     private void init() {
@@ -36,5 +42,15 @@ public class RemarkInfoActivity extends BaseCompatActivity {
         setSupportActionBar(mToolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setData() {
+        mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
+        if(mContactBean==null){
+            LogUtil.e("mContactBean == null");
+            finish();
+        }else {
+            
+        }
     }
 }

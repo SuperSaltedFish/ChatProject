@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/ConversationMenu_ReviseRemarks"
-        android:title="修改备注" />
+        android:id="@+id/ContactMenu_ReviseRemarks"
+        android:title="@string/ContactMenu_UpdateRemarkName" />
 
     <item
-        android:id="@+id/ConversationMenu_DelectContact"
-        android:title="删除好友" />
+        android:id="@+id/ContactMenu_DeleteContact"
+        android:title="@string/ContactMenu_DeleteContact" />
 
 </menu>

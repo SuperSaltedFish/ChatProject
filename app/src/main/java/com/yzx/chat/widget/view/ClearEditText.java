@@ -1,0 +1,119 @@
+package com.yzx.chat.widget.view;
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+
+import com.yzx.chat.R;
+
+
+/**
+ * Created by YZX on 2018年01月15日.
+ * 每一个不曾起舞的日子 都是对生命的辜负
+ */
+
+public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
+
+    private Drawable mClearDrawable;
+    private boolean isShowClearDrawable;
+
+    public ClearEditText(Context context) {
+        this(context, null);
+    }
+
+    public ClearEditText(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public ClearEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        mClearDrawable = context.getDrawable(R.drawable.ic_close);
+        if (mClearDrawable != null) {
+            mClearDrawable.setBounds(0, 0, mClearDrawable.getIntrinsicWidth(), mClearDrawable.getIntrinsicHeight());
+        }
+        addTextChangedListener(mTextWatcher);
+    }
+
+    @Override
+    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect);
+        if (focused) {
+            setClearIconVisible(true);
+        } else {
+            setClearIconVisible(false);
+        }
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            performClick();
+        }
+        if (mClearDrawable != null && event.getAction() == MotionEvent.ACTION_UP) {
+            int x = (int) event.getX();
+            // 判断触摸点是否在水平范围内
+            boolean isInnerWidth = (x > (getWidth() - getTotalPaddingRight()))
+                    && (x < (getWidth() - getPaddingRight()));
+            // 获取删除图标的边界，返回一个Rect对象
+            Rect rect = mClearDrawable.getBounds();
+            // 获取删除图标的高度
+            int height = rect.height();
+            int y = (int) event.getY();
+            // 计算图标底部到控件底部的距离
+            int distance = (getHeight() - height) / 2;
+            // 判断触摸点是否在竖直范围内(可能会有点误差)
+            // 触摸点的纵坐标在distance到（distance+图标自身的高度）之内，则视为点中删除图标
+            boolean isInnerHeight = (y > distance) && (y < (distance + height));
+            if (isInnerHeight && isInnerWidth) {
+                this.setText(null);
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+
+    private void setClearIconVisible(boolean visible) {
+        if (isShowClearDrawable == visible) {
+            return;
+        }
+        Drawable right = visible ? mClearDrawable : null;
+        Drawable[] drawables = getCompoundDrawables();
+        setCompoundDrawables(drawables[0], drawables[1], right, drawables[3]);
+        isShowClearDrawable = visible;
+    }
+
+
+    private final TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (TextUtils.isEmpty(s)) {
+                setClearIconVisible(false);
+            } else {
+                setClearIconVisible(true);
+            }
+        }
+    };
+}

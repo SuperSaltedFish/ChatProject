@@ -20,7 +20,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/FriendProfileActivity_mToolbar"
                 android:layout_width="0dp"
-                android:layout_height="?actionBarSize"
+                android:layout_height="48dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:popupTheme="@style/ActionBarPopupTheme"

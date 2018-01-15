@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -91,10 +90,15 @@ public class ContactProfileActivity extends BaseCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                return true;
+            case R.id.ContactMenu_UpdateRemarkInfo:
+                Intent intent = new Intent(this, RemarkInfoActivity.class);
+                intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactBean);
+                startActivityForResult(intent,0);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     @Override

@@ -9,7 +9,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/ChatActivity_mToolbar"
         android:layout_width="0dp"
-        android:layout_height="?actionBarSize"
+        android:layout_height="48dp"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"

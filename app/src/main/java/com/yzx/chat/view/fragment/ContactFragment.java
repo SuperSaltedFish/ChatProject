@@ -26,6 +26,7 @@ import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.ContactProfileActivity;
+import com.yzx.chat.view.activity.RemarkInfoActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactBean;
@@ -157,10 +158,14 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
             @Override
             public void onMenuItemClick(int position, int menuID) {
                 int index = (int) mContactRecyclerView.getTag();
-                switch (menuID) {
-                    case R.id.ContactMenu_UpdateRemarkName:
-                        //    mPresenter.setConversationToTop(conversation, !conversation.isTop());
-                        break;
+                if (index < mContactList.size()) {
+                    switch (menuID) {
+                        case R.id.ContactMenu_UpdateRemarkInfo:
+                            Intent intent = new Intent(mContext, RemarkInfoActivity.class);
+                            intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactList.get(index));
+                            startActivityForResult(intent,0);
+                            break;
+                    }
                 }
             }
         });

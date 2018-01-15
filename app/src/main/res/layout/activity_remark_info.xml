@@ -7,7 +7,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/RemarkInfoActivity_mToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="48dp"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:title="@string/RemarkInfoActivity_Title"
@@ -15,12 +15,12 @@
 
         <Button
             android:id="@+id/ImageSelectorActivity_mBtnConfirm"
-            android:layout_width="72dp"
+            android:layout_width="64dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/radius_default_bt"
             android:elevation="2dp"
             android:text="@string/RemarkInfoActivity_Save"
@@ -31,7 +31,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
+        android:layout_marginTop="48dp"
         android:overScrollMode="never">
 
         <LinearLayout
@@ -40,24 +40,93 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
+            android:paddingBottom="16dp"
             android:paddingEnd="16dp"
             android:paddingStart="16dp">
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="40dp"
                 android:gravity="start|bottom"
                 android:text="备注名称"
                 android:textSize="17sp" />
 
-            <EditText
+            <com.yzx.chat.widget.view.ClearEditText
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:gravity="center_vertical"
+                android:layout_height="32dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/selector_et_underline_default"
+                android:gravity="bottom"
                 android:maxLines="1"
+                android:paddingBottom="8dp"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
                 android:text="叶智星"
+                android:textCursorDrawable="@drawable/cursor_default"
+                android:textSize="17sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="start|bottom"
+                android:text="电话号码"
+                android:textSize="17sp" />
+
+            <com.yzx.chat.widget.view.ClearEditText
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/selector_et_underline_default"
+                android:gravity="center_vertical"
+                android:inputType="number"
+                android:maxLines="1"
+                android:paddingBottom="8dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:text="13631232530"
+                android:textCursorDrawable="@drawable/cursor_default"
+                android:textSize="17sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="start|bottom"
+                android:text="标签"
+                android:textSize="17sp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/selector_et_underline_default"
+                android:gravity="bottom"
+                android:maxLines="1"
+                android:paddingBottom="8dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:text="程序员 推广师"
+                android:textCursorDrawable="@drawable/cursor_default"
+                android:textSize="17sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="start|bottom"
+                android:text="描述"
+                android:textSize="17sp" />
+
+            <com.yzx.chat.widget.view.ClearEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/selector_et_underline_default"
+                android:gravity="bottom"
+                android:minHeight="44dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:text="da随风倒wdwdda随风倒wdwdda随风倒wdwdda随风倒wdwdda随风倒wdwdda随风倒wdwd"
+                android:textCursorDrawable="@drawable/cursor_default"
                 android:textSize="17sp" />
 
         </LinearLayout>
