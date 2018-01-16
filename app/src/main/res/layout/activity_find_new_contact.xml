@@ -26,98 +26,46 @@
 
     </FrameLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <com.yzx.chat.widget.view.RoundLinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="240dp">
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="240dp"
+        android:background="#ffffff"
+        android:elevation="2dp"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/ImageView1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
-            app:layout_constraintEnd_toStartOf="@+id/ImageView2"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <com.yzx.chat.widget.view.RoundLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:background="#ffffff"
+            android:elevation="2dp" />
 
-        <ImageView
-            android:id="@+id/ImageView2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
-            app:layout_constraintEnd_toStartOf="@+id/ImageView3"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/ImageView1"
-            app:layout_constraintTop_toTopOf="@+id/ImageView1" />
+        <com.yzx.chat.widget.view.RoundLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:background="#ffffff"
+            android:elevation="2dp" />
 
-        <ImageView
-            android:id="@+id/ImageView3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
-            app:layout_constraintEnd_toStartOf="@+id/ImageView4"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/ImageView2"
-            app:layout_constraintTop_toTopOf="@+id/ImageView1" />
-
-        <ImageView
-            android:id="@+id/ImageView4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/ImageView3"
-            app:layout_constraintTop_toTopOf="@+id/ImageView1" />
-
-        <TextView
-            android:id="@+id/TextView1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:text="少一少"
-            app:layout_constraintEnd_toStartOf="@+id/TextView2"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ImageView1" />
-
-        <TextView
-            android:id="@+id/TextView2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="少一少"
-            app:layout_constraintEnd_toStartOf="@+id/TextView3"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/TextView1"
-            app:layout_constraintTop_toTopOf="@+id/TextView1" />
-
-        <TextView
-            android:id="@+id/TextView3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="少一少"
-            app:layout_constraintEnd_toStartOf="@+id/TextView4"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/TextView2"
-            app:layout_constraintTop_toTopOf="@+id/TextView1" />
-
-        <TextView
-            android:id="@+id/TextView4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="少一少"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@+id/TextView3"
-            app:layout_constraintTop_toTopOf="@+id/TextView1" />
+        <com.yzx.chat.widget.view.RoundLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:background="#ffffff"
+            android:elevation="2dp" />
 
 
-    </android.support.constraint.ConstraintLayout>
+    </com.yzx.chat.widget.view.RoundLinearLayout>
 
 
     <com.yzx.chat.widget.view.RoundFrameLayout
@@ -145,9 +93,31 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical|start"
             android:layout_marginStart="8dp"
+            android:padding="2dp"
             android:src="@drawable/ic_search" />
 
     </com.yzx.chat.widget.view.RoundFrameLayout>
 
 </merge>
 
+
+    <!--<android.support.constraint.ConstraintLayout--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:layout_marginTop="240dp">-->
+
+    <!--<ImageView--><!--android:id="@+id/ImageView1"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toStartOf="@+id/ImageView2"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<ImageView--><!--android:id="@+id/ImageView2"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toStartOf="@+id/ImageView3"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/ImageView1"--><!--app:layout_constraintTop_toTopOf="@+id/ImageView1" />-->
+
+    <!--<ImageView--><!--android:id="@+id/ImageView3"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toStartOf="@+id/ImageView4"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/ImageView2"--><!--app:layout_constraintTop_toTopOf="@+id/ImageView1" />-->
+
+    <!--<ImageView--><!--android:id="@+id/ImageView4"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toEndOf="parent"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/ImageView3"--><!--app:layout_constraintTop_toTopOf="@+id/ImageView1" />-->
+
+    <!--<TextView--><!--android:id="@+id/TextView1"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:layout_marginTop="4dp"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toStartOf="@+id/TextView2"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toBottomOf="@+id/ImageView1" />-->
+
+    <!--<TextView--><!--android:id="@+id/TextView2"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toStartOf="@+id/TextView3"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/TextView1"--><!--app:layout_constraintTop_toTopOf="@+id/TextView1" />-->
+
+    <!--<TextView--><!--android:id="@+id/TextView3"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toStartOf="@+id/TextView4"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/TextView2"--><!--app:layout_constraintTop_toTopOf="@+id/TextView1" />-->
+
+    <!--<TextView--><!--android:id="@+id/TextView4"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toEndOf="parent"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/TextView3"--><!--app:layout_constraintTop_toTopOf="@+id/TextView1" />-->
+
+
+    <!--</android.support.constraint.ConstraintLayout>-->

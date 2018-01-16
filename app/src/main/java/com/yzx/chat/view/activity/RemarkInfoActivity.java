@@ -50,7 +50,7 @@ public class RemarkInfoActivity extends BaseCompatActivity {
             LogUtil.e("mContactBean == null");
             finish();
         }else {
-            
+
         }
     }
 }
