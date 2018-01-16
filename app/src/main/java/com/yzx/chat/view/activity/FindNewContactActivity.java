@@ -31,8 +31,8 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     private void init() {
         mToolbar = findViewById(R.id.FindNewContactActivity_mToolbar);
-        mRvNewContact = findViewById(R.id.FindNewContactActivity_mRvNewContact);
-        mAdapter = new NewContactAdapter();
+//        mRvNewContact = findViewById(R.id.FindNewContactActivity_mRvNewContact);
+//        mAdapter = new NewContactAdapter();
     }
 
     private void setView() {
@@ -40,14 +40,14 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(null);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
-        mRvNewContact.setLayoutManager(layoutManager);
-        mRvNewContact.setAdapter(mAdapter);
-        mRvNewContact.setHasFixedSize(true);
+//
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        layoutManager.setStackFromEnd(true);
+//        layoutManager.setReverseLayout(true);
+//        mRvNewContact.setLayoutManager(layoutManager);
+//        mRvNewContact.setAdapter(mAdapter);
+//        mRvNewContact.setHasFixedSize(true);
 
     }
 
