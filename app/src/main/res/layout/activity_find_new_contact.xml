@@ -11,12 +11,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.25" />
 
     <ImageView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:foreground="#c0222f42"
+        android:foreground="#ac222f42"
         android:scaleType="centerCrop"
         android:src="@drawable/temp_share_image"
         app:layout_constraintBottom_toTopOf="@+id/FindNewContactActivity_mGuideline"
@@ -26,8 +26,9 @@
 
     <FrameLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:fitsSystemWindows="true"
+        app:layout_constraintBottom_toTopOf="@+id/FindNewContactActivity_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -35,11 +36,14 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/FindNewContactActivity_mToolbar"
             android:layout_width="match_parent"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:layout_gravity="top"
+            app:title="@string/FindNewContactActivity_Title" />
 
     </FrameLayout>
 
     <com.yzx.chat.widget.view.RoundFrameLayout
+        android:id="@+id/FindNewContactActivity_mFlSearchLayout"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginEnd="40dp"
@@ -72,6 +76,18 @@
 
     </com.yzx.chat.widget.view.RoundFrameLayout>
 
+    <TextView
+        android:id="@+id/FindNewContactActivity_mTvMyPhoneNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="我的手机号:13631232530"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mFlSearchLayout" />
+
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/ConversationFragment_mSmartRefreshLayout"
         android:layout_width="0dp"
@@ -79,195 +95,230 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mTvMyPhoneNumber"
         app:srlEnablePureScrollMode="true">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:background="@android:color/white"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
-
-        <ImageView
-            android:id="@+id/ImageView3"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="4dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_scan"
-            android:tint="@color/colorAccent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/TextView5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:text="扫一扫"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/TextView6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ImageView3"
-            app:layout_constraintTop_toTopOf="@+id/ImageView3"
-            app:layout_constraintVertical_chainStyle="packed" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
 
-        <TextView
-            android:id="@+id/TextView6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:text="扫描二维码名片"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/ImageView3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ImageView3"
-            app:layout_constraintTop_toBottomOf="@+id/TextView5" />
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp">
+
+                <ImageView
+                    android:id="@+id/ImageView3"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="4dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_scan"
+                    android:tint="@color/colorAccent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/TextView5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="扫一扫"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toTopOf="@+id/TextView6"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ImageView3"
+                    app:layout_constraintTop_toTopOf="@+id/ImageView3"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
 
-        <ImageView
-            android:id="@+id/ImageView2"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="4dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_friend"
-            android:tint="@color/colorAccent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ImageView3" />
-
-        <TextView
-            android:id="@+id/TextView3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:text="面对面建群"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/TextView4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ImageView2"
-            app:layout_constraintTop_toTopOf="@+id/ImageView2"
-            app:layout_constraintVertical_chainStyle="packed" />
+                <TextView
+                    android:id="@+id/TextView6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="扫描二维码名片"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ImageView3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ImageView3"
+                    app:layout_constraintTop_toBottomOf="@+id/TextView5" />
 
 
-        <TextView
-            android:id="@+id/TextView4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:text="与身边的朋友进入同一个群聊"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/ImageView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ImageView2"
-            app:layout_constraintTop_toBottomOf="@+id/TextView3" />
+                <ImageView
+                    android:id="@+id/ImageView2"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="4dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_friend"
+                    android:tint="@color/colorAccent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ImageView3" />
+
+                <TextView
+                    android:id="@+id/TextView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="面对面建群"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toTopOf="@+id/TextView4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ImageView2"
+                    app:layout_constraintTop_toTopOf="@+id/ImageView2"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
 
-        <ImageView
-            android:id="@+id/ImageView1"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="4dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_address_book"
-            android:tint="@color/colorAccent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ImageView2" />
-
-        <TextView
-            android:id="@+id/TextView1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:text="手机联系人"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/TextView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ImageView1"
-            app:layout_constraintTop_toTopOf="@+id/ImageView1"
-            app:layout_constraintVertical_chainStyle="packed" />
+                <TextView
+                    android:id="@+id/TextView4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="与身边的朋友进入同一个群聊"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ImageView2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ImageView2"
+                    app:layout_constraintTop_toBottomOf="@+id/TextView3" />
 
 
-        <TextView
-            android:id="@+id/TextView2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:text="添加或邀请通讯录中的好友"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/ImageView1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ImageView1"
-            app:layout_constraintTop_toBottomOf="@+id/TextView1" />
+                <ImageView
+                    android:id="@+id/ImageView1"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="4dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_address_book"
+                    android:tint="@color/colorAccent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ImageView2" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1px"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:background="@color/divider_color_black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ImageView3" />
+                <TextView
+                    android:id="@+id/TextView1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="手机联系人"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toTopOf="@+id/TextView2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ImageView1"
+                    app:layout_constraintTop_toTopOf="@+id/ImageView1"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1px"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:background="@color/divider_color_black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ImageView2" />
 
-    </android.support.constraint.ConstraintLayout>
+                <TextView
+                    android:id="@+id/TextView2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="添加或邀请通讯录中的好友"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ImageView1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ImageView1"
+                    app:layout_constraintTop_toBottomOf="@+id/TextView1" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@color/divider_color_black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ImageView3" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@color/divider_color_black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ImageView2" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/white"
+                android:gravity="center_vertical"
+                android:paddingEnd="8dp"
+                android:paddingStart="16dp">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start|center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="可能认识的人"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textSize="17sp" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end|center_vertical"
+                    android:drawableEnd="@drawable/ic_arrow_right"
+                    android:gravity="center_vertical"
+                    android:text="查看更多"
+                    android:textSize="13sp" />
+
+            </FrameLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/FindNewContactActivity_mRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:overScrollMode="never"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp" />
+
+
+        </LinearLayout>
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
+
 </android.support.constraint.ConstraintLayout>
 
-
-    <!--<android.support.constraint.ConstraintLayout--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:layout_marginTop="240dp">-->
-
-    <!--<ImageView--><!--android:id="@+id/ImageView1"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toStartOf="@+id/ImageView2"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--<ImageView--><!--android:id="@+id/ImageView2"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toStartOf="@+id/ImageView3"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/ImageView1"--><!--app:layout_constraintTop_toTopOf="@+id/ImageView1" />-->
-
-    <!--<ImageView--><!--android:id="@+id/ImageView3"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toStartOf="@+id/ImageView4"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/ImageView2"--><!--app:layout_constraintTop_toTopOf="@+id/ImageView1" />-->
-
-    <!--<ImageView--><!--android:id="@+id/ImageView4"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/ic_send"--><!--app:layout_constraintEnd_toEndOf="parent"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/ImageView3"--><!--app:layout_constraintTop_toTopOf="@+id/ImageView1" />-->
-
-    <!--<TextView--><!--android:id="@+id/TextView1"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:layout_marginTop="4dp"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toStartOf="@+id/TextView2"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toBottomOf="@+id/ImageView1" />-->
-
-    <!--<TextView--><!--android:id="@+id/TextView2"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toStartOf="@+id/TextView3"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/TextView1"--><!--app:layout_constraintTop_toTopOf="@+id/TextView1" />-->
-
-    <!--<TextView--><!--android:id="@+id/TextView3"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toStartOf="@+id/TextView4"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/TextView2"--><!--app:layout_constraintTop_toTopOf="@+id/TextView1" />-->
-
-    <!--<TextView--><!--android:id="@+id/TextView4"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:gravity="center"--><!--android:text="少一少"--><!--app:layout_constraintEnd_toEndOf="parent"--><!--app:layout_constraintHorizontal_weight="1"--><!--app:layout_constraintStart_toEndOf="@+id/TextView3"--><!--app:layout_constraintTop_toTopOf="@+id/TextView1" />-->
-
-
-    <!--</android.support.constraint.ConstraintLayout>-->

@@ -90,6 +90,7 @@ public class ContactProfileActivity extends BaseCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
             case R.id.ContactMenu_UpdateRemarkInfo:
                 Intent intent = new Intent(this, RemarkInfoActivity.class);
                 intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactBean);

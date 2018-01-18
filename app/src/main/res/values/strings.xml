@@ -85,5 +85,7 @@
     <string name="RemarkInfoActivity_Save">保存</string>
     <string name="RemarkInfoActivity_Title">备注信息</string>
     <string name="ContactMenu_DeleteContact">删除好友</string>
+    <string name="FindNewContactActivity_Title">添加好友</string>
+    <string name="ContactMessageActivity_Title">新的朋友</string>
 
 </resources>

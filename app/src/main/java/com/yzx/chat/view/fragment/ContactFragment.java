@@ -123,6 +123,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
+        mFBtnAdd.setOnClickListener(mOnAddNewContactClick);
+
         mSegmentedControlView
                 .setColors(Color.WHITE, ContextCompat.getColor(mContext, R.color.colorPrimary))
                 .setItems(new String[]{"好友", "群组"})
@@ -179,10 +181,16 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(mContext, FindNewContactActivity.class));
+           // startActivity(new Intent(mContext, FindNewContactActivity.class));
         }
     };
 
+    private final View.OnClickListener mOnAddNewContactClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+             startActivity(new Intent(mContext, FindNewContactActivity.class));
+        }
+    };
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
 

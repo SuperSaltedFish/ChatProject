@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".view.activity.ContactMessageActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/ContactMessageActivity_mToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:title="@string/ContactMessageActivity_Title"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp">
+
+
+        <Button
+            android:id="@+id/ContactMessageActivity_mBtnAddNewContact"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|end"
+            android:background="@null"
+            android:gravity="center"
+            android:text="添加好友"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srlEnablePureScrollMode="true">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/ContactMessageActivity_mRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
+</LinearLayout>
