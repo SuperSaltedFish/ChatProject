@@ -43,8 +43,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);

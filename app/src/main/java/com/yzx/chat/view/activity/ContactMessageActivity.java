@@ -1,7 +1,8 @@
 package com.yzx.chat.view.activity;
 
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
+
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.adapter.ContactMessageAdapter;
+import com.yzx.chat.widget.view.DividerItemDecoration;
 
 /**
  * Created by YZX on 2018年01月18日.
@@ -48,10 +50,8 @@ public class ContactMessageActivity extends BaseCompatActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this,R.color.divider_color_black)));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
 
