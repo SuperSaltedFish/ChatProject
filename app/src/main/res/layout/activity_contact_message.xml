@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         app:title="@string/ContactMessageActivity_Title"
-        app:titleTextColor="@android:color/white"
-        android:background="@color/colorPrimary"
+
+
         android:elevation="4dp">
 
 
@@ -23,10 +23,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
             android:background="@null"
+            android:layout_marginEnd="8dp"
+            android:minWidth="0dp"
             android:gravity="center"
             android:text="添加好友"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
     </android.support.v7.widget.Toolbar>
 
