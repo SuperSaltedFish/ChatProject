@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     protected abstract void init(View parentView);
 
-    protected abstract void setView();
+    protected abstract void setup();
 
     protected P mPresenter;
 
@@ -49,16 +50,16 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
         mContext = getActivity();
         if (mParentView == null) {
             mParentView = inflater.inflate(getLayoutID(), container, false);
-            init(mParentView);
-            setView();
             initPresenter();
+            init(mParentView);
+            setup();
         }
         return mParentView;
     }
 
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (getUserVisibleHint() && !isOnceVisible) {
             isOnceVisible = true;
             onFirstVisible();
@@ -99,7 +100,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
             onFirstVisible();
         }
     }
-
 
 
     protected void onFirstVisible() {

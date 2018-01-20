@@ -8,13 +8,12 @@
     tools:context=".view.activity.ContactMessageActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/ContactMessageActivity_mToolbar"
+        android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        app:title="@string/ContactMessageActivity_Title"
-
-
-        android:elevation="4dp">
+        android:elevation="4dp"
+        app:theme="@style/ToolbarTheme"
+        app:titleTextAppearance="@style/ToolbarTitleText.Light">
 
 
         <Button

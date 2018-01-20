@@ -34,7 +34,7 @@ public class MomentsFragment extends BaseFragment {
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

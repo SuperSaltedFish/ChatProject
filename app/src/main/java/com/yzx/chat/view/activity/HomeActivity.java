@@ -35,14 +35,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initView();
-        setView();
-        setData();
-    }
-
-    private void initView() {
+    protected void init() {
         mFragments = new Fragment[4];
         mFragments[0] = new ConversationFragment();
         mFragments[1] = new ContactFragment();
@@ -59,7 +52,8 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .build();
     }
 
-    private void setView() {
+    @Override
+    protected void setup() {
         mNavigationController.addTabItemSelectedListener(mOnTabSelectedListener);
 
         mFragmentManager.beginTransaction()
@@ -70,7 +64,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .hide(mFragments[2])
                 .commit();
 
-
+        setData();
     }
 
     private void setData() {

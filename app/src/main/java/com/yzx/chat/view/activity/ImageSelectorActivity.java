@@ -42,7 +42,6 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
     private static final int HORIZONTAL_ITEM_COUNT = 3;
 
-    private Toolbar mToolbar;
     private RecyclerView mRvImageList;
     private RecyclerView mRvImageDirList;
     private Button mBtnConfirm;
@@ -66,18 +65,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initView();
-        setView();
-        setData();
-
-        requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-    }
-
-
-    private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.ImageSelectorActivity_mToolbar);
+    protected void init() {
         mBtnConfirm = (Button) findViewById(R.id.ImageSelectorActivity_mBtnConfirm);
         mRvImageList = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageList);
         mTvChooseDir = (TextView) findViewById(R.id.ImageSelectorActivity_mTvChooseDir);
@@ -95,13 +83,11 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         mMaskColorDrawable = new ColorDrawable(Color.BLACK);
     }
 
-    private void setView() {
-        mToolbar.setTitle("选择图片");
-        mToolbar.setTitleTextColor(Color.WHITE);
-        setActionBar(mToolbar);
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void setup() {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            setTitle(R.string.ImageSelectorActivity_Title);
         }
 
         mRvImageList.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
@@ -123,9 +109,13 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         mBtnConfirm.setOnClickListener(mOnBtnConfirmClickListener);
 
         mImageSelectAdapter.setOnSelectedChangeListener(mOnSelectedChangeListener);
+
+        setData();
     }
 
+
     private void setData() {
+        requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         new LoadImageAsyncTask(ImageSelectorActivity.this).execute();
     }
 

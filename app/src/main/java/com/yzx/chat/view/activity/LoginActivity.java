@@ -70,14 +70,8 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         return R.layout.activity_login;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init();
-        setView();
-    }
 
-    private void init() {
+    protected void init() {
         mVfPageSwitch = (ViewFlipper) findViewById(R.id.LoginActivity_mVfPageSwitch);
         mBtnLogin = (Button) findViewById(R.id.FlipperLogin_mBtnLogin);
         mBtnRegister = (Button) findViewById(R.id.FlipperRegister_mBtnRegister);
@@ -104,7 +98,8 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mTranslateAnimation = AnimationUtils.loadAnimation(this, R.anim.bg_translate_anim);
     }
 
-    private void setView() {
+    @Override
+    protected void setup() {
         mBtnLogin.setOnClickListener(mOnBtnLoginClick);
         mBtnRegister.setOnClickListener(mOnBtnRegisterClick);
         mBtnVerify.setOnClickListener(mOnBtnVerifyClick);
@@ -124,6 +119,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mEtVerifyCode.addTextChangedListener(mTextWatcher);
         mIvBackground.startAnimation(mTranslateAnimation);
     }
+
 
     @Override
     public void onBackPressed() {

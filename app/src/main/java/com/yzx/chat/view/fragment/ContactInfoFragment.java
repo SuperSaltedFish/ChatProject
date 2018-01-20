@@ -24,7 +24,7 @@ public class ContactInfoFragment extends BaseFragment {
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
 
     }
 

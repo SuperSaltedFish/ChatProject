@@ -5,13 +5,13 @@
     tools:context=".view.activity.RemarkInfoActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/RemarkInfoActivity_mToolbar"
+        android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:title="@string/RemarkInfoActivity_Title"
-        app:titleTextColor="@android:color/white">
+        app:theme="@style/ToolbarTheme"
+        app:titleTextAppearance="@style/ToolbarTitleText.Light">
 
         <Button
             android:id="@+id/ImageSelectorActivity_mBtnConfirm"

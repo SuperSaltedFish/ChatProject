@@ -16,10 +16,6 @@
 
     </style>
 
-    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:titleTextAppearance">@style/TitleText.Light</item>
-        <item name="android:background">@color/colorPrimary</item>
-    </style>
 
     <style name="BaseDarkTheme" parent="Theme.AppCompat.NoActionBar">
         <!--<item name="colorPrimary">@color/theme_main_color</item>-->
@@ -61,7 +57,13 @@
         <item name="overlapAnchor">false</item>
     </style>
 
-    <style name="TitleText.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:titleTextAppearance">@style/ToolbarTitleText.Light</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="ToolbarTitleText.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/white</item>
     </style>

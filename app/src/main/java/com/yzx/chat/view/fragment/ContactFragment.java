@@ -10,13 +10,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
@@ -79,7 +79,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected void init(View parentView) {
-        mToolbar = (Toolbar) parentView.findViewById(R.id.ContactFragment_mToolbar);
+        mToolbar = (Toolbar) parentView.findViewById(R.id.Default_mToolbar);
         mContactRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
         mIndexBarView = (IndexBarView) parentView.findViewById(R.id.ContactFragment_mIndexBarView);
         mTvIndexBarHint = (TextView) parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
@@ -96,7 +96,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
         mToolbar.setTitle("微信");
         mToolbar.setTitleTextColor(Color.WHITE);
 

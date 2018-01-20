@@ -20,7 +20,6 @@ import com.yzx.chat.widget.view.MaskView;
 
 public class QrCodeScanActivity extends BaseCompatActivity {
 
-    private Toolbar mToolbar;
     private Camera2TextureView mCamera2TextureView;
     private View mScanAnimationView;
     private MaskView mMaskView;
@@ -33,15 +32,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initView();
-        setView();
-    }
-
-
-    private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.QrCodeScanActivity_mToolbar);
+    protected void init() {
         mCamera2TextureView = (Camera2TextureView) findViewById(R.id.QrCodeScanActivity_mCamera2TextureView);
         mScanAnimationView = findViewById(R.id.QrCodeScanActivity_mScanAnimationView);
         mMaskView = (MaskView) findViewById(R.id.QrCodeScanActivity_mMaskView);
@@ -49,9 +40,8 @@ public class QrCodeScanActivity extends BaseCompatActivity {
         mIvToggleFlash = (ImageView) findViewById(R.id.QrCodeScanActivity_mIvToggleFlash);
     }
 
-    private void setView() {
-        setActionBar(mToolbar);
-        setTitle(null);
+    @Override
+    protected void setup() {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

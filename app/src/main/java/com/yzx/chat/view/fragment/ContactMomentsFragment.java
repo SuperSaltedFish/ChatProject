@@ -41,7 +41,7 @@ public class ContactMomentsFragment extends BaseFragment {
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 

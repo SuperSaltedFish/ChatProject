@@ -20,29 +20,23 @@ public class RemarkInfoActivity extends BaseCompatActivity {
     private Toolbar mToolbar;
     private ContactBean mContactBean;
 
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_remark_info;
     }
 
+    protected void init() {
+        mToolbar = findViewById(R.id.Default_mToolbar);
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init();
-        setView();
+    protected void setup() {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         setData();
     }
 
-    private void init() {
-        mToolbar = findViewById(R.id.RemarkInfoActivity_mToolbar);
-    }
-
-    private void setView(){
-        setSupportActionBar(mToolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
 
     private void setData() {
         mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);

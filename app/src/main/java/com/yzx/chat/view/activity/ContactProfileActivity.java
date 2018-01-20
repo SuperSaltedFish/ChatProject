@@ -26,7 +26,6 @@ public class ContactProfileActivity extends BaseCompatActivity {
     private ViewPager mViewPager;
     private ImageView mIvStartChat;
     private ContactProfilePagerAdapter mPagerAdapter;
-    private Toolbar mToolbar;
 
     private ContactBean mContactBean;
 
@@ -36,29 +35,23 @@ public class ContactProfileActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void init() {
         mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
         if (mContactBean == null) {
             finish();
         }
-        initView();
-        setView();
-    }
-
-    private void initView() {
         mTabLayout = findViewById(R.id.FriendProfileActivity_mTabLayout);
         mViewPager = findViewById(R.id.FriendProfileActivity_mViewPager);
-        mToolbar = findViewById(R.id.FriendProfileActivity_mToolbar);
         mIvStartChat = findViewById(R.id.FriendProfileActivity_mIvStartChat);
         mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle));
     }
 
-    private void setView() {
-        setSupportActionBar(mToolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(mContactBean.getName());
+    @Override
+    protected void setup() {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            setTitle(mContactBean.getName());
+        }
 
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -76,7 +69,6 @@ public class ContactProfileActivity extends BaseCompatActivity {
                 finish();
             }
         });
-
     }
 
     @Override

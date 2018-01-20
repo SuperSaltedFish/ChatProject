@@ -15,7 +15,6 @@ import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 public class FindNewContactActivity extends BaseCompatActivity<FindNewContactContract.Presenter> implements FindNewContactContract.View {
 
     private RecyclerView mRecyclerView;
-    private Toolbar mToolbar;
     private MaybeKnowAdapter mAdapter;
 
     @Override
@@ -23,31 +22,24 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         return R.layout.activity_find_new_contact;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init();
-        setView();
-    }
-
-    private void init() {
-        mToolbar = findViewById(R.id.FindNewContactActivity_mToolbar);
+    protected void init() {
         mRecyclerView = findViewById(R.id.FindNewContactActivity_mRecyclerView);
         mAdapter = new MaybeKnowAdapter();
     }
 
-    private void setView() {
-
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void setup() {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

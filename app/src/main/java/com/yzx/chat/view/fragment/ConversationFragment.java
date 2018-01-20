@@ -1,13 +1,11 @@
 package com.yzx.chat.view.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -65,7 +63,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     protected void init(View parentView) {
         mRecyclerView = parentView.findViewById(R.id.ConversationFragment_mRecyclerView);
-        mToolbar = parentView.findViewById(R.id.ConversationFragment_mToolbar);
+        mToolbar = parentView.findViewById(R.id.Default_mToolbar);
         mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
         mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
         mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
@@ -77,7 +75,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
         mToolbar.setTitle(R.string.app_name);
 //        mToolbar.inflateMenu(R.menu.menu_conversation_overflow);
 //        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);

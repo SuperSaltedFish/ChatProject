@@ -14,13 +14,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Toolbar
-            android:id="@+id/ImageSelectorActivity_mToolbar"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/Default_mToolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="?colorPrimary"
             android:elevation="4dp"
-            android:minHeight="48dp">
+            app:theme="@style/ToolbarTheme"
+            app:titleTextAppearance="@style/ToolbarTitleText.Light">
 
             <Button
                 android:id="@+id/ImageSelectorActivity_mBtnConfirm"
@@ -33,7 +33,7 @@
                 android:background="@drawable/radius_default_bt"
                 android:elevation="2dp"
                 android:text="确认"/>
-        </Toolbar>
+        </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ImageSelectorActivity_mRvImageList"

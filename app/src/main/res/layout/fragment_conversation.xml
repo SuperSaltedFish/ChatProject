@@ -5,15 +5,15 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/ConversationFragment_mToolbar"
+        android:id="@+id/Default_mToolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarTheme"
+        app:titleTextAppearance="@style/ToolbarTitleText.Light"
         android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:titleTextColor="@android:color/white" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ConversationFragment_mIvEmptyHintImage"
@@ -43,7 +43,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mToolbar"
+        app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar"
         app:srlEnablePureScrollMode="true">
 
         <android.support.v7.widget.RecyclerView

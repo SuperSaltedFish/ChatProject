@@ -31,7 +31,6 @@ import android.widget.ViewSwitcher;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryManager;
@@ -78,7 +77,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public static final String INTENT_EXTRA_CONVERSATION = "Conversation";
 
     private RecyclerView mRvChatView;
-    private Toolbar mToolbar;
     private ImageSwitcher mIsvSendMessage;
     private ImageView mIvEmoticons;
     private ImageView mIvMicrophone;
@@ -117,16 +115,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         return R.layout.activity_chat;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        init();
-        setView();
-        setData(getIntent());
-    }
-
-    private void init() {
-        mToolbar = findViewById(R.id.ChatActivity_mToolbar);
+    protected void init() {
         mRvChatView = findViewById(R.id.ChatActivity_mRvChatView);
         mIsvSendMessage = findViewById(R.id.ChatActivity_mIsvSendMessage);
         mEtContent = findViewById(R.id.ChatActivity_mEtContent);
@@ -139,13 +128,34 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mTlOtherPanelLayout = findViewById(R.id.ChatActivity_mTlOtherPanelLayout);
-        mHeaderView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) mToolbar.getParent(), false);
+        mHeaderView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mHeaderView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
         mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
         mKeyBoardHeight = SharePreferenceManager.getInstance().getConfigurePreferences().getKeyBoardHeight();
+    }
+
+    @Override
+    protected void setup() {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        setChatRecyclerViewAndAdapter();
+
+        setEditAndSendStateChangeListener();
+
+        setAlerterDialog();
+
+        setEmotionPanel();
+
+        setKeyBoardSwitcherListener();
+
+        setVoiceRecorder();
+
+        setData(getIntent());
     }
 
     private void setData(Intent intent) {
@@ -160,26 +170,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (!TextUtils.isEmpty(draft)) {
             mEtContent.setText(draft);
         }
-
-    }
-
-    private void setView() {
-        setSupportActionBar(mToolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        setChatRecyclerViewAndAdapter();
-
-        setEditAndSendStateChangeListener();
-
-        setAlerterDialog();
-
-        setEmotionPanel();
-
-        setKeyBoardSwitcherListener();
-
-        setVoiceRecorder();
-
 
     }
 

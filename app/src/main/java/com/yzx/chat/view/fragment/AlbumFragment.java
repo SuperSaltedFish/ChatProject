@@ -31,7 +31,7 @@ public class AlbumFragment extends BaseFragment {
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAlbumAdapter);
         mRecyclerView.addItemDecoration(new TimeLineItemDecoration());

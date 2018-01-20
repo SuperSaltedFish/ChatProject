@@ -37,7 +37,7 @@ public class ProfileFragment extends BaseFragment {
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
 //        mPagerIndicator.setBackgroundColor(Color.WHITE);
 //        CommonNavigator navigator = new CommonNavigator(mContext);
 //        ProfileNavigatorAdapter adapter = new ProfileNavigatorAdapter(mTabTitleList);

@@ -18,13 +18,15 @@
             app:layout_scrollFlags="scroll">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/FriendProfileActivity_mToolbar"
+                android:id="@+id/Default_mToolbar"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
+                android:elevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:popupTheme="@style/ActionBarPopupTheme"
-                app:titleTextColor="@android:color/white" />
+                app:theme="@style/ToolbarTheme"
+                app:titleTextAppearance="@style/ToolbarTitleText.Light"
+                app:popupTheme="@style/ActionBarPopupTheme" />
 
             <com.yzx.chat.widget.view.CircleImageView
                 android:id="@+id/FriendProfileActivity_mIvAvatar"
@@ -36,7 +38,7 @@
                 android:src="@drawable/temp_head_image"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mToolbar" />
+                app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
 
             <com.yzx.chat.widget.view.CircleImageView
                 android:layout_width="48dp"

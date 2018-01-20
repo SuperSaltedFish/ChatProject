@@ -34,10 +34,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/FindNewContactActivity_mToolbar"
+            android:id="@+id/Default_mToolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_gravity="top"
+            android:elevation="4dp"
+            app:theme="@style/ToolbarTheme"
+            app:titleTextAppearance="@style/ToolbarTitleText.Light"
             app:title="@string/FindNewContactActivity_Title" />
 
     </FrameLayout>

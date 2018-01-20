@@ -7,15 +7,15 @@
     tools:context=".view.activity.ChatActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/ChatActivity_mToolbar"
+        android:id="@+id/Default_mToolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:background="@color/colorPrimary"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/ToolbarTheme"
+        app:titleTextAppearance="@style/ToolbarTitleText.Light" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mLlInputLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
 
     <View
         android:layout_width="0dp"

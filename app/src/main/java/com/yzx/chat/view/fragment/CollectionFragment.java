@@ -22,7 +22,7 @@ public class CollectionFragment extends BaseFragment {
     }
 
     @Override
-    protected void setView() {
+    protected void setup() {
 
     }
 

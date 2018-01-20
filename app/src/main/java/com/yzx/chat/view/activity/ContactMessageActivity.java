@@ -20,7 +20,6 @@ import com.yzx.chat.widget.view.DividerItemDecoration;
 
 public class ContactMessageActivity extends BaseCompatActivity {
 
-    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private ContactMessageAdapter mAdapter;
 
@@ -29,24 +28,17 @@ public class ContactMessageActivity extends BaseCompatActivity {
         return R.layout.activity_contact_message;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        init();
-        setView();
-    }
-
-    private void init() {
-        mToolbar = findViewById(R.id.ContactMessageActivity_mToolbar);
+    protected void init() {
         mRecyclerView = findViewById(R.id.ContactMessageActivity_mRecyclerView);
         mAdapter = new ContactMessageAdapter();
     }
 
-    private void setView() {
-        setSupportActionBar(mToolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void setup() {
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -54,8 +46,8 @@ public class ContactMessageActivity extends BaseCompatActivity {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this,R.color.divider_color_black)));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -30,6 +30,16 @@ public class TestActivity extends BaseCompatActivity {
     }
 
     @Override
+    protected void init() {
+
+    }
+
+    @Override
+    protected void setup() {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

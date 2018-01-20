@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -38,14 +39,25 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     @LayoutRes
     protected abstract int getLayoutID();
 
+    protected abstract void init();
+
+    protected abstract void setup();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int layout_id = getLayoutID();
-        if (layout_id != 0) {
-            setContentView(getLayoutID());
+        int layoutID = getLayoutID();
+        if(layoutID!=0) {
+            setContentView(layoutID);
         }
         initPresenter();
+        Toolbar toolbar = findViewById(R.id.Default_mToolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            setTitle(null);
+        }
+        init();
+        setup();
     }
 
     @Override
