@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,6 +35,8 @@ import java.util.List;
  */
 
 public class ContactMessageActivity extends BaseCompatActivity<ContactMessageContract.Presenter> implements ContactMessageContract.View {
+
+    public static final String INTENT_EXTRA_USER_ID = "UserID";
 
     private RecyclerView mRecyclerView;
     private Button mBtnFindNewContact;
@@ -77,9 +80,9 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
 
         mAdapter.setScrollToBottomListener(mOnScrollToBottomListener);
 
-        mPresenter.loadMoreContactMessage(Integer.MAX_VALUE);
-
         setOverflowMenu();
+
+        setData();
     }
 
     private void setOverflowMenu() {
@@ -96,6 +99,16 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
                 }
             }
         });
+    }
+
+    private void setData() {
+        String userID = getIntent().getStringExtra(INTENT_EXTRA_USER_ID);
+        if (!TextUtils.isEmpty(userID)) {
+            mPresenter.init(userID);
+        } else {
+            LogUtil.e("userID == null in ContactMessageActivity Intent");
+            finish();
+        }
     }
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {

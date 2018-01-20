@@ -30,6 +30,9 @@ public class ContactMessageContract {
 
 
     public interface Presenter extends BasePresenter<View> {
+
+        void init(String userID);
+
         boolean isLoadingMore();
 
         boolean hasMoreMessage();
