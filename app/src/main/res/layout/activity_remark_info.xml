@@ -8,10 +8,11 @@
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
-        app:title="@string/RemarkInfoActivity_Title"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleText.Light">
+        app:title="@string/RemarkInfoActivity_Title"
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
         <Button
             android:id="@+id/ImageSelectorActivity_mBtnConfirm"

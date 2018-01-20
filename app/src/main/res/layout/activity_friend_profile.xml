@@ -21,12 +21,12 @@
                 android:id="@+id/Default_mToolbar"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:elevation="4dp"
+                android:background="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:popupTheme="@style/ToolbarPopupTheme"
                 app:theme="@style/ToolbarTheme"
-                app:titleTextAppearance="@style/ToolbarTitleText.Light"
-                app:popupTheme="@style/ActionBarPopupTheme" />
+                app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
             <com.yzx.chat.widget.view.CircleImageView
                 android:id="@+id/FriendProfileActivity_mIvAvatar"

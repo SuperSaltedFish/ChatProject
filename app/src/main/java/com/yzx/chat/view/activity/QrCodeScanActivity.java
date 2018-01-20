@@ -71,13 +71,10 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
             case R.id.QCodeeScanMenu_albums:
                 break;
             default:
-                return false;
+                return super.onOptionsItemSelected(item);
         }
         return true;
     }

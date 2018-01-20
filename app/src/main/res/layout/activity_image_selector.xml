@@ -18,9 +18,10 @@
             android:id="@+id/Default_mToolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="@color/colorPrimary"
             android:elevation="4dp"
             app:theme="@style/ToolbarTheme"
-            app:titleTextAppearance="@style/ToolbarTitleText.Light">
+            app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
             <Button
                 android:id="@+id/ImageSelectorActivity_mBtnConfirm"
@@ -32,7 +33,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/radius_default_bt"
                 android:elevation="2dp"
-                android:text="确认"/>
+                android:text="确认" />
         </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView
@@ -40,13 +41,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="56dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
     </LinearLayout>
 
     <View
         android:id="@+id/ImageSelectorActivity_mMaskView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -57,7 +58,7 @@
         android:paddingBottom="56dp"
         app:behavior_hideable="true"
         app:behavior_peekHeight="0dp"
-        app:layout_behavior="@string/bottom_sheet_behavior"/>
+        app:layout_behavior="@string/bottom_sheet_behavior" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,17 +74,17 @@
             android:id="@+id/ImageSelectorActivity_mTvChooseDir"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
             android:gravity="center"
             android:minWidth="81dp"
             android:textColor="@color/text_main_color_white"
-            android:layout_marginStart="16dp"
-            android:textSize="17sp"/>
+            android:textSize="17sp" />
 
         <ImageView
-            android:layout_gravity="bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_drop_down_arrow"/>
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_drop_down_arrow" />
 
 
     </LinearLayout>

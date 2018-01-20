@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 public abstract class AbstractDao<T> {
 
+    protected static final String COLUMN_NAME_RowID = "rowid";
+
     protected ReadWriteHelper mHelper;
 
     protected abstract String getTableName();
@@ -206,9 +208,9 @@ public abstract class AbstractDao<T> {
         return result;
     }
 
-    public void cleanTable(){
+    public void cleanTable() {
         SQLiteDatabase database = mHelper.openWritableDatabase();
-        database.execSQL("delete from "+getTableName());
+        database.execSQL("delete from " + getTableName());
         mHelper.closeWritableDatabase();
     }
 

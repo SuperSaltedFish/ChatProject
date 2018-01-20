@@ -33,6 +33,9 @@ public class GlideUtil {
     }
 
     public static void loadCircleFromUrl(Context context, ImageView view, Object url) {
+        if (url == null || view == null) {
+            return;
+        }
         if (view.getTag() != null) {
             GlideApp.with(context).clear(view);
         }
@@ -45,6 +48,9 @@ public class GlideUtil {
     }
 
     public static void loadRoundFromUrl(Context context, ImageView view, Object url) {
+        if (url == null || view == null) {
+            return;
+        }
         if (view.getTag() != null) {
             GlideApp.with(context).clear(view);
         }

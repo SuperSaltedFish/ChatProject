@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#ffffff"
     tools:context=".view.activity.QrCodeScanActivity">
 
 
     <com.yzx.chat.widget.view.Camera2TextureView
-    android:id="@+id/QrCodeScanActivity_mCamera2TextureView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+        android:id="@+id/QrCodeScanActivity_mCamera2TextureView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Toolbar
         android:id="@+id/QrCodeScanActivity_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/mask_color_black"
-        android:minHeight="48dp"/>
+        android:minHeight="48dp" />
 
     <com.yzx.chat.widget.view.MaskView
         android:id="@+id/QrCodeScanActivity_mMaskView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="48dp" />
 
     <ImageView
         android:id="@+id/QrCodeScanActivity_mIvToggleFlash"
@@ -34,7 +33,7 @@
         android:layout_gravity="end|top"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="64dp"
-        android:src="@drawable/ic_flash_close"/>
+        android:src="@drawable/ic_flash_close" />
 
 
     <LinearLayout
@@ -55,7 +54,7 @@
                 android:id="@+id/QrCodeScanActivity_mScanAnimationView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_scan"/>
+                android:background="@drawable/bg_scan" />
 
         </FrameLayout>
 
@@ -64,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="请将二维码对准框内，耐心等待"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white" />
 
 
     </LinearLayout>

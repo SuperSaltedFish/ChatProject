@@ -4,18 +4,15 @@ package com.yzx.chat.view.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -86,7 +83,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private EmotionPanelLayout mEmotionPanelLayout;
     private AmplitudeView mAmplitudeView;
     private TableLayout mTlOtherPanelLayout;
-    private View mHeaderView;
+    private View mFooterView;
     private TextView mTvLoadMoreHint;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
@@ -128,8 +125,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mTlOtherPanelLayout = findViewById(R.id.ChatActivity_mTlOtherPanelLayout);
-        mHeaderView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
-        mTvLoadMoreHint = mHeaderView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
+        mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
+        mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
@@ -549,19 +546,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
         mPresenter.saveMessageDraft(mEtContent.getText().toString());
         finish();
-        overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -633,7 +617,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void enableLoadMoreHint(boolean isEnable) {
         if (isEnable) {
-            mAdapter.addFooterView(mHeaderView);
+            mAdapter.addFooterView(mFooterView);
         } else {
             mAdapter.addFooterView(null);
         }

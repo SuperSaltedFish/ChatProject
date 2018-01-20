@@ -10,12 +10,13 @@
         android:id="@+id/Default_mToolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleText.Light" />
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
 
     <android.support.v7.widget.RecyclerView

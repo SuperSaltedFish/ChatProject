@@ -24,6 +24,7 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.view.activity.ContactMessageActivity;
 import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.ContactProfileActivity;
 import com.yzx.chat.view.activity.RemarkInfoActivity;
@@ -63,7 +64,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private Toolbar mToolbar;
     private SmartRefreshLayout mSmartRefreshLayout;
     private SegmentedControlView mSegmentedControlView;
-    private BadgeImageView mContactRequestBadge;
+    private BadgeImageView mContactMessageBadge;
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
@@ -79,14 +80,14 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected void init(View parentView) {
-        mToolbar = (Toolbar) parentView.findViewById(R.id.Default_mToolbar);
-        mContactRecyclerView = (RecyclerView) parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
-        mIndexBarView = (IndexBarView) parentView.findViewById(R.id.ContactFragment_mIndexBarView);
-        mTvIndexBarHint = (TextView) parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
-        mFBtnAdd = (FloatingActionButton) parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
-        mContactRequestBadge = (BadgeImageView) parentView.findViewById(R.id.ContactFragment_mContactRequestBadge);
-        mSegmentedControlView = (SegmentedControlView) parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
-        mSmartRefreshLayout = (SmartRefreshLayout) parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
+        mToolbar = parentView.findViewById(R.id.Default_mToolbar);
+        mContactRecyclerView = parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
+        mIndexBarView = parentView.findViewById(R.id.ContactFragment_mIndexBarView);
+        mTvIndexBarHint = parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
+        mFBtnAdd = parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
+        mContactMessageBadge = parentView.findViewById(R.id.ContactFragment_mContactMessageBadge);
+        mSegmentedControlView = parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
+        mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
         mSearchHarderView = (AutoCompleteTextView) LayoutInflater.from(mContext).inflate(R.layout.item_contact_search, (ViewGroup) parentView, false);
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
@@ -115,9 +116,9 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
-        mContactRequestBadge.setBadgeTextPadding((int) AndroidUtil.dip2px(2));
-        mContactRequestBadge.setBadgePadding(0, (int) AndroidUtil.dip2px(6), (int) AndroidUtil.dip2px(4), 0);
-        mContactRequestBadge.setOnClickListener(mOnContactRequestBadgeClick);
+        mContactMessageBadge.setBadgeTextPadding((int) AndroidUtil.dip2px(2));
+        mContactMessageBadge.setBadgePadding(0, (int) AndroidUtil.dip2px(6), (int) AndroidUtil.dip2px(4), 0);
+        mContactMessageBadge.setOnClickListener(mOnContactRequestBadgeClick);
 
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black));
@@ -165,7 +166,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
                         case R.id.ContactMenu_UpdateRemarkInfo:
                             Intent intent = new Intent(mContext, RemarkInfoActivity.class);
                             intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactList.get(index));
-                            startActivityForResult(intent,0);
+                            startActivityForResult(intent, 0);
                             break;
                     }
                 }
@@ -181,14 +182,14 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-           // startActivity(new Intent(mContext, FindNewContactActivity.class));
+            startActivity(new Intent(mContext, ContactMessageActivity.class));
         }
     };
 
     private final View.OnClickListener mOnAddNewContactClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-             startActivity(new Intent(mContext, FindNewContactActivity.class));
+            startActivity(new Intent(mContext, FindNewContactActivity.class));
         }
     };
 
@@ -204,7 +205,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
                 public void run() {
                     Intent intent = new Intent(mContext, ContactProfileActivity.class);
                     intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, mContactList.get(position - 1));
-                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
+                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.activity_slide_in_right, R.anim.activity_slide_out_left);
                     startActivity(intent, compat.toBundle());
                 }
             });
@@ -216,6 +217,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
             if (position == 0 && mContactAdapter.isHasHeaderView()) {
                 return;
             }
+            mContactRecyclerView.setTag(position-1);
             OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mContactRecyclerView.getHeight(), (int) touchX, (int) touchY);
         }
     };
@@ -278,10 +280,10 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     @Override
     public void updateUnreadBadge(int unreadCount) {
         if (unreadCount == 0) {
-            mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_HIDE);
+            mContactMessageBadge.setBadgeMode(BadgeImageView.MODE_HIDE);
         } else {
-            mContactRequestBadge.setBadgeText(unreadCount);
-            mContactRequestBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
+            mContactMessageBadge.setBadgeText(unreadCount);
+            mContactMessageBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
         }
     }
 

@@ -85,7 +85,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext,R.color.divider_color_black)));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.divider_color_black)));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
 
@@ -154,8 +154,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                     } else if (position != 0) {
                         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position - 1));
                     } else return;
-                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
-                    startActivity(intent, compat.toBundle());
+                    startActivity(intent);
                 }
             });
         }

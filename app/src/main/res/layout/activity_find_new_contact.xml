@@ -40,8 +40,8 @@
             android:layout_gravity="top"
             android:elevation="4dp"
             app:theme="@style/ToolbarTheme"
-            app:titleTextAppearance="@style/ToolbarTitleText.Light"
-            app:title="@string/FindNewContactActivity_Title" />
+            app:title="@string/FindNewContactActivity_Title"
+            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     </FrameLayout>
 
@@ -109,8 +109,8 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="8dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:background="@android:color/white"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp">

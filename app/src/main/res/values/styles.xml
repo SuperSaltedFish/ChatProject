@@ -11,8 +11,7 @@
         <!--<item name="android:textColorSecondary">@color/text_secondary_color_black</item>-->
         <!--<item name="android:textColorPrimary">@color/text_primary_color_black</item>-->
         <item name="android:windowBackground">@color/theme_background_color</item>
-
-
+        <item name="android:windowAnimationStyle">@style/ActivitySlideAnimStyle</item>
 
     </style>
 
@@ -53,19 +52,17 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="ActionBarPopupTheme" parent="ThemeOverlay.AppCompat.Light">
-        <item name="overlapAnchor">false</item>
-    </style>
-
-
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:titleTextAppearance">@style/ToolbarTitleText.Light</item>
-        <item name="android:background">@color/colorPrimary</item>
+
     </style>
 
-    <style name="ToolbarTitleText.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="ToolbarTitleTheme.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ToolbarPopupTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="overlapAnchor">false</item>
     </style>
 
 
@@ -83,6 +80,13 @@
 
     <style name="PopupMenuAnimation_Right_Bottom" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/menu_scale_in_from_right_bottom</item>
+    </style>
+
+    <style name="ActivitySlideAnimStyle" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_slide_out_right</item>
     </style>
 
 </resources>

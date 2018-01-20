@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -113,6 +114,7 @@ public class IdentityManager {
         return mDeviceID;
     }
 
+    @Nullable
     public String getUserID() {
         if (TextUtils.isEmpty(mUserID)) {
             mUserID = mIdentityPreferences.getUserID();

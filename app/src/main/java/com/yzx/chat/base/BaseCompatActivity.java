@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -47,7 +48,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int layoutID = getLayoutID();
-        if(layoutID!=0) {
+        if (layoutID != 0) {
             setContentView(layoutID);
         }
         initPresenter();
@@ -67,6 +68,18 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             mPresenter.detachView();
             mPresenter = null;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     protected void showToast(String content) {

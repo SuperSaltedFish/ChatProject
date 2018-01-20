@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".view.activity.ContactMessageActivity">
 
@@ -11,20 +11,22 @@
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleText.Light">
+        app:title="@string/ContactMessageActivity_Title"
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
 
         <Button
-            android:id="@+id/ContactMessageActivity_mBtnAddNewContact"
+            android:id="@+id/ContactMessageActivity_mBtnFindNewContact"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="16dp"
             android:background="@null"
-            android:layout_marginEnd="8dp"
-            android:minWidth="0dp"
             android:gravity="center"
+            android:minWidth="0dp"
             android:text="添加好友"
             android:textColor="@android:color/white"
             android:textSize="13sp" />
@@ -36,10 +38,11 @@
         android:layout_height="match_parent"
         app:srlEnablePureScrollMode="true">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/ContactMessageActivity_mRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/ContactMessageActivity_mRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
 
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 

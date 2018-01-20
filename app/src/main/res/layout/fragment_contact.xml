@@ -8,12 +8,13 @@
         android:id="@+id/Default_mToolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
-        app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleText.Light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/ToolbarTheme"
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
         <com.yzx.chat.widget.view.SegmentedControlView
             android:id="@+id/ContactFragment_mSegmentedControlView"
@@ -22,7 +23,7 @@
             android:layout_gravity="center" />
 
         <com.yzx.chat.widget.view.BadgeImageView
-            android:id="@+id/ContactFragment_mContactRequestBadge"
+            android:id="@+id/ContactFragment_mContactMessageBadge"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_vertical|end"

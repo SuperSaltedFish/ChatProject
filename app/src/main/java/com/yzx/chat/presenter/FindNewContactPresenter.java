@@ -64,14 +64,14 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
     public void loadContactRequest(List<ContactMessageBean> mOldContactList) {
         NetworkUtil.cancelTask(mLoadContactRequestTask);
         mLoadContactRequestTask = new LoadContactRequestTask(this);
-        mLoadContactRequestTask.execute(mOldContactList, mContactList);
+     //   mLoadContactRequestTask.execute(mOldContactList, mContactList);
     }
 
     @Override
     public void requestAddContact(String contactID, String reason) {
         NetworkUtil.cancelTask(mRequestAddContactTask);
         mRequestAddContactTask = new RequestAddContactTask(this);
-        mRequestAddContactTask.execute(contactID, reason);
+     //   mRequestAddContactTask.execute(contactID, reason);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
             ContactMessageDao dao = DBManager.getInstance().getContactMessageDao();
             List<ContactMessageBean> newList = lists[1];
             newList.clear();
-            newList.addAll(dao.loadAllContactInfo(IdentityManager.getInstance().getUserID()));
+            //newList.addAll(dao.loadAllContactInfo(IdentityManager.getInstance().getUserID()));
 
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactMessageBean>(lists[0], newList) {
                 @Override
@@ -136,7 +136,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
                     if (oldItem.getTime() != newItem.getTime()) {
                         return false;
                     }
-                    if (!oldItem.getType().equals(newItem.getType())) {
+                    if (oldItem.getType()!=newItem.getType()) {
                         return false;
                     }
                     if (!oldItem.getReason().equals(newItem.getReason())) {

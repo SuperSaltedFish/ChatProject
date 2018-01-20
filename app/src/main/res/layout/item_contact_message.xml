@@ -26,13 +26,13 @@
         android:text="Touch魅"
         android:textColor="@color/text_primary_color_black"
         android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/ContactMessageAdapter_mTvMessage"
+        app:layout_constraintBottom_toTopOf="@+id/ContactMessageAdapter_mTvReason"
         app:layout_constraintStart_toEndOf="@+id/ContactMessageAdapter_mIvAvatar"
         app:layout_constraintTop_toTopOf="@+id/ContactMessageAdapter_mIvAvatar"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/ContactMessageAdapter_mTvMessage"
+        android:id="@+id/ContactMessageAdapter_mTvReason"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -43,13 +43,14 @@
         app:layout_constraintStart_toEndOf="@+id/ContactMessageAdapter_mIvAvatar"
         app:layout_constraintTop_toBottomOf="@+id/ContactMessageAdapter_mTvName" />
 
-    <TextView
-        android:id="@+id/ContactMessageAdapter_mTvState"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Button
+        android:id="@+id/ContactMessageAdapter_mBtnState"
+        android:layout_width="64dp"
+        android:layout_height="32dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/selector_btn_contact_request_state"
         android:gravity="center"
-        android:text="已添加"
+        android:textColor="@color/selector_tv_contact_request_state"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

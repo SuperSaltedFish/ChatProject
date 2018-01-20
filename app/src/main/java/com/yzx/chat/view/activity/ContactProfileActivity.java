@@ -1,11 +1,9 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,7 +46,7 @@ public class ContactProfileActivity extends BaseCompatActivity {
 
     @Override
     protected void setup() {
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             setTitle(mContactBean.getName());
         }
@@ -64,8 +62,7 @@ public class ContactProfileActivity extends BaseCompatActivity {
                 conversation.setTargetId(mContactBean.getUserID());
                 conversation.setConversationTitle(mContactBean.getName());
                 intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
-                ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(ContactProfileActivity.this, R.anim.avtivity_slide_in_right, R.anim.activity_slide_out_left);
-                startActivity(intent, compat.toBundle());
+                startActivity(intent);
                 finish();
             }
         });
@@ -80,13 +77,10 @@ public class ContactProfileActivity extends BaseCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
             case R.id.ContactMenu_UpdateRemarkInfo:
                 Intent intent = new Intent(this, RemarkInfoActivity.class);
                 intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactBean);
-                startActivityForResult(intent,0);
+                startActivityForResult(intent, 0);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -97,6 +91,5 @@ public class ContactProfileActivity extends BaseCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
-        overridePendingTransition(R.anim.avtivity_slide_in_left, R.anim.activity_slide_out_right);
     }
 }
