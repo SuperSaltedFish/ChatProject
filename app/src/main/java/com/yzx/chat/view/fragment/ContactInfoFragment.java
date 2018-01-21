@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactBean;
@@ -76,7 +77,13 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
     private final View.OnClickListener mOnClearMessageClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mPresenter.clearChatMessages();
+//            mPresenter.clearChatMessages();
+            new MaterialDialog.Builder(mContext)
+
+                    .content("是否删除所有聊天记录？")
+                    .positiveText("确定")
+                    .negativeText("取消")
+                    .show();
         }
     };
 
