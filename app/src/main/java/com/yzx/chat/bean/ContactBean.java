@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.PinYinUtil;
 
+import io.rong.imlib.model.Conversation;
+
 /**
  * Created by YZX on 2017年07月01日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
@@ -20,6 +22,7 @@ public class ContactBean implements Parcelable {
     private String nickname;
     private String remarkName;
     private String avatar;
+    private String type;
 
     private String abbreviation;
 
@@ -87,6 +90,13 @@ public class ContactBean implements Parcelable {
         this.avatar = avatar;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     @Override
     public int describeContents() {
@@ -101,6 +111,7 @@ public class ContactBean implements Parcelable {
         dest.writeString(this.remarkName);
         dest.writeString(this.avatar);
         dest.writeString(this.abbreviation);
+        dest.writeString(this.type);
     }
 
     public ContactBean() {
@@ -113,6 +124,7 @@ public class ContactBean implements Parcelable {
         this.remarkName = in.readString();
         this.avatar = in.readString();
         this.abbreviation = in.readString();
+        this.type = in.readString();
     }
 
     public static final Creator<ContactBean> CREATOR = new Creator<ContactBean>() {

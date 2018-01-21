@@ -41,7 +41,7 @@ public class ContactProfileActivity extends BaseCompatActivity {
         mTabLayout = findViewById(R.id.FriendProfileActivity_mTabLayout);
         mViewPager = findViewById(R.id.FriendProfileActivity_mViewPager);
         mIvStartChat = findViewById(R.id.FriendProfileActivity_mIvStartChat);
-        mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle));
+        mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle),mContactBean);
     }
 
     @Override

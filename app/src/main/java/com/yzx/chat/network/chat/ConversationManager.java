@@ -5,6 +5,8 @@ import com.yzx.chat.util.LogUtil;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
@@ -22,6 +24,7 @@ public class ConversationManager {
     public static final int UPDATE_TYPE_REMOVE = 3;
     public static final int UPDATE_TYPE_SAVE_DRAFT = 4;
     public static final int UPDATE_TYPE_CLEAR_MESSAGE = 5;
+    public static final int UPDATE_TYPE_NOTIFICATION = 6;
 
     private RongIMClient mRongIMClient;
     private IMClient.SubManagerCallback mSubManagerCallback;
@@ -131,13 +134,10 @@ public class ConversationManager {
         mRongIMClient.deleteMessages(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                if (aBoolean) {
-                    callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
-                    if (isUpdateUnreadState) {
-                        mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
-                    }
-                } else {
-                    LogUtil.e("clearAllConversationMessages fail");
+                LogUtil.e("clearAllConversationMessages " + aBoolean.toString());
+                callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
+                if (isUpdateUnreadState) {
+                    mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
                 }
             }
 
@@ -146,6 +146,25 @@ public class ConversationManager {
                 LogUtil.e(errorCode.getMessage());
             }
         });
+    }
+
+    public void enableConversationNotification(final Conversation conversation, boolean isEnable) {
+        Conversation.ConversationNotificationStatus status = isEnable ? Conversation.ConversationNotificationStatus.NOTIFY : Conversation.ConversationNotificationStatus.DO_NOT_DISTURB;
+        mRongIMClient.setConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), status, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+            @Override
+            public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
+                callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_NOTIFICATION);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtil.e(errorCode.getMessage());
+            }
+        });
+    }
+
+    public void isEnableConversationNotification(Conversation conversation, RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus> callback) {
+        mRongIMClient.getConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), callback);
     }
 
     public void addConversationStateChangeListener(OnConversationStateChangeListener listener) {

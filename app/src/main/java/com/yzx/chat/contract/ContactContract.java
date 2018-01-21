@@ -27,6 +27,5 @@ public class ContactContract {
     public interface Presenter extends BasePresenter<View> {
         void refreshAllContact(List<ContactBean> oldData);
 
-        void updateRemarkName(ContactBean contactBean, String newRemarkName);
     }
 }

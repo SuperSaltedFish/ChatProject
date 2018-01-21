@@ -11,7 +11,6 @@ import com.yzx.chat.contract.ContactMessageContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.tool.DBManager;
-import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.util.NetworkUtil;
@@ -61,6 +60,7 @@ public class ContactMessagePresenter implements ContactMessageContract.Presenter
     public void init(String userID) {
         mUserID = userID;
         if (!TextUtils.isEmpty(mUserID)) {
+            mIMClient.contactManager().makeAllContactMessageAsRead();
             loadMoreContactMessage(Integer.MAX_VALUE);
         }
     }
@@ -84,14 +84,14 @@ public class ContactMessagePresenter implements ContactMessageContract.Presenter
     @Override
     public void loadAllContactMessage() {
         NetworkUtil.cancelTask(mLoadAllContactMessageTask);
-        mLoadAllContactMessageTask = new LoadAllContactMessageTask(mUserID,this);
+        mLoadAllContactMessageTask = new LoadAllContactMessageTask(this);
         mLoadAllContactMessageTask.execute(mContactMessageList);
     }
 
     @Override
     public void loadMoreContactMessage(int startID) {
         NetworkUtil.cancelTask(mLoadMoreContactMessageTask);
-        mLoadMoreContactMessageTask = new LoadMoreContactMessageTask(mUserID,this);
+        mLoadMoreContactMessageTask = new LoadMoreContactMessageTask(this);
         mLoadMoreContactMessageTask.execute(startID, Constants.CONTACT_MESSAGE_PAGE_SIZE);
         isLoadingMore = true;
     }
@@ -120,6 +120,7 @@ public class ContactMessagePresenter implements ContactMessageContract.Presenter
 
         @Override
         public void onContactMessageReceive(final ContactMessageBean message) {
+            mIMClient.contactManager().makeAllContactMessageAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -147,16 +148,14 @@ public class ContactMessagePresenter implements ContactMessageContract.Presenter
 
     private static class LoadMoreContactMessageTask extends NetworkAsyncTask<ContactMessagePresenter, Integer, List<ContactMessageBean>> {
 
-        private String mUserID;
 
-        LoadMoreContactMessageTask(String userID,ContactMessagePresenter lifeCycleDependence) {
+        LoadMoreContactMessageTask(ContactMessagePresenter lifeCycleDependence) {
             super(lifeCycleDependence);
-            mUserID = userID;
         }
 
         @Override
         protected List<ContactMessageBean> doInBackground(Integer... params) {
-            return IMClient.getInstance().contactManager().loadMoreContactMessage(mUserID, params[0], params[1]);
+            return IMClient.getInstance().contactManager().loadMoreContactMessage(params[0], params[1]);
         }
 
         @Override
@@ -168,17 +167,14 @@ public class ContactMessagePresenter implements ContactMessageContract.Presenter
 
     private static class LoadAllContactMessageTask extends NetworkAsyncTask<ContactMessagePresenter, List<ContactMessageBean>, DiffUtil.DiffResult> {
 
-        private String mUserID;
-
-        LoadAllContactMessageTask(String userID,ContactMessagePresenter lifeCycleDependence) {
+        LoadAllContactMessageTask(ContactMessagePresenter lifeCycleDependence) {
             super(lifeCycleDependence);
-            mUserID = userID;
         }
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ContactMessageBean>[] lists) {
             List<ContactMessageBean> oldList = lists[0];
-            List<ContactMessageBean> newList = DBManager.getInstance().getContactMessageDao().loadAllContactMessage(mUserID);
+            List<ContactMessageBean> newList = IMClient.getInstance().contactManager().loadAllContactMessage();
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactMessageBean>(lists[0], newList) {
                 @Override
                 public boolean isItemEquals(ContactMessageBean oldItem, ContactMessageBean newItem) {

@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.view.fragment.ContactInfoFragment;
 import com.yzx.chat.view.fragment.ContactMomentsFragment;
 
@@ -16,17 +17,19 @@ import com.yzx.chat.view.fragment.ContactMomentsFragment;
 public class ContactProfilePagerAdapter extends FragmentPagerAdapter {
 
     private String[] mTitle;
+    private ContactBean mContactBean;
 
-    public ContactProfilePagerAdapter(FragmentManager fm, String title[]) {
+    public ContactProfilePagerAdapter(FragmentManager fm, String title[], ContactBean contactBean) {
         super(fm);
         mTitle = title;
+        mContactBean = contactBean;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ContactInfoFragment();
+                return ContactInfoFragment.newInstance(mContactBean);
             case 1:
                 return new ContactMomentsFragment();
             default:

@@ -35,7 +35,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<Conversation> mConversationList;
-    private IMClient mChatClient;
+    private IMClient mIMClient;
     private Handler mHandler;
 
     @Override
@@ -43,18 +43,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
         mHandler = new Handler();
-        mChatClient = IMClient.getInstance();
-        mChatClient.addConnectionListener(mOnConnectionStateChangeListener);
-        mChatClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
-        mChatClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        mIMClient = IMClient.getInstance();
+        mIMClient.addConnectionListener(mOnConnectionStateChangeListener);
+        mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
-        mChatClient.removeConnectionListener(mOnConnectionStateChangeListener);
-        mChatClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mChatClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
+        mIMClient.removeConnectionListener(mOnConnectionStateChangeListener);
+        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mIMClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
@@ -72,23 +72,23 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void setConversationToTop(Conversation conversation, boolean isTop) {
-        mChatClient.conversationManager().setConversationTop(conversation, isTop);
+        mIMClient.conversationManager().setConversationTop(conversation, isTop);
     }
 
 
     @Override
     public void removeConversation(Conversation conversation) {
-        mChatClient.conversationManager().removeConversation(conversation);
+        mIMClient.conversationManager().removeConversation(conversation);
     }
 
     @Override
     public void clearChatMessages(Conversation conversation) {
-        mChatClient.conversationManager().clearAllConversationMessages(conversation);
+        mIMClient.conversationManager().clearAllConversationMessages(conversation);
     }
 
     @Override
     public boolean isConnected() {
-        return mChatClient.isConnected();
+        return mIMClient.isConnected();
     }
 
 
@@ -131,8 +131,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         public void onConversationStateChange(final Conversation conversation, int typeCode) {
             switch (typeCode) {
                 case ConversationManager.UPDATE_TYPE_REMOVE:
-                    if(conversation.getUnreadMessageCount()!=0){
-                        mChatClient.conversationManager().clearConversationUnreadStatus(conversation);
+                    if (conversation.getUnreadMessageCount() != 0) {
+                        mIMClient.conversationManager().clearConversationUnreadStatus(conversation);
                         return;
                     }
                     synchronized (ConversationPresenter.class) {
@@ -154,6 +154,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 case ConversationManager.UPDATE_TYPE_SAVE_DRAFT:
                 case ConversationManager.UPDATE_TYPE_SET_TOP:
                 case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
+                case ConversationManager.UPDATE_TYPE_NOTIFICATION:
                     refreshAllConversations();
                     break;
             }

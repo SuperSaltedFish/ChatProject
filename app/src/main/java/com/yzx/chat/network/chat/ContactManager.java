@@ -35,6 +35,8 @@ public class ContactManager {
     private int mContactMessageUnreadNumber;
     private final Object mUpdateContactUnreadNumberLock = new Object();
 
+    private String mUserID;
+
     public ContactManager(IMClient.SubManagerCallback subManagerCallback) {
         if (subManagerCallback == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
@@ -52,6 +54,7 @@ public class ContactManager {
         for (ContactBean contact : contacts) {
             mContactsMap.put(contact.getUserID(), contact);
         }
+        mUserID = userID;
     }
 
     public ContactBean getContact(String userID) {
@@ -99,8 +102,7 @@ public class ContactManager {
             @Override
             public void run() {
                 synchronized (mUpdateContactUnreadNumberLock) {
-                    ContactMessageDao contactMessageDao = DBManager.getInstance().getContactMessageDao();
-                    int count = contactMessageDao.loadRemindCount(IdentityManager.getInstance().getUserID());
+                    int count = mContactMessageDao.loadRemindCount(mUserID);
                     if (count != mContactMessageUnreadNumber) {
                         mContactMessageUnreadNumber = count;
                         for (OnContactMessageUnreadCountChangeListener listener : mContactMessageUnreadCountChangeListeners) {
@@ -108,6 +110,16 @@ public class ContactManager {
                         }
                     }
                 }
+            }
+        });
+    }
+
+    public void makeAllContactMessageAsRead() {
+        mSubManagerCallback.execute(new Runnable() {
+            @Override
+            public void run() {
+                mContactMessageDao.makeAllRemindAsNoRemind(mUserID);
+                updateContactUnreadCount();
             }
         });
     }
@@ -137,8 +149,13 @@ public class ContactManager {
         }
     }
 
-    public List<ContactMessageBean> loadMoreContactMessage(String userID, int startID, int count) {
-        return mContactMessageDao.loadMoreContactMessage(userID, startID, count);
+
+    public List<ContactMessageBean> loadAllContactMessage(){
+        return mContactMessageDao.loadAllContactMessage(mUserID);
+    }
+
+    public List<ContactMessageBean> loadMoreContactMessage(int startID, int count) {
+        return mContactMessageDao.loadMoreContactMessage(mUserID, startID, count);
     }
 
     public void addContactMessageListener(OnContactMessageListener listener) {
@@ -185,6 +202,7 @@ public class ContactManager {
         for (OnContactMessageListener contactListener : mContactMessageListeners) {
             contactListener.onContactMessageReceive(bean);
         }
+        updateContactUnreadCount();
     }
 
 
