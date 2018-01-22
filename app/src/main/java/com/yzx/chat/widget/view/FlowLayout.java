@@ -6,8 +6,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yzx.chat.util.LogUtil;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +16,8 @@ import java.util.List;
 
 public class FlowLayout extends ViewGroup {
 
-    private SparseArray<List<View>> mIdentitySparseArray;
+    private SparseArray<List<View>> mLineViewMap;
+
 
     public FlowLayout(Context context) {
         this(context, null);
@@ -30,7 +29,7 @@ public class FlowLayout extends ViewGroup {
 
     public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mIdentitySparseArray = new SparseArray<>();
+        mLineViewMap = new SparseArray<>();
     }
 
     @Override
@@ -39,6 +38,8 @@ public class FlowLayout extends ViewGroup {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
         int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+        mLineViewMap.clear();
 
         int layoutWidth = 0;
         int layoutHeight = 0;
@@ -66,10 +67,10 @@ public class FlowLayout extends ViewGroup {
                 layoutWidth = Math.max(currentLineWidth, layoutWidth);
                 layoutHeight += currentLineHeight;
             }
-            List<View> singleLineViewList = mIdentitySparseArray.get(lineCount);
+            List<View> singleLineViewList = mLineViewMap.get(lineCount);
             if (singleLineViewList == null) {
                 singleLineViewList = new LinkedList<>();
-                mIdentitySparseArray.put(lineCount, singleLineViewList);
+                mLineViewMap.put(lineCount, singleLineViewList);
             }
             singleLineViewList.add(childView);
         }
@@ -78,18 +79,16 @@ public class FlowLayout extends ViewGroup {
                 (widthMode == MeasureSpec.EXACTLY) ? maxWidth : layoutWidth,
                 (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight
         );
-        LogUtil.e(layoutWidth+" "+layoutHeight);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int startX = getPaddingLeft();
         int startY = getPaddingTop();
-
         int i = 1;
         int usedHeight = 0;
-        while (mIdentitySparseArray.get(i) != null) {
-            List<View> singleViewList = mIdentitySparseArray.get(i);
+        while (mLineViewMap.get(i) != null) {
+            List<View> singleViewList = mLineViewMap.get(i);
             int usedWidth = 0;
             int lineHeight = 0;
             MarginLayoutParams childLP;
@@ -99,7 +98,6 @@ public class FlowLayout extends ViewGroup {
                 int top = startY + usedHeight;
                 int right = left + child.getMeasuredWidth();
                 int bottom = top + child.getMeasuredHeight();
-                LogUtil.e(left+" "+top+" "+(right-left)+" "+(bottom-top));
                 child.layout(left + childLP.leftMargin, top + childLP.topMargin, right, bottom);
                 lineHeight = Math.max(lineHeight, child.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin);
                 usedWidth += child.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
@@ -111,9 +109,17 @@ public class FlowLayout extends ViewGroup {
     }
 
     @Override
+    protected LayoutParams generateLayoutParams(LayoutParams p) {
+        return new MarginLayoutParams(p);
+    }
+
+    @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new MarginLayoutParams(getContext(), attrs);
     }
 
-
+    @Override
+    protected LayoutParams generateDefaultLayoutParams() {
+        return new MarginLayoutParams(super.generateDefaultLayoutParams());
+    }
 }

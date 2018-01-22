@@ -243,6 +243,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
 
     private void loginVerify(boolean isReVerify) {
+        mTvLoginHint.setText(null);
         final String username = mEtLoginUsername.getText().toString();
         final String password = mEtLoginPassword.getText().toString();
 
@@ -295,6 +296,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     }
 
     private void registerVerify(boolean isReVerify) {
+        mTvRegisterHint.setText(null);
         final String username = mEtRegisterUsername.getText().toString();
         final String nickname = mEtRegisterNickname.getText().toString();
         final String password = mEtRegisterPassword.getText().toString();

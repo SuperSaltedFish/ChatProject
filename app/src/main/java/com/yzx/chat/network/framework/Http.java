@@ -79,7 +79,7 @@ public class Http {
                 conn.setDoInput(true);
                 conn.setUseCaches(false);
                 conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Content-Type", "text/plain");
                 conn.setRequestProperty("Charset", "UTF-8");
 //               conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
