@@ -28,7 +28,9 @@ import android.widget.ViewSwitcher;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ChatContract;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.AndroidUtil;
@@ -87,6 +89,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private TextView mTvLoadMoreHint;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
+    private ImageView mIvProfile;
     private VoiceRecorder mVoiceRecorder;
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
@@ -108,6 +111,48 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private boolean isHasVoiceRecorderPermission;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mEtContent.clearFocus();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoicePlayer.getInstance(this).stop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAlerterIconAnimation.cancel();
+        mMessageList = null;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (isShowMoreInput()) {
+            hintMoreInput();
+            return;
+        }
+        mPresenter.saveMessageDraft(mEtContent.getText().toString());
+        finish();
+    }
+
+    @Override
+    public void onRequestPermissionsSuccess(int requestCode) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_VOICE_RECORDER:
+                if (!isHasVoiceRecorderPermission) {
+                    isHasVoiceRecorderPermission = true;
+                    toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
+                }
+                break;
+        }
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.activity_chat;
     }
@@ -125,6 +170,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mTlOtherPanelLayout = findViewById(R.id.ChatActivity_mTlOtherPanelLayout);
+        mIvProfile = findViewById(R.id.ChatActivity_mIvProfile);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
@@ -136,7 +182,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     protected void setup() {
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -153,6 +199,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         setVoiceRecorder();
 
         setData(getIntent());
+
+        mIvProfile.setOnClickListener(mOnProfileClickListener);
     }
 
     private void setData(Intent intent) {
@@ -517,48 +565,19 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mEtContent.clearFocus();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        VoicePlayer.getInstance(this).stop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mAlerterIconAnimation.cancel();
-        mMessageList = null;
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (isShowMoreInput()) {
-            hintMoreInput();
-            return;
+    private final View.OnClickListener mOnProfileClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ContactBean contactBean = IMClient.getInstance().contactManager().getContact(mConversation.getTargetId());
+            if (contactBean != null) {
+                Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
+                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, contactBean);
+                startActivity(intent);
+            } else {
+                LogUtil.e("contactBean == null,open ContactProfileActivity fail");
+            }
         }
-        mPresenter.saveMessageDraft(mEtContent.getText().toString());
-        finish();
-    }
-
-    @Override
-    public void onRequestPermissionsSuccess(int requestCode) {
-        switch (requestCode) {
-            case REQUEST_PERMISSION_VOICE_RECORDER:
-                if (!isHasVoiceRecorderPermission) {
-                    isHasVoiceRecorderPermission = true;
-                    toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
-                }
-                break;
-        }
-    }
+    };
 
 
     @Override
@@ -615,6 +634,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
+    public void clearMessage() {
+        mAdapter.notifyDataSetChanged();
+        mMessageList.clear();
+    }
+
+    @Override
     public void enableLoadMoreHint(boolean isEnable) {
         if (isEnable) {
             mAdapter.addFooterView(mFooterView);
@@ -622,5 +647,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mAdapter.addFooterView(null);
         }
     }
+
 
 }

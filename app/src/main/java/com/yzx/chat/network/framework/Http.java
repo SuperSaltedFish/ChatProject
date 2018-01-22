@@ -6,9 +6,6 @@ import android.text.TextUtils;
 
 import com.yzx.chat.util.LogUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -96,13 +93,6 @@ public class Http {
             }
 
             if (!TextUtils.isEmpty(params)) {
-                try {
-                    params = new JSONObject().put("params",params).toString();
-                } catch (JSONException e) {
-                    conn.disconnect();
-                    result.throwable = e;
-                    break;
-                }
                 conn.setRequestProperty("Content-Length", String.valueOf(params.getBytes().length));
                 BufferedWriter bufferedWriter = null;
                 try {

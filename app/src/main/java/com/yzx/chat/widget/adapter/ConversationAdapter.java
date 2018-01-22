@@ -50,25 +50,22 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
         int unreadMsgCount = conversation.getUnreadMessageCount();
-        switch (conversation.getConversationType()) {
-            case PRIVATE:
-                SingleHolder singleViewHolder = (SingleHolder) holder;
-                if (unreadMsgCount > 0) {
-                    singleViewHolder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
-                    singleViewHolder.mBadgeImageView.setBadgeText(unreadMsgCount);
-                } else {
-                    singleViewHolder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);
-                }
-                break;
-            case GROUP:
-                GroupHolder groupViewHolder = (GroupHolder) holder;
-                break;
+        if (unreadMsgCount > 0) {
+            if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY) {
+                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW_ONLY_SMALL_BACKGROUND);
+            } else {
+                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
+                holder.mBadgeImageView.setBadgeText(unreadMsgCount);
+            }
+        } else {
+            holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);
         }
+
     }
 
     @Override
     public int getViewHolderCount() {
-       return mConversationList == null?0:mConversationList.size();
+        return mConversationList == null ? 0 : mConversationList.size();
     }
 
     @Override
@@ -84,6 +81,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         TextView mTvName;
         TextView mTvLastRecord;
         TextView mTvTime;
+        BadgeImageView mBadgeImageView;
 
         ConversationHolder(View itemView, int conversationType) {
             super(itemView);
@@ -99,7 +97,6 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     private final static class SingleHolder extends ConversationHolder {
 
-        BadgeImageView mBadgeImageView;
 
         SingleHolder(View itemView) {
             super(itemView, SINGLE);

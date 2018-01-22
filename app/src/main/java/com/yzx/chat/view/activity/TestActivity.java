@@ -42,41 +42,6 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void setup() {
 
-        ContactMessageDao dao = DBManager.getInstance().getContactMessageDao();
-        ContactMessageBean a1 = new ContactMessageBean();
-        a1.setReason("爱你");
-        a1.setRemind(true);
-        a1.setTime(1);
-        a1.setType(ContactMessageBean.TYPE_ADDED);
-        a1.setUserFrom("2");
-        a1.setUserTo("1");
-        a1.setNickname("Touch美");
-
-        dao.insert(a1);
-        a1.setUserFrom("10");
-        a1.setNickname("戴一个表");
-        a1.setType(ContactMessageBean.TYPE_REQUESTING);
-        dao.insert(a1);
-        a1.setUserFrom("3");
-        a1.setNickname("Unlimited");
-        a1.setType(ContactMessageBean.TYPE_DISAGREE);
-        dao.insert(a1);
-        a1.setUserFrom("4");
-        dao.insert(a1);
-        a1.setUserFrom("5");
-        a1.setNickname("PlaydonJJ");
-        a1.setType(ContactMessageBean.TYPE_REFUSED);
-        dao.insert(a1);
-        a1.setUserFrom("6");
-        a1.setNickname("叶智星");
-        a1.setType(ContactMessageBean.TYPE_VERIFYING);
-        dao.insert(a1);
-
-        for(int i =11;i<80;i++){
-            a1.setUserFrom(String.valueOf(i));
-            dao.insert(a1);
-            a1.setNickname(String.valueOf(i));
-        }
     }
 
     @Override

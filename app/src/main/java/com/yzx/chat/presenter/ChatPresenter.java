@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
+import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.util.LogUtil;
@@ -50,6 +51,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void detachView() {
         mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
+        mIMClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
         mHandler = null;
@@ -64,6 +66,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mIsLoadingMore = false;
         mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
+        mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
         if (mConversation.getUnreadMessageCount() != 0) {
             mIMClient.conversationManager().clearConversationUnreadStatus(mConversation);
         }
@@ -197,6 +200,22 @@ public class ChatPresenter implements ChatContract.Presenter {
         @Override
         public void onSendFail(Message message) {
             mChatView.updateMessage(message);
+        }
+    };
+
+    private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
+        @Override
+        public void onConversationStateChange(Conversation conversation, int typeCode) {
+            if(typeCode==ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE){
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChatView.clearMessage();
+                        mChatView.enableLoadMoreHint(false);
+                        mHasMoreMessage = false;
+                    }
+                });
+            }
         }
     };
 
