@@ -29,7 +29,6 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.FlowLayout;
-import com.yzx.chat.widget.view.LabelView;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -66,8 +65,15 @@ public class TestActivity extends BaseCompatActivity {
                        return true;
                    }
 
-                   LabelView textView = (LabelView) LayoutInflater.from(TestActivity.this).inflate(R.layout.item_profile_label,mFlowLayout,false);
+                   TextView textView = (TextView) LayoutInflater.from(TestActivity.this).inflate(R.layout.item_profile_label,mFlowLayout,false);
                     textView.setText(ContentType);
+                    textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TextView textView = (TextView) v;
+                            textView.setText(textView.getText()+" x");
+                        }
+                    });
                     int count =mFlowLayout.getChildCount();
                     if(count!=0){
                         count--;

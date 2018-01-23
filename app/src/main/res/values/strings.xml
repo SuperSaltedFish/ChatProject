@@ -94,5 +94,6 @@
     <string name="ContactMessageAdapter_Requesting">添加</string>
     <string name="ContactMessageAdapter_Verifying">等待验证</string>
     <string name="ContactMessageMenu_Delete">删除</string>
+    <string name="ModifyContactLabelActivity_Title">添加标签</string>
 
 </resources>
