@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ContactRemarkBean;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,12 +26,18 @@ public class ContactDao extends AbstractDao<ContactBean> {
     public static final String COLUMN_NAME_Nickname = "Nickname";
     private static final String COLUMN_NAME_Avatar = "Avatar";
     public static final String COLUMN_NAME_RemarkName = "RemarkName";
+    private static final String COLUMN_NAME_Description = "Description";
+    private static final String COLUMN_NAME_Telephone = "Telephone";
+    private static final String COLUMN_NAME_Tags = "Tags";
 
     private static final int COLUMN_INDEX_ContactOf = 0;
     private static final int COLUMN_INDEX_UserID = 1;
     private static final int COLUMN_INDEX_Nickname = 2;
     private static final int COLUMN_INDEX_Avatar = 3;
     private static final int COLUMN_INDEX_RemarkName = 4;
+    private static final int COLUMN_INDEX_Description = 5;
+    private static final int COLUMN_INDEX_Telephone = 6;
+    private static final int COLUMN_INDEX_Tags = 7;
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
@@ -38,6 +46,9 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     + COLUMN_NAME_Nickname + " TEXT NOT NULL,"
                     + COLUMN_NAME_Avatar + " TEXT,"
                     + COLUMN_NAME_RemarkName + " TEXT,"
+                    + COLUMN_NAME_Description + " TEXT,"
+                    + COLUMN_NAME_Telephone + " INTEGER,"
+                    + COLUMN_NAME_Tags + " TEXT,"
                     + "PRIMARY KEY (" + COLUMN_NAME_ContactOf + ", " + COLUMN_NAME_UserID + ")"
                     + ")";
 
@@ -92,7 +103,23 @@ public class ContactDao extends AbstractDao<ContactBean> {
         values.put(COLUMN_NAME_UserID, entity.getUserID());
         values.put(COLUMN_NAME_Nickname, entity.getNickname());
         values.put(COLUMN_NAME_Avatar, entity.getAvatar());
-        values.put(COLUMN_NAME_RemarkName, entity.getRemarkName());
+        ContactRemarkBean remark = entity.getRemark();
+        if (remark != null) {
+            values.put(COLUMN_NAME_RemarkName, remark.getRemarkName());
+            values.put(COLUMN_NAME_Description, remark.getDescription());
+            values.put(COLUMN_NAME_Telephone, remark.getTelephone());
+            List<String> tags = remark.getTags();
+            if (tags != null && tags.size() > 0) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0, size = tags.size(); i < size; i++) {
+                    stringBuilder.append(tags.get(i));
+                    if (i != size - 1) {
+                        stringBuilder.append(";");
+                    }
+                }
+                values.put(COLUMN_NAME_Tags, stringBuilder.toString());
+            }
+        }
         return values;
     }
 
@@ -103,7 +130,16 @@ public class ContactDao extends AbstractDao<ContactBean> {
         bean.setUserID(cursor.getString(COLUMN_INDEX_UserID));
         bean.setNickname(cursor.getString(COLUMN_INDEX_Nickname));
         bean.setAvatar(cursor.getString(COLUMN_INDEX_Avatar));
-        bean.setRemarkName(cursor.getString(COLUMN_INDEX_RemarkName));
+        ContactRemarkBean remark = new ContactRemarkBean();
+        remark.setRemarkName(cursor.getString(COLUMN_INDEX_RemarkName));
+        remark.setDescription(cursor.getString(COLUMN_INDEX_Description));
+        remark.setTelephone(cursor.getInt(COLUMN_INDEX_Telephone));
+        String tag = cursor.getString(COLUMN_INDEX_Tags);
+        if (!TextUtils.isEmpty(tag)) {
+            String[] tags = tag.split(";");
+            remark.setTags((ArrayList<String>) Arrays.asList(tags));
+        }
+        bean.setRemark(remark);
         return bean;
     }
 }

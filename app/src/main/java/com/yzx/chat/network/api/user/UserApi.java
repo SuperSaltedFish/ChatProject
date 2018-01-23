@@ -1,5 +1,6 @@
 package com.yzx.chat.network.api.user;
 
+import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
@@ -23,18 +24,18 @@ public interface UserApi {
     Call<JsonResponse<GetUserContactsBean>> getUserContacts();
 
     @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
-    Call<JsonResponse<Void>> requestContact(@HttpParam("friendID") String friendUserID, @HttpParam("reason") String reason);
+    Call<JsonResponse<Void>> requestContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
 
     @HttpApi(RequestMethod = "POST", Path = "user/rejectContact")
-    Call<JsonResponse<Void>> rejectContact(@HttpParam("friendID") String friendUserID, @HttpParam("reason") String reason);
+    Call<JsonResponse<Void>> rejectContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
 
     @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
-    Call<JsonResponse<Void>> acceptContact(@HttpParam("friendID") String friendUserID);
+    Call<JsonResponse<Void>> acceptContact(@HttpParam("contactID") String contactID);
 
     @HttpApi(RequestMethod = "POST", Path = "user/deleteContact")
-    Call<JsonResponse<Void>> deleteContact(@HttpParam("friendID") String friendUserID);
+    Call<JsonResponse<Void>> deleteContact(@HttpParam("contactID") String contactID);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/updateRemarkName")
-    Call<JsonResponse<Void>> updateRemarkName(@HttpParam("friendID") String friendUserID,
-                                              @HttpParam("remarkName") String remarkName);
+    @HttpApi(RequestMethod = "POST", Path = "user/updateRemark")
+    Call<JsonResponse<Void>> updateRemark(@HttpParam("friendID") String friendUserID,
+                                          @HttpParam("remark") ContactRemarkBean contactRemark);
 }

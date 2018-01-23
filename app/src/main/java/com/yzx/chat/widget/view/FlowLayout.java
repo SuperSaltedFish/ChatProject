@@ -17,6 +17,8 @@ import java.util.List;
 public class FlowLayout extends ViewGroup {
 
     private SparseArray<List<View>> mLineViewMap;
+    private int mItemSpace;
+    private int mLineSpace;
 
 
     public FlowLayout(Context context) {
@@ -46,6 +48,7 @@ public class FlowLayout extends ViewGroup {
         int lineCount = 1;
         int currentLineWidth = 0;
         int currentLineHeight = 0;
+        int currentLineChildCount = 0;
 
         for (int i = 0, count = getChildCount(); i < count; i++) {
             View childView = getChildAt(i);
@@ -53,13 +56,15 @@ public class FlowLayout extends ViewGroup {
             MarginLayoutParams childLP = (MarginLayoutParams) childView.getLayoutParams();
             int childWidth = childView.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
             int childHeight = childView.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin;
-            if (currentLineWidth + childWidth > maxWidth - getPaddingLeft() - getPaddingRight()) {
+            if (currentLineWidth + childWidth + currentLineChildCount * mItemSpace > maxWidth - getPaddingLeft() - getPaddingRight()) {
                 layoutWidth = Math.max(currentLineWidth, layoutWidth);
-                layoutHeight += currentLineHeight;
+                layoutHeight = layoutHeight + currentLineHeight + mLineSpace;
                 lineCount++;
                 currentLineWidth = childWidth;
                 currentLineHeight = childHeight;
+                currentLineChildCount = 0;
             } else {
+                currentLineChildCount++;
                 currentLineWidth += childWidth;
                 currentLineHeight = Math.max(childHeight, currentLineHeight);
             }
@@ -77,7 +82,7 @@ public class FlowLayout extends ViewGroup {
 
         setMeasuredDimension(
                 (widthMode == MeasureSpec.EXACTLY) ? maxWidth : layoutWidth,
-                (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight
+                (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight+getPaddingTop()+getPaddingBottom()
         );
     }
 
@@ -94,18 +99,39 @@ public class FlowLayout extends ViewGroup {
             MarginLayoutParams childLP;
             for (View child : singleViewList) {
                 childLP = (MarginLayoutParams) child.getLayoutParams();
-                int left = startX + usedWidth;
+                int left = startX + usedWidth+childLP.leftMargin;
                 int top = startY + usedHeight;
-                int right = left + child.getMeasuredWidth();
+                int right = left + child.getMeasuredWidth()+childLP.topMargin;
                 int bottom = top + child.getMeasuredHeight();
-                child.layout(left + childLP.leftMargin, top + childLP.topMargin, right, bottom);
+                if (singleViewList.indexOf(child) == 0) {
+                    child.layout(left , top , right, bottom);
+                    usedWidth +=  (right-left);
+                } else {
+                    child.layout(mItemSpace + left , top , mItemSpace + right, bottom);
+                    usedWidth += (right-left+mItemSpace);
+                }
                 lineHeight = Math.max(lineHeight, child.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin);
-                usedWidth += child.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
             }
-            usedHeight += lineHeight;
+            usedHeight += lineHeight + mLineSpace;
             i++;
         }
 
+    }
+
+    public int getItemSpace() {
+        return mItemSpace;
+    }
+
+    public void setItemSpace(int itemSpace) {
+        mItemSpace = itemSpace;
+    }
+
+    public int getLineSpace() {
+        return mLineSpace;
+    }
+
+    public void setLineSpace(int lineSpace) {
+        mLineSpace = lineSpace;
     }
 
     @Override

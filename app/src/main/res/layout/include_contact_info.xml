@@ -48,6 +48,7 @@
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
+            android:paddingTop="2dp"
             android:id="@+id/FriendProfileActivity_mTvContentAccount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -103,6 +104,7 @@
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
+            android:paddingTop="2dp"
             android:id="@+id/FriendProfileActivity_mTvContentLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -158,6 +160,7 @@
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
+            android:paddingTop="2dp"
             android:id="@+id/FriendProfileActivity_mTvContentDateOfBirth"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -203,7 +206,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:maxLines="1"
-            android:text="我的标签"
+            android:text="标签"
             android:textColor="@color/text_primary_color_black"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentLabel"
@@ -212,17 +215,41 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <TextView
+        <com.yzx.chat.widget.view.FlowLayout
             android:id="@+id/FriendProfileActivity_mTvContentLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="程序员 屌丝一个 废人"
-            android:textSize="13sp"
+            android:paddingTop="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel"
-            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelLabel">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:background="@drawable/selector_bg_label"
+                android:gravity="center"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:text="程序员"
+                android:textColor="@color/selector_text_label"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/selector_bg_label"
+                android:gravity="center"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:text="超级家人"
+                android:textColor="@color/selector_text_label"
+                android:textSize="13sp" />
+
+        </com.yzx.chat.widget.view.FlowLayout>
 
         <View
             android:layout_width="0dp"

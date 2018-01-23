@@ -20,11 +20,10 @@ public class ContactBean implements Parcelable {
     private String contactOf;
     private String userID;
     private String nickname;
-    private String remarkName;
     private String avatar;
     private String type;
-
     private String abbreviation;
+    private ContactRemarkBean remark;
 
     @Override
     public boolean equals(Object obj) {
@@ -39,6 +38,10 @@ public class ContactBean implements Parcelable {
     }
 
     public String getName() {
+        String remarkName=null;
+        if(remark!=null){
+            remarkName = remark.getRemarkName();
+        }
         return TextUtils.isEmpty(remarkName) ? nickname : remarkName;
     }
 
@@ -74,14 +77,6 @@ public class ContactBean implements Parcelable {
         this.nickname = nickname;
     }
 
-    public String getRemarkName() {
-        return remarkName;
-    }
-
-    public void setRemarkName(String remarkName) {
-        this.remarkName = remarkName;
-    }
-
     public String getAvatar() {
         return avatar;
     }
@@ -98,6 +93,19 @@ public class ContactBean implements Parcelable {
         this.type = type;
     }
 
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
+    public ContactRemarkBean getRemark() {
+        return remark;
+    }
+
+    public void setRemark(ContactRemarkBean remark) {
+        this.remark = remark;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -108,10 +116,10 @@ public class ContactBean implements Parcelable {
         dest.writeString(this.contactOf);
         dest.writeString(this.userID);
         dest.writeString(this.nickname);
-        dest.writeString(this.remarkName);
         dest.writeString(this.avatar);
-        dest.writeString(this.abbreviation);
         dest.writeString(this.type);
+        dest.writeString(this.abbreviation);
+        dest.writeParcelable(this.remark, flags);
     }
 
     public ContactBean() {
@@ -121,10 +129,10 @@ public class ContactBean implements Parcelable {
         this.contactOf = in.readString();
         this.userID = in.readString();
         this.nickname = in.readString();
-        this.remarkName = in.readString();
         this.avatar = in.readString();
-        this.abbreviation = in.readString();
         this.type = in.readString();
+        this.abbreviation = in.readString();
+        this.remark = in.readParcelable(ContactRemarkBean.class.getClassLoader());
     }
 
     public static final Creator<ContactBean> CREATOR = new Creator<ContactBean>() {
