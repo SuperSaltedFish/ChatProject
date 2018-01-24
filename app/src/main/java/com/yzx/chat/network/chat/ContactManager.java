@@ -5,7 +5,6 @@ import com.yzx.chat.bean.ContactMessageBean;
 import com.yzx.chat.database.ContactDao;
 import com.yzx.chat.database.ContactMessageDao;
 import com.yzx.chat.tool.DBManager;
-import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
@@ -118,7 +117,7 @@ public class ContactManager {
         mSubManagerCallback.execute(new Runnable() {
             @Override
             public void run() {
-                mContactMessageDao.makeAllRemindAsNoRemind(mUserID);
+                mContactMessageDao.makeAllRemindAsRemind(mUserID);
                 updateContactUnreadCount();
             }
         });

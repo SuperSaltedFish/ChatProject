@@ -5,10 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.PinYinUtil;
 
-import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2017年07月01日.
@@ -18,11 +16,12 @@ import io.rong.imlib.model.Conversation;
 public class ContactBean implements Parcelable {
 
     private String contactOf;
+    private String abbreviation;
+
     private String userID;
     private String nickname;
     private String avatar;
     private String type;
-    private String abbreviation;
     private ContactRemarkBean remark;
 
     @Override
@@ -54,7 +53,7 @@ public class ContactBean implements Parcelable {
 
 
     public String getContactOf() {
-        return IdentityManager.getInstance().getUserID();
+        return contactOf;
     }
 
     public void setContactOf(String contactOf) {

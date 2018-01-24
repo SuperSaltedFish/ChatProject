@@ -116,7 +116,7 @@ public class ContactPresenter implements ContactContract.Presenter {
                     if (!oldItem.getAvatar().equals(newItem.getAvatar())) {
                         return false;
                     }
-                    if (!oldItem.getRemarkName().equals(newItem.getRemarkName())) {
+                    if (!oldItem.getName().equals(newItem.getName())) {
                         return false;
                     }
                     if (!oldItem.getNickname().equals(newItem.getNickname())) {

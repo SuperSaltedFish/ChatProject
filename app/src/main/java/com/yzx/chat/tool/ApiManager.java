@@ -29,6 +29,7 @@ public class ApiManager {
     private static Gson sGson = new GsonBuilder()
             .serializeNulls()
             .enableComplexMapKeySerialization()
+
             .registerTypeAdapter(String.class,new NullStringToEmptyAdapter())
             .create();
 

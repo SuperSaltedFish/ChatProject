@@ -36,6 +36,6 @@ public interface UserApi {
     Call<JsonResponse<Void>> deleteContact(@HttpParam("contactID") String contactID);
 
     @HttpApi(RequestMethod = "POST", Path = "user/updateRemark")
-    Call<JsonResponse<Void>> updateRemark(@HttpParam("friendID") String friendUserID,
+    Call<JsonResponse<Void>> updateRemark(@HttpParam("contactID") String friendUserID,
                                           @HttpParam("remark") ContactRemarkBean contactRemark);
 }

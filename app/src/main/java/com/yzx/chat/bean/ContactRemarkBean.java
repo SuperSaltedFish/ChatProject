@@ -3,6 +3,8 @@ package com.yzx.chat.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 
 /**
@@ -16,6 +18,8 @@ public class ContactRemarkBean implements Parcelable {
     private String remarkName;
     private int telephone;
     private ArrayList<String> tags;
+    @Expose
+    private int uploadFlag = 1;
 
 
     public String getDescription() {
@@ -51,6 +55,15 @@ public class ContactRemarkBean implements Parcelable {
     }
 
 
+    public int getUploadFlag() {
+        return uploadFlag;
+    }
+
+    public void setUploadFlag(int uploadFlag) {
+        this.uploadFlag = uploadFlag;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -62,6 +75,7 @@ public class ContactRemarkBean implements Parcelable {
         dest.writeString(this.remarkName);
         dest.writeInt(this.telephone);
         dest.writeStringList(this.tags);
+        dest.writeInt(this.uploadFlag);
     }
 
     public ContactRemarkBean() {
@@ -72,6 +86,7 @@ public class ContactRemarkBean implements Parcelable {
         this.remarkName = in.readString();
         this.telephone = in.readInt();
         this.tags = in.createStringArrayList();
+        this.uploadFlag = in.readInt();
     }
 
     public static final Parcelable.Creator<ContactRemarkBean> CREATOR = new Parcelable.Creator<ContactRemarkBean>() {

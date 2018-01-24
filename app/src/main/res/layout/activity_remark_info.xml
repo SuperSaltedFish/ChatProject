@@ -19,9 +19,9 @@
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/radius_default_bt"
             android:elevation="2dp"
             android:text="@string/RemarkInfoActivity_Save"
@@ -53,6 +53,7 @@
                 android:textSize="17sp" />
 
             <com.yzx.chat.widget.view.ClearEditText
+                android:id="@+id/ImageSelectorActivity_mEtRemarkName"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:layout_marginTop="12dp"
@@ -62,7 +63,6 @@
                 android:paddingBottom="8dp"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
-                android:text="叶智星"
                 android:textCursorDrawable="@drawable/cursor_default"
                 android:textSize="17sp" />
 
@@ -74,6 +74,7 @@
                 android:textSize="17sp" />
 
             <com.yzx.chat.widget.view.ClearEditText
+                android:id="@+id/ImageSelectorActivity_mEtTelephone"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:layout_marginTop="12dp"
@@ -84,7 +85,6 @@
                 android:paddingBottom="8dp"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
-                android:text="13631232530"
                 android:textCursorDrawable="@drawable/cursor_default"
                 android:textSize="17sp" />
 
@@ -105,7 +105,6 @@
                 android:paddingBottom="8dp"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
-                android:text="程序员 推广师"
                 android:textCursorDrawable="@drawable/cursor_default"
                 android:textSize="17sp" />
 
@@ -117,6 +116,7 @@
                 android:textSize="17sp" />
 
             <com.yzx.chat.widget.view.ClearEditText
+                android:id="@+id/ImageSelectorActivity_mEtDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -126,7 +126,6 @@
                 android:paddingBottom="8dp"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
-                android:text="da随风倒wdwdda随风倒wdwdda随风倒wdwdda随风倒wdwdda随风倒wdwdda随风倒wdwd"
                 android:textCursorDrawable="@drawable/cursor_default"
                 android:textSize="17sp" />
 

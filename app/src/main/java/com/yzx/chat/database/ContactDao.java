@@ -29,6 +29,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
     private static final String COLUMN_NAME_Description = "Description";
     private static final String COLUMN_NAME_Telephone = "Telephone";
     private static final String COLUMN_NAME_Tags = "Tags";
+    private static final String COLUMN_NAME_UploadFlag = "UploadFlag";
 
     private static final int COLUMN_INDEX_ContactOf = 0;
     private static final int COLUMN_INDEX_UserID = 1;
@@ -38,6 +39,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
     private static final int COLUMN_INDEX_Description = 5;
     private static final int COLUMN_INDEX_Telephone = 6;
     private static final int COLUMN_INDEX_Tags = 7;
+    private static final int COLUMN_INDEX_UploadFlag = 8;
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
@@ -49,6 +51,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     + COLUMN_NAME_Description + " TEXT,"
                     + COLUMN_NAME_Telephone + " INTEGER,"
                     + COLUMN_NAME_Tags + " TEXT,"
+                    + COLUMN_NAME_UploadFlag + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_ContactOf + ", " + COLUMN_NAME_UserID + ")"
                     + ")";
 
@@ -137,7 +140,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
         String tag = cursor.getString(COLUMN_INDEX_Tags);
         if (!TextUtils.isEmpty(tag)) {
             String[] tags = tag.split(";");
-            remark.setTags((ArrayList<String>) Arrays.asList(tags));
+            remark.setTags(new ArrayList<>(Arrays.asList(tags)));
         }
         bean.setRemark(remark);
         return bean;

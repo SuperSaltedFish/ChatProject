@@ -7,6 +7,4 @@
     android:paddingEnd="10dp"
     android:paddingStart="10dp"
     android:textColor="@color/selector_text_label"
-    android:textSize="15sp">
-
-</TextView>
+    android:textSize="15sp"/>

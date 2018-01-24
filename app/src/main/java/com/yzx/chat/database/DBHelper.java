@@ -3,6 +3,8 @@ package com.yzx.chat.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.yzx.chat.util.LogUtil;
+
 
 /**
  * Created by YZX on 2017年11月17日.
@@ -12,8 +14,8 @@ import android.database.sqlite.SQLiteDatabase;
 public class DBHelper {
 
     private DatabaseHelper mHelper;
-    private SQLiteDatabase mReadableDatabase;
-    private SQLiteDatabase mWritableDatabase;
+    private volatile SQLiteDatabase mReadableDatabase;
+    private volatile SQLiteDatabase mWritableDatabase;
     private int mReadingCount;
     private int mWritingCount;
 
@@ -29,9 +31,12 @@ public class DBHelper {
 
     private final AbstractDao.ReadWriteHelper mReadWriteHelper = new AbstractDao.ReadWriteHelper() {
 
+        private final Object mReadableLock = new Object();
+        private final Object mWritableLock = new Object();
+
         @Override
         public SQLiteDatabase openReadableDatabase() {
-            synchronized (this) {
+            synchronized (mReadableLock) {
                 mReadingCount++;
                 if (mReadableDatabase == null) {
                     mReadableDatabase = mHelper.getReadableDatabase();
@@ -42,7 +47,7 @@ public class DBHelper {
 
         @Override
         public SQLiteDatabase openWritableDatabase() {
-            synchronized (this) {
+            synchronized (mWritableLock) {
                 mWritingCount++;
                 if (mWritableDatabase == null) {
                     mWritableDatabase = mHelper.getWritableDatabase();
@@ -53,21 +58,21 @@ public class DBHelper {
 
         @Override
         public void closeReadableDatabase() {
-            synchronized (this) {
+            synchronized (mReadableLock) {
                 if (mReadingCount == 0) {
                     return;
                 }
                 mReadingCount--;
                 if (mReadingCount == 0 && mReadableDatabase != null) {
-                    mReadableDatabase.close();
-                    mReadableDatabase = null;
+                 //   mReadableDatabase.close();
+                  //  mReadableDatabase = null;
                 }
             }
         }
 
         @Override
         public void closeWritableDatabase() {
-            synchronized (this) {
+            synchronized (mWritableLock) {
                 if (mWritingCount == 0) {
                     return;
                 }

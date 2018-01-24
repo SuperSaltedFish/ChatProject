@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import com.yzx.chat.bean.ContactMessageBean;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,9 @@ public class ContactMessageDao extends AbstractDao<ContactMessageBean> {
             return null;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
+        LogUtil.e("loadMoreContactMessage 1");
         Cursor cursor = database.query(TABLE_NAME, new String[]{"*", COLUMN_NAME_RowID}, COLUMN_NAME_UserTo + "=? AND " + COLUMN_NAME_RowID + "<?", new String[]{userID, String.valueOf(startID)}, null, null, COLUMN_NAME_RowID + " DESC", String.valueOf(count));
+        LogUtil.e("loadMoreContactMessage 2");
         List<ContactMessageBean> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
@@ -87,7 +90,9 @@ public class ContactMessageDao extends AbstractDao<ContactMessageBean> {
             return 0;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
+        LogUtil.e("loadRemindCount 1");
         Cursor cursor = database.query(TABLE_NAME, new String[]{"COUNT(ROWID)"}, COLUMN_NAME_UserTo + "=?", new String[]{userID}, null, null, null, null);
+        LogUtil.e("loadRemindCount 2");
         int result;
         if (cursor.moveToFirst()) {
             result = cursor.getInt(0);
@@ -99,7 +104,7 @@ public class ContactMessageDao extends AbstractDao<ContactMessageBean> {
         return result;
     }
 
-    public int makeAllRemindAsNoRemind(String userID) {
+    public int makeAllRemindAsRemind(String userID) {
         SQLiteDatabase database = mHelper.openWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_IsRemind, 0);

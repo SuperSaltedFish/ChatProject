@@ -29,6 +29,9 @@ public class LogUtil {
     }
 
     public static void v(String msg) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableV) {
             String tag = generateTag();
             Log.v(tag, msg);
@@ -36,6 +39,9 @@ public class LogUtil {
     }
 
     public static void v(String msg, Throwable tr) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableV) {
             String tag = generateTag();
             Log.v(tag, msg, tr);
@@ -43,6 +49,9 @@ public class LogUtil {
     }
 
     public static void d(String msg) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableD) {
             String tag = generateTag();
             Log.d(tag, msg);
@@ -50,6 +59,9 @@ public class LogUtil {
     }
 
     public static void d(String msg, Throwable tr) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableD) {
             String tag = generateTag();
             Log.d(tag, msg, tr);
@@ -57,6 +69,9 @@ public class LogUtil {
     }
 
     public static void i(String msg) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableI) {
             String tag = generateTag();
             Log.i(tag, msg);
@@ -64,6 +79,9 @@ public class LogUtil {
     }
 
     public static void i(String msg, Throwable tr) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableI) {
             String tag = generateTag();
             Log.i(tag, msg, tr);
@@ -71,6 +89,9 @@ public class LogUtil {
     }
 
     public static void w(String msg) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableW) {
             String tag = generateTag();
             Log.w(tag, msg);
@@ -78,6 +99,9 @@ public class LogUtil {
     }
 
     public static void w(String msg, Throwable tr) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableW) {
             String tag = generateTag();
             Log.w(tag, msg, tr);
@@ -85,6 +109,9 @@ public class LogUtil {
     }
 
     public static void e(String msg) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableE) {
             String tag = generateTag();
             Log.e(tag, msg);
@@ -92,6 +119,9 @@ public class LogUtil {
     }
 
     public static void e(String msg, Throwable tr) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableE) {
             String tag = generateTag();
             Log.e(tag, msg, tr);
@@ -99,6 +129,9 @@ public class LogUtil {
     }
 
     public static void wtf(String msg) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableWTF) {
             String tag = generateTag();
             Log.wtf(tag, msg);
@@ -106,6 +139,9 @@ public class LogUtil {
     }
 
     public static void wtf(String msg, Throwable tr) {
+        if(msg==null){
+            msg="null";
+        }
         if (isEnableWTF) {
             String tag = generateTag();
             Log.wtf(tag, msg, tr);
