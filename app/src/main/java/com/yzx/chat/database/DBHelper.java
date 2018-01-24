@@ -14,8 +14,8 @@ import com.yzx.chat.util.LogUtil;
 public class DBHelper {
 
     private DatabaseHelper mHelper;
-    private volatile SQLiteDatabase mReadableDatabase;
-    private volatile SQLiteDatabase mWritableDatabase;
+    private SQLiteDatabase mReadableDatabase;
+    private SQLiteDatabase mWritableDatabase;
     private int mReadingCount;
     private int mWritingCount;
 
@@ -64,8 +64,8 @@ public class DBHelper {
                 }
                 mReadingCount--;
                 if (mReadingCount == 0 && mReadableDatabase != null) {
-                 //   mReadableDatabase.close();
-                  //  mReadableDatabase = null;
+                    mReadableDatabase.close();
+                    mReadableDatabase = null;
                 }
             }
         }

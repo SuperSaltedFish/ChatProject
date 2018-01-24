@@ -49,7 +49,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     + COLUMN_NAME_Avatar + " TEXT,"
                     + COLUMN_NAME_RemarkName + " TEXT,"
                     + COLUMN_NAME_Description + " TEXT,"
-                    + COLUMN_NAME_Telephone + " INTEGER,"
+                    + COLUMN_NAME_Telephone + " TEXT,"
                     + COLUMN_NAME_Tags + " TEXT,"
                     + COLUMN_NAME_UploadFlag + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_ContactOf + ", " + COLUMN_NAME_UserID + ")"
@@ -136,7 +136,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
         ContactRemarkBean remark = new ContactRemarkBean();
         remark.setRemarkName(cursor.getString(COLUMN_INDEX_RemarkName));
         remark.setDescription(cursor.getString(COLUMN_INDEX_Description));
-        remark.setTelephone(cursor.getInt(COLUMN_INDEX_Telephone));
+        remark.setTelephone(cursor.getString(COLUMN_INDEX_Telephone));
         String tag = cursor.getString(COLUMN_INDEX_Tags);
         if (!TextUtils.isEmpty(tag)) {
             String[] tags = tag.split(";");

@@ -37,10 +37,10 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     }
 
     protected void init() {
-        mBtnConfirm = findViewById(R.id.ImageSelectorActivity_mBtnConfirm);
-        mEtRemarkName = findViewById(R.id.ImageSelectorActivity_mEtRemarkName);
-        mEtTelephone = findViewById(R.id.ImageSelectorActivity_mEtTelephone);
-        mEtDescription = findViewById(R.id.ImageSelectorActivity_mEtDescription);
+        mBtnConfirm = findViewById(R.id.RemarkInfoActivity_mBtnConfirm);
+        mEtRemarkName = findViewById(R.id.RemarkInfoActivity_mEtRemarkName);
+        mEtTelephone = findViewById(R.id.RemarkInfoActivity_mEtTelephone);
+        mEtDescription = findViewById(R.id.RemarkInfoActivity_mEtDescription);
     }
 
     @Override
@@ -63,11 +63,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
             ContactRemarkBean contactRemark = mContactBean.getRemark();
             mEtRemarkName.setText(contactRemark.getRemarkName());
             mEtDescription.setText(contactRemark.getDescription());
-            if (contactRemark.getTelephone() == 0) {
-                mEtTelephone.setText(null);
-            } else {
-                mEtTelephone.setText(String.valueOf(contactRemark.getTelephone()));
-            }
+            mEtTelephone.setText(String.valueOf(contactRemark.getTelephone()));
         }
     }
 
@@ -77,9 +73,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
             ContactRemarkBean contactRemark = mContactBean.getRemark();
             contactRemark.setDescription(mEtDescription.getText().toString());
             contactRemark.setRemarkName(mEtRemarkName.getText().toString());
-            if (!TextUtils.isEmpty(mEtTelephone.getText())) {
-                contactRemark.setTelephone(Integer.parseInt(mEtTelephone.getText().toString()));
-            }
+            contactRemark.setTelephone(mEtTelephone.getText().toString());
             mPresenter.save(mContactBean);
             finish();
         }

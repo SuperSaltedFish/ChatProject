@@ -95,5 +95,11 @@
     <string name="ContactMessageAdapter_Verifying">等待验证</string>
     <string name="ContactMessageMenu_Delete">删除</string>
     <string name="ModifyContactLabelActivity_Title">添加标签</string>
+    <string name="RemarkInfoActivity_RemarkNameLabel">备注名称</string>
+    <string name="RemarkInfoActivity_TelephoneLabel">电话号码</string>
+    <string name="RemarkInfoActivity_TelephoneHint">添加电话号码</string>
+    <string name="RemarkInfoActivity_TagLabel">标签</string>
+    <string name="RemarkInfoActivity_DescriptionHint">添加更多备注信息</string>
+    <string name="RemarkInfoActivity_DescriptionLabel">描述</string>
 
 </resources>

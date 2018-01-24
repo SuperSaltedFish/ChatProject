@@ -90,6 +90,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
 
         setOverflowMenu();
+        enableDisconnectionHint(!mPresenter.isConnected());
     }
 
     private void setOverflowMenu() {
@@ -206,6 +207,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void enableDisconnectionHint(boolean isEnable) {
+        if(mAdapter==null){
+            return;
+        }
         if (isEnable) {
             mAdapter.addHeaderView(mHeaderView);
         } else {

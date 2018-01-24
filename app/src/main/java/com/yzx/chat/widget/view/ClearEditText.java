@@ -8,8 +8,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.yzx.chat.R;
+import com.yzx.chat.util.LogUtil;
 
 
 /**
@@ -21,6 +23,7 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
 
     private Drawable mClearDrawable;
     private boolean isShowClearDrawable;
+    private boolean isEditState;
 
     public ClearEditText(Context context) {
         this(context, null);
@@ -39,16 +42,18 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
             mClearDrawable.setBounds(0, 0, mClearDrawable.getIntrinsicWidth(), mClearDrawable.getIntrinsicHeight());
         }
         addTextChangedListener(mTextWatcher);
-    }
 
-    @Override
-    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        super.onFocusChanged(focused, direction, previouslyFocusedRect);
-        if (focused) {
-            setClearIconVisible(true);
-        } else {
-            setClearIconVisible(false);
-        }
+        setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                isEditState=hasFocus;
+                if (!TextUtils.isEmpty(getText()) && isEditState) {
+                    setClearIconVisible(true);
+                } else {
+                    setClearIconVisible(false);
+                }
+            }
+        });
     }
 
     @Override
@@ -62,7 +67,7 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             performClick();
         }
-        if (mClearDrawable != null && event.getAction() == MotionEvent.ACTION_UP) {
+        if (mClearDrawable != null && event.getAction() == MotionEvent.ACTION_UP && isShowClearDrawable) {
             int x = (int) event.getX();
             // 判断触摸点是否在水平范围内
             boolean isInnerWidth = (x > (getWidth() - getTotalPaddingRight()))
@@ -109,10 +114,10 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
 
         @Override
         public void afterTextChanged(Editable s) {
-            if (TextUtils.isEmpty(s)) {
-                setClearIconVisible(false);
-            } else {
+            if (!TextUtils.isEmpty(s) && isEditState) {
                 setClearIconVisible(true);
+            } else {
+                setClearIconVisible(false);
             }
         }
     };

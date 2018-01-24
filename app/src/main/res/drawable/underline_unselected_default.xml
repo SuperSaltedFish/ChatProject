@@ -9,7 +9,7 @@
         <shape>
             <solid android:color="@null" />
             <stroke
-                android:width="0.5dp"
+                android:width="1px"
                 android:color="@color/divider_color_black" />
             <padding android:bottom="4dp" />
         </shape>

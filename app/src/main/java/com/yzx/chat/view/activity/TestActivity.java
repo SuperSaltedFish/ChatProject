@@ -1,6 +1,8 @@
 package com.yzx.chat.view.activity;
 
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.MessageQueue;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,55 +54,8 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void setup() {
-        mFlowLayout = findViewById(R.id.FlowLayout);
-        mEditText = findViewById(R.id.edit);
-        mEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
-        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_DONE || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
-                   CharSequence ContentType = mEditText.getText();
-                   if(TextUtils.isEmpty(ContentType)){
-                       return true;
-                   }
 
-                   TextView textView = (TextView) LayoutInflater.from(TestActivity.this).inflate(R.layout.item_profile_label,mFlowLayout,false);
-                    textView.setText(ContentType);
-                    textView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            TextView textView = (TextView) v;
-                            textView.setText(textView.getText()+" x");
-                        }
-                    });
-                    int count =mFlowLayout.getChildCount();
-                    if(count!=0){
-                        count--;
-                    }
-                    mFlowLayout.addView(textView,count);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        mFlowLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CharSequence ContentType = mEditText.getText();
-                if(TextUtils.isEmpty(ContentType)){
-                    return ;
-                }
-                TextView textView = (TextView) LayoutInflater.from(TestActivity.this).inflate(R.layout.item_profile_label,mFlowLayout,false);
-                textView.setText(ContentType);
-                int count =mFlowLayout.getChildCount();
-                if(count!=0){
-                    count--;
-                }
-                mFlowLayout.addView(textView,count);
-            }
-        });
     }
 
 
