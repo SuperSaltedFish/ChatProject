@@ -12,11 +12,13 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.contract.ContactProfileContract;
+import com.yzx.chat.presenter.ContactProfilePresenter;
 import com.yzx.chat.widget.adapter.ContactProfilePagerAdapter;
 
 import io.rong.imlib.model.Conversation;
 
-public class ContactProfileActivity extends BaseCompatActivity {
+public class ContactProfileActivity extends BaseCompatActivity<ContactProfileContract.Presenter> implements ContactProfileContract.View {
 
     public static final String INTENT_EXTRA_CONTACT = "Contact";
 
@@ -66,6 +68,8 @@ public class ContactProfileActivity extends BaseCompatActivity {
                 finish();
             }
         });
+
+        mPresenter.init(mContactBean);
     }
 
     @Override
@@ -91,5 +95,15 @@ public class ContactProfileActivity extends BaseCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    public ContactProfileContract.Presenter getPresenter() {
+        return new ContactProfilePresenter();
+    }
+
+    @Override
+    public void updateContactInfo(ContactBean contact) {
+        mContactBean = contact;
     }
 }

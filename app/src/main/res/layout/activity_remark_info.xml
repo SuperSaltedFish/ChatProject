@@ -73,21 +73,33 @@
                 android:text="@string/RemarkInfoActivity_TelephoneLabel"
                 android:textSize="16sp" />
 
-            <com.yzx.chat.widget.view.ClearEditText
-                android:id="@+id/RemarkInfoActivity_mEtTelephone"
+            <LinearLayout
+                android:id="@+id/RemarkInfoActivity_mLlTelephoneLayout"
                 android:layout_width="match_parent"
-                android:layout_height="24dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/selector_et_underline_default"
-                android:gravity="center_vertical"
-                android:hint="@string/RemarkInfoActivity_TelephoneHint"
-                android:inputType="number"
-                android:maxLines="1"
-                android:paddingBottom="4dp"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:textCursorDrawable="@drawable/cursor_default"
-                android:textSize="16sp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical">
+
+                <com.yzx.chat.widget.view.ClearEditText
+                    android:id="@+id/RemarkInfoActivity_mEtTelephone"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:background="@drawable/selector_et_underline_default"
+                    android:gravity="center_vertical"
+                    android:hint="@string/RemarkInfoActivity_TelephoneHint"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:maxLength="13"
+                    android:layout_marginTop="14dp"
+                    android:imeOptions="actionDone"
+                    android:paddingBottom="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:textCursorDrawable="@drawable/cursor_default"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
 
             <TextView
                 android:layout_width="match_parent"

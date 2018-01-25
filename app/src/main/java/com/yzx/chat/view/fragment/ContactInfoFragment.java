@@ -24,7 +24,6 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.FlowLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -52,7 +51,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
     private Switch mSwitchTop;
     private Switch mSwitchRemind;
     private TextView mTvRemarkTitle;
-    private TextView mTvLabelDescription;
+    private TextView mTvContentDescription;
     private ConstraintLayout mLabelLayout;
     private ConstraintLayout mTelephoneLayout;
     private ConstraintLayout mDescriptionLayout;
@@ -75,7 +74,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         mTvRemarkTitle = parentView.findViewById(R.id.FriendProfileActivity_mTvRemarkTitle);
         mFlContentLabel = parentView.findViewById(R.id.FriendProfileActivity_mFlContentLabel);
         mLlContentTelephone = parentView.findViewById(R.id.FriendProfileActivity_mLlContentTelephone);
-        mTvLabelDescription = parentView.findViewById(R.id.FriendProfileActivity_mTvLabelDescription);
+        mTvContentDescription = parentView.findViewById(R.id.FriendProfileActivity_mTvContentDescription);
     }
 
     @Override
@@ -105,19 +104,25 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
                     label.setText(tag);
                     mFlContentLabel.addView(label);
                 }
+            }else {
+                mLabelLayout.setVisibility(View.GONE);
             }
 
-            String telephone = contactRemark.getTelephone();
-            if (!TextUtils.isEmpty(telephone)) {
-                mLlContentTelephone.removeAllViews();
+            mLlContentTelephone.removeAllViews();
+            List<String> telephones = contactRemark.getTelephone();
+            if (telephones != null && telephones.size() > 0) {
                 isShowRemarkTitle = true;
                 mTelephoneLayout.setVisibility(View.VISIBLE);
-                TextView textView = new TextView(mContext);
-                textView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-                textView.setTextSize(15);
-                textView.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
-                textView.setText(telephone);
-                mLlContentTelephone.addView(textView);
+                for (String telephone : telephones) {
+                    TextView textView = new TextView(mContext);
+                    textView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                    textView.setTextSize(15);
+                    textView.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                    textView.setText(telephone);
+                    mLlContentTelephone.addView(textView);
+                }
+            }else {
+                mTelephoneLayout.setVisibility(View.GONE);
             }
 
 
@@ -125,7 +130,9 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
             if (!TextUtils.isEmpty(description)) {
                 isShowRemarkTitle = true;
                 mDescriptionLayout.setVisibility(View.VISIBLE);
-                mTvLabelDescription.setText(description);
+                mTvContentDescription.setText(description);
+            }else {
+                mDescriptionLayout.setVisibility(View.GONE);
             }
 
             if (isShowRemarkTitle) {

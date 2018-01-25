@@ -26,21 +26,24 @@ public class ContactBean implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
         if (!(obj instanceof ContactBean)) {
             return false;
         }
         ContactBean bean = (ContactBean) obj;
 
-        if ( TextUtils.isEmpty(contactOf)|| TextUtils.isEmpty(userID)) {
+        if (TextUtils.isEmpty(contactOf) || TextUtils.isEmpty(userID)) {
             return false;
         }
 
-        return userID.equals(bean.getUserID())&&contactOf.equals(bean.getContactOf());
+        return userID.equals(bean.getUserID()) && contactOf.equals(bean.getContactOf());
     }
 
     public String getName() {
-        String remarkName=null;
-        if(remark!=null){
+        String remarkName = null;
+        if (remark != null) {
             remarkName = remark.getRemarkName();
         }
         return TextUtils.isEmpty(remarkName) ? nickname : remarkName;

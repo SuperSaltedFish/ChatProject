@@ -16,11 +16,10 @@ public class ContactRemarkBean implements Parcelable {
 
     private String description;
     private String remarkName;
-    private String telephone;
+    private ArrayList<String> telephone;
     private ArrayList<String> tags;
     @Expose
     private int uploadFlag = 1;
-
 
     public String getDescription() {
         return description;
@@ -38,11 +37,11 @@ public class ContactRemarkBean implements Parcelable {
         this.remarkName = remarkName;
     }
 
-    public String getTelephone() {
+    public ArrayList<String> getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(String telephone) {
+    public void setTelephone(ArrayList<String> telephone) {
         this.telephone = telephone;
     }
 
@@ -53,7 +52,6 @@ public class ContactRemarkBean implements Parcelable {
     public void setTags(ArrayList<String> tags) {
         this.tags = tags;
     }
-
 
     public int getUploadFlag() {
         return uploadFlag;
@@ -73,7 +71,7 @@ public class ContactRemarkBean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.description);
         dest.writeString(this.remarkName);
-        dest.writeString(this.telephone);
+        dest.writeStringList(this.telephone);
         dest.writeStringList(this.tags);
         dest.writeInt(this.uploadFlag);
     }
@@ -84,7 +82,7 @@ public class ContactRemarkBean implements Parcelable {
     protected ContactRemarkBean(Parcel in) {
         this.description = in.readString();
         this.remarkName = in.readString();
-        this.telephone = in.readString();
+        this.telephone = in.createStringArrayList();
         this.tags = in.createStringArrayList();
         this.uploadFlag = in.readInt();
     }

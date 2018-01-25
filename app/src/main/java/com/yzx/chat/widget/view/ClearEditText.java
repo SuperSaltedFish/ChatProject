@@ -90,7 +90,7 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
     }
 
 
-    private void setClearIconVisible(boolean visible) {
+    public void setClearIconVisible(boolean visible) {
         if (isShowClearDrawable == visible) {
             return;
         }

@@ -108,7 +108,6 @@ public class FlowLayout extends ViewGroup {
                 int right = left + child.getMeasuredWidth();
                 int bottom = top + child.getMeasuredHeight();
                 if (singleViewList.indexOf(child) == 0) {
-                    LogUtil.e("有 "+left);
                     child.layout(left , top , right, bottom);
                     usedWidth +=  (right-left)+childLP.rightMargin+childLP.leftMargin;
                 } else {

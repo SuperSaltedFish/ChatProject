@@ -186,7 +186,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:paddingBottom="8dp"
-            android:paddingTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription"
             app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvDescriptionGuideline" />

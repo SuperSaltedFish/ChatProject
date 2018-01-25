@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yzx.chat.widget.view.ClearEditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="24dp"
+    android:background="@drawable/selector_et_underline_default"
+    android:gravity="center_vertical"
+    android:hint="@string/RemarkInfoActivity_TelephoneHint"
+    android:imeOptions="actionNext"
+    android:inputType="number"
+    android:layout_marginTop="14dp"
+    android:maxLength="13"
+    android:maxLines="1"
+    android:paddingBottom="4dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
+    android:textCursorDrawable="@drawable/cursor_default"
+    android:textSize="16sp" />

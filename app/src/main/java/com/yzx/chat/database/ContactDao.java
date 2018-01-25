@@ -110,7 +110,18 @@ public class ContactDao extends AbstractDao<ContactBean> {
         if (remark != null) {
             values.put(COLUMN_NAME_RemarkName, remark.getRemarkName());
             values.put(COLUMN_NAME_Description, remark.getDescription());
-            values.put(COLUMN_NAME_Telephone, remark.getTelephone());
+            List<String> telephone = remark.getTelephone();
+            if (telephone != null && telephone.size() > 0) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0, size = telephone.size(); i < size; i++) {
+                    stringBuilder.append(telephone.get(i));
+                    if (i != size - 1) {
+                        stringBuilder.append(";");
+                    }
+                }
+                values.put(COLUMN_NAME_Telephone, stringBuilder.toString());
+            }
+
             List<String> tags = remark.getTags();
             if (tags != null && tags.size() > 0) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -136,7 +147,14 @@ public class ContactDao extends AbstractDao<ContactBean> {
         ContactRemarkBean remark = new ContactRemarkBean();
         remark.setRemarkName(cursor.getString(COLUMN_INDEX_RemarkName));
         remark.setDescription(cursor.getString(COLUMN_INDEX_Description));
-        remark.setTelephone(cursor.getString(COLUMN_INDEX_Telephone));
+        remark.setUploadFlag(cursor.getInt(COLUMN_INDEX_UploadFlag));
+
+        String telephone = cursor.getString(COLUMN_INDEX_Telephone);
+        if (!TextUtils.isEmpty(telephone)) {
+            String[] telephones = telephone.split(";");
+            remark.setTelephone(new ArrayList<>(Arrays.asList(telephones)));
+        }
+
         String tag = cursor.getString(COLUMN_INDEX_Tags);
         if (!TextUtils.isEmpty(tag)) {
             String[] tags = tag.split(";");
