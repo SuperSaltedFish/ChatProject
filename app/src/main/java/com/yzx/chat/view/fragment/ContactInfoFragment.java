@@ -84,14 +84,16 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
         mClClearMessage.setOnClickListener(mOnClearMessageClickListener);
 
-        mPresenter.init(mContactBean);
         setData((ContactBean) getArguments().getParcelable(ARGUMENT_CONTACT));
+
+        mPresenter.init(mContactBean);
     }
 
     private void setData(ContactBean contact) {
         ContactRemarkBean contactRemark = contact.getRemark();
         boolean isShowRemarkTitle = false;
         if (contactRemark != null) {
+            mFlContentLabel.removeAllViews();
             List<String> tags = contactRemark.getTags();
             if (tags != null && tags.size() != 0) {
                 isShowRemarkTitle = true;
@@ -107,6 +109,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
 
             String telephone = contactRemark.getTelephone();
             if (!TextUtils.isEmpty(telephone)) {
+                mLlContentTelephone.removeAllViews();
                 isShowRemarkTitle = true;
                 mTelephoneLayout.setVisibility(View.VISIBLE);
                 TextView textView = new TextView(mContext);

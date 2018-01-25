@@ -42,6 +42,7 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
         mUpdateRemarkCall = mUserApi.updateRemark(contact.getUserID(),contact.getRemark());
         mUpdateRemarkCall.setCallback(new UpdateResponseCallback(contact));
         NetworkExecutor.getInstance().submit(mUpdateRemarkCall);
+        IMClient.getInstance().contactManager().updateContact(contact);
     }
 
     private final static class UpdateResponseCallback extends BaseHttpCallback<Void>{
