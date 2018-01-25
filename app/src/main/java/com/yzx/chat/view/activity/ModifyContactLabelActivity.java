@@ -1,7 +1,7 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -19,12 +19,17 @@ import com.yzx.chat.widget.view.BackInputConnection;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.LabelEditText;
 
+import java.util.ArrayList;
+
 /**
  * Created by YZX on 2018年01月23日.
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
 public class ModifyContactLabelActivity extends BaseCompatActivity {
+
+    public static final String INTENT_EXTRA_LABEL = "Label";
+    public static final int RESULT_CODE = 1;
 
     private FlowLayout mFlowLayout;
     private LabelEditText mEtInput;
@@ -42,7 +47,7 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
     protected void init() {
         mFlowLayout = findViewById(R.id.ModifyContactLabelActivity_mFlowLayout);
         mEtInput = findViewById(R.id.ModifyContactLabelActivity_mEtInput);
-        mBtnConfirm = findViewById(R.id.ImageSelectorActivity_mBtnConfirm);
+        mBtnConfirm = findViewById(R.id.ModifyContactLabelActivity_mBtnConfirm);
         mCloseDrawable = getDrawable(R.drawable.ic_close);
     }
 
@@ -62,10 +67,24 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
         int size = (int) AndroidUtil.dip2px(16);
         mCloseDrawable.setBounds(0, 0, size, size);
         mCloseDrawable.setTint(Color.WHITE);
+
+        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
+
+        setData();
+    }
+
+    private void setData() {
+        Intent intent = getIntent();
+        ArrayList<String> tags = intent.getStringArrayListExtra(INTENT_EXTRA_LABEL);
+        if (tags != null && tags.size() != 0) {
+            for (String tag : tags) {
+                addNewLabelTextView(tag);
+            }
+        }
     }
 
     private void addNewLabelTextView(CharSequence labelContent) {
-        TextView textView = (TextView) getLayoutInflater().inflate(R.layout.item_profile_label, mFlowLayout, false);
+        TextView textView = (TextView) getLayoutInflater().inflate(R.layout.item_label, mFlowLayout, false);
         textView.setText(labelContent);
         int lastIndex = mFlowLayout.getChildCount();
         if (lastIndex != 0) {
@@ -92,6 +111,21 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
         labelView.setSelected(isSelected);
         mCurrentSelectedID = labelView.getId();
     }
+
+    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ArrayList<String> tags = new ArrayList<>();
+            for (int i = 0, count = mFlowLayout.getChildCount() - 1; i < count; i++) {
+                TextView labelView = (TextView) mFlowLayout.getChildAt(i);
+                tags.add(labelView.getText().toString());
+            }
+            Intent intent = new Intent();
+            intent.putStringArrayListExtra(INTENT_EXTRA_LABEL, tags);
+            setResult(RESULT_CODE, intent);
+            finish();
+        }
+    };
 
 
     private final View.OnClickListener mOnFlowLayoutClickListener = new View.OnClickListener() {

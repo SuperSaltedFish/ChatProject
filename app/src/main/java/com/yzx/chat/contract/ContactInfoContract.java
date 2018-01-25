@@ -2,6 +2,7 @@ package com.yzx.chat.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.ContactBean;
 
 import io.rong.imlib.model.Conversation;
 
@@ -18,11 +19,13 @@ public class ContactInfoContract {
 
         void switchRemindState(boolean isOpen);
 
+        void updateContactInfo(ContactBean contact);
+
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void init(String userID);
+        void init(ContactBean contact);
 
         void enableConversationNotification(boolean isEnable);
 

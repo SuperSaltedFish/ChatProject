@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.yzx.chat.widget.view.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/FlowLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/edit"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_label_edit"
-        android:gravity="center_vertical"
-        android:hint="我的标签"
-        android:paddingBottom="2dp"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp"
-        android:paddingTop="2dp"
-        android:textSize="14sp" />
-
-
-</com.yzx.chat.widget.view.FlowLayout>
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="283dp" />
+</android.support.constraint.ConstraintLayout>

@@ -77,7 +77,7 @@ public class ContactProfileActivity extends BaseCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.ContactMenu_UpdateRemarkInfo:
+            case R.id.ContactMenu_ReviseRemarks:
                 Intent intent = new Intent(this, RemarkInfoActivity.class);
                 intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactBean);
                 startActivityForResult(intent, 0);

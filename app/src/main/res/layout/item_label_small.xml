@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="24dp"
+    android:layout_height="20dp"
     android:background="@drawable/selector_bg_label"
     android:gravity="center"
     android:paddingEnd="10dp"
     android:paddingStart="10dp"
     android:textColor="@color/selector_text_label"
-    android:textSize="15sp"/>
+    android:textSize="13sp" />

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/FriendProfileActivity_mTvRemarkTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center_vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/RemarkInfoActivity_Title"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/FriendProfileActivity_mLabelLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:minHeight="64dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/FriendProfileActivity_mIvIconLabel"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="18dp"
+            android:src="@drawable/ic_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/FriendProfileActivity_mIvLabelGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="32dp" />
+
+        <TextView
+            android:id="@+id/FriendProfileActivity_mTvLabelLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:maxLines="1"
+            android:text="@string/RemarkInfoActivity_TagLabel"
+            android:textColor="@color/text_primary_color_black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mIvLabelGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel" />
+
+        <com.yzx.chat.widget.view.FlowLayout
+            android:id="@+id/FriendProfileActivity_mFlContentLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel"
+            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvLabelGuideline"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_marginStart="24dp"
+            android:background="@color/divider_color_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/FriendProfileActivity_mTelephoneLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:minHeight="64dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/FriendProfileActivity_mIvIconTelephone"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="18dp"
+            android:src="@drawable/ic_telephone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/FriendProfileActivity_mIvTelephoneGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="32dp" />
+
+        <TextView
+            android:id="@+id/FriendProfileActivity_mTvLabelTelephone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:maxLines="1"
+            android:text="@string/RemarkInfoActivity_TelephoneLabel"
+            android:textColor="@color/text_primary_color_black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mIvTelephoneGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconTelephone" />
+
+        <LinearLayout
+            android:id="@+id/FriendProfileActivity_mLlContentTelephone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconTelephone"
+            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvTelephoneGuideline" />
+
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_marginStart="24dp"
+            android:background="@color/divider_color_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconTelephone" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/FriendProfileActivity_mDescriptionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:minHeight="64dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/FriendProfileActivity_mIvIconDescription"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="18dp"
+            android:src="@drawable/ic_describe"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/FriendProfileActivity_mIvDescriptionGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="32dp" />
+
+        <TextView
+            android:id="@+id/FriendProfileActivity_mTvLabelDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:maxLines="1"
+            android:text="@string/RemarkInfoActivity_DescriptionLabel"
+            android:textColor="@color/text_primary_color_black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mIvDescriptionGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription" />
+
+        <TextView
+            android:id="@+id/FriendProfileActivity_mTvContentDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription"
+            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvDescriptionGuideline" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_marginStart="24dp"
+            android:background="@color/divider_color_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription" />
+    </android.support.constraint.ConstraintLayout>
+
+
+</merge>

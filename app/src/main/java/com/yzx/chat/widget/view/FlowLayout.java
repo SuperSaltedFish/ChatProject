@@ -6,6 +6,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.yzx.chat.util.LogUtil;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,32 +54,34 @@ public class FlowLayout extends ViewGroup {
 
         for (int i = 0, count = getChildCount(); i < count; i++) {
             View childView = getChildAt(i);
-            measureChild(childView, widthMeasureSpec, heightMeasureSpec);
-            MarginLayoutParams childLP = (MarginLayoutParams) childView.getLayoutParams();
-            int childWidth = childView.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
-            int childHeight = childView.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin;
-            if (currentLineWidth + childWidth + currentLineChildCount * mItemSpace > maxWidth - getPaddingLeft() - getPaddingRight()) {
-                layoutWidth = Math.max(currentLineWidth, layoutWidth);
-                layoutHeight = layoutHeight + currentLineHeight + mLineSpace;
-                lineCount++;
-                currentLineWidth = childWidth;
-                currentLineHeight = childHeight;
-                currentLineChildCount = 0;
-            } else {
-                currentLineChildCount++;
-                currentLineWidth += childWidth;
-                currentLineHeight = Math.max(childHeight, currentLineHeight);
+            if(childView.getVisibility()!=View.GONE) {
+                measureChild(childView, widthMeasureSpec, heightMeasureSpec);
+                MarginLayoutParams childLP = (MarginLayoutParams) childView.getLayoutParams();
+                int childWidth = childView.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
+                int childHeight = childView.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin;
+                if (currentLineWidth + childWidth + currentLineChildCount * mItemSpace > maxWidth - getPaddingLeft() - getPaddingRight()) {
+                    layoutWidth = Math.max(currentLineWidth, layoutWidth);
+                    layoutHeight = layoutHeight + currentLineHeight + mLineSpace;
+                    lineCount++;
+                    currentLineWidth = childWidth;
+                    currentLineHeight = childHeight;
+                    currentLineChildCount = 0;
+                } else {
+                    currentLineChildCount++;
+                    currentLineWidth += childWidth;
+                    currentLineHeight = Math.max(childHeight, currentLineHeight);
+                }
+                List<View> singleLineViewList = mLineViewMap.get(lineCount);
+                if (singleLineViewList == null) {
+                    singleLineViewList = new LinkedList<>();
+                    mLineViewMap.put(lineCount, singleLineViewList);
+                }
+                singleLineViewList.add(childView);
             }
             if (i == count - 1) {
                 layoutWidth = Math.max(currentLineWidth, layoutWidth);
                 layoutHeight += currentLineHeight;
             }
-            List<View> singleLineViewList = mLineViewMap.get(lineCount);
-            if (singleLineViewList == null) {
-                singleLineViewList = new LinkedList<>();
-                mLineViewMap.put(lineCount, singleLineViewList);
-            }
-            singleLineViewList.add(childView);
         }
 
         setMeasuredDimension(
@@ -100,17 +104,18 @@ public class FlowLayout extends ViewGroup {
             for (View child : singleViewList) {
                 childLP = (MarginLayoutParams) child.getLayoutParams();
                 int left = startX + usedWidth+childLP.leftMargin;
-                int top = startY + usedHeight;
-                int right = left + child.getMeasuredWidth()+childLP.topMargin;
+                int top = startY + usedHeight+childLP.topMargin;
+                int right = left + child.getMeasuredWidth();
                 int bottom = top + child.getMeasuredHeight();
                 if (singleViewList.indexOf(child) == 0) {
+                    LogUtil.e("有 "+left);
                     child.layout(left , top , right, bottom);
-                    usedWidth +=  (right-left);
+                    usedWidth +=  (right-left)+childLP.rightMargin+childLP.leftMargin;
                 } else {
                     child.layout(mItemSpace + left , top , mItemSpace + right, bottom);
-                    usedWidth += (right-left+mItemSpace);
+                    usedWidth += (right-left+mItemSpace+childLP.rightMargin+childLP.leftMargin);
                 }
-                lineHeight = Math.max(lineHeight, child.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin);
+                lineHeight = Math.max(lineHeight, bottom-top + childLP.topMargin + childLP.bottomMargin);
             }
             usedHeight += lineHeight + mLineSpace;
             i++;

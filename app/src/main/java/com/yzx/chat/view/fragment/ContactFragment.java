@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
@@ -177,7 +176,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected void onFirstVisible() {
-        mPresenter.refreshAllContact(mContactList);
+        mPresenter.loadUnreadCount();
+        mPresenter.loadAllContact();
     }
 
     private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
@@ -208,8 +208,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
                 public void run() {
                     Intent intent = new Intent(mContext, ContactProfileActivity.class);
                     intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, mContactList.get(position - 1));
-                    ActivityOptionsCompat compat = ActivityOptionsCompat.makeCustomAnimation(mContext, R.anim.activity_slide_in_right, R.anim.activity_slide_out_left);
-                    startActivity(intent, compat.toBundle());
+                    startActivity(intent);
                 }
             });
 
@@ -291,7 +290,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     }
 
     @Override
-    public void updateContact(ContactBean contactBean) {
+    public void updateContactItem(ContactBean contactBean) {
         int updatePosition = mContactList.indexOf(contactBean);
         if (updatePosition != -1) {
             mContactList.set(updatePosition, contactBean);

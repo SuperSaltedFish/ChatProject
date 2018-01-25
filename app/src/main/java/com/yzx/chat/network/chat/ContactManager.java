@@ -26,6 +26,7 @@ public class ContactManager {
 
     private Map<String, ContactBean> mContactsMap;
     private IMClient.SubManagerCallback mSubManagerCallback;
+    private List<OnContactChangeListener> mContactChangeListeners;
     private List<OnContactMessageListener> mContactMessageListeners;
     private List<OnContactMessageUnreadCountChangeListener> mContactMessageUnreadCountChangeListeners;
     private ContactMessageDao mContactMessageDao;
@@ -44,6 +45,7 @@ public class ContactManager {
         mContactsMap = new HashMap<>(256);
         mContactMessageDao = DBManager.getInstance().getContactMessageDao();
         mContactDao = DBManager.getInstance().getContactDao();
+        mContactChangeListeners = Collections.synchronizedList(new LinkedList<OnContactChangeListener>());
         mContactMessageListeners = Collections.synchronizedList(new LinkedList<OnContactMessageListener>());
         mContactMessageUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnContactMessageUnreadCountChangeListener>());
     }
@@ -60,30 +62,57 @@ public class ContactManager {
         return mContactsMap.get(userID);
     }
 
-    public boolean updateContact(ContactBean contact) {
+    public boolean updateContact(ContactBean contact){
+        return updateContact(contact,true);
+    }
+
+    public boolean updateContact(ContactBean contact,boolean isCallListener) {
         boolean result = mContactDao.update(contact);
         if (result) {
             mContactsMap.put(contact.getUserID(), contact);
+            if(isCallListener) {
+                for (OnContactChangeListener listener : mContactChangeListeners) {
+                    listener.onContactUpdate(contact);
+                }
+            }
         } else {
             LogUtil.e("update contact fail");
         }
         return result;
     }
 
-    public boolean addContact(ContactBean contact) {
+    public boolean addContact(ContactBean contact){
+        return addContact(contact,true);
+    }
+
+    public boolean addContact(ContactBean contact,boolean isCallListener) {
         boolean result = mContactDao.insert(contact);
         if (result) {
             mContactsMap.put(contact.getUserID(), contact);
+            if(isCallListener) {
+                for (OnContactChangeListener listener : mContactChangeListeners) {
+                    listener.onContactAdded(contact);
+                }
+            }
         } else {
             LogUtil.e("update contact fail");
         }
         return result;
     }
 
-    public boolean delectContact(ContactBean contact) {
+    public boolean delectContact(ContactBean contact){
+        return delectContact(contact,true);
+    }
+
+    public boolean delectContact(ContactBean contact,boolean isCallListener) {
         boolean result = mContactDao.delete(contact);
         if (result) {
             mContactsMap.remove(contact.getUserID());
+            if(isCallListener) {
+                for (OnContactChangeListener listener : mContactChangeListeners) {
+                    listener.onContactDeleted(contact);
+                }
+            }
         } else {
             LogUtil.e("update contact fail");
         }
@@ -177,6 +206,16 @@ public class ContactManager {
         mContactMessageUnreadCountChangeListeners.remove(listener);
     }
 
+    public void addContactChangeListener(OnContactChangeListener listener) {
+        if (!mContactChangeListeners.contains(listener)) {
+            mContactChangeListeners.add(listener);
+        }
+    }
+
+    public void removeContactChangeListener(OnContactChangeListener listener) {
+        mContactChangeListeners.remove(listener);
+    }
+
     void onReceiveContactNotificationMessage(Message message) {
         ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
         ContactMessageBean bean = new ContactMessageBean();
@@ -213,6 +252,12 @@ public class ContactManager {
 
     public interface OnContactMessageUnreadCountChangeListener {
         void onContactMessageUnreadCountChange(int count);
+    }
+
+    public interface OnContactChangeListener {
+        void onContactAdded(ContactBean contact);
+        void onContactDeleted(ContactBean contact);
+        void onContactUpdate(ContactBean contact);
     }
 
 }

@@ -30,10 +30,12 @@ public class ContactBean implements Parcelable {
             return false;
         }
         ContactBean bean = (ContactBean) obj;
-        if (TextUtils.isEmpty(bean.getUserID()) || TextUtils.isEmpty(userID)) {
+
+        if ( TextUtils.isEmpty(contactOf)|| TextUtils.isEmpty(userID)) {
             return false;
         }
-        return userID.equals(bean.getUserID());
+
+        return userID.equals(bean.getUserID())&&contactOf.equals(bean.getContactOf());
     }
 
     public String getName() {

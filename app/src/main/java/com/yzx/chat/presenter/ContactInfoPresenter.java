@@ -1,10 +1,12 @@
 package com.yzx.chat.presenter;
 
-import android.os.Looper;
 
+import android.os.Handler;
+
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactInfoContract;
+import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.util.LogUtil;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
@@ -18,27 +20,34 @@ public class ContactInfoPresenter implements ContactInfoContract.Presenter {
 
     private ContactInfoContract.View mContactInfoContractView;
     private IMClient mIMClient;
+    private ContactBean mContactBean;
     private Conversation mConversation;
+    private Handler mHandler;
 
     @Override
     public void attachView(ContactInfoContract.View view) {
         mContactInfoContractView = view;
+        mHandler = new Handler();
         mIMClient = IMClient.getInstance();
+        mIMClient.contactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
     public void detachView() {
+        mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
+        mHandler.removeCallbacksAndMessages(null);
         mContactInfoContractView = null;
         mIMClient = null;
     }
 
 
     @Override
-    public void init(String userID) {
-        mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, userID);
+    public void init(ContactBean contact) {
+        mContactBean = contact;
+        mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserID());
         if (mConversation == null) {
             mConversation = new Conversation();
-            mConversation.setTargetId(userID);
+            mConversation.setTargetId(mContactBean.getUserID());
             mConversation.setTop(false);
             mConversation.setConversationType(Conversation.ConversationType.PRIVATE);
         }
@@ -72,5 +81,30 @@ public class ContactInfoPresenter implements ContactInfoContract.Presenter {
     public void clearChatMessages() {
         mIMClient.conversationManager().clearAllConversationMessages(mConversation);
     }
+
+    private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
+        @Override
+        public void onContactAdded(ContactBean contact) {
+
+        }
+
+        @Override
+        public void onContactDeleted(ContactBean contact) {
+
+        }
+
+        @Override
+        public void onContactUpdate(final ContactBean contact) {
+            if (mContactBean.equals(contact)) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mContactBean = contact;
+                        mContactInfoContractView.updateContactInfo(contact);
+                    }
+                });
+            }
+        }
+    };
 
 }

@@ -6,10 +6,12 @@ import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.contract.RemarkInfoContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.tool.DBManager;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkUtil;
 
 /**
@@ -53,12 +55,12 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
         @Override
         protected void onSuccess(Void response) {
             mContactBean.getRemark().setUploadFlag(1);
-            DBManager.getInstance().getContactDao().replace(mContactBean);
+            IMClient.getInstance().contactManager().updateContact(mContactBean,false);
         }
 
         @Override
         protected void onFailure(String message) {
-
+            LogUtil.e(message);
         }
     }
 

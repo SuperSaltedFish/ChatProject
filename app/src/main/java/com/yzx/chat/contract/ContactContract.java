@@ -18,14 +18,16 @@ public class ContactContract {
     public interface View extends BaseView<Presenter> {
         void updateUnreadBadge(int unreadCount);
 
-        void updateContact(ContactBean contactBean);
+        void updateContactItem(ContactBean contactBean);
 
         void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void refreshAllContact(List<ContactBean> oldData);
+        void loadUnreadCount();
+
+        void loadAllContact();
 
     }
 }

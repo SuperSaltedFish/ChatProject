@@ -1,20 +1,31 @@
 package com.yzx.chat.view.fragment;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.contract.ContactInfoContract;
 import com.yzx.chat.presenter.ContactInfoPresenter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.widget.view.FlowLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -40,6 +51,13 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
     private ConstraintLayout mClClearMessage;
     private Switch mSwitchTop;
     private Switch mSwitchRemind;
+    private TextView mTvRemarkTitle;
+    private TextView mTvLabelDescription;
+    private ConstraintLayout mLabelLayout;
+    private ConstraintLayout mTelephoneLayout;
+    private ConstraintLayout mDescriptionLayout;
+    private FlowLayout mFlContentLabel;
+    private LinearLayout mLlContentTelephone;
 
     @Override
     protected int getLayoutID() {
@@ -51,15 +69,67 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         mSwitchTop = parentView.findViewById(R.id.FriendProfileActivity_mSwitchTop);
         mSwitchRemind = parentView.findViewById(R.id.FriendProfileActivity_mSwitchRemind);
         mClClearMessage = parentView.findViewById(R.id.FriendProfileActivity_mClClearMessage);
-        mContactBean = getArguments().getParcelable(ARGUMENT_CONTACT);
+        mLabelLayout = parentView.findViewById(R.id.FriendProfileActivity_mLabelLayout);
+        mTelephoneLayout = parentView.findViewById(R.id.FriendProfileActivity_mTelephoneLayout);
+        mDescriptionLayout = parentView.findViewById(R.id.FriendProfileActivity_mDescriptionLayout);
+        mTvRemarkTitle = parentView.findViewById(R.id.FriendProfileActivity_mTvRemarkTitle);
+        mFlContentLabel = parentView.findViewById(R.id.FriendProfileActivity_mFlContentLabel);
+        mLlContentTelephone = parentView.findViewById(R.id.FriendProfileActivity_mLlContentTelephone);
+        mTvLabelDescription = parentView.findViewById(R.id.FriendProfileActivity_mTvLabelDescription);
     }
 
     @Override
     protected void setup() {
-        mPresenter.init(mContactBean.getUserID());
         mSwitchTop.setOnCheckedChangeListener(mOnTopSwitchChangeListener);
         mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
         mClClearMessage.setOnClickListener(mOnClearMessageClickListener);
+
+        mPresenter.init(mContactBean);
+        setData((ContactBean) getArguments().getParcelable(ARGUMENT_CONTACT));
+    }
+
+    private void setData(ContactBean contact) {
+        ContactRemarkBean contactRemark = contact.getRemark();
+        boolean isShowRemarkTitle = false;
+        if (contactRemark != null) {
+            List<String> tags = contactRemark.getTags();
+            if (tags != null && tags.size() != 0) {
+                isShowRemarkTitle = true;
+                mLabelLayout.setVisibility(View.VISIBLE);
+                mFlContentLabel.setLineSpace((int) AndroidUtil.dip2px(8));
+                mFlContentLabel.setItemSpace((int) AndroidUtil.dip2px(8));
+                for (String tag : tags) {
+                    TextView label = (TextView) getLayoutInflater().inflate(R.layout.item_label_small, mFlContentLabel, false);
+                    label.setText(tag);
+                    mFlContentLabel.addView(label);
+                }
+            }
+
+            String telephone = contactRemark.getTelephone();
+            if (!TextUtils.isEmpty(telephone)) {
+                isShowRemarkTitle = true;
+                mTelephoneLayout.setVisibility(View.VISIBLE);
+                TextView textView = new TextView(mContext);
+                textView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+                textView.setTextSize(15);
+                textView.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                textView.setText(telephone);
+                mLlContentTelephone.addView(textView);
+            }
+
+
+            String description = contactRemark.getDescription();
+            if (!TextUtils.isEmpty(description)) {
+                isShowRemarkTitle = true;
+                mDescriptionLayout.setVisibility(View.VISIBLE);
+                mTvLabelDescription.setText(description);
+            }
+
+            if (isShowRemarkTitle) {
+                mTvRemarkTitle.setVisibility(View.VISIBLE);
+            }
+        }
+        mContactBean = contact;
     }
 
     private final CompoundButton.OnCheckedChangeListener mOnTopSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -118,5 +188,14 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         mSwitchRemind.setOnCheckedChangeListener(null);
         mSwitchRemind.setChecked(isOpen);
         mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
+    }
+
+    @Override
+    public void updateContactInfo(ContactBean contact) {
+        if (mContactBean.equals(contact)) {
+            setData(contact);
+        } else {
+            LogUtil.e("unknown contact");
+        }
     }
 }
