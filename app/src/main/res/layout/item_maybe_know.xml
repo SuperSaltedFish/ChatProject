@@ -24,7 +24,7 @@
         android:layout_width="56dp"
         android:layout_height="32dp"
         android:text="添加"
-        android:background="@drawable/boder_btn_black"
+        android:background="@drawable/border_btn_black"
         android:textSize="12dp" />
 
 

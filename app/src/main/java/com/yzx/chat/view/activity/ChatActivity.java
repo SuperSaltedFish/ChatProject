@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -72,6 +73,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private static final int MORE_INPUT_TYPE_OTHER = 3;
 
     private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 2;
 
     public static final String INTENT_EXTRA_CONVERSATION = "Conversation";
 
@@ -84,12 +86,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private KeyboardPanelSwitcher mLlInputLayout;
     private EmotionPanelLayout mEmotionPanelLayout;
     private AmplitudeView mAmplitudeView;
-    private TableLayout mTlOtherPanelLayout;
+    private ConstraintLayout mClOtherPanelLayout;
     private View mFooterView;
     private TextView mTvLoadMoreHint;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
     private ImageView mIvProfile;
+    private ImageView mIvSendImage;
     private VoiceRecorder mVoiceRecorder;
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
@@ -149,6 +152,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
                 }
                 break;
+            case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
+                startActivity(new Intent(this, ImageSelectorActivity.class));
+                break;
         }
     }
 
@@ -169,8 +175,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAmplitudeView = findViewById(R.id.ChatActivity_mAmplitudeView);
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
-        mTlOtherPanelLayout = findViewById(R.id.ChatActivity_mTlOtherPanelLayout);
+        mClOtherPanelLayout = findViewById(R.id.ChatActivity_mClOtherPanelLayout);
         mIvProfile = findViewById(R.id.ChatActivity_mIvProfile);
+        mIvSendImage = findViewById(R.id.ChatActivity_mIvSendImage);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
@@ -193,6 +200,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         setAlerterDialog();
 
         setEmotionPanel();
+
+        setOtherPanel();
 
         setKeyBoardSwitcherListener();
 
@@ -359,6 +368,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
     }
 
+    private void setOtherPanel() {
+        mIvSendImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+            }
+        });
+    }
+
     private void setKeyBoardSwitcherListener() {
         mLlInputLayout.setOnKeyBoardSwitchListener(new KeyboardPanelSwitcher.onSoftKeyBoardSwitchListener() {
             @Override
@@ -523,7 +541,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 hintMoreInput();
             } else if (mLlRecorderLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_MICROPHONE) {
                 showSoftKeyboard(mEtContent);
-            } else if (mTlOtherPanelLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_OTHER) {
+            } else if (mClOtherPanelLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_OTHER) {
                 hintMoreInput();
             } else {
                 hintMoreInput();
@@ -540,13 +558,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private boolean isShowMoreInput() {
         return mEmotionPanelLayout.getVisibility() == View.VISIBLE ||
                 mLlRecorderLayout.getVisibility() == View.VISIBLE ||
-                mTlOtherPanelLayout.getVisibility() == View.VISIBLE;
+                mClOtherPanelLayout.getVisibility() == View.VISIBLE;
     }
 
     private void hintMoreInput() {
         mEmotionPanelLayout.setVisibility(View.GONE);
         mLlRecorderLayout.setVisibility(View.GONE);
-        mTlOtherPanelLayout.setVisibility(View.GONE);
+        mClOtherPanelLayout.setVisibility(View.GONE);
         mIvMicrophone.setImageResource(R.drawable.ic_microphone);
     }
 
@@ -560,7 +578,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 mLlRecorderLayout.setVisibility(View.VISIBLE);
                 break;
             case MORE_INPUT_TYPE_OTHER:
-                mTlOtherPanelLayout.setVisibility(View.VISIBLE);
+                mClOtherPanelLayout.setVisibility(View.VISIBLE);
                 break;
         }
     }

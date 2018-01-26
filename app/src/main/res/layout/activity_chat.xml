@@ -162,13 +162,120 @@
             android:layout_height="200dp"
             android:visibility="gone" />
 
-        <TableLayout
-            android:id="@+id/ChatActivity_mTlOtherPanelLayout"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/ChatActivity_mClOtherPanelLayout"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
             android:visibility="gone">
 
-        </TableLayout>
+            <ImageView
+                android:id="@+id/ChatActivity_mIvSendImage"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/selector_bg_chat_panel_item"
+                android:padding="8dp"
+                android:src="@drawable/ic_image"
+                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendImage"
+                app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mIvSendVideo"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
+
+            <ImageView
+                android:id="@+id/ChatActivity_mIvSendVideo"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/selector_bg_chat_panel_item"
+                android:padding="8dp"
+                android:src="@drawable/ic_camera"
+                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendVideo"
+                app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mIvSendLocation"
+                app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvSendImage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
+
+            <ImageView
+                android:id="@+id/ChatActivity_mIvSendLocation"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/selector_bg_chat_panel_item"
+                android:padding="8dp"
+                android:src="@drawable/ic_location"
+                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendLocation"
+                app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mIvSendFile"
+                app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvSendVideo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
+
+            <ImageView
+                android:id="@+id/ChatActivity_mIvSendFile"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/selector_bg_chat_panel_item"
+                android:padding="8dp"
+                android:src="@drawable/ic_file"
+                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendFile"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvSendLocation"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
+
+            <TextView
+                android:id="@+id/ChatActivity_mTvSendImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:includeFontPadding="false"
+                android:text="相册"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendImage"
+                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendImage"
+                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendImage" />
+
+            <TextView
+                android:id="@+id/ChatActivity_mTvSendVideo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:includeFontPadding="false"
+                android:text="拍摄"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendVideo"
+                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendVideo"
+                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendVideo" />
+
+            <TextView
+                android:id="@+id/ChatActivity_mTvSendLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:includeFontPadding="false"
+                android:text="位置"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendLocation"
+                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendLocation"
+                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendLocation" />
+
+            <TextView
+                android:id="@+id/ChatActivity_mTvSendFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:includeFontPadding="false"
+                android:text="文件"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendFile"
+                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendFile"
+                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendFile" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </com.yzx.chat.widget.view.KeyboardPanelSwitcher>
 

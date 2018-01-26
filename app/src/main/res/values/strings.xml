@@ -102,5 +102,6 @@
     <string name="RemarkInfoActivity_DescriptionHint">添加更多备注信息</string>
     <string name="RemarkInfoActivity_DescriptionLabel">描述</string>
     <string name="RemarkInfoActivity_LabelHint">添加标签对联系人进行分类</string>
+    <string name="ContactInfoFragment_Call">呼叫</string>
 
 </resources>

@@ -1,25 +1,21 @@
 package com.yzx.chat.view.activity;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.yzx.chat.R;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
@@ -37,7 +33,7 @@ import java.util.Map;
 
 public class ImageSelectorActivity extends BaseCompatActivity {
 
-    public static final int RESULT_CODE = ImageSelectorActivity.class.hashCode();
+    public static final int RESULT_CODE = 1;
     public static final String RESULT = "ImageSelectedList";
 
     private static final int HORIZONTAL_ITEM_COUNT = 3;
@@ -85,7 +81,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void setup() {
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             setTitle(R.string.ImageSelectorActivity_Title);
         }

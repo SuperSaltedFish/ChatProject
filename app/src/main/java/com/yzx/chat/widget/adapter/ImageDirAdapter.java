@@ -57,7 +57,7 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
 
     @Override
     public int getViewHolderCount() {
-        return mImageDirPath == null ? 0 : mImageDirPath.size()+1;
+        return mImageDirPath == null ? 0 : mImageDirPath.size();
     }
 
     final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {

@@ -1,12 +1,19 @@
 package com.yzx.chat.view.fragment;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -104,7 +111,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
                     label.setText(tag);
                     mFlContentLabel.addView(label);
                 }
-            }else {
+            } else {
                 mLabelLayout.setVisibility(View.GONE);
             }
 
@@ -116,12 +123,34 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
                 for (String telephone : telephones) {
                     TextView textView = new TextView(mContext);
                     textView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-                    textView.setTextSize(15);
+                    textView.setTextSize(16);
                     textView.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
                     textView.setText(telephone);
-                    mLlContentTelephone.addView(textView);
+                    textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final String telephone = ((TextView) v).getText().toString();
+                            if (TextUtils.isEmpty(telephone)) {
+                                return;
+                            }
+                            final String headStr = getString(R.string.ContactInfoFragment_Call);
+                            final String content = headStr + "  " + telephone;
+                            new MaterialDialog.Builder(mContext)
+                                    .items(content)
+                                    .itemsColor(Color.BLACK)
+                                    .itemsCallback(new MaterialDialog.ListCallback() {
+                                        @Override
+                                        public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                                            Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + telephone));//跳转到拨号界面，同时传递电话号码
+                                            startActivity(dialIntent);
+                                        }
+                                    })
+                                    .show();
+                        }
+                    });
+                    mLlContentTelephone.addView(textView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 }
-            }else {
+            } else {
                 mTelephoneLayout.setVisibility(View.GONE);
             }
 
@@ -131,7 +160,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
                 isShowRemarkTitle = true;
                 mDescriptionLayout.setVisibility(View.VISIBLE);
                 mTvContentDescription.setText(description);
-            }else {
+            } else {
                 mDescriptionLayout.setVisibility(View.GONE);
             }
 
