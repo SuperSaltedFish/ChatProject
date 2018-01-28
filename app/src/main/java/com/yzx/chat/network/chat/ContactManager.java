@@ -52,8 +52,10 @@ public class ContactManager {
 
     public void loadAllContact(String userID) {
         List<ContactBean> contacts = mContactDao.loadAllContacts(userID);
-        for (ContactBean contact : contacts) {
-            mContactsMap.put(contact.getUserID(), contact);
+        if (contacts != null) {
+            for (ContactBean contact : contacts) {
+                mContactsMap.put(contact.getUserID(), contact);
+            }
         }
         mUserID = userID;
     }
@@ -62,15 +64,15 @@ public class ContactManager {
         return mContactsMap.get(userID);
     }
 
-    public boolean updateContact(ContactBean contact){
-        return updateContact(contact,true);
+    public boolean updateContact(ContactBean contact) {
+        return updateContact(contact, true);
     }
 
-    public boolean updateContact(ContactBean contact,boolean isCallListener) {
+    public boolean updateContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.update(contact);
         if (result) {
             mContactsMap.put(contact.getUserID(), contact);
-            if(isCallListener) {
+            if (isCallListener) {
                 for (OnContactChangeListener listener : mContactChangeListeners) {
                     listener.onContactUpdate(contact);
                 }
@@ -81,15 +83,15 @@ public class ContactManager {
         return result;
     }
 
-    public boolean addContact(ContactBean contact){
-        return addContact(contact,true);
+    public boolean addContact(ContactBean contact) {
+        return addContact(contact, true);
     }
 
-    public boolean addContact(ContactBean contact,boolean isCallListener) {
+    public boolean addContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.insert(contact);
         if (result) {
             mContactsMap.put(contact.getUserID(), contact);
-            if(isCallListener) {
+            if (isCallListener) {
                 for (OnContactChangeListener listener : mContactChangeListeners) {
                     listener.onContactAdded(contact);
                 }
@@ -100,15 +102,15 @@ public class ContactManager {
         return result;
     }
 
-    public boolean delectContact(ContactBean contact){
-        return delectContact(contact,true);
+    public boolean delectContact(ContactBean contact) {
+        return delectContact(contact, true);
     }
 
-    public boolean delectContact(ContactBean contact,boolean isCallListener) {
+    public boolean delectContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.delete(contact);
         if (result) {
             mContactsMap.remove(contact.getUserID());
-            if(isCallListener) {
+            if (isCallListener) {
                 for (OnContactChangeListener listener : mContactChangeListeners) {
                     listener.onContactDeleted(contact);
                 }
@@ -178,7 +180,7 @@ public class ContactManager {
     }
 
 
-    public List<ContactMessageBean> loadAllContactMessage(){
+    public List<ContactMessageBean> loadAllContactMessage() {
         return mContactMessageDao.loadAllContactMessage(mUserID);
     }
 
@@ -256,7 +258,9 @@ public class ContactManager {
 
     public interface OnContactChangeListener {
         void onContactAdded(ContactBean contact);
+
         void onContactDeleted(ContactBean contact);
+
         void onContactUpdate(ContactBean contact);
     }
 

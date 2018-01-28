@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
@@ -36,7 +37,7 @@ public class IdentityManager {
     private byte[] mAESKey;
     private String mToken;
     private String mDeviceID;
-    private String mUserID;
+    private UserBean mUserBean;
 
 
     public static IdentityManager getInstance() {
@@ -81,14 +82,28 @@ public class IdentityManager {
         return !TextUtils.isEmpty(getToken()) && initAESKey();
     }
 
+    public boolean initFromLocalDB() {
+        String userID = mIdentityPreferences.getUserID();
+        if (TextUtils.isEmpty(userID)) {
+            return false;
+        }
+        userID = decrypt(userID);
+        mUserBean = DBManager.getInstance().getUserDao().loadByKey(userID);
+        return !(mUserBean == null || mUserBean.isEmpty());
+    }
+
     public synchronized boolean saveAESKey(String key) {
         String encryptData = encrypt(key);
         return !TextUtils.isEmpty(encryptData) && mIdentityPreferences.putAESKey(encryptData);
     }
 
-    public boolean saveUserID(String userID) {
-        String encryptData = encrypt(userID);
-        return !TextUtils.isEmpty(encryptData) && mIdentityPreferences.putUserID(encryptData);
+    public boolean saveUser(UserBean user) {
+        if (DBManager.getInstance().getUserDao().replace(user) && saveUserID(user.getUserID())) {
+            mUserBean = user;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean saveToken(String token) {
@@ -116,14 +131,16 @@ public class IdentityManager {
 
     @Nullable
     public String getUserID() {
-        if (TextUtils.isEmpty(mUserID)) {
-            mUserID = mIdentityPreferences.getUserID();
-            mUserID = decrypt(mUserID);
-        }
-        if (TextUtils.isEmpty(mUserID)) {
+        if (mUserBean == null || TextUtils.isEmpty(mUserBean.getUserID())) {
             startToLoginActivity();
+            return "";
+        } else {
+            return mUserBean.getUserID();
         }
-        return mUserID;
+    }
+
+    public UserBean getUser() {
+        return mUserBean;
     }
 
     public String getBase64RSAPublicKey() {
@@ -168,6 +185,11 @@ public class IdentityManager {
             return null;
         }
         return aesDecrypt(encryptData);
+    }
+
+    private boolean saveUserID(String userID) {
+        String encryptData = encrypt(userID);
+        return !TextUtils.isEmpty(encryptData) && mIdentityPreferences.putUserID(encryptData);
     }
 
     private synchronized boolean initAESKey() {

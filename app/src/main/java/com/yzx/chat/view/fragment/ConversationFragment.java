@@ -63,7 +63,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     protected void init(View parentView) {
         mRecyclerView = parentView.findViewById(R.id.ConversationFragment_mRecyclerView);
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
-        mSmartRefreshLayout = parentView.findViewById(R.id.ConversationFragment_mSmartRefreshLayout);
+        mSmartRefreshLayout = parentView.findViewById(R.id.FindNewContactActivity_mSmartRefreshLayout);
         mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
         mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_conversation_header, (ViewGroup) parentView, false);

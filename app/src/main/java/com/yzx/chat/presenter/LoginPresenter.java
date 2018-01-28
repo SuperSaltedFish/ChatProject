@@ -279,19 +279,16 @@ public class LoginPresenter implements LoginContract.Presenter {
         String token = bean.getToken();
         String secretKey = bean.getSecretKey();
         UserBean userBean = bean.getUser();
-        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey) || userBean == null) {
+        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey) || userBean == null||userBean.isEmpty()) {
             return false;
         }
-        if (!mIDManager.saveUserID(userBean.getUserID())) {
+        if (!mIDManager.saveUser(userBean)) {
             return false;
         }
         if (!mIDManager.saveAESKey(secretKey)) {
             return false;
         }
         if (!mIDManager.saveToken(token)) {
-            return false;
-        }
-        if (!DBManager.getInstance().getUserDao().replace(userBean)) {
             return false;
         }
         return true;

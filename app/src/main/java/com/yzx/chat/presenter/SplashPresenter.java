@@ -1,16 +1,21 @@
 package com.yzx.chat.presenter;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
+import com.yzx.chat.network.api.auth.TokenVerifyBean;
 import com.yzx.chat.network.api.user.GetUserContactsBean;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.network.framework.HttpCallback;
+import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.tool.ApiManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.tool.DBManager;
@@ -31,7 +36,7 @@ import io.rong.imlib.RongIMClient;
 public class SplashPresenter implements SplashContract.Presenter {
     //
     private SplashContract.View mSplashView;
-    private Call<JsonResponse<Void>> mTokenVerify;
+    private Call<JsonResponse<TokenVerifyBean>> mTokenVerify;
     private Call<JsonResponse<GetUserContactsBean>> mGetUserFriendsTask;
 
     private AtomicInteger mTaskCount;
@@ -115,18 +120,41 @@ public class SplashPresenter implements SplashContract.Presenter {
 
         NetworkUtil.cancelCall(mTokenVerify);
         mTokenVerify = authApi.tokenVerify();
-        mTokenVerify.setCallback(new BaseHttpCallback<Void>() {
-            boolean isSuccess;
+        mTokenVerify.setCallback(new HttpCallback<JsonResponse<TokenVerifyBean>>() {
+            private boolean isSuccess;
 
             @Override
-            protected void onSuccess(Void response) {
-                isSuccess = true;
+            public void onResponse(HttpResponse<JsonResponse<TokenVerifyBean>> response) {
+                if (response.getResponseCode() == 200) {
+                    JsonResponse<TokenVerifyBean> jsonResponse = response.getResponse();
+                    if (jsonResponse != null) {
+                        TokenVerifyBean tokenVerifyBean = jsonResponse.getData();
+                        if (jsonResponse.getStatus() != 200 || tokenVerifyBean == null || tokenVerifyBean.getUser() == null) {
+                            mSplashView.startLoginActivity();
+                        } else {
+                            UserBean userBean = tokenVerifyBean.getUser();
+                            if (userBean.isEmpty() || !IdentityManager.getInstance().saveUser(userBean)) {
+                                mSplashView.startLoginActivity();
+                                return;
+                            }
+                        }
+                    }
+                }
+                if (IdentityManager.getInstance().initFromLocalDB()) {
+                    isSuccess = true;
+                } else {
+                    mSplashView.startLoginActivity();
+                }
             }
 
             @Override
-            protected void onFailure(String message) {
-                isSuccess = true;
-                //mSplashView.startLoginActivity();
+            public void onError(@NonNull Throwable e) {
+                e.printStackTrace();
+                if (IdentityManager.getInstance().initFromLocalDB()) {
+                    isSuccess = true;
+                } else {
+                    mSplashView.startLoginActivity();
+                }
             }
 
             @Override

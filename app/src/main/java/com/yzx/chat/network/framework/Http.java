@@ -18,8 +18,8 @@ import java.nio.charset.Charset;
 
 public class Http {
 
-    private final static int CONNECT_TIMEOUT = 30000;
-    private final static int READ_TIMEOUT = 30000;
+    private final static int CONNECT_TIMEOUT = 20000;
+    private final static int READ_TIMEOUT = 20000;
 
     @NonNull
     public static Result doGet(String remoteUrl, String params) {

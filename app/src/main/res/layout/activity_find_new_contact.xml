@@ -14,6 +14,7 @@
         app:layout_constraintGuide_percent="0.25" />
 
     <ImageView
+        android:id="@+id/FindNewContactActivity_mIvBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:foreground="#ac222f42"
@@ -60,10 +61,12 @@
         app:layout_constraintTop_toTopOf="@+id/FindNewContactActivity_mGuideline">
 
         <EditText
+            android:id="@+id/FindNewContactActivity_mEtSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/white"
-            android:hint="手机号/群号/昵称"
+            android:hint="@string/FindNewContactActivity_SearchHint"
+            android:imeOptions="actionSearch"
             android:maxLines="1"
             android:paddingEnd="16dp"
             android:paddingStart="40dp"
@@ -82,23 +85,45 @@
     <TextView
         android:id="@+id/FindNewContactActivity_mTvMyPhoneNumber"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="26dp"
         android:gravity="center"
-        android:text="我的手机号:13631232530"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mFlSearchLayout" />
 
+    <LinearLayout
+        android:id="@+id/FindNewContactActivity_mLlSearchHintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mTvMyPhoneNumber">
+
+        <ProgressBar
+            android:id="@+id/FindNewContactActivity_mPbSearch"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+        <TextView
+            android:id="@+id/FindNewContactActivity_mTvSearchHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/ConversationFragment_mSmartRefreshLayout"
+        android:id="@+id/FindNewContactActivity_mSmartRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mTvMyPhoneNumber"
+        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mIvBackground"
         app:srlEnablePureScrollMode="true">
 
         <LinearLayout
@@ -108,15 +133,15 @@
 
 
             <android.support.constraint.ConstraintLayout
+                android:id="@+id/FindNewContactActivity_mClScanLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:background="@android:color/white"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp">
 
                 <ImageView
-                    android:id="@+id/ImageView3"
+                    android:id="@+id/ConversationFragment_mIvScan"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_marginStart="4dp"
@@ -127,7 +152,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/TextView5"
+                    android:id="@+id/ConversationFragment_mTvScan"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -137,15 +162,15 @@
                     android:text="扫一扫"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toTopOf="@+id/TextView6"
+                    app:layout_constraintBottom_toTopOf="@+id/ConversationFragment_mTvScanHint"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ImageView3"
-                    app:layout_constraintTop_toTopOf="@+id/ImageView3"
+                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvScan"
+                    app:layout_constraintTop_toTopOf="@+id/ConversationFragment_mIvScan"
                     app:layout_constraintVertical_chainStyle="packed" />
 
 
                 <TextView
-                    android:id="@+id/TextView6"
+                    android:id="@+id/ConversationFragment_mTvScanHint"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -154,10 +179,10 @@
                     android:maxLines="1"
                     android:text="扫描二维码名片"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/ImageView3"
+                    app:layout_constraintBottom_toBottomOf="@+id/ConversationFragment_mIvScan"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ImageView3"
-                    app:layout_constraintTop_toBottomOf="@+id/TextView5" />
+                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvScan"
+                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mTvScan" />
 
 
                 <ImageView
@@ -169,7 +194,7 @@
                     android:src="@drawable/ic_friend"
                     android:tint="@color/colorAccent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ImageView3" />
+                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mIvScan" />
 
                 <TextView
                     android:id="@+id/TextView3"
@@ -257,7 +282,7 @@
                     android:background="@color/divider_color_black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ImageView3" />
+                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mIvScan" />
 
                 <View
                     android:layout_width="0dp"

@@ -23,6 +23,7 @@ public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T
 
     protected abstract void onFailure(String message);
 
+
     @Override
     public void onResponse(HttpResponse<JsonResponse<T>> response) {
         if(response.getResponseCode()!=200){

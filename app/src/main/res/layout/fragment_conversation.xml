@@ -38,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mIvEmptyHintImage" />
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/ConversationFragment_mSmartRefreshLayout"
+        android:id="@+id/FindNewContactActivity_mSmartRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,6 +1,7 @@
 package com.yzx.chat.network.api.user;
 
 import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
@@ -13,12 +14,11 @@ import com.yzx.chat.network.framework.HttpParam;
 
 public interface UserApi {
 
-
     @HttpApi(RequestMethod = "POST", Path = "user/getUserProfile")
     Call<JsonResponse<GetUserProfileBean>> getUserProfile(@HttpParam("targetUserID") String userID);
 
     @HttpApi(RequestMethod = "POST", Path = "user/searchUser")
-    Call<JsonResponse<SearchUserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
+    Call<JsonResponse<UserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
 
     @HttpApi(RequestMethod = "POST", Path = "user/getUserContacts")
     Call<JsonResponse<GetUserContactsBean>> getUserContacts();

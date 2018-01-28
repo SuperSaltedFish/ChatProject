@@ -1,5 +1,6 @@
 package com.yzx.chat.network.api.auth;
 
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
@@ -35,7 +36,7 @@ public interface AuthApi {
                                                     @HttpParam("data") Object data);
 
     @HttpApi(RequestMethod = "POST", Path = "auth/tokenVerify")
-    Call<JsonResponse<Void>> tokenVerify();
+    Call<JsonResponse<TokenVerifyBean>> tokenVerify();
 
 
 
