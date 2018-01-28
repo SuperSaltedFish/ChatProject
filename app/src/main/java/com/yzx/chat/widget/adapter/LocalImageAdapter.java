@@ -4,7 +4,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,31 +22,30 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapter.ItemView> {
+public class LocalImageAdapter extends BaseRecyclerViewAdapter<LocalImageAdapter.ItemView> {
 
     private List<String> mImagePathList;
+    private List<String> mImageSelectedList;
     private int mHorizontalItemCount;
-    private SparseBooleanArray mCheckedStateArray;
-    private OnSelectedChangeListener mOnSelectedChangeListener;
+    private OnImageItemChangeListener mOnImageItemChangeListener;
 
-    public ImageSelectAdapter(List<String> imagePathList, int horizontalItemCount) {
-        mImagePathList = imagePathList;
+    public LocalImageAdapter(List<String> currentImagePathList, List<String> imageSelectedList, int horizontalItemCount) {
+        mImagePathList = currentImagePathList;
+        mImageSelectedList = imageSelectedList;
         mHorizontalItemCount = horizontalItemCount;
-        mCheckedStateArray = new SparseBooleanArray(128);
-        registerAdapterDataObserver(mDataObserver);
     }
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
         int itemSize = parent.getWidth() / mHorizontalItemCount;
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_image_select, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_local_image, parent, false);
         view.setLayoutParams(new RecyclerView.LayoutParams(itemSize, itemSize));
-        return  new ItemView(view);
+        return new ItemView(view, mProxyImageItemChangeListener);
     }
 
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
-        holder.mCbSelected.setChecked(mCheckedStateArray.get(position));
+        holder.mCbSelected.setChecked(mImageSelectedList.contains(mImagePathList.get(position)));
         GlideUtil.loadFromUrl(mContext, holder.mIvImage, String.format("file://%s", mImagePathList.get(position)));
     }
 
@@ -56,27 +54,28 @@ public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapt
         return mImagePathList == null ? 0 : mImagePathList.size();
     }
 
-
-    private void onSelectChange(int position, boolean isSelect) {
-        mCheckedStateArray.put(position, isSelect);
-        if (mOnSelectedChangeListener != null) {
-            mOnSelectedChangeListener.onSelect(position, isSelect);
-        }
+    public void setOnImageItemChangeListener(OnImageItemChangeListener onImageItemChangeListener) {
+        mOnImageItemChangeListener = onImageItemChangeListener;
     }
 
-    public void setOnSelectedChangeListener(OnSelectedChangeListener onSelectedChangeListener) {
-        mOnSelectedChangeListener = onSelectedChangeListener;
-    }
-
-    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+    private final OnImageItemChangeListener mProxyImageItemChangeListener = new OnImageItemChangeListener() {
         @Override
-        public void onChanged() {
-            mCheckedStateArray.clear();
+        public void onItemSelect(int position, boolean isSelect) {
+            if (mOnImageItemChangeListener != null) {
+                mOnImageItemChangeListener.onItemSelect(position, isSelect);
+            }
+        }
+
+        @Override
+        public void onItemClick(int position) {
+            if (mOnImageItemChangeListener != null) {
+                mOnImageItemChangeListener.onItemClick(position);
+            }
         }
     };
 
 
-    final class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
+    final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         ImageView mIvImage;
         CheckBox mCbSelected;
@@ -84,15 +83,18 @@ public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapt
         private ColorStateList mSelectColorTint;
         private ColorStateList mUnselectedColorTint;
 
-        ItemView(View itemView) {
+        private OnImageItemChangeListener mOnImageItemChangeListener;
+
+        ItemView(View itemView, OnImageItemChangeListener onImageItemChangeListener) {
             super(itemView);
+            mOnImageItemChangeListener = onImageItemChangeListener;
             initView();
             setView();
         }
 
         private void initView() {
-            mIvImage = (ImageView) itemView.findViewById(R.id.ImageSelectorActivity_mIvImage);
-            mCbSelected = (CheckBox) itemView.findViewById(R.id.ImageSelectorActivity_mCbSelected);
+            mIvImage = itemView.findViewById(R.id.ImageSelectorActivity_mIvImage);
+            mCbSelected = itemView.findViewById(R.id.ImageSelectorActivity_mCbSelected);
 
             mSelectColorTint = ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.mask_color_black));
             mUnselectedColorTint = ColorStateList.valueOf(Color.parseColor("#20000000"));
@@ -100,13 +102,20 @@ public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapt
 
         private void setView() {
             mCbSelected.setOnCheckedChangeListener(mOnCheckedChangeListener);
+            mIvImage.setOnClickListener(mOnImageClickListener);
         }
 
+        private final View.OnClickListener mOnImageClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnImageItemChangeListener.onItemClick(getAdapterPosition());
+            }
+        };
 
         private final CheckBox.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onSelectChange(ItemView.this.getAdapterPosition(), isChecked);
+                mOnImageItemChangeListener.onItemSelect(ItemView.this.getAdapterPosition(), isChecked);
                 if (isChecked) {
                     mIvImage.setImageTintList(mSelectColorTint);
                 } else {
@@ -118,8 +127,10 @@ public class ImageSelectAdapter extends BaseRecyclerViewAdapter<ImageSelectAdapt
 
     }
 
-    public interface OnSelectedChangeListener {
-        void onSelect(int position, boolean isSelect);
+    public interface OnImageItemChangeListener {
+        void onItemSelect(int position, boolean isSelect);
+
+        void onItemClick(int position);
     }
 
 }

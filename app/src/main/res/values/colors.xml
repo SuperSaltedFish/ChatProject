@@ -9,6 +9,8 @@
 
     <color name="colorPrimaryDark">#1b2839</color>
 
+    <color name="colorPrimary_alpha">#a8222f42</color>
+
 
 
     <color name="text_primary_color_black">#af000000</color>
@@ -22,7 +24,9 @@
     <color name="divider_color_white">#45ffffff</color>
 
 
-    <color name="theme_background_color">#f6fbfe</color>
+    <color name="theme_background_color_white">#f6fbfe</color>
+
+    <color name="theme_background_color_dark">#101010</color>
 
     <color name="grey_background_color">#ebeef1</color>
 
@@ -33,7 +37,7 @@
 
     <color name="text_main_color_white">#ffffff</color>
 
-    <color name="text_main_color_white_alpha">#dcffffff</color>
+    <color name="text_main_color_white_alpha">#a8ffffff</color>
 
 
     <color name="red">#FD5B5C</color>

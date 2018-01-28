@@ -103,5 +103,10 @@
     <string name="RemarkInfoActivity_DescriptionLabel">描述</string>
     <string name="RemarkInfoActivity_LabelHint">添加标签对联系人进行分类</string>
     <string name="ContactInfoFragment_Call">呼叫</string>
+    <string name="ImageSelectorActivity_Send">发送</string>
+    <string name="ImageSelectorActivity_AllImage">所有图片</string>
+    <string name="ImageViewPagerActivity_Selected">选择</string>
+    <string name="ImageSelectorActivity_Original">原图</string>
+    <string name="ImageSelectorActivity_Preview">预览</string>
 
 </resources>

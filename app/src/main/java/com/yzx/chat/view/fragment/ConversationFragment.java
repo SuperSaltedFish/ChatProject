@@ -3,7 +3,6 @@ package com.yzx.chat.view.fragment;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
@@ -95,7 +94,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     private void setOverflowMenu() {
         mConversationMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mConversationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color)));
+        mConversationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color_white)));
         mConversationMenu.setElevation(AndroidUtil.dip2px(2));
         mConversationMenu.inflate(R.menu.menu_conversation_overflow);
         mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {

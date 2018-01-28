@@ -154,7 +154,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     private void setOverflowMenu() {
         mContactMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mContactMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color)));
+        mContactMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color_white)));
         mContactMenu.setElevation(AndroidUtil.dip2px(2));
         mContactMenu.inflate(R.menu.menu_contact_overflow);
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {

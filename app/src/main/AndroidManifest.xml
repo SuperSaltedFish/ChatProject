@@ -35,11 +35,11 @@
         <activity
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity
@@ -66,6 +66,15 @@
         <activity
             android:name=".view.activity.ImageSelectorActivity"
             android:theme="@style/BaseDarkTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".view.activity.ImageViewPagerActivity"
+            android:theme="@style/BaseDarkTheme">
 
         </activity>
         <activity android:name=".view.activity.ContactProfileActivity">
@@ -82,19 +91,19 @@
 
         </activity>
 
-        <activity android:name=".view.activity.ContactMessageActivity" >
+        <activity android:name=".view.activity.ContactMessageActivity">
 
         </activity>
 
-        <activity android:name=".view.activity.ModifyContactLabelActivity" >
+        <activity android:name=".view.activity.ModifyContactLabelActivity">
 
         </activity>
 
         <activity android:name=".view.activity.TestActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
 

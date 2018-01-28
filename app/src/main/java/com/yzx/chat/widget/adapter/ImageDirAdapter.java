@@ -1,10 +1,10 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -24,6 +24,7 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
 
     private List<String> mImageDirPath;
     private Map<String, List<String>> mGroupingMap;
+    private int mSelectedPosition;
 
     public ImageDirAdapter(List<String> imageDirPath, Map<String, List<String>> groupingMap) {
         mImageDirPath = imageDirPath;
@@ -37,44 +38,51 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
 
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
-        if(position==0){
-            holder.mTvDirPath.setText("所有图片");
-            String fileDirPath = mImageDirPath.get(position);
-            List<String> imagePathList = mGroupingMap.get(fileDirPath);
-            if(imagePathList!=null&&imagePathList.size()!=0) {
-                GlideUtil.loadFromUrl(mContext, holder.mIvLowSource, imagePathList.get(0));
-            }
-        }else {
+        if (mSelectedPosition == position) {
+            holder.mRBtnSelected.setChecked(true);
+        } else {
+            holder.mRBtnSelected.setChecked(false);
+        }
+        if (position == 0) {
+            holder.mTvDirPath.setText(R.string.ImageSelectorActivity_AllImage);
+        } else {
             position--;
             String fileDirPath = mImageDirPath.get(position);
             List<String> imagePathList = mGroupingMap.get(fileDirPath);
-            if(imagePathList!=null&&imagePathList.size()!=0) {
+            if (imagePathList != null && imagePathList.size() != 0) {
                 GlideUtil.loadFromUrl(mContext, holder.mIvLowSource, imagePathList.get(0));
-                holder.mTvDirPath.setText(String.format(Locale.getDefault(), "%s(%d)", fileDirPath.substring(fileDirPath.lastIndexOf("/")+1), imagePathList.size()));
+                holder.mTvDirPath.setText(String.format(Locale.getDefault(), "%s(%d)", fileDirPath.substring(fileDirPath.lastIndexOf("/") + 1), imagePathList.size()));
             }
         }
     }
 
     @Override
     public int getViewHolderCount() {
-        return mImageDirPath == null ? 0 : mImageDirPath.size();
+        return mImageDirPath == null ? 1 : mImageDirPath.size() + 1;
+    }
+
+    public void setSelectedPosition(int position) {
+        if (mSelectedPosition != position) {
+            mSelectedPosition = position;
+            notifyDataSetChanged();
+        }
     }
 
     final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         TextView mTvDirPath;
         ImageView mIvLowSource;
+        RadioButton mRBtnSelected;
 
         ItemView(View itemView) {
             super(itemView);
             initView();
-
         }
 
         private void initView() {
-            mTvDirPath = (TextView) itemView.findViewById(R.id.ImageDirAdapter_mTvDirPath);
-            mIvLowSource = (ImageView) itemView.findViewById(R.id.ImageDirAdapter_mIvLowSource);
+            mTvDirPath = itemView.findViewById(R.id.ImageDirAdapter_mTvDirPath);
+            mIvLowSource = itemView.findViewById(R.id.ImageDirAdapter_mIvLowSource);
+            mRBtnSelected = itemView.findViewById(R.id.ImageDirAdapter_mRBtnSelected);
         }
-
     }
 }

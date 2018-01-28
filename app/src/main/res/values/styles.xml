@@ -11,7 +11,7 @@
         <item name="android:textColorTertiary">@color/text_secondary_color_black</item>
         <!--<item name="android:textColorSecondary">@color/text_secondary_color_black</item>-->
         <!--<item name="android:textColorPrimary">@color/text_primary_color_black</item>-->
-        <item name="android:windowBackground">@color/theme_background_color</item>
+        <item name="android:windowBackground">@color/theme_background_color_white</item>
         <item name="android:windowAnimationStyle">@style/ActivitySlideAnimStyle</item>
 
     </style>
@@ -21,6 +21,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/theme_background_color_dark</item>
         <item name="android:windowAnimationStyle">@style/ActivitySlideAnimStyle</item>
     </style>
 

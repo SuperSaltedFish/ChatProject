@@ -1,10 +1,8 @@
 package com.yzx.chat.view.activity;
 
-import android.os.Bundle;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -29,7 +27,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     @Override
     protected void setup() {
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 

@@ -1,6 +1,5 @@
 package com.yzx.chat.view.activity;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,11 +14,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
-import com.yzx.chat.widget.adapter.ImageSelectAdapter;
+import com.yzx.chat.widget.adapter.LocalImageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 
@@ -36,12 +37,14 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     public static final int RESULT_CODE = 1;
     public static final String RESULT = "ImageSelectedList";
 
-    private static final int HORIZONTAL_ITEM_COUNT = 3;
+    private static final int HORIZONTAL_ITEM_COUNT = 4;
 
-    private RecyclerView mRvImageList;
-    private RecyclerView mRvImageDirList;
+    private RecyclerView mRvImage;
+    private RecyclerView mRvImageDir;
     private Button mBtnConfirm;
-    private ImageSelectAdapter mImageSelectAdapter;
+    private RadioButton mRBtnOriginal;
+    private Button mBtnPreview;
+    private LocalImageAdapter mLocalImageAdapter;
     private BottomSheetBehavior mBottomBehavior;
     private ImageDirAdapter mImageDirAdapter;
     private View mMaskView;
@@ -53,6 +56,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     private ArrayList<String> mSelectedList;
 
     private TextView mTvChooseDir;
+    private boolean isOriginal;
 
 
     @Override
@@ -63,18 +67,20 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     @Override
     protected void init() {
         mBtnConfirm = (Button) findViewById(R.id.ImageSelectorActivity_mBtnConfirm);
-        mRvImageList = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageList);
+        mRvImage = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageList);
+        mRBtnOriginal = findViewById(R.id.ImageSelectorActivity_mRBtnOriginal);
         mTvChooseDir = (TextView) findViewById(R.id.ImageSelectorActivity_mTvChooseDir);
-        mRvImageDirList = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageDirList);
+        mRvImageDir = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageDirList);
+        mBtnPreview = findViewById(R.id.ImageSelectorActivity_mBtnPreview);
         mMaskView = findViewById(R.id.ImageSelectorActivity_mMaskView);
 
-        mCurrentImagePathList = new ArrayList<>();
+        mCurrentImagePathList = new ArrayList<>(128);
         mImageDirPath = new ArrayList<>();
         mSelectedList = new ArrayList<>();
         mGroupingMap = new HashMap<>();
         mCurrentShowDir = "";
-        mBottomBehavior = BottomSheetBehavior.from(mRvImageDirList);
-        mImageSelectAdapter = new ImageSelectAdapter(mCurrentImagePathList, HORIZONTAL_ITEM_COUNT);
+        mBottomBehavior = BottomSheetBehavior.from(mRvImageDir);
+        mLocalImageAdapter = new LocalImageAdapter(mCurrentImagePathList, mSelectedList, HORIZONTAL_ITEM_COUNT);
         mImageDirAdapter = new ImageDirAdapter(mImageDirPath, mGroupingMap);
         mMaskColorDrawable = new ColorDrawable(Color.BLACK);
     }
@@ -83,15 +89,16 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     protected void setup() {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            setTitle(R.string.ImageSelectorActivity_Title);
         }
 
-        mRvImageList.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
-        mRvImageList.setAdapter(mImageSelectAdapter);
+        mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
+        mRvImage.setHasFixedSize(true);
+        mRvImage.setAdapter(mLocalImageAdapter);
 
-        mRvImageDirList.setLayoutManager(new LinearLayoutManager(this));
-        mRvImageDirList.setAdapter(mImageDirAdapter);
-        mRvImageDirList.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
+        mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
+        mRvImageDir.setHasFixedSize(true);
+        mRvImageDir.setAdapter(mImageDirAdapter);
+        mRvImageDir.addOnItemTouchListener(mOnBottomSheetItemClickListener);
 
         mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomBehavior.setSkipCollapsed(true);
@@ -104,14 +111,18 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
         mBtnConfirm.setOnClickListener(mOnBtnConfirmClickListener);
 
-        mImageSelectAdapter.setOnSelectedChangeListener(mOnSelectedChangeListener);
+        mLocalImageAdapter.setOnImageItemChangeListener(mOnImageItemChangeListener);
 
+        mRBtnOriginal.setOnClickListener(mOnOriginalClickListener);
+
+        mBtnPreview.setOnClickListener(mOnPreviewClickListener);
+
+        updateCountText();
         setData();
     }
 
 
     private void setData() {
-        requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         new LoadImageAsyncTask(ImageSelectorActivity.this).execute();
     }
 
@@ -123,9 +134,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
     private void loadDirList() {
         mImageDirPath.clear();
-        for (String dir : mGroupingMap.keySet()) {
-            mImageDirPath.add(dir);
-        }
+        mImageDirPath.addAll(mGroupingMap.keySet());
         mImageDirAdapter.notifyDataSetChanged();
     }
 
@@ -136,17 +145,45 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         mCurrentShowDir = folder;
         mCurrentImagePathList.clear();
         mSelectedList.clear();
-        mBtnConfirm.setText("确定");
+        mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
         if (folder == null) {
             for (Map.Entry<String, List<String>> entry : mGroupingMap.entrySet()) {
                 mCurrentImagePathList.addAll(entry.getValue());
             }
-            mTvChooseDir.setText("所有图片");
+            mTvChooseDir.setText(R.string.ImageSelectorActivity_AllImage);
         } else if (mGroupingMap.containsKey(folder)) {
             mCurrentImagePathList.addAll(mGroupingMap.get(folder));
             mTvChooseDir.setText(folder.substring(folder.lastIndexOf("/") + 1));
         }
-        mImageSelectAdapter.notifyDataSetChanged();
+        mLocalImageAdapter.notifyDataSetChanged();
+    }
+
+    private void updateCountText() {
+        int selectedCount = mSelectedList.size();
+        if (selectedCount > 0) {
+            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), mCurrentImagePathList.size()));
+            mBtnPreview.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.ImageSelectorActivity_Preview), mSelectedList.size()));
+            mBtnPreview.setEnabled(true);
+        } else {
+            mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
+            mBtnPreview.setEnabled(false);
+            mBtnPreview.setText(R.string.ImageSelectorActivity_Preview);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == ImageViewPagerActivity.RESULT_CODE && data != null) {
+            ArrayList<String> selectList = data.getStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST);
+            isOriginal = data.getBooleanExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+            mRBtnOriginal.setChecked(isOriginal);
+            if (selectList != null) {
+                mSelectedList.clear();
+                mSelectedList.addAll(selectList);
+                mLocalImageAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -164,6 +201,26 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         @Override
         public void onClick(View v) {
             mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+    };
+
+    private final View.OnClickListener mOnOriginalClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            isOriginal = !isOriginal;
+            mRBtnOriginal.setChecked(isOriginal);
+        }
+    };
+
+    private final View.OnClickListener mOnPreviewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(ImageSelectorActivity.this, ImageViewPagerActivity.class);
+            intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_LIST, mSelectedList);
+            intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
+            intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, 0);
+            intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+            startActivityForResult(intent, 0);
         }
     };
 
@@ -199,10 +256,10 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         }
     };
 
-
-    private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
+    private final OnRecyclerViewItemClickListener mOnBottomSheetItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
         public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            mImageDirAdapter.setSelectedPosition(position);
             if (position == 0) {
                 setAlbumFolder(null);
             } else {
@@ -213,15 +270,27 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     };
 
 
-    private final ImageSelectAdapter.OnSelectedChangeListener mOnSelectedChangeListener = new ImageSelectAdapter.OnSelectedChangeListener() {
+    private final LocalImageAdapter.OnImageItemChangeListener mOnImageItemChangeListener = new LocalImageAdapter.OnImageItemChangeListener() {
         @Override
-        public void onSelect(int position, boolean isSelect) {
+        public void onItemSelect(int position, boolean isSelect) {
             if (isSelect) {
-                mSelectedList.add(mCurrentImagePathList.get(position));
+                if (!mSelectedList.contains(mCurrentImagePathList.get(position))) {
+                    mSelectedList.add(mCurrentImagePathList.get(position));
+                }
             } else {
                 mSelectedList.remove(mCurrentImagePathList.get(position));
             }
-            mBtnConfirm.setText(String.format(Locale.getDefault(), "确定(%d/%d)", mSelectedList.size(), mCurrentImagePathList.size()));
+            updateCountText();
+        }
+
+        @Override
+        public void onItemClick(int position) {
+            Intent intent = new Intent(ImageSelectorActivity.this, ImageViewPagerActivity.class);
+            intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_LIST, mCurrentImagePathList);
+            intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
+            intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, position);
+            intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+            startActivityForResult(intent, 0);
         }
     };
 
@@ -233,11 +302,6 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         LoadImageAsyncTask(ImageSelectorActivity imageSelectorActivity) {
             mContentResolver = imageSelectorActivity.getContentResolver();
             mWReference = new WeakReference<>(imageSelectorActivity);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
         }
 
         @Override

@@ -87,7 +87,7 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
 
     private void setOverflowMenu() {
         mContactMessageMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mContactMessageMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.theme_background_color)));
+        mContactMessageMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.theme_background_color_white)));
         mContactMessageMenu.setElevation(AndroidUtil.dip2px(2));
         mContactMessageMenu.inflate(R.menu.menu_contact_message_overflow);
         mContactMessageMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
