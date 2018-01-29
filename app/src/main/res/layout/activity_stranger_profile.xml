@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:overScrollMode="never"
+    tools:context="com.yzx.chat.view.activity.StrangerProfileActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@color/colorPrimary"
+            android:paddingBottom="16dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/Default_mToolbar"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:popupTheme="@style/ToolbarPopupTheme"
+                app:theme="@style/ToolbarTheme"
+                app:titleTextAppearance="@style/ToolbarTitleTheme.Light" >
+
+                <Button
+                    android:id="@+id/RemarkInfoActivity_mBtnConfirm"
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/radius_default_bt"
+                    android:elevation="2dp"
+                    android:text="发送"
+                    android:textColor="@android:color/white" />
+
+            </android.support.v7.widget.Toolbar>
+
+            <com.yzx.chat.widget.view.CircleImageView
+                android:id="@+id/StrangerProfileActivity_mIvAvatar"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:background="@android:color/white"
+                android:elevation="3dp"
+                android:padding="1dp"
+                android:src="@drawable/temp_head_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
+
+            <TextView
+                android:id="@+id/StrangerProfileActivity_mTvNickname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Rebecca Rain"
+                android:textColor="@color/text_main_color_white"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/StrangerProfileActivity_mIvAvatar" />
+
+            <TextView
+                android:id="@+id/StrangerProfileActivity_mTvExplain"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingEnd="80dp"
+                android:paddingStart="80dp"
+                android:text="生活就像海洋，只有意志坚强的人才能到彼岸"
+                android:textColor="#aaaaaa"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/StrangerProfileActivity_mTvNickname" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <include layout="@layout/include_profile" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:text="@string/StrangerProfile_VerifyTitle"
+            android:textSize="12sp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:background="#f0f0f0"
+            android:gravity="start|top"
+            android:hint="@string/StrangerProfileActivity_VerifyContentHint"
+            android:minHeight="80dp"
+            android:padding="8dp"
+            android:textSize="15sp" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:id="@+id/StrangerProfileActivity_mTvLabelRemind"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/StrangerProfile_SetPermissionTitle"
+                android:textColor="@color/text_primary_color_black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/StrangerProfileActivity_mTvContentRemind"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/StrangerProfileActivity_mTvContentRemind"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/StrangerProfile_SetPermissionContent"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/StrangerProfileActivity_mTvLabelRemind" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:background="@color/divider_color_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Switch
+                android:id="@+id/StrangerProfileActivity_mSwitchRemind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
+
+</ScrollView>
+

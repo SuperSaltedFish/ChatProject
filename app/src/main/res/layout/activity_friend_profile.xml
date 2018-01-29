@@ -14,14 +14,12 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             app:layout_scrollFlags="scroll">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/Default_mToolbar"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:background="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:popupTheme="@style/ToolbarPopupTheme"

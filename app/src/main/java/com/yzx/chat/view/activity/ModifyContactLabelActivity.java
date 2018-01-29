@@ -44,6 +44,12 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        super.hideSoftKeyboard();
+    }
+
+    @Override
     protected void init() {
         mFlowLayout = findViewById(R.id.ModifyContactLabelActivity_mFlowLayout);
         mEtInput = findViewById(R.id.ModifyContactLabelActivity_mEtInput);

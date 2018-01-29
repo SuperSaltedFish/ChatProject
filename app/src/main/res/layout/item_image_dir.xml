@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="72dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingEnd="16dp"
@@ -9,22 +10,34 @@
 
     <ImageView
         android:id="@+id/ImageDirAdapter_mIvLowSource"
-        android:layout_width="88dp"
-        android:layout_height="88dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="4:3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ImageDirAdapter_mTvDirPath"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_weight="1"
         android:gravity="center_vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
         android:textColor="@color/text_primary_color_black"
-        android:textSize="18sp" />
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ImageDirAdapter_mRBtnSelected"
+        app:layout_constraintStart_toEndOf="@+id/ImageDirAdapter_mIvLowSource"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RadioButton
         android:id="@+id/ImageDirAdapter_mRBtnSelected"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

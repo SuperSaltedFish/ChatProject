@@ -18,11 +18,13 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalImageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
+import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -99,6 +101,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         mRvImageDir.setHasFixedSize(true);
         mRvImageDir.setAdapter(mImageDirAdapter);
         mRvImageDir.addOnItemTouchListener(mOnBottomSheetItemClickListener);
+        mRvImageDir.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12)));
 
         mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomBehavior.setSkipCollapsed(true);

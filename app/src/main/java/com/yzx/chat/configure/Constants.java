@@ -10,7 +10,7 @@ public class Constants {
 public static final String RONG_CLOUD_APP_KEY = "82hegw5u8dlsx";
 
 //    public static final String URL_API_BASE = "http://192.168.16.116:3000/v1/api/";
-    public static final String URL_API_BASE = "http://47.95.250.204:3000/v1/api/";
+    public static final String URL_API_BASE = "http://118.89.17.132:3000/v1/api/";
 
     public static final String DATABASE_NAME = "addsdddd1d.db";
     public static final int DATABASE_VERSION = 1;

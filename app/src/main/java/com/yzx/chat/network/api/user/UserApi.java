@@ -18,7 +18,7 @@ public interface UserApi {
     Call<JsonResponse<GetUserProfileBean>> getUserProfile(@HttpParam("targetUserID") String userID);
 
     @HttpApi(RequestMethod = "POST", Path = "user/searchUser")
-    Call<JsonResponse<UserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
+    Call<JsonResponse<SearchUserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
 
     @HttpApi(RequestMethod = "POST", Path = "user/getUserContacts")
     Call<JsonResponse<GetUserContactsBean>> getUserContacts();

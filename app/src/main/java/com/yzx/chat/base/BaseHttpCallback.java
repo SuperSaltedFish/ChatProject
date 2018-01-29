@@ -40,7 +40,7 @@ public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T
             ParameterizedType pType = (ParameterizedType) response.getClass().getGenericInterfaces()[0];
             Type type = pType.getActualTypeArguments()[0];
             if (type != Void.class) {
-                onFailure(null);
+                onFailure("数据解析失败，请稍后再试！");
             } else {
                 onSuccess(null);
             }
