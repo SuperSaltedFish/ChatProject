@@ -80,7 +80,6 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     private void initIMServer() {
-        //"nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8"
         IMClient.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {

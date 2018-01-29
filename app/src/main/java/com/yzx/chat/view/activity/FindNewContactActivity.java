@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -118,6 +119,9 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     @Override
     public void searchSuccess(UserBean user) {
         enableSearchHint(false);
+        Intent intent = new Intent(this, StrangerProfileActivity.class);
+        intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
+        startActivity(intent);
     }
 
     @Override
