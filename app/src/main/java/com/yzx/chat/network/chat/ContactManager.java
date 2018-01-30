@@ -1,18 +1,26 @@
 package com.yzx.chat.network.chat;
 
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactMessageBean;
+import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.database.ContactDao;
-import com.yzx.chat.database.ContactMessageDao;
+import com.yzx.chat.database.ContactOperationDao;
 import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;
@@ -24,15 +32,24 @@ import io.rong.message.ContactNotificationMessage;
 
 public class ContactManager {
 
+    public static final String CONTACT_OPERATION_REQUEST = "Request";//被请求
+    public static final String CONTACT_OPERATION_DISAGREE = "Disagree";//被拒绝
+    public static final String CONTACT_OPERATION_ACCEPT = "AcceptResponse";//同意添加
+    public static final String CONTACT_OPERATION_REFUSED = "RefusedResponse";//拒绝添加
+    public static final String CONTACT_OPERATION_ADDED = "Added";//已经添加
+    public static final String CONTACT_OPERATION_VERIFYING = "VERIFYING";//等待验证
+
+    private Set<String> mContactOperationSet;
     private Map<String, ContactBean> mContactsMap;
     private IMClient.SubManagerCallback mSubManagerCallback;
     private List<OnContactChangeListener> mContactChangeListeners;
-    private List<OnContactMessageListener> mContactMessageListeners;
-    private List<OnContactMessageUnreadCountChangeListener> mContactMessageUnreadCountChangeListeners;
-    private ContactMessageDao mContactMessageDao;
+    private List<OnContactOperationListener> mContactOperationListeners;
+    private List<OnContactOperationUnreadCountChangeListener> mContactOperationUnreadCountChangeListeners;
+    private ContactOperationDao mContactOperationDao;
     private ContactDao mContactDao;
+    private Gson mGson;
 
-    private int mContactMessageUnreadNumber;
+    private int mContactOperationUnreadNumber;
     private final Object mUpdateContactUnreadNumberLock = new Object();
 
     private String mUserID;
@@ -42,12 +59,14 @@ public class ContactManager {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
         mSubManagerCallback = subManagerCallback;
+        mContactOperationSet = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_DISAGREE, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_ADDED, CONTACT_OPERATION_VERIFYING));
         mContactsMap = new HashMap<>(256);
-        mContactMessageDao = DBManager.getInstance().getContactMessageDao();
+        mContactOperationDao = DBManager.getInstance().getContactOperationDao();
         mContactDao = DBManager.getInstance().getContactDao();
         mContactChangeListeners = Collections.synchronizedList(new LinkedList<OnContactChangeListener>());
-        mContactMessageListeners = Collections.synchronizedList(new LinkedList<OnContactMessageListener>());
-        mContactMessageUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnContactMessageUnreadCountChangeListener>());
+        mContactOperationListeners = Collections.synchronizedList(new LinkedList<OnContactOperationListener>());
+        mContactOperationUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnContactOperationUnreadCountChangeListener>());
+        mGson = new GsonBuilder().serializeNulls().create();
     }
 
     public void loadAllContact(String userID) {
@@ -132,11 +151,11 @@ public class ContactManager {
             @Override
             public void run() {
                 synchronized (mUpdateContactUnreadNumberLock) {
-                    int count = mContactMessageDao.loadRemindCount(mUserID);
-                    if (count != mContactMessageUnreadNumber) {
-                        mContactMessageUnreadNumber = count;
-                        for (OnContactMessageUnreadCountChangeListener listener : mContactMessageUnreadCountChangeListeners) {
-                            listener.onContactMessageUnreadCountChange(mContactMessageUnreadNumber);
+                    int count = mContactOperationDao.loadRemindCount(mUserID);
+                    if (count != mContactOperationUnreadNumber) {
+                        mContactOperationUnreadNumber = count;
+                        for (OnContactOperationUnreadCountChangeListener listener : mContactOperationUnreadCountChangeListeners) {
+                            listener.onContactOperationUnreadCountChange(mContactOperationUnreadNumber);
                         }
                     }
                 }
@@ -144,23 +163,23 @@ public class ContactManager {
         });
     }
 
-    public void makeAllContactMessageAsRead() {
+    public void makeAllContactOperationAsRead() {
         mSubManagerCallback.execute(new Runnable() {
             @Override
             public void run() {
-                mContactMessageDao.makeAllRemindAsRemind(mUserID);
+                mContactOperationDao.makeAllRemindAsRemind(mUserID);
                 updateContactUnreadCount();
             }
         });
     }
 
-    public void removeContactMessageAsync(final ContactMessageBean contactMessage) {
+    public void removeContactOperationAsync(final ContactOperationBean contactMessage) {
         mSubManagerCallback.execute(new Runnable() {
             @Override
             public void run() {
-                if (mContactMessageDao.delete(contactMessage)) {
-                    for (OnContactMessageListener contactListener : mContactMessageListeners) {
-                        contactListener.onContactMessageDelete(contactMessage);
+                if (mContactOperationDao.delete(contactMessage)) {
+                    for (OnContactOperationListener contactListener : mContactOperationListeners) {
+                        contactListener.onContactOperationDelete(contactMessage);
                     }
                 } else {
                     LogUtil.e("delete ContactMessageFail from DB");
@@ -169,10 +188,10 @@ public class ContactManager {
         });
     }
 
-    public void removeContactMessage(final ContactMessageBean contactMessage) {
-        if (mContactMessageDao.delete(contactMessage)) {
-            for (OnContactMessageListener contactListener : mContactMessageListeners) {
-                contactListener.onContactMessageDelete(contactMessage);
+    public void removeContactMessage(final ContactOperationBean contactMessage) {
+        if (mContactOperationDao.delete(contactMessage)) {
+            for (OnContactOperationListener contactListener : mContactOperationListeners) {
+                contactListener.onContactOperationDelete(contactMessage);
             }
         } else {
             LogUtil.e("delete ContactMessageFail from DB");
@@ -180,32 +199,32 @@ public class ContactManager {
     }
 
 
-    public List<ContactMessageBean> loadAllContactMessage() {
-        return mContactMessageDao.loadAllContactMessage(mUserID);
+    public List<ContactOperationBean> loadAllContactOperation() {
+        return mContactOperationDao.loadAllContactOperation(mUserID);
     }
 
-    public List<ContactMessageBean> loadMoreContactMessage(int startID, int count) {
-        return mContactMessageDao.loadMoreContactMessage(mUserID, startID, count);
+    public List<ContactOperationBean> loadMoreContactOperation(int startID, int count) {
+        return mContactOperationDao.loadMoreContactOperation(mUserID, startID, count);
     }
 
-    public void addContactMessageListener(OnContactMessageListener listener) {
-        if (!mContactMessageListeners.contains(listener)) {
-            mContactMessageListeners.add(listener);
+    public void addContactOperationListener(OnContactOperationListener listener) {
+        if (!mContactOperationListeners.contains(listener)) {
+            mContactOperationListeners.add(listener);
         }
     }
 
-    public void removeContactMessageListener(OnContactMessageListener listener) {
-        mContactMessageListeners.remove(listener);
+    public void removeContactOperationListener(OnContactOperationListener listener) {
+        mContactOperationListeners.remove(listener);
     }
 
-    public void addContactMessageUnreadCountChangeListener(OnContactMessageUnreadCountChangeListener listener) {
-        if (!mContactMessageUnreadCountChangeListeners.contains(listener)) {
-            mContactMessageUnreadCountChangeListeners.add(listener);
+    public void addContactOperationUnreadCountChangeListener(OnContactOperationUnreadCountChangeListener listener) {
+        if (!mContactOperationUnreadCountChangeListeners.contains(listener)) {
+            mContactOperationUnreadCountChangeListeners.add(listener);
         }
     }
 
-    public void removeContactMessageUnreadCountChangeListener(OnContactMessageUnreadCountChangeListener listener) {
-        mContactMessageUnreadCountChangeListeners.remove(listener);
+    public void removeContactOperationUnreadCountChangeListener(OnContactOperationUnreadCountChangeListener listener) {
+        mContactOperationUnreadCountChangeListeners.remove(listener);
     }
 
     public void addContactChangeListener(OnContactChangeListener listener) {
@@ -220,40 +239,46 @@ public class ContactManager {
 
     void onReceiveContactNotificationMessage(Message message) {
         ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
-        ContactMessageBean bean = new ContactMessageBean();
+        ContactOperationBean bean = new ContactOperationBean();
+        String operation = contactMessage.getOperation();
+        if (!mContactOperationSet.contains(operation)) {
+            LogUtil.e("unknown contact operation:" + operation);
+            return;
+        }
+        if (TextUtils.isEmpty(contactMessage.getExtra())) {
+            LogUtil.e("contact operation extra is empty");
+            return;
+        }
+        UserBean user = mGson.fromJson(contactMessage.getExtra(), UserBean.class);
+        if (TextUtils.isEmpty(user.getNickname())) {
+            LogUtil.e("Nickname is empty");
+            return;
+        }
+        bean.setUser(user);
         bean.setUserTo(contactMessage.getTargetUserId());
         bean.setUserFrom(contactMessage.getSourceUserId());
-        bean.setReason(contactMessage.getMessage());
         bean.setRemind(true);
         bean.setTime((int) (message.getReceivedTime() / 1000));
-        switch (contactMessage.getOperation()) {
-//            case ContactNotificationMessage.CONTACT_OPERATION_REQUEST:
-//                 bean.setType(ContactMessageBean.TYPE_REQUESTING);
-//                break;
-//            case ContactNotificationMessage.CONTACT_OPERATION_ACCEPT_RESPONSE:
-//                   bean.setType(ContactMessageBean.CONTACT_TYPE_ACCEPTED);
-//                break;
-//            case ContactNotificationMessage.CONTACT_OPERATION_REJECT_RESPONSE:
-//                //   bean.setType(ContactMessageBean.CONTACT_TYPE_DECLINED);
-//                break;
+        bean.setType(operation);
+        if (!mContactOperationDao.replace(bean)) {
+            LogUtil.e("replace contact operation fail");
+            return;
         }
-        mContactMessageDao.delete(bean);
-        mContactMessageDao.insert(bean);
-        for (OnContactMessageListener contactListener : mContactMessageListeners) {
-            contactListener.onContactMessageReceive(bean);
+        for (OnContactOperationListener contactListener : mContactOperationListeners) {
+            contactListener.onContactOperationReceive(bean);
         }
         updateContactUnreadCount();
     }
 
 
-    public interface OnContactMessageListener {
-        void onContactMessageReceive(ContactMessageBean message);
+    public interface OnContactOperationListener {
+        void onContactOperationReceive(ContactOperationBean message);
 
-        void onContactMessageDelete(ContactMessageBean message);
+        void onContactOperationDelete(ContactOperationBean message);
     }
 
-    public interface OnContactMessageUnreadCountChangeListener {
-        void onContactMessageUnreadCountChange(int count);
+    public interface OnContactOperationUnreadCountChangeListener {
+        void onContactOperationUnreadCountChange(int count);
     }
 
     public interface OnContactChangeListener {

@@ -2,10 +2,7 @@ package com.yzx.chat.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactMessageBean;
 import com.yzx.chat.bean.UserBean;
-
-import java.util.List;
 
 /**
  * Created by YZX on 2017年11月27日.

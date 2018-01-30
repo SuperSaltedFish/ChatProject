@@ -24,7 +24,7 @@ import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.view.activity.ContactMessageActivity;
+import com.yzx.chat.view.activity.ContactOperationActivity;
 import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.ContactProfileActivity;
 import com.yzx.chat.view.activity.RemarkInfoActivity;
@@ -183,8 +183,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(mContext, ContactMessageActivity.class);
-            intent.putExtra(ContactMessageActivity.INTENT_EXTRA_USER_ID, IdentityManager.getInstance().getUserID());
+            Intent intent = new Intent(mContext, ContactOperationActivity.class);
+            intent.putExtra(ContactOperationActivity.INTENT_EXTRA_USER_ID, IdentityManager.getInstance().getUserID());
             startActivity(intent);
         }
     };

@@ -38,14 +38,14 @@ public class ContactPresenter implements ContactContract.Presenter {
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mContactList = new ArrayList<>(128);
-        mIMClient.contactManager().addContactMessageUnreadCountChangeListener(mOnContactMessageUnreadCountChangeListener);
+        mIMClient.contactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.contactManager().addContactChangeListener(mOnContactChangeListener);
 
     }
 
     @Override
     public void detachView() {
-        mIMClient.contactManager().removeContactMessageUnreadCountChangeListener(mOnContactMessageUnreadCountChangeListener);
+        mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
         NetworkUtil.cancelTask(mLoadUnreadCountTask);
         NetworkUtil.cancelTask(mRefreshContactsTask);
@@ -78,9 +78,9 @@ public class ContactPresenter implements ContactContract.Presenter {
         mContactView.updateContactListView(diffResult, mContactList);
     }
 
-    private final ContactManager.OnContactMessageUnreadCountChangeListener mOnContactMessageUnreadCountChangeListener = new ContactManager.OnContactMessageUnreadCountChangeListener() {
+    private final ContactManager.OnContactOperationUnreadCountChangeListener mOnContactOperationUnreadCountChangeListener = new ContactManager.OnContactOperationUnreadCountChangeListener() {
         @Override
-        public void onContactMessageUnreadCountChange(final int count) {
+        public void onContactOperationUnreadCountChange(final int count) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

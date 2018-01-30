@@ -88,7 +88,7 @@
 
         </activity>
 
-        <activity android:name=".view.activity.ContactMessageActivity">
+        <activity android:name=".view.activity.ContactOperationActivity">
 
         </activity>
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.activity.ContactMessageActivity">
+    tools:context=".view.activity.ContactOperationActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"
@@ -14,12 +14,12 @@
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
-        app:title="@string/ContactMessageActivity_Title"
+        app:title="@string/ContactOperationActivity_Title"
         app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
 
         <Button
-            android:id="@+id/ContactMessageActivity_mBtnFindNewContact"
+            android:id="@+id/ContactOperationActivity_mBtnFindNewContact"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
@@ -39,7 +39,7 @@
         app:srlEnablePureScrollMode="true">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/ContactMessageActivity_mRecyclerView"
+            android:id="@+id/ContactOperationActivity_mRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never" />

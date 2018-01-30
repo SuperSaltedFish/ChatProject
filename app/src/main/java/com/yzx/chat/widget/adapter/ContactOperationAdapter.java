@@ -9,7 +9,8 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactMessageBean;
+import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class ContactMessageAdapter extends BaseRecyclerViewAdapter<ContactMessageAdapter.ContactMessageHolder> {
+public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOperationAdapter.ContactMessageHolder> {
 
-    private List<ContactMessageBean> mContactMessageList;
+    private List<ContactOperationBean> mContactOperationList;
 
-    public ContactMessageAdapter(List<ContactMessageBean> contactMessageList) {
-        mContactMessageList = contactMessageList;
+    public ContactOperationAdapter(List<ContactOperationBean> contactOperationList) {
+        mContactOperationList = contactOperationList;
     }
 
     @Override
@@ -34,39 +35,39 @@ public class ContactMessageAdapter extends BaseRecyclerViewAdapter<ContactMessag
 
     @Override
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
-        ContactMessageBean contactMessage = mContactMessageList.get(position);
-        holder.mTvName.setText(contactMessage.getNickname());
+        ContactOperationBean contactMessage = mContactOperationList.get(position);
+        holder.mTvName.setText(contactMessage.getUser().getNickname());
         holder.mTvReason.setText(contactMessage.getReason());
-        int type = contactMessage.getType();
-        if (type == ContactMessageBean.TYPE_REQUESTING) {
+        String type = contactMessage.getType();
+        if (ContactManager.CONTACT_OPERATION_REQUEST.equals(type)) {
             holder.mBtnState.setEnabled(true);
         } else {
             holder.mBtnState.setEnabled(false);
         }
         switch (type) {
-            case ContactMessageBean.TYPE_ADDED:
+            case ContactManager.CONTACT_OPERATION_ADDED:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Added);
                 break;
-            case ContactMessageBean.TYPE_DISAGREE:
+            case ContactManager.CONTACT_OPERATION_DISAGREE:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Disagree);
                 break;
-            case ContactMessageBean.TYPE_REFUSED:
+            case ContactManager.CONTACT_OPERATION_REFUSED:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Refused);
                 break;
-            case ContactMessageBean.TYPE_REQUESTING:
+            case ContactManager.CONTACT_OPERATION_REQUEST:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Requesting);
                 break;
-            case ContactMessageBean.TYPE_VERIFYING:
+            case ContactManager.CONTACT_OPERATION_VERIFYING:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Verifying);
                 break;
         }
-        GlideUtil.loadFromUrl(mContext, holder.mIvAvatar, contactMessage.getAvatarUrl());
+        GlideUtil.loadFromUrl(mContext, holder.mIvAvatar, contactMessage.getUser().getAvatar());
 
     }
 
     @Override
     public int getViewHolderCount() {
-        return mContactMessageList == null ? 0 : mContactMessageList.size();
+        return mContactOperationList == null ? 0 : mContactOperationList.size();
     }
 
     static final class ContactMessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {

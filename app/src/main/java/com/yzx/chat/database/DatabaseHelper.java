@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         db.execSQL(UserDao.CREATE_TABLE_SQL);
-        db.execSQL(ContactMessageDao.CREATE_TABLE_SQL);
+        db.execSQL(ContactOperationDao.CREATE_TABLE_SQL);
         db.execSQL(ContactDao.CREATE_TABLE_SQL);
         db.execSQL(ConversationDao.CREATE_TABLE_SQL);
         db.setTransactionSuccessful();

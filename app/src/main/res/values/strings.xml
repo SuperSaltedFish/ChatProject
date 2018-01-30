@@ -86,7 +86,7 @@
     <string name="RemarkInfoActivity_Title">备注信息</string>
     <string name="ContactMenu_DeleteContact">删除好友</string>
     <string name="FindNewContactActivity_Title">添加好友</string>
-    <string name="ContactMessageActivity_Title">新的朋友</string>
+    <string name="ContactOperationActivity_Title">新的朋友</string>
     <string name="ImageSelectorActivity_Title">选择图片</string>
     <string name="ContactMessageAdapter_Added">已添加</string>
     <string name="ContactMessageAdapter_Disagree">对方已拒绝</string>

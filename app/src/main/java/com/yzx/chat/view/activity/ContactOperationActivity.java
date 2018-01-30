@@ -15,12 +15,12 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactMessageBean;
-import com.yzx.chat.contract.ContactMessageContract;
-import com.yzx.chat.presenter.ContactMessagePresenter;
+import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.contract.ContactOperationContract;
+import com.yzx.chat.presenter.ContactOperationPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.widget.adapter.ContactMessageAdapter;
+import com.yzx.chat.widget.adapter.ContactOperationAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
@@ -34,7 +34,7 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class ContactMessageActivity extends BaseCompatActivity<ContactMessageContract.Presenter> implements ContactMessageContract.View {
+public class ContactOperationActivity extends BaseCompatActivity<ContactOperationContract.Presenter> implements ContactOperationContract.View {
 
     public static final String INTENT_EXTRA_USER_ID = "UserID";
 
@@ -42,9 +42,9 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
     private Button mBtnFindNewContact;
     private View mFooterView;
     private TextView mTvLoadMoreHint;
-    private OverflowPopupMenu mContactMessageMenu;
-    private ContactMessageAdapter mAdapter;
-    private List<ContactMessageBean> mContactMessageList;
+    private OverflowPopupMenu mContactOperationMenu;
+    private ContactOperationAdapter mAdapter;
+    private List<ContactOperationBean> mContactOperationList;
 
     @Override
     protected int getLayoutID() {
@@ -53,13 +53,13 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
 
 
     protected void init() {
-        mBtnFindNewContact = findViewById(R.id.ContactMessageActivity_mBtnFindNewContact);
-        mRecyclerView = findViewById(R.id.ContactMessageActivity_mRecyclerView);
+        mBtnFindNewContact = findViewById(R.id.ContactOperationActivity_mBtnFindNewContact);
+        mRecyclerView = findViewById(R.id.ContactOperationActivity_mRecyclerView);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
-        mContactMessageMenu = new OverflowPopupMenu(this);
-        mContactMessageList = new ArrayList<>(32);
-        mAdapter = new ContactMessageAdapter(mContactMessageList);
+        mContactOperationMenu = new OverflowPopupMenu(this);
+        mContactOperationList = new ArrayList<>(32);
+        mAdapter = new ContactOperationAdapter(mContactOperationList);
     }
 
     @Override
@@ -86,16 +86,16 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
     }
 
     private void setOverflowMenu() {
-        mContactMessageMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mContactMessageMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.theme_background_color_white)));
-        mContactMessageMenu.setElevation(AndroidUtil.dip2px(2));
-        mContactMessageMenu.inflate(R.menu.menu_contact_message_overflow);
-        mContactMessageMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
+        mContactOperationMenu.setWidth((int) AndroidUtil.dip2px(128));
+        mContactOperationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.theme_background_color_white)));
+        mContactOperationMenu.setElevation(AndroidUtil.dip2px(2));
+        mContactOperationMenu.inflate(R.menu.menu_contact_message_overflow);
+        mContactOperationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(int position, int menuID) {
                 int index = (int) mRecyclerView.getTag();
-                if (menuID == R.id.ContactMessageMenu_Delete) {
-                    mPresenter.removeContactMessage(mContactMessageList.get(index));
+                if (menuID == R.id.ContactOperationMenu_Delete) {
+                    mPresenter.removeContactOperation(mContactOperationList.get(index));
                 }
             }
         });
@@ -106,7 +106,7 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
         if (!TextUtils.isEmpty(userID)) {
             mPresenter.init(userID);
         } else {
-            LogUtil.e("userID == null in ContactMessageActivity Intent");
+            LogUtil.e("userID == null in ContactOperationActivity Intent");
             finish();
         }
     }
@@ -120,7 +120,7 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
             mRecyclerView.setTag(position);
-            OverflowMenuShowHelper.show(viewHolder.itemView, mContactMessageMenu, mRecyclerView.getHeight(), (int) touchX, (int) touchY);
+            OverflowMenuShowHelper.show(viewHolder.itemView, mContactOperationMenu, mRecyclerView.getHeight(), (int) touchX, (int) touchY);
         }
     };
 
@@ -132,7 +132,7 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
             }
             if (mPresenter.hasMoreMessage()) {
                 mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_Loading));
-                mPresenter.loadMoreContactMessage(mContactMessageList.get(mContactMessageList.size() - 1).getIndexID());
+                mPresenter.loadMoreContactOperation(mContactOperationList.get(mContactOperationList.size() - 1).getIndexID());
             } else {
                 mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
             }
@@ -142,48 +142,48 @@ public class ContactMessageActivity extends BaseCompatActivity<ContactMessageCon
     private final View.OnClickListener mOnBtnAddNewContactClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(ContactMessageActivity.this, FindNewContactActivity.class));
+            startActivity(new Intent(ContactOperationActivity.this, FindNewContactActivity.class));
         }
     };
 
     @Override
-    public ContactMessageContract.Presenter getPresenter() {
-        return new ContactMessagePresenter();
+    public ContactOperationContract.Presenter getPresenter() {
+        return new ContactOperationPresenter();
     }
 
     @Override
-    public void addContactMessageToList(ContactMessageBean contactMessage) {
+    public void addContactOperationToList(ContactOperationBean ContactOperation) {
         mAdapter.notifyItemInsertedEx(0);
-        mContactMessageList.add(0, contactMessage);
+        mContactOperationList.add(0, ContactOperation);
     }
 
     @Override
-    public void removeContactMessageFromList(ContactMessageBean contactMessage) {
-        int removePosition = mContactMessageList.indexOf(contactMessage);
+    public void removeContactOperationFromList(ContactOperationBean ContactOperation) {
+        int removePosition = mContactOperationList.indexOf(ContactOperation);
         if (removePosition >= 0) {
             mAdapter.notifyItemRemovedEx(removePosition);
-            mContactMessageList.remove(removePosition);
+            mContactOperationList.remove(removePosition);
         } else {
-            LogUtil.e("remove contactMessageItem fail in ui");
+            LogUtil.e("remove ContactOperationItem fail in ui");
         }
     }
 
     @Override
-    public void updateAllContactMessageList(DiffUtil.DiffResult diffResult, List<ContactMessageBean> newDataList) {
+    public void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationBean> newDataList) {
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
-        mContactMessageList.clear();
-        mContactMessageList.addAll(newDataList);
+        mContactOperationList.clear();
+        mContactOperationList.addAll(newDataList);
     }
 
     @Override
-    public void addMoreContactMessageToList(List<ContactMessageBean> contactMessageList, boolean isHasMore) {
-        if (contactMessageList != null && contactMessageList.size() != 0) {
-            mAdapter.notifyItemRangeInsertedEx(mContactMessageList.size(), contactMessageList.size());
-            mContactMessageList.addAll(contactMessageList);
+    public void addMoreContactOperationToList(List<ContactOperationBean> ContactOperationList, boolean isHasMore) {
+        if (ContactOperationList != null && ContactOperationList.size() != 0) {
+            mAdapter.notifyItemRangeInsertedEx(mContactOperationList.size(), ContactOperationList.size());
+            mContactOperationList.addAll(ContactOperationList);
         }
         if (!isHasMore) {
             mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
-        } else if (contactMessageList == null) {
+        } else if (ContactOperationList == null) {
             mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_LoadFail));
         }
     }

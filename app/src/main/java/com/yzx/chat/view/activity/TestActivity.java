@@ -1,33 +1,13 @@
 package com.yzx.chat.view.activity;
 
 import android.os.Bundle;
-import android.os.Looper;
-import android.os.MessageQueue;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 
-import com.yzx.chat.base.BaseHttpCallback;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactMessageBean;
-import com.yzx.chat.database.ContactDao;
-import com.yzx.chat.database.ContactMessageDao;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.tool.DBManager;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.FlowLayout;

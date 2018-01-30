@@ -23,13 +23,13 @@ public class HomePresenter implements HomeContract.Presenter {
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mIMClient.chatManager().addChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
-        mIMClient.contactManager().addContactMessageUnreadCountChangeListener(mOnContactMessageUnreadCountChangeListener);
+        mIMClient.contactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
     }
 
     @Override
     public void detachView() {
         mIMClient.chatManager().removeChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
-        mIMClient.contactManager().removeContactMessageUnreadCountChangeListener(mOnContactMessageUnreadCountChangeListener);
+        mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
         mIMClient = null;
@@ -55,9 +55,9 @@ public class HomePresenter implements HomeContract.Presenter {
         }
     };
 
-    private final ContactManager.OnContactMessageUnreadCountChangeListener mOnContactMessageUnreadCountChangeListener = new ContactManager.OnContactMessageUnreadCountChangeListener() {
+    private final ContactManager.OnContactOperationUnreadCountChangeListener mOnContactOperationUnreadCountChangeListener = new ContactManager.OnContactOperationUnreadCountChangeListener() {
         @Override
-        public void onContactMessageUnreadCountChange(final int count) {
+        public void onContactOperationUnreadCountChange(final int count) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

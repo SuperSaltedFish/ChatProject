@@ -2,7 +2,7 @@ package com.yzx.chat.tool;
 
 import android.content.Context;
 
-import com.yzx.chat.database.ContactMessageDao;
+import com.yzx.chat.database.ContactOperationDao;
 import com.yzx.chat.database.ConversationDao;
 import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.database.ContactDao;
@@ -47,11 +47,11 @@ public class DBManager {
         return dao;
     }
 
-    public ContactMessageDao getContactMessageDao() {
-        ContactMessageDao dao = (ContactMessageDao) mDaoInstanceMap.get(ContactMessageDao.class);
+    public ContactOperationDao getContactOperationDao() {
+        ContactOperationDao dao = (ContactOperationDao) mDaoInstanceMap.get(ContactOperationDao.class);
         if (dao == null) {
-            dao = mDBHelper.getDaoInstance(new ContactMessageDao());
-            mDaoInstanceMap.put(ContactMessageDao.class, dao);
+            dao = mDBHelper.getDaoInstance(new ContactOperationDao());
+            mDaoInstanceMap.put(ContactOperationDao.class, dao);
         }
         return dao;
     }
