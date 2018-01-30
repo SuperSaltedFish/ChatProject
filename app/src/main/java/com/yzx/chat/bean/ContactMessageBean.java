@@ -27,6 +27,7 @@ public class ContactMessageBean {
     private int indexID;
     private String userTo;
     private String userFrom;
+    private UserBean mUser;
     private String reason;
     private String avatarUrl;
     private String nickname;

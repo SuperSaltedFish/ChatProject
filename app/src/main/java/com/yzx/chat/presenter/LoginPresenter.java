@@ -146,7 +146,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
             @Override
             public boolean isExecuteNextTask() {
-                return mServerSecretKey != null;
+                return !TextUtils.isEmpty(mServerSecretKey);
             }
         });
         mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
@@ -295,7 +295,6 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void loginIMServer() {
-        //nxv/AObbYd4yTGG14RkxiaE4ovwvabHEXU8xDrUJSvHwGIJoS4kz3vgMQ+4tQkG9HkDogLCSeC4Q1Tv4cVPPjmaWYJKFaTH8
         IMClient.getInstance().login(mIDManager.getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
