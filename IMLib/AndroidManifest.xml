@@ -30,11 +30,14 @@
             android:exported="true"
             android:process=":ipc" />
 
-        <service android:name="io.rong.imlib.ReConnectService"
-            android:exported="true"/>
+        <service
+            android:name=".ReConnectService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver android:name="io.rong.imlib.ConnectChangeReceiver"
-            android:exported="true"/>
+        <receiver
+            android:name="io.rong.imlib.ConnectChangeReceiver"
+            android:exported="true" />
 
         <receiver
             android:name="io.rong.imlib.HeartbeatReceiver"
@@ -44,23 +47,23 @@
 
         <!--必选： SDK 核心功能-->
         <!--第三方相关,向第三方推送服务请求 token 的服务 -->
-        <service
-            android:name="io.rong.push.core.PushRegistrationService"
-            android:exported="false">
-        </service>
-
         <!-- 处理 push 消息相关的服务 -->
         <service
-            android:name="io.rong.push.core.MessageHandleService"
-            android:exported="true">
-        </service>
+            android:name="io.rong.push.core.PushRegistrationService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <service
+            android:name="io.rong.push.core.MessageHandleService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <!-- push服务 -->
+
         <service
             android:name="io.rong.push.PushService"
             android:exported="true"
-            android:process="io.rong.push">  <!-- push进程，可以改名 -->
-        </service>
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process="io.rong.push" />
 
         <!-- push 相关事件接收器 -->
         <receiver
@@ -84,7 +87,7 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </receiver>
-        
+
         <!--必选： SDK 核心功能-->
 
         <!-- end -->
