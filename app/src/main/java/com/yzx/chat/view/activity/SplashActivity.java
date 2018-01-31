@@ -14,7 +14,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     private static int PERMISSIONS_REQUEST_CODE = 1;
 
-    public static final String INTENT_EXTRA_LOGGED = "isAlreadyLoggedIM";
+    public static final String INTENT_EXTRA_LOGGED = "isAlreadyLogged";
 
     @Override
     protected int getLayoutID() {

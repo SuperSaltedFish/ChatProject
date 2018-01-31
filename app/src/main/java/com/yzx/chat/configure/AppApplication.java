@@ -36,10 +36,6 @@ public class AppApplication extends Application {
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
 
-            SharePreferenceManager.getInstance();
-
-            IdentityManager.getInstance();
-
             DirectoryManager.init();
 
             ActivityTool.init(this);

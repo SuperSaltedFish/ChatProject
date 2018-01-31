@@ -435,6 +435,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
                 } else {
                     jumpToRegisterPager();
                 }
+                mEtVerifyCode.setText(null);
                 break;
         }
 

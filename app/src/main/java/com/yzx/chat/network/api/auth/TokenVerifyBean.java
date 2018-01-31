@@ -8,13 +8,13 @@ import com.yzx.chat.bean.UserBean;
  */
 
 public class TokenVerifyBean {
-   private UserBean userProfile;
+   private UserBean user;
 
     public UserBean getUser() {
-        return userProfile;
+        return user;
     }
 
     public void setUser(UserBean user) {
-        this.userProfile = user;
+        this.user = user;
     }
 }

@@ -7,14 +7,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.AppApplication;
-import com.yzx.chat.database.UserDao;
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.view.activity.LoginActivity;
 
@@ -32,6 +29,13 @@ public class IdentityManager {
     private static final String RSA_KEY_ALIAS = "RSAKey";
 
     private static IdentityManager sManager;
+    private static String sDeviceID;
+    private static KeyPair sRSAKeyPair;
+
+    static {
+        sRSAKeyPair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(AppApplication.getAppContext(), RSA_KEY_ALIAS);
+        sDeviceID = initDeviceID();
+    }
 
     public static IdentityManager getInstance() {
         if (sManager == null) {
@@ -40,7 +44,7 @@ public class IdentityManager {
         return sManager;
     }
 
-    public synchronized static boolean init(Context context, String token, String aesKey, UserBean user) {
+    public synchronized static boolean init(String token, String aesKey, UserBean user) {
         if (sManager != null) {
             return true;
         }
@@ -49,14 +53,10 @@ public class IdentityManager {
             return false;
         }
 
-        KeyPair rsaKeyPair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(context, RSA_KEY_ALIAS);
-        if (rsaKeyPair == null) {
-            return false;
-        }
+
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
 
-
-        byte enToken[] = RSAUtil.encryptByPublicKey(token.getBytes(), rsaKeyPair.getPublic());
+        byte enToken[] = RSAUtil.encryptByPublicKey(token.getBytes(), sRSAKeyPair.getPublic());
         if (enToken == null || enToken.length == 0) {
             return false;
         }
@@ -65,7 +65,7 @@ public class IdentityManager {
             return false;
         }
 
-        byte enAESKey[] = RSAUtil.encryptByPublicKey(aesKey.getBytes(), rsaKeyPair.getPublic());
+        byte enAESKey[] = RSAUtil.encryptByPublicKey(aesKey.getBytes(), sRSAKeyPair.getPublic());
         if (enAESKey == null || enAESKey.length == 0) {
             return false;
         }
@@ -75,7 +75,7 @@ public class IdentityManager {
         }
 
         String tmpUserID = user.getUserID();
-        byte enUserID[] = RSAUtil.encryptByPublicKey(tmpUserID.getBytes(), rsaKeyPair.getPublic());
+        byte enUserID[] = RSAUtil.encryptByPublicKey(tmpUserID.getBytes(), sRSAKeyPair.getPublic());
         if (enUserID == null || enUserID.length == 0) {
             return false;
         }
@@ -88,26 +88,23 @@ public class IdentityManager {
             idPref.clear(false);
             return false;
         }
-        sManager = new IdentityManager(token, aesKey, initDeviceID(idPref, rsaKeyPair), user, rsaKeyPair);
+        if (!DBManager.getInstance().getUserDao().insert(user)) {
+            return false;
+        }
+        sManager = new IdentityManager(token, aesKey, user);
         return true;
     }
 
-    public synchronized static boolean initFromLocal(Context context) {
+    public synchronized static boolean initFromLocal() {
         if (sManager != null) {
             return true;
         }
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         String strToken = idPref.getToken();
         String strAESKey = idPref.getAESKey();
-        String strDeviceID = idPref.getDeviceID();
         String strUserID = idPref.getUserID();
 
-        if (TextUtils.isEmpty(strToken) || TextUtils.isEmpty(strAESKey) || TextUtils.isEmpty(strDeviceID) || TextUtils.isEmpty(strUserID)) {
-            return false;
-        }
-
-        KeyPair rsaKeyPair = RSAUtil.generateRSAKeyPairInAndroidKeyStore(context, RSA_KEY_ALIAS);
-        if (rsaKeyPair == null) {
+        if (TextUtils.isEmpty(strToken) || TextUtils.isEmpty(strAESKey) || TextUtils.isEmpty(strUserID)) {
             return false;
         }
 
@@ -115,7 +112,7 @@ public class IdentityManager {
         if (token == null || token.length == 0) {
             return false;
         }
-        token = RSAUtil.decryptByPrivateKey(token, rsaKeyPair.getPrivate());
+        token = RSAUtil.decryptByPrivateKey(token, sRSAKeyPair.getPrivate());
         if (token == null || token.length == 0) {
             return false;
         }
@@ -124,17 +121,8 @@ public class IdentityManager {
         if (aesKey == null || aesKey.length == 0) {
             return false;
         }
-        aesKey = RSAUtil.decryptByPrivateKey(aesKey, rsaKeyPair.getPrivate());
+        aesKey = RSAUtil.decryptByPrivateKey(aesKey, sRSAKeyPair.getPrivate());
         if (aesKey == null || aesKey.length == 0) {
-            return false;
-        }
-
-        byte deviceID[] = Base64Util.decode(strDeviceID);
-        if (deviceID == null || deviceID.length == 0) {
-            return false;
-        }
-        deviceID = RSAUtil.decryptByPrivateKey(deviceID, rsaKeyPair.getPrivate());
-        if (deviceID == null || deviceID.length == 0) {
             return false;
         }
 
@@ -142,23 +130,25 @@ public class IdentityManager {
         if (userID == null || userID.length == 0) {
             return false;
         }
-        userID = RSAUtil.decryptByPrivateKey(userID, rsaKeyPair.getPrivate());
+        userID = RSAUtil.decryptByPrivateKey(userID, sRSAKeyPair.getPrivate());
         if (userID == null || userID.length == 0) {
             return false;
         }
 
-
-        strUserID = new String(userID);
-        UserBean user = DBManager.getInstance().getUserDao().loadByKey(strUserID);
+        UserBean user = DBManager.getInstance().getUserDao().loadByKey(new String(userID));
         if (user == null || user.isEmpty()) {
             return false;
         }
 
-        sManager = new IdentityManager(new String(token), new String(aesKey), new String(deviceID), user, rsaKeyPair);
+        sManager = new IdentityManager(new String(token), new String(aesKey), user);
         return true;
     }
 
-    private static String initDeviceID(SharePreferenceManager.IdentityPreferences idPref, KeyPair rsaKeyPair) {
+    private static synchronized String initDeviceID() {
+        if (!TextUtils.isEmpty(sDeviceID)) {
+            return sDeviceID;
+        }
+        SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         String deviceID = idPref.getDeviceID();
         if (TextUtils.isEmpty(deviceID)) {
             deviceID = String.format(Locale.getDefault(), "%s.%d.Api%s(%s)",
@@ -166,115 +156,123 @@ public class IdentityManager {
                     Build.VERSION.SDK_INT,
                     Build.BRAND,
                     Build.MODEL);
-            byte enDeviceID[] = RSAUtil.encryptByPublicKey(deviceID.getBytes(), rsaKeyPair.getPublic());
+            byte enDeviceID[] = RSAUtil.encryptByPublicKey(deviceID.getBytes(), sRSAKeyPair.getPublic());
             if (enDeviceID != null && enDeviceID.length != 0) {
                 String tmpDeviceID = Base64Util.encodeToString(enDeviceID);
                 if (!TextUtils.isEmpty(tmpDeviceID)) {
                     idPref.putDeviceID(tmpDeviceID);
                 }
             }
-            return deviceID;
+            sDeviceID = deviceID;
+            return sDeviceID;
         } else {
             byte enDeviceID[] = Base64Util.decode(deviceID);
             if (enDeviceID != null && enDeviceID.length > 0) {
-                enDeviceID = RSAUtil.decryptByPrivateKey(enDeviceID, rsaKeyPair.getPrivate());
+                enDeviceID = RSAUtil.decryptByPrivateKey(enDeviceID, sRSAKeyPair.getPrivate());
                 if (enDeviceID != null && enDeviceID.length > 0) {
-                    deviceID = new String(enDeviceID);
-                    return deviceID;
+                    sDeviceID = new String(enDeviceID);
+                    return sDeviceID;
                 }
             }
             idPref.clear(true);
-            return initDeviceID(idPref, rsaKeyPair);
+            return initDeviceID();
         }
     }
 
+    public static void logout() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                clearLocalAuthenticationData();
+                Context context = AppApplication.getAppContext();
+                Intent intent = new Intent(context, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                sManager = null;
+            }
+        });
+    }
+
+    public static boolean isLogged() {
+        return sManager != null;
+    }
+
+    public static void clearLocalAuthenticationData() {
+        SharePreferenceManager.getIdentityPreferences().clear(false);
+        DBManager.getInstance().getUserDao().cleanTable();
+    }
+
+    public static String getDeviceID() {
+        return sDeviceID;
+    }
+
+    public static String getBase64RSAPublicKey() {
+        return Base64Util.encodeToString(sRSAKeyPair.getPublic().getEncoded());
+    }
+
+    public static byte[] rsaEncrypt(byte[] data) {
+        if (data == null || data.length == 0) {
+            return null;
+        }
+        return RSAUtil.encryptByPublicKey(data, sRSAKeyPair.getPublic());
+    }
+
+    public static String rsaEncryptToBase64String(byte[] data) {
+        return Base64Util.encodeToString(rsaEncrypt(data));
+    }
+
+
+    public static byte[] rsaDecrypt(byte[] data) {
+        if (data == null || data.length == 0) {
+            return null;
+        }
+        return RSAUtil.decryptByPrivateKey(data, sRSAKeyPair.getPrivate());
+    }
+
+    public static byte[] rsaDecryptFromBase64String(String base64String) {
+        return rsaDecrypt(Base64Util.decode(base64String));
+    }
 
     private String mToken;
     private String mAESKey;
-    private String mDeviceID;
     private UserBean mUserBean;
-    private KeyPair mRSAKeyPair;
 
-    private IdentityManager(String token, String AESKey, String deviceID, UserBean userBean, KeyPair RSAKeyPair) {
+    private IdentityManager(String token, String AESKey, UserBean userBean) {
         if (sManager != null) {
             throw new RuntimeException("Please use the 'getInstance' method to obtain the instance.");
         }
         mToken = token;
         mAESKey = AESKey;
-        mDeviceID = deviceID;
         mUserBean = userBean;
-        mRSAKeyPair = RSAKeyPair;
     }
 
-
-    public void logout() {
-        SharePreferenceManager.getIdentityPreferences().clear(false);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Context context = AppApplication.getAppContext();
-                Intent intent = new Intent(context, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-        });
+    public boolean updateUserInfo(UserBean user) {
+        if (!user.isEmpty() && DBManager.getInstance().getUserDao().replace(user)) {
+            mUserBean = user;
+            return true;
+        }
+        return false;
     }
-
-    public boolean isLogged() {
-        return !TextUtils.isEmpty(getToken()) && initAESKey() && mUserBean != null && !mUserBean.isEmpty();
-    }
-
 
     public String getToken() {
-        if (TextUtils.isEmpty(mToken)) {
-            mToken = mIdentityPreferences.getToken();
-            mToken = decrypt(mToken);
-        }
-        if (TextUtils.isEmpty(mToken)) {
-            startToLoginActivity();
-        }
         return mToken;
-    }
-
-    public String getDeviceID() {
-        if (mDeviceID == null) {
-            createDeviceID();
-        }
-        return mDeviceID;
     }
 
     @Nullable
     public String getUserID() {
-        if (mUserBean == null || TextUtils.isEmpty(mUserBean.getUserID())) {
-            startToLoginActivity();
-            return "";
-        } else {
-            return mUserBean.getUserID();
-        }
+        return mUserBean.getUserID();
     }
 
     public UserBean getUser() {
         return mUserBean;
     }
 
-    public String getBase64RSAPublicKey() {
-        return Base64Util.encodeToString(mRSAKeyPair.getPublic().getEncoded());
-    }
-
-
-    public byte[] rsaEncryptByPublicKey(byte[] data) {
-        return RSAUtil.encryptByPublicKey(data, mRSAKeyPair.getPublic());
-    }
-
-    public byte[] rsaDecryptByPrivateKey(byte[] data) {
-        return RSAUtil.decryptByPrivateKey(data, mRSAKeyPair.getPrivate());
-    }
 
     public byte[] aesEncrypt(byte[] data) {
-        if (!initAESKey()) {
+        if (data == null || data.length == 0) {
             return null;
         }
-        return AESUtil.encrypt(data, mAESKey);
+        return AESUtil.encrypt(data, mAESKey.getBytes());
     }
 
     public String aesEncryptToBase64(byte[] data) {
@@ -287,60 +285,21 @@ public class IdentityManager {
 
 
     public byte[] aesDecrypt(byte[] data) {
-        if (!initAESKey()) {
+        if (data == null || data.length == 0) {
             return null;
         }
-        return AESUtil.decrypt(data, mAESKey);
+        return AESUtil.decrypt(data, mAESKey.getBytes());
     }
 
     public byte[] aesDecryptFromBase64String(String base64String) {
+        if (TextUtils.isEmpty(base64String)) {
+            return null;
+        }
         byte[] encryptData = Base64Util.decode(base64String);
         if (encryptData == null) {
             return null;
         }
         return aesDecrypt(encryptData);
-    }
-
-    private boolean saveUserID(String userID) {
-        String encryptData = encrypt(userID);
-        return !TextUtils.isEmpty(encryptData) && mIdentityPreferences.putUserID(encryptData);
-    }
-
-    private synchronized boolean initAESKey() {
-        if (mAESKey == null) {
-            String aesKeyStr = mIdentityPreferences.getAESKey();
-            if (aesKeyStr == null) {
-                return false;
-            }
-            mAESKey = rsaDecryptByPrivateKey(Base64Util.decode(aesKeyStr));
-        }
-        return mAESKey != null;
-    }
-
-    private String encrypt(String value) {
-        if (TextUtils.isEmpty(value)) {
-            return null;
-        }
-        byte[] data = rsaEncryptByPublicKey(value.getBytes());
-        if (data == null) {
-            return null;
-        }
-        return Base64Util.encodeToString(data);
-    }
-
-    private String decrypt(String value) {
-        if (TextUtils.isEmpty(value)) {
-            return null;
-        }
-        byte[] data = Base64Util.decode(value);
-        if (data == null) {
-            return null;
-        }
-        data = rsaDecryptByPrivateKey(data);
-        if (data != null) {
-            return new String(data);
-        }
-        return null;
     }
 
 

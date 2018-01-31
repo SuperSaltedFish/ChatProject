@@ -184,7 +184,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
         mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
-        mKeyBoardHeight = SharePreferenceManager.getInstance().getConfigurePreferences().getKeyBoardHeight();
+        mKeyBoardHeight = SharePreferenceManager.getConfigurePreferences().getKeyBoardHeight();
     }
 
     @Override
@@ -384,7 +384,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (mKeyBoardHeight != keyBoardHeight) {
                     mKeyBoardHeight = keyBoardHeight;
                     mEmotionPanelLayout.setHeight(mKeyBoardHeight);
-                    SharePreferenceManager.getInstance().getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
+                    SharePreferenceManager.getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
                 }
                 if (isShowMoreInput()) {
                     hintMoreInput();

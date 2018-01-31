@@ -30,7 +30,7 @@ public class ApiManager {
             .serializeNulls()
             .enableComplexMapKeySerialization()
 
-            .registerTypeAdapter(String.class,new NullStringToEmptyAdapter())
+            .registerTypeAdapter(String.class, new NullStringToEmptyAdapter())
             .create();
 
     private static ApiProxy sApiProxy = new ApiProxy(Constants.URL_API_BASE, new HttpDataFormatAdapter() {
@@ -40,9 +40,9 @@ public class ApiManager {
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
-            request.setToken(IdentityManager.getInstance().getToken());
+            request.setToken(IdentityManager.isLogged() ? IdentityManager.getInstance().getToken() : null);
             String json = sGson.toJson(request);
-            LogUtil.e("request: "+json);
+            LogUtil.e("request: " + json);
 //            if (json != null) {
 //                return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
 //            }
@@ -67,7 +67,7 @@ public class ApiManager {
 //            }
 //            return null;
             try {
-                LogUtil.e("response: "+httpResponse);
+                LogUtil.e("response: " + httpResponse);
                 return sGson.fromJson(httpResponse, genericType);
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();

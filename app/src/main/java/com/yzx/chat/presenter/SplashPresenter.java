@@ -7,6 +7,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
@@ -57,24 +58,33 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     @Override
-    public void init(boolean isAlreadyLoggedIM) {
-        isInitIMComplete = isAlreadyLoggedIM;
-        initIMServer();
-        initHTTPServer();
+    public void init(boolean isAlreadyLogged) {
+        if(!IdentityManager.initFromLocal()){
+            mSplashView.startLoginActivity();
+        }else {
+            isInitIMComplete = isAlreadyLogged;
+            initHTTPServer(isAlreadyLogged);
+        }
+
     }
 
     private synchronized void initComplete() {
-        if (mTaskCount.decrementAndGet() == 0) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    if(isInitHTTPComplete&&isInitIMComplete){
-                        mSplashView.startHomeActivity();
-                    }else {
-                        mSplashView.startLoginActivity();
+        switch (mTaskCount.decrementAndGet()) {
+            case 0:
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isInitHTTPComplete && isInitIMComplete) {
+                            mSplashView.startHomeActivity();
+                        } else {
+                            mSplashView.startLoginActivity();
+                        }
                     }
-                }
-            });
+                });
+                break;
+            case 1:
+                initIMServer();
+                break;
         }
     }
 
@@ -117,7 +127,7 @@ public class SplashPresenter implements SplashContract.Presenter {
         });
     }
 
-    private void initHTTPServer() {
+    private void initHTTPServer(boolean isAlreadyLogged) {
         UserApi userApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
         AuthApi authApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
 
@@ -132,28 +142,22 @@ public class SplashPresenter implements SplashContract.Presenter {
                     JsonResponse<TokenVerifyBean> jsonResponse = response.getResponse();
                     if (jsonResponse != null) {
                         TokenVerifyBean tokenVerifyBean = jsonResponse.getData();
-                        if (jsonResponse.getStatus() != 200 || tokenVerifyBean == null || tokenVerifyBean.getUser() == null) {
-                            mSplashView.startLoginActivity();
-                        } else {
+                        if (jsonResponse.getStatus() == 200 && tokenVerifyBean != null) {
                             UserBean userBean = tokenVerifyBean.getUser();
-                            if (userBean.isEmpty() || !IdentityManager.getInstance().saveUser(userBean)) {
-                                mSplashView.startLoginActivity();
+                            if (userBean != null && !userBean.isEmpty() &&  IdentityManager.getInstance().updateUserInfo(userBean)) {
+                                isSuccess = true;
                                 return;
                             }
                         }
                     }
                 }
-                if (IdentityManager.getInstance().initFromLocalDB()) {
-                    isSuccess = true;
-                } else {
-                    mSplashView.startLoginActivity();
-                }
+                initComplete();
             }
 
             @Override
             public void onError(@NonNull Throwable e) {
                 e.printStackTrace();
-                if (IdentityManager.getInstance().initFromLocalDB()) {
+                if (IdentityManager.initFromLocal()) {
                     isSuccess = true;
                 } else {
                     mSplashView.startLoginActivity();
@@ -185,6 +189,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                     LogUtil.e("response.getContacts() is null");
                 }
                 IMClient.getInstance().contactManager().loadAllContact(myID);
+                isInitHTTPComplete = true;
                 initComplete();
             }
 
@@ -197,8 +202,11 @@ public class SplashPresenter implements SplashContract.Presenter {
                 }
             }
         });
-
-        sHttpExecutor.submit(mTokenVerify, mGetUserFriendsTask);
+        if (isAlreadyLogged) {
+            sHttpExecutor.submit(mGetUserFriendsTask);
+        } else {
+            sHttpExecutor.submit(mTokenVerify, mGetUserFriendsTask);
+        }
     }
 
 }

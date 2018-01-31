@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.contract.LoginContract;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
@@ -59,17 +60,16 @@ public class LoginPresenter implements LoginContract.Presenter {
     private String mServerSecretKey;
     private int mCurrVerifyType;
 
-    private IdentityManager mIDManager;
+
     private Handler mHandler;
 
     public LoginPresenter() {
         mAuthApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
-        mIDManager = IdentityManager.getInstance();
         mGson = new GsonBuilder().serializeNulls().create();
         mHandler = new Handler(Looper.myLooper());
 
         IMClient.getInstance().logout();
-        mIDManager.clearAuthenticationData();
+        IdentityManager.clearLocalAuthenticationData();
         sHttpExecutor.cleanAllTask();
         NetworkAsyncTask.cleanAllTask();
     }
@@ -111,7 +111,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
         data.put("password", password);
-        data.put("deviceID", mIDManager.getDeviceID());
+        data.put("deviceID", IdentityManager.getDeviceID());
         mCurrVerifyType = VERIFY_TYPE_LOGIN;
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_LOGIN, data);
         startVerify(mObtainSMSCodeCall);
@@ -170,7 +170,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
-                mIDManager.getBase64RSAPublicKey(),
+                IdentityManager.getBase64RSAPublicKey(),
                 data);
         mObtainSMSCodeCall.setCallback(new BaseHttpCallback<ObtainSMSCode>() {
             @Override
@@ -178,7 +178,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
                     if (response.isSkipVerify()) {
                         mCurrVerifyType = VERIFY_TYPE_NONE;
-                    }else {
+                    } else {
                         AndroidUtil.showToast(response.getVerifyCode());
                     }
                     mLoginView.inputLoginVerifyCode(response.isSkipVerify());
@@ -204,8 +204,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         mLoginCall = mAuthApi.login(
                 username,
                 password,
-                mIDManager.getDeviceID(),
-                mIDManager.getBase64RSAPublicKey(),
+                IdentityManager.getDeviceID(),
+                IdentityManager.getBase64RSAPublicKey(),
                 verifyCode);
         mLoginCall.setCallback(new BaseHttpCallback<LoginRegisterBean>() {
             @Override
@@ -219,18 +219,13 @@ public class LoginPresenter implements LoginContract.Presenter {
 
             @Override
             protected void onFailure(final String message) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
-                            mLoginView.verifyFailure(message);
-                        } else {
-                            mLoginView.loginFailure(message);
-                        }
-                    }
-                });
+                if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
+                    mLoginView.verifyFailure(message);
+                } else {
+                    mLoginView.loginFailure(message);
+                }
             }
-        }, false);
+        });
         mLoginCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
     }
 
@@ -240,8 +235,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                 username,
                 password,
                 nickname,
-                mIDManager.getDeviceID(),
-                mIDManager.getBase64RSAPublicKey(),
+                IdentityManager.getDeviceID(),
+                IdentityManager.getBase64RSAPublicKey(),
                 verifyCode);
         mRegisterCall.setCallback(new BaseHttpCallback<LoginRegisterBean>() {
             @Override
@@ -276,26 +271,11 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private boolean saveVerifyInfo(LoginRegisterBean bean) {
-        String token = bean.getToken();
-        String secretKey = bean.getSecretKey();
-        UserBean userBean = bean.getUser();
-        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(secretKey) || userBean == null||userBean.isEmpty()) {
-            return false;
-        }
-        if (!mIDManager.saveUser(userBean)) {
-            return false;
-        }
-        if (!mIDManager.saveAESKey(secretKey)) {
-            return false;
-        }
-        if (!mIDManager.saveToken(token)) {
-            return false;
-        }
-        return true;
+        return IdentityManager.init( bean.getToken(), bean.getSecretKey(), bean.getUser());
     }
 
     private void loginIMServer() {
-        IMClient.getInstance().login(mIDManager.getToken(), new RongIMClient.ConnectCallback() {
+        IMClient.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 LogUtil.e("onTokenIncorrect");
@@ -326,7 +306,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             public void run() {
                 mLoginView.reLogin();
                 mLoginView.loginFailure(AndroidUtil.getString(R.string.SplashPresenter_LoginFailInIMSDK));
-                mIDManager.clearAuthenticationData();
+                IdentityManager.clearLocalAuthenticationData();
             }
         });
     }
@@ -352,7 +332,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             if (data == null) {
                 return null;
             }
-            data = mIDManager.rsaDecryptByPrivateKey(data);
+            data = IdentityManager.rsaDecrypt(data);
             if (data == null) {
                 return null;
             }
