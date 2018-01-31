@@ -12,31 +12,13 @@ import com.yzx.chat.configure.AppApplication;
 
 public class SharePreferenceManager {
 
-    private static SharePreferenceManager sManager;
+    private static IdentityPreferences mIdentityPreferences;
+    private static ConfigurePreferences mConfigurePreferences;
 
-    public static SharePreferenceManager getInstance() {
-        if (sManager == null) {
-            synchronized (IdentityManager.class) {
-                if (sManager == null) {
-                    sManager = new SharePreferenceManager();
-                }
-            }
-        }
-        return sManager;
-    }
 
-    private IdentityPreferences mIdentityPreferences;
-    private ConfigurePreferences mConfigurePreferences;
-
-    private SharePreferenceManager() {
-        if (sManager != null) {
-            throw new RuntimeException("Please use the 'getInstance' method to obtain the instance.");
-        }
-    }
-
-    public IdentityPreferences getIdentityPreferences() {
+    public static IdentityPreferences getIdentityPreferences() {
         if (mIdentityPreferences == null) {
-            synchronized (this) {
+            synchronized (SharePreferenceManager.class) {
                 if (mIdentityPreferences == null) {
                     mIdentityPreferences = new IdentityPreferences(AppApplication.getAppContext());
                 }
@@ -45,9 +27,9 @@ public class SharePreferenceManager {
         return mIdentityPreferences;
     }
 
-    public ConfigurePreferences getConfigurePreferences() {
+    public static ConfigurePreferences getConfigurePreferences() {
         if (mConfigurePreferences == null) {
-            synchronized (this) {
+            synchronized (SharePreferenceManager.class) {
                 if (mConfigurePreferences == null) {
                     mConfigurePreferences = new ConfigurePreferences(AppApplication.getAppContext());
                 }
@@ -62,6 +44,7 @@ public class SharePreferenceManager {
         private static final String IDENTITY_KEY_AES_Secret_Key = "AESSecretKey";
         private static final String IDENTITY_KEY_Token = "Token";
         private static final String IDENTITY_KEY_USER_ID = "UserID";
+        private static final String IDENTITY_KEY_DEVICE_ID = "DeviceID";
 
         private SharedPreferences mPreferences;
 
@@ -69,8 +52,14 @@ public class SharePreferenceManager {
             mPreferences = context.getSharedPreferences(PREFERENCES_NAME_IDENTITY, Context.MODE_PRIVATE);
         }
 
-        public void clear() {
-            mPreferences.edit().clear().apply();
+        public void clear(boolean isClearDeviceID) {
+            if(isClearDeviceID){
+                mPreferences.edit().clear().apply();
+            }else {
+                String deviceID = getDeviceID();
+                mPreferences.edit().clear().commit();
+                putDeviceID(deviceID);
+            }
         }
 
         public boolean putUserID(String value) {
@@ -96,12 +85,19 @@ public class SharePreferenceManager {
         public String getToken() {
             return mPreferences.getString(IDENTITY_KEY_Token, null);
         }
+
+        public boolean putDeviceID(String value) {
+            return mPreferences.edit().putString(IDENTITY_KEY_DEVICE_ID, value).commit();
+        }
+
+        public String getDeviceID() {
+            return mPreferences.getString(IDENTITY_KEY_DEVICE_ID, null);
+        }
     }
 
     public static class ConfigurePreferences {
         private static final String PREFERENCES_NAME_CONFIGURE = "Configure";
         private static final String CONFIGURE_KEY_KEY_BOARD_HEIGHT = "KeyBoardHeight";
-        private static final String CONFIGURE_KEY_DEVICE_ID = "DeviceID";
 
         private SharedPreferences mPreferences;
 
@@ -117,12 +113,5 @@ public class SharePreferenceManager {
             return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT, 0);
         }
 
-        public boolean putDeviceID(String value) {
-            return mPreferences.edit().putString(CONFIGURE_KEY_DEVICE_ID, value).commit();
-        }
-
-        public String getDeviceID() {
-            return mPreferences.getString(CONFIGURE_KEY_DEVICE_ID, null);
-        }
     }
 }

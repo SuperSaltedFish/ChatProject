@@ -40,6 +40,8 @@ public class SplashPresenter implements SplashContract.Presenter {
     private Call<JsonResponse<GetUserContactsBean>> mGetUserFriendsTask;
 
     private AtomicInteger mTaskCount;
+    private boolean isInitIMComplete;
+    private boolean isInitHTTPComplete;
 
     @Override
     public void attachView(SplashContract.View view) {
@@ -56,45 +58,47 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void init(boolean isAlreadyLoggedIM) {
-        if (IdentityManager.getInstance().isLogged()) {
-            if (isAlreadyLoggedIM) {
-                mTaskCount.decrementAndGet();
-            } else {
-                initIMServer();
-            }
-            initHTTPServer();
-        } else {
-            mSplashView.startLoginActivity();
-        }
+        isInitIMComplete = isAlreadyLoggedIM;
+        initIMServer();
+        initHTTPServer();
     }
 
-    private void initComplete() {
+    private synchronized void initComplete() {
         if (mTaskCount.decrementAndGet() == 0) {
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    mSplashView.startHomeActivity();
+                    if(isInitHTTPComplete&&isInitIMComplete){
+                        mSplashView.startHomeActivity();
+                    }else {
+                        mSplashView.startLoginActivity();
+                    }
                 }
             });
         }
     }
 
     private void initIMServer() {
+        if (isInitIMComplete) {
+            initComplete();
+            return;
+        }
         IMClient.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
                 AndroidUtil.showToast(R.string.SplashPresenter_TokenIncorrect);
-                mSplashView.startLoginActivity();
+                initComplete();
             }
 
             @Override
             public void onSuccess(String s) {
+                isInitIMComplete = true;
                 initComplete();
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
+                LogUtil.e("login im error :" + errorCode.getMessage());
                 switch (errorCode) {
                     case RC_CONN_ID_REJECT:
                     case RC_CONN_USER_OR_PASSWD_ERROR:
@@ -103,12 +107,12 @@ public class SplashPresenter implements SplashContract.Presenter {
                     case RC_CONN_APP_BLOCKED_OR_DELETED:
                     case RC_CONN_USER_BLOCKED:
                     case RC_DISCONN_KICK:
-                        AndroidUtil.showToast(R.string.SplashPresenter_LoginFailInIMSDK);
-                        mSplashView.startLoginActivity();
                         break;
                     default:
+                        isInitIMComplete = true;
                         initComplete();
                 }
+                initComplete();
             }
         });
     }
