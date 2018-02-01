@@ -121,11 +121,11 @@ public class ContactManager {
         return result;
     }
 
-    public boolean delectContact(ContactBean contact) {
-        return delectContact(contact, true);
+    public boolean deleteContact(ContactBean contact) {
+        return deleteContact(contact, true);
     }
 
-    public boolean delectContact(ContactBean contact, boolean isCallListener) {
+    public boolean deleteContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.delete(contact);
         if (result) {
             mContactsMap.remove(contact.getUserID());
@@ -168,7 +168,22 @@ public class ContactManager {
             @Override
             public void run() {
                 mContactOperationDao.makeAllRemindAsRemind(mUserID);
-                updateContactUnreadCount();
+                if (mContactOperationUnreadNumber != 0) {
+                    updateContactUnreadCount();
+                }
+            }
+        });
+    }
+
+    public void replaceContactOperationAsync(final ContactOperationBean contactMessage) {
+        mSubManagerCallback.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mContactOperationDao.replace(contactMessage)) {
+                    updateContactUnreadCount();
+                } else {
+                    LogUtil.e("delete ContactMessageFail from DB");
+                }
             }
         });
     }
@@ -181,21 +196,12 @@ public class ContactManager {
                     for (OnContactOperationListener contactListener : mContactOperationListeners) {
                         contactListener.onContactOperationDelete(contactMessage);
                     }
+                    updateContactUnreadCount();
                 } else {
                     LogUtil.e("delete ContactMessageFail from DB");
                 }
             }
         });
-    }
-
-    public void removeContactMessage(final ContactOperationBean contactMessage) {
-        if (mContactOperationDao.delete(contactMessage)) {
-            for (OnContactOperationListener contactListener : mContactOperationListeners) {
-                contactListener.onContactOperationDelete(contactMessage);
-            }
-        } else {
-            LogUtil.e("delete ContactMessageFail from DB");
-        }
     }
 
 

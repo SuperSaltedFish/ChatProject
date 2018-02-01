@@ -2,6 +2,7 @@ package com.yzx.chat.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.UserBean;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -17,6 +18,6 @@ public class StrangerProfileContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void requestContact(String userID,String verifyContent);
+        void requestContact(UserBean user, String verifyContent);
     }
 }

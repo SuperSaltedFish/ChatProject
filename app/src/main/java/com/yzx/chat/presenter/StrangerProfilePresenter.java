@@ -3,13 +3,18 @@ package com.yzx.chat.presenter;
 import android.support.annotation.NonNull;
 
 import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.StrangerProfileContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.chat.ContactManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.tool.ApiManager;
+import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.NetworkUtil;
 
 /**
@@ -36,12 +41,20 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
     }
 
     @Override
-    public void requestContact(String userID, String verifyContent) {
+    public void requestContact(final UserBean user, final String verifyContent) {
         NetworkUtil.cancelCall(mRequestContactCall);
-        mRequestContactCall = mUserApi.requestContact(userID, verifyContent);
+        mRequestContactCall = mUserApi.requestContact(user.getUserID(), verifyContent);
         mRequestContactCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
+                ContactOperationBean operation = new ContactOperationBean();
+                operation.setReason(verifyContent);
+                operation.setUserFrom(user.getUserID());
+                operation.setUserTo(IdentityManager.getInstance().getUserID());
+                operation.setTime((int) (System.currentTimeMillis() / 1000));
+                operation.setUser(user);
+                operation.setType(ContactManager.CONTACT_OPERATION_VERIFYING);
+                IMClient.getInstance().contactManager().replaceContactOperationAsync(operation);
                 mStrangerProfileView.goBack();
             }
 

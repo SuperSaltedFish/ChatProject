@@ -88,7 +88,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
             return 0;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.query(TABLE_NAME, new String[]{"COUNT(ROWID)"}, COLUMN_NAME_UserTo + "=?", new String[]{userID}, null, null, null, null);
+        Cursor cursor = database.query(TABLE_NAME, new String[]{"COUNT(ROWID)"}, COLUMN_NAME_UserTo + "=? AND "+COLUMN_NAME_IsRemind+"=?", new String[]{userID,"1"}, null, null, null, null);
         int result;
         if (cursor.moveToFirst()) {
             result = cursor.getInt(0);

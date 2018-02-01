@@ -49,14 +49,14 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private void setData() {
         mUserBean = getIntent().getParcelableExtra(INTENT_EXTRA_USER);
         if (mUserBean == null) {
-            return;
+            finish();
         }
     }
 
     private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mPresenter.requestContact(mUserBean.getUserID(), mEtVerifyContent.getText().toString());
+            mPresenter.requestContact(mUserBean, mEtVerifyContent.getText().toString());
         }
     };
 
