@@ -20,6 +20,18 @@ public class ContactOperationBean implements Parcelable {
     private boolean isRemind;
     private int time;
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj==null||!(obj instanceof ContactOperationBean)){
+            return false;
+        }
+        if(this == obj){
+            return true;
+        }
+        ContactOperationBean operation = (ContactOperationBean) obj;
+        return userTo!=null&&userTo.equals(operation.userTo)&&userFrom!=null&&userFrom.equals(operation.userFrom);
+    }
+
     public int getIndexID() {
         return indexID;
     }

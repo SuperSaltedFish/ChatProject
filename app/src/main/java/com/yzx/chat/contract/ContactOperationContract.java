@@ -21,17 +21,22 @@ public class ContactOperationContract {
 
         void removeContactOperationFromList(ContactOperationBean ContactOperation);
 
+        void updateContactOperationFromList(ContactOperationBean ContactOperation);
+
         void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationBean> newDataList);
 
         void addMoreContactOperationToList(List<ContactOperationBean> ContactOperationList, boolean isHasMore);
 
         void enableLoadMoreHint(boolean isEnable);
+
     }
 
 
     public interface Presenter extends BasePresenter<View> {
 
         void init(String userID);
+
+        void acceptContactRequest(String contactID);
 
         boolean isLoadingMore();
 

@@ -23,6 +23,7 @@ import java.util.List;
 public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOperationAdapter.ContactMessageHolder> {
 
     private List<ContactOperationBean> mContactOperationList;
+    private OnAcceptContactRequestListener mOnAcceptContactRequestListener;
 
     public ContactOperationAdapter(List<ContactOperationBean> contactOperationList) {
         mContactOperationList = contactOperationList;
@@ -41,8 +42,10 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         String type = contactMessage.getType();
         if (ContactManager.CONTACT_OPERATION_REQUEST.equals(type)) {
             holder.mBtnState.setEnabled(true);
+            holder.setAcceptContactRequestListener(mOnAcceptContactRequestListener);
         } else {
             holder.mBtnState.setEnabled(false);
+            holder.setAcceptContactRequestListener(null);
         }
         switch (type) {
             case ContactManager.CONTACT_OPERATION_ADDED:
@@ -70,8 +73,13 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         return mContactOperationList == null ? 0 : mContactOperationList.size();
     }
 
+    public void setOnAcceptContactRequestListener(OnAcceptContactRequestListener onAcceptContactRequestListener) {
+        mOnAcceptContactRequestListener = onAcceptContactRequestListener;
+    }
+
     static final class ContactMessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
+        private OnAcceptContactRequestListener mAcceptContactRequestListener;
         ImageView mIvAvatar;
         TextView mTvName;
         TextView mTvReason;
@@ -83,6 +91,28 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
             mTvName = itemView.findViewById(R.id.ContactMessageAdapter_mTvName);
             mTvReason = itemView.findViewById(R.id.ContactMessageAdapter_mTvReason);
             mBtnState = itemView.findViewById(R.id.ContactMessageAdapter_mBtnState);
+            setup();
         }
+
+        private void setup() {
+            mBtnState.setOnClickListener(mOnAcceptClickListener);
+        }
+
+        public void setAcceptContactRequestListener(OnAcceptContactRequestListener acceptContactRequestListener) {
+            mAcceptContactRequestListener = acceptContactRequestListener;
+        }
+
+        private final View.OnClickListener mOnAcceptClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mAcceptContactRequestListener != null) {
+                    mAcceptContactRequestListener.onAcceptContactRequest(getAdapterPosition());
+                }
+            }
+        };
+    }
+
+    public interface OnAcceptContactRequestListener {
+        void onAcceptContactRequest(int position);
     }
 }

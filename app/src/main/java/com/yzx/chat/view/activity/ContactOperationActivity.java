@@ -78,6 +78,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
 
         mBtnFindNewContact.setOnClickListener(mOnBtnAddNewContactClickListener);
 
+        mAdapter.setOnAcceptContactRequestListener(mOnAcceptContactRequestListener);
         mAdapter.setScrollToBottomListener(mOnScrollToBottomListener);
 
         setOverflowMenu();
@@ -124,6 +125,13 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         }
     };
 
+    private final ContactOperationAdapter.OnAcceptContactRequestListener mOnAcceptContactRequestListener = new ContactOperationAdapter.OnAcceptContactRequestListener() {
+        @Override
+        public void onAcceptContactRequest(int position) {
+            mPresenter.acceptContactRequest(mContactOperationList.get(position).getUserFrom());
+        }
+    };
+
     private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
         @Override
         public void OnScrollToBottom() {
@@ -165,6 +173,17 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
             mContactOperationList.remove(removePosition);
         } else {
             LogUtil.e("remove ContactOperationItem fail in ui");
+        }
+    }
+
+    @Override
+    public void updateContactOperationFromList(ContactOperationBean ContactOperation) {
+        int index = mContactOperationList.indexOf(ContactOperation);
+        if (index < 0) {
+            LogUtil.e("update fail from ContactOperationList");
+        } else {
+            mAdapter.notifyItemChangedEx(index);
+            mContactOperationList.set(index, ContactOperation);
         }
     }
 
