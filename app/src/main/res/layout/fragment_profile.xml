@@ -1,140 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
+    android:clipChildren="false"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <android.support.constraint.Guideline
+        android:id="@+id/ProfileFragment_mGuideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="#ffffff"
-        android:elevation="4dp">
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.34" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/ProfileFragment_mGuideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.17" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.yzx.chat.widget.view.CircleImageView
+        android:id="@+id/ProfileFragment_mIvAvatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="32dp"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        android:padding="1dp"
+        android:src="@drawable/temp_head_image"
+        app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/ProfileFragment_mEtEditProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="32dp"
+        android:background="@null"
+        android:gravity="center_vertical"
+        android:minWidth="0dp"
+        android:text="编辑资料"
+        android:textColor="@color/text_main_color_white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mTvNickname" />
+
+    <TextView
+        android:id="@+id/ProfileFragment_mTvNickname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:text="_________夜之星"
+        android:textColor="@color/text_main_color_white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline2"
+        app:layout_constraintEnd_toStartOf="@+id/ProfileFragment_mEtEditProfile"
+        app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mIvAvatar" />
 
 
-        <ImageView
+    <TextView
+        android:id="@+id/ProfileFragment_mTvDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="真想击倒你的不是敌人，而是你自甘落伍的内心。"
+        android:textColor="@color/text_main_color_white_alpha"
+        android:textSize="12dp"
+        app:layout_constraintEnd_toEndOf="@+id/ProfileFragment_mEtEditProfile"
+        app:layout_constraintStart_toStartOf="@+id/ProfileFragment_mTvNickname"
+        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mGuideline2" />
+
+
+    <com.yzx.chat.widget.view.RoundLinearLayout
+        android:id="@+id/ProfileFragment_mILlProfileLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mIvAvatar">
+
+
+        <include layout="@layout/include_profile" />
+
+    </com.yzx.chat.widget.view.RoundLinearLayout>
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        app:cardElevation="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:cardCornerRadius="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mILlProfileLayout">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/ProfileFragment_mVpAlbum"
             android:layout_width="match_parent"
-            android:layout_height="88dp"
-            android:layout_alignParentTop="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/temp_share_image"/>
+            android:layout_height="120dp"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"
+            android:paddingEnd="128dp"
+            android:paddingStart="128dp"
+            android:paddingTop="8dp" />
 
-        <com.yzx.chat.widget.view.CircleImageView
-            android:id="@+id/ProfileFragment_mIvHeadImage"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="56dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/temp_head_image"/>
-
-        <TextView
-            android:id="@+id/ProfileFragment_mTvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ProfileFragment_mIvHeadImage"
-            android:layout_centerHorizontal="true"
-            android:text="我就是一个名字"
-            android:textSize="16sp"/>
-
-        <ImageView
-            android:id="@+id/temp1"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_below="@+id/ProfileFragment_mTvName"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_moments"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_alignTop="@+id/temp1"
-            android:layout_toEndOf="@+id/temp1"
-            android:gravity="center_vertical"
-            android:text="Email"
-            android:textColor="@color/colorAccent"
-            android:textSize="13sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_alignBottom="@+id/temp1"
-            android:layout_toEndOf="@+id/temp1"
-            android:gravity="center_vertical"
-            android:text="244546875@qq.com"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="15sp"/>
+    </android.support.v7.widget.CardView>
 
 
-        <ImageView
-            android:id="@+id/temp2"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_below="@+id/temp1"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_moments"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_alignTop="@+id/temp2"
-            android:layout_toEndOf="@+id/temp2"
-            android:gravity="center_vertical"
-            android:text="Email"
-            android:textColor="@color/colorAccent"
-            android:textSize="13sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_alignBottom="@+id/temp2"
-            android:layout_toEndOf="@+id/temp1"
-            android:gravity="center_vertical"
-            android:text="244546875@qq.com"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="15sp"/>
-
-
-        <ImageView
-            android:id="@+id/temp3"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_below="@+id/temp2"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_moments"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_alignTop="@+id/temp3"
-            android:layout_toEndOf="@+id/temp3"
-            android:gravity="center_vertical"
-            android:text="Email"
-            android:textColor="@color/colorAccent"
-            android:textSize="13sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_alignBottom="@+id/temp3"
-            android:layout_toEndOf="@+id/temp3"
-            android:gravity="center_vertical"
-            android:text="244546875@qq.com"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="15sp"/>
-
-    </RelativeLayout>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

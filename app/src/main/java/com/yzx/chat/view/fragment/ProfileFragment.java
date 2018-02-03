@@ -6,9 +6,13 @@ import android.view.View;
 import com.yzx.chat.R;
 //import com.yzx.chat.adapter.ProfileNavigatorAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
+import com.yzx.chat.widget.view.CarouselView;
 
 //import net.lucode.hackware.magicindicator.MagicIndicator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,9 +24,9 @@ public class ProfileFragment extends BaseFragment {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
-//    private MagicIndicator mPagerIndicator;
-    private ViewPager mVpProfile;
-    private List<String> mTabTitleList;
+    private ViewPager mVpAlbum;
+    private AlbumPagerAdapter mAlbumAdapter;
+    private List<Object> mObjects;
 
     @Override
     protected int getLayoutID() {
@@ -31,30 +35,21 @@ public class ProfileFragment extends BaseFragment {
 
     @Override
     protected void init(View parentView) {
-//        mVpProfile = (ViewPager) parentView.findViewById(R.id.ProfileFragment_mVpProfile);
-//        mPagerIndicator = (MagicIndicator) parentView.findViewById(R.id.ProfileFragment_mPagerIndicator);
-//        mTabTitleList = Arrays.asList(mContext.getResources().getStringArray(R.array.ProfilePagerTitle));
+        mVpAlbum = parentView.findViewById(R.id.ProfileFragment_mVpAlbum);
+        mObjects = new ArrayList<>();
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_share_image);
+        mAlbumAdapter = new AlbumPagerAdapter(mObjects);
     }
 
     @Override
     protected void setup() {
-//        mPagerIndicator.setBackgroundColor(Color.WHITE);
-//        CommonNavigator navigator = new CommonNavigator(mContext);
-//        ProfileNavigatorAdapter adapter = new ProfileNavigatorAdapter(mTabTitleList);
-//        adapter.setOnItemClickListener(mOnItemClickListener);
-//        navigator.setAdapter(adapter);
-//        navigator.setAdjustMode(true);
-//        mPagerIndicator.setNavigator(navigator);
-//        ViewPagerHelper.bind(mPagerIndicator, mVpProfile);
-//
-//        mVpProfile.setAdapter(new ProfileViewPagerAdapter(getFragmentManager()));
+        mVpAlbum.setAdapter(mAlbumAdapter);
+        mVpAlbum.setPageMargin((int) AndroidUtil.dip2px(32));
     }
 
-
-//    private final ProfileNavigatorAdapter.OnItemClickListener mOnItemClickListener = new ProfileNavigatorAdapter.OnItemClickListener() {
-//        @Override
-//        public void onItemClick(View v, int position) {
-//             mVpProfile.setCurrentItem(position);
-//        }
-//    };
 }
