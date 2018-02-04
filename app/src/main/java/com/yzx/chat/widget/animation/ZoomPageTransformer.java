@@ -1,0 +1,43 @@
+package com.yzx.chat.widget.animation;
+
+import android.support.v4.view.ViewPager;
+import android.view.View;
+
+
+/**
+ * Created by YZX on 2017年12月05日.
+ * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
+ */
+
+public class ZoomPageTransformer implements ViewPager.PageTransformer {
+
+    private static final float MAX_SCALE = 1.00f;
+    private static final float MIN_SCALE = 0.75f;
+    private static final float MIN_Alpha = 0.50f;
+    private static final float MAX_ALPHA = 1.00f;
+
+    @Override
+    public void transformPage(View page, float position) {
+        if (position <= -1) {
+            page.setScaleX(MIN_SCALE);
+            page.setScaleY(MIN_SCALE);
+            page.setAlpha(MIN_Alpha);
+        } else if (position <= 1) {
+            float scaleFactor = MIN_SCALE + (1 - Math.abs(position)) * (MAX_SCALE - MIN_SCALE);
+            float alphaFactor = MIN_Alpha + (1 - Math.abs(position)) * (MAX_ALPHA - MIN_Alpha);
+            page.setScaleX(scaleFactor);
+            if (position > 0) {
+                page.setTranslationX(-scaleFactor * 2);
+            } else if (position < 0) {
+                page.setTranslationX(scaleFactor * 2);
+            }
+            page.setScaleY(scaleFactor);
+            page.setAlpha(alphaFactor);
+
+        } else {
+            page.setScaleX(MIN_SCALE);
+            page.setScaleY(MIN_SCALE);
+            page.setAlpha(MIN_Alpha);
+        }
+    }
+}

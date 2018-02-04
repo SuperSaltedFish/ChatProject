@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipChildren="false">
+    android:layout_height="match_parent">
 
     <android.support.constraint.Guideline
         android:id="@+id/ProfileFragment_mGuideline"
@@ -107,43 +106,105 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@android:color/white"
         android:elevation="2dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mILlProfileLayout">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_add" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="20dp"
+                    android:text="添加新的相册"
+                    android:textColor="@color/text_secondary_color_black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="8dp"
+                android:paddingStart="16dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_image" />
+
+                <TextSwitcher
+                    android:id="@+id/ProfileFragment_mTsAlbumName"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:inAnimation="@anim/anim_fade_in"
+                    android:outAnimation="@anim/anim_fade_out"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="20dp"
+                    android:text="添加新的相册"
+                    android:textColor="@color/text_secondary_color_black"
+                    android:textSize="16sp" />
+
+                <com.yzx.chat.widget.view.CircleImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_more" />
+
+            </LinearLayout>
 
 
+        </FrameLayout>
 
-        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/ProfileFragment_mFlPagerParentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:clipChildren="false">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/ProfileFragment_mVpAlbum"
+                android:layout_width="120dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center_horizontal"
+                android:clipChildren="false"
+                android:overScrollMode="never" />
+
+        </FrameLayout>
 
 
     </com.yzx.chat.widget.view.RoundLinearLayout>
-
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="2dp"
-        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mILlProfileLayout">
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/ProfileFragment_mVpAlbum"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:clipToPadding="false"
-            android:paddingBottom="8dp"
-            android:paddingEnd="128dp"
-            android:paddingStart="128dp"
-            android:paddingTop="8dp" />
-
-    </android.support.v7.widget.CardView>
 
 
 </android.support.constraint.ConstraintLayout>

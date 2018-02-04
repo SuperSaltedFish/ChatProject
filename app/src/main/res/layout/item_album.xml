@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.yzx.chat.widget.view.RoundImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
+    android:layout_width="112dp"
+    android:layout_height="96dp"
     android:elevation="2dp"
     android:scaleType="centerCrop" />
 

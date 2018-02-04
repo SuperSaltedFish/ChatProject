@@ -83,7 +83,8 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:clickable="true"
-        android:src="@drawable/ic_more"
+        android:src="@drawable/ic_add"
+        android:tint="@android:color/white"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

@@ -66,7 +66,7 @@
                 android:id="@+id/FriendProfileActivity_mTvLabelLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:maxLines="1"
                 android:text="@string/RemarkInfoActivity_TagLabel"
                 android:textColor="@color/text_primary_color_black"
@@ -79,17 +79,17 @@
                 android:id="@+id/FriendProfileActivity_mFlContentLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:paddingBottom="8dp"
                 android:paddingTop="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel"
-                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvLabelGuideline"/>
+                app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvLabelGuideline" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="1px"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:background="@color/divider_color_black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel" />
@@ -127,7 +127,7 @@
                 android:id="@+id/FriendProfileActivity_mTvLabelTelephone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:maxLines="1"
                 android:text="@string/RemarkInfoActivity_TelephoneLabel"
                 android:textColor="@color/text_primary_color_black"
@@ -140,7 +140,7 @@
                 android:id="@+id/FriendProfileActivity_mLlContentTelephone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:orientation="vertical"
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -151,7 +151,7 @@
             <View
                 android:layout_width="0dp"
                 android:layout_height="1px"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:background="@color/divider_color_black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconTelephone" />
@@ -189,7 +189,7 @@
                 android:id="@+id/FriendProfileActivity_mTvLabelDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:maxLines="1"
                 android:text="@string/RemarkInfoActivity_DescriptionLabel"
                 android:textColor="@color/text_primary_color_black"
@@ -202,7 +202,7 @@
                 android:id="@+id/FriendProfileActivity_mTvContentDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription"
@@ -211,7 +211,7 @@
             <View
                 android:layout_width="0dp"
                 android:layout_height="1px"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="20dp"
                 android:background="@color/divider_color_black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription" />
