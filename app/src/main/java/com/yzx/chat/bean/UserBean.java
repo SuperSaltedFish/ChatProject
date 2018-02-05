@@ -14,6 +14,10 @@ public class UserBean implements Parcelable {
     private String telephone;
     private String nickname;
     private String avatar;
+    private String signature;
+    private String location;
+    private long birthday;
+    private int sex;
 
     public boolean isEmpty() {
         return (TextUtils.isEmpty(userID) || TextUtils.isEmpty(telephone) || TextUtils.isEmpty(nickname));
@@ -51,6 +55,38 @@ public class UserBean implements Parcelable {
         this.avatar = avatar;
     }
 
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public long getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(long birthday) {
+        this.birthday = birthday;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
 
     @Override
     public int describeContents() {
@@ -63,6 +99,10 @@ public class UserBean implements Parcelable {
         dest.writeString(this.telephone);
         dest.writeString(this.nickname);
         dest.writeString(this.avatar);
+        dest.writeString(this.signature);
+        dest.writeString(this.location);
+        dest.writeLong(this.birthday);
+        dest.writeInt(this.sex);
     }
 
     public UserBean() {
@@ -73,6 +113,10 @@ public class UserBean implements Parcelable {
         this.telephone = in.readString();
         this.nickname = in.readString();
         this.avatar = in.readString();
+        this.signature = in.readString();
+        this.location = in.readString();
+        this.birthday = in.readLong();
+        this.sex = in.readInt();
     }
 
     public static final Parcelable.Creator<UserBean> CREATOR = new Parcelable.Creator<UserBean>() {
