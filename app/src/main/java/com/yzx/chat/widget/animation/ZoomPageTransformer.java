@@ -11,8 +11,8 @@ import android.view.View;
 
 public class ZoomPageTransformer implements ViewPager.PageTransformer {
 
-    private static final float MAX_SCALE = 1.00f;
-    private static final float MIN_SCALE = 0.75f;
+    private static final float MAX_SCALE = 0.95f;
+    private static final float MIN_SCALE = 0.70f;
     private static final float MIN_Alpha = 0.50f;
     private static final float MAX_ALPHA = 1.00f;
 

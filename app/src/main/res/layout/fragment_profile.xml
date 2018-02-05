@@ -195,8 +195,8 @@
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/ProfileFragment_mVpAlbum"
-                android:layout_width="120dp"
-                android:layout_height="96dp"
+                android:layout_width="116dp"
+                android:layout_height="88dp"
                 android:layout_gravity="center_horizontal"
                 android:clipChildren="false"
                 android:overScrollMode="never" />
