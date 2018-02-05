@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="48dp"
-        android:background="@color/colorPrimary_alpha"
+        android:background="@color/colorAccent_alpha"
         android:overScrollMode="never"
         android:paddingBottom="14dp"
         android:paddingTop="14dp" />
@@ -58,7 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="bottom"
-        android:background="@color/colorPrimary_alpha"
+        android:background="@color/colorAccent_alpha"
         android:paddingEnd="16dp"
         android:paddingStart="16dp">
 

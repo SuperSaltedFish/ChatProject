@@ -60,7 +60,7 @@ public class AlbumPagerAdapter extends PagerAdapter {
         WeakReference<RoundImageView> weakReference = mCacheViewQueue.poll();
         if (weakReference == null || weakReference.get() == null) {
             imageView = (RoundImageView) LayoutInflater.from(mContext).inflate(R.layout.item_album, container, false);
-            imageView.setRoundRadius(AndroidUtil.dip2px(4));
+            imageView.setRoundRadius(AndroidUtil.dip2px(6));
         } else {
             imageView = weakReference.get();
         }

@@ -17,13 +17,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.17" />
+        app:layout_constraintGuide_percent="0.15" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ProfileFragment_mIvSetting"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="2dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_setting"
+        android:tint="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.yzx.chat.widget.view.CircleImageView
@@ -35,24 +47,10 @@
         android:elevation="2dp"
         android:padding="1dp"
         android:src="@drawable/temp_head_image"
-        app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mGuideline2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mGuideline2" />
 
-    <Button
-        android:id="@+id/ProfileFragment_mEtEditProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="32dp"
-        android:background="@null"
-        android:gravity="center_vertical"
-        android:minWidth="0dp"
-        android:text="编辑资料"
-        android:textColor="@color/text_main_color_white"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mTvNickname" />
 
     <TextView
         android:id="@+id/ProfileFragment_mTvNickname"
@@ -62,21 +60,53 @@
         android:gravity="center_vertical"
         android:text="_________夜之星"
         android:textColor="@color/text_main_color_white"
-        android:textSize="16sp"
+        android:textSize="17sp"
         app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline2"
-        app:layout_constraintEnd_toStartOf="@+id/ProfileFragment_mEtEditProfile"
         app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mIvAvatar" />
+
+    <LinearLayout
+        android:id="@+id/ProfileFragment_mLlEditProfile"
+        android:paddingStart="4dp"
+        android:paddingEnd="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@drawable/radius_btn_4dp_color_accent_light"
+        android:gravity="center"
+        android:layout_marginStart="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
+        app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mTvNickname"
+        app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mTvNickname">
+
+        <ImageView
+            android:padding="2dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_edit" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ProfileModifyActivity_Title"
+            android:textColor="@color/text_main_color_white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
+            app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mTvNickname"
+            app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mTvNickname" />
+
+    </LinearLayout>
 
 
     <TextView
         android:id="@+id/ProfileFragment_mTvDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
         android:gravity="center_vertical"
         android:text="真想击倒你的不是敌人，而是你自甘落伍的内心。"
         android:textColor="@color/text_main_color_white_alpha"
         android:textSize="12dp"
-        app:layout_constraintEnd_toEndOf="@+id/ProfileFragment_mEtEditProfile"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/ProfileFragment_mTvNickname"
         app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mGuideline2" />
 
@@ -87,7 +117,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:background="@android:color/white"
         android:elevation="2dp"
         android:orientation="vertical"

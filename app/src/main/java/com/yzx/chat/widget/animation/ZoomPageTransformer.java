@@ -1,7 +1,10 @@
 package com.yzx.chat.widget.animation;
 
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.ImageView;
 
 
 /**
@@ -13,18 +16,24 @@ public class ZoomPageTransformer implements ViewPager.PageTransformer {
 
     private static final float MAX_SCALE = 0.95f;
     private static final float MIN_SCALE = 0.70f;
-    private static final float MIN_Alpha = 0.50f;
+    private static final float MIN_AlPHA = 0.50f;
     private static final float MAX_ALPHA = 1.00f;
+    private static final float MIN_SATURATION = 0.00f;
+    private static final float MAX_SATURATION = 1.00f;
+
+    private ColorMatrix mGrayColorMatrix = new ColorMatrix();
 
     @Override
     public void transformPage(View page, float position) {
+
         if (position <= -1) {
             page.setScaleX(MIN_SCALE);
             page.setScaleY(MIN_SCALE);
-            page.setAlpha(MIN_Alpha);
+            page.setAlpha(MIN_AlPHA);
         } else if (position <= 1) {
             float scaleFactor = MIN_SCALE + (1 - Math.abs(position)) * (MAX_SCALE - MIN_SCALE);
-            float alphaFactor = MIN_Alpha + (1 - Math.abs(position)) * (MAX_ALPHA - MIN_Alpha);
+            float alphaFactor = MIN_AlPHA + (1 - Math.abs(position)) * (MAX_ALPHA - MIN_AlPHA);
+            float saturationFactor = MIN_SATURATION + (1 - Math.abs(position)) * (MAX_SATURATION - MIN_SATURATION);
             page.setScaleX(scaleFactor);
             if (position > 0) {
                 page.setTranslationX(-scaleFactor * 2);
@@ -33,11 +42,12 @@ public class ZoomPageTransformer implements ViewPager.PageTransformer {
             }
             page.setScaleY(scaleFactor);
             page.setAlpha(alphaFactor);
-
+            mGrayColorMatrix.setSaturation(saturationFactor);
+            ((ImageView) page).setColorFilter(new ColorMatrixColorFilter(mGrayColorMatrix));
         } else {
             page.setScaleX(MIN_SCALE);
             page.setScaleY(MIN_SCALE);
-            page.setAlpha(MIN_Alpha);
+            page.setAlpha(MIN_AlPHA);
         }
     }
 }

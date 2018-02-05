@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorAccent">#5179f3</color>
+    <color name="colorAccent">#5C95FE</color>
 
-    <color name="colorAccent_light">#a2a9f7</color>
+    <color name="colorAccent_alpha">#f05c95fe</color>
 
-    <color name="colorPrimary">#222f42</color>
+    <color name="colorAccent_light">#79A9FE</color>
 
-    <color name="colorPrimaryDark">#1b2839</color>
+    <color name="colorPrimary">#5C95FE</color>
 
-    <color name="colorPrimary_alpha">#a8222f42</color>
-
+    <color name="colorPrimaryDark">#5C95FE</color>
 
 
     <color name="text_primary_color_black">#af000000</color>
@@ -19,7 +18,7 @@
 
     <color name="text_secondary_color_black_light">#cbcfd2</color>
 
-    <color name="divider_color_black">#cbcfd2</color>
+    <color name="divider_color_black">#ced2d5</color>
 
     <color name="divider_color_white">#45ffffff</color>
 

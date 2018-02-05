@@ -2,7 +2,6 @@ package com.yzx.chat.view.activity;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +30,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_friend_profile;
+        return R.layout.activity_contact_profile;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.yzx.chat.view.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -16,6 +18,7 @@ import android.widget.ViewSwitcher;
 import com.yzx.chat.R;
 //import com.yzx.chat.adapter.ProfileNavigatorAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.view.activity.ProfileModifyActivity;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
 
@@ -34,6 +37,7 @@ public class ProfileFragment extends BaseFragment {
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
     private FrameLayout mPagerParentLayout;
+    private LinearLayout mLlEditProfile;
     private ViewPager mVpAlbum;
     private AlbumPagerAdapter mAlbumAdapter;
     private TextSwitcher mTsAlbumName;
@@ -49,6 +53,7 @@ public class ProfileFragment extends BaseFragment {
         mPagerParentLayout = parentView.findViewById(R.id.ProfileFragment_mFlPagerParentLayout);
         mVpAlbum = parentView.findViewById(R.id.ProfileFragment_mVpAlbum);
         mTsAlbumName = parentView.findViewById(R.id.ProfileFragment_mTsAlbumName);
+        mLlEditProfile = parentView.findViewById(R.id.ProfileFragment_mLlEditProfile);
 
         mObjects = new ArrayList<>();
         mObjects.add(R.drawable.temp_share_image);
@@ -69,6 +74,8 @@ public class ProfileFragment extends BaseFragment {
         mVpAlbum.addOnPageChangeListener(mOnAlbumPageChangeListener);
 
         mTsAlbumName.setFactory(mAlbumViewFactory);
+
+        mLlEditProfile.setOnClickListener(mOnEditProfileClickListener);
 
         mPagerParentLayout.setOnTouchListener(mOnPagerParentLayoutTouchListener);
     }
@@ -103,6 +110,13 @@ public class ProfileFragment extends BaseFragment {
         public boolean onTouch(View v, MotionEvent event) {
             mVpAlbum.onTouchEvent(event);
             return true;
+        }
+    };
+
+    private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(mContext, ProfileModifyActivity.class));
         }
     };
 
