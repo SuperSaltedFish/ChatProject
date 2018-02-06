@@ -63,6 +63,7 @@ public class ProfileModifyActivity extends BaseCompatActivity {
                         LogUtil.e(year + " " + month + " " + dayOfMonth);
                     }
                 }, -1, -1, -1);
+                mDatePickerDialog.setTitle(getString(R.string.ProfileModifyActivity_BirthdayDialogTitle));
             }
             Calendar calendar = Calendar.getInstance();
             mDatePickerDialog.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));

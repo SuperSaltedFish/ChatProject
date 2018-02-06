@@ -118,5 +118,6 @@
     <string name="StrangerProfile_SetPermissionContent">不让他(她)看我的朋友圈</string>
     <string name="StrangerProfile_VerifyTitle">验证信息</string>
     <string name="ProfileModifyActivity_Title">编辑资料</string>
+    <string name="ProfileModifyActivity_BirthdayDialogTitle">请选择生日日期</string>
 
 </resources>
