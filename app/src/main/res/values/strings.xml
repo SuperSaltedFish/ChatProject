@@ -13,6 +13,11 @@
         <item name="moments">动态</item>
     </string-array>
 
+    <string-array name="ProfileModifyActivity_SexList">
+        <item name="information">男</item>
+        <item name="moments">女</item>
+    </string-array>
+
     <string name="PermissionDialog_Help">无法使用该功能</string>
     <string name="PermissionDialog_MissPermissionHint">当前应用缺少必要权限。\n请点击“设置”-“权限”-开启所需权限。\n最后点击两次后退按钮，即可返回。</string>
     <string name="PermissionDialog_Cancel">取消</string>
@@ -119,5 +124,11 @@
     <string name="StrangerProfile_VerifyTitle">验证信息</string>
     <string name="ProfileModifyActivity_Title">编辑资料</string>
     <string name="ProfileModifyActivity_BirthdayDialogTitle">请选择生日日期</string>
+    <string name="ProfileModifyActivity_SexLabel">性别</string>
+    <string name="ProfileModifyActivity_BirthdayLabel">生日</string>
+    <string name="ProfileModifyActivity_SexDialogTitle">性别</string>
+    <string name="ProfileModifyActivity_NoSet">未设置</string>
+    <string name="ProfileModifyActivity_DateFormat">%d年%02d月%02d日</string>
+    <string name="ProfileModifyActivity_LocationLabel">所在地区</string>
 
 </resources>

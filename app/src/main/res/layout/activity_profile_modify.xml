@@ -96,6 +96,7 @@
                 android:background="@color/divider_color_black" />
 
             <LinearLayout
+                android:id="@+id/ProfileModifyActivity_mLlSexSelected"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:foreground="?android:attr/selectableItemBackground"
@@ -106,15 +107,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="性别"
+                    android:text="@string/ProfileModifyActivity_SexLabel"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/ProfileModifyActivity_mTvSexSelected"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|end"
-                    android:text="男"
+                    android:text="@string/ProfileModifyActivity_NoSet"
                     android:textSize="14sp" />
 
 
@@ -139,7 +141,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="生日"
+                    android:text="@string/ProfileModifyActivity_BirthdayLabel"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp" />
 
@@ -148,7 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|end"
-                    android:text="1995年3月18日"
+                    android:text="@string/ProfileModifyActivity_NoSet"
                     android:textSize="14sp" />
 
 
@@ -162,6 +164,7 @@
                 android:background="@color/divider_color_black" />
 
             <LinearLayout
+                android:id="@+id/ProfileModifyActivity_mLlLocation"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:foreground="?android:attr/selectableItemBackground"
@@ -172,15 +175,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="所在地区"
+                    android:text="@string/ProfileModifyActivity_LocationLabel"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/ProfileModifyActivity_mTvLocation"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|end"
-                    android:text="广东 韶关"
+                    android:text="@string/ProfileModifyActivity_NoSet"
                     android:textSize="14sp" />
 
 
