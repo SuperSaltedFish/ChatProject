@@ -91,6 +91,7 @@ public class ProfileModifyActivity extends BaseCompatActivity {
     private final View.OnClickListener mOnBirthdayClickListener = new View.OnClickListener() {
         private DatePickerDialog mDatePickerDialog;
 
+        
         @Override
         public void onClick(View v) {
             if (mDatePickerDialog == null) {
