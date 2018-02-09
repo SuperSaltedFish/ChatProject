@@ -2,6 +2,8 @@ package com.yzx.chat.view.activity;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
+import android.text.TextUtils;
 import android.text.method.CharacterPickerDialog;
 import android.view.View;
 import android.widget.DatePicker;
@@ -29,6 +31,8 @@ public class ProfileModifyActivity extends BaseCompatActivity {
     private TextView mTvSexSelected;
     private LinearLayout mLlLocation;
     private TextView mTvLocation;
+    private LinearLayout mLlSignature;
+    private TextView mTvSignature;
     private UserBean mUserBean;
 
     @Override
@@ -44,6 +48,8 @@ public class ProfileModifyActivity extends BaseCompatActivity {
         mTvSexSelected = findViewById(R.id.ProfileModifyActivity_mTvSexSelected);
         mLlLocation = findViewById(R.id.ProfileModifyActivity_mLlLocation);
         mTvLocation = findViewById(R.id.ProfileModifyActivity_mTvLocation);
+        mLlSignature = findViewById(R.id.ProfileModifyActivity_mLlSignature);
+        mTvSignature = findViewById(R.id.ProfileModifyActivity_mTvSignature);
     }
 
     @Override
@@ -55,6 +61,7 @@ public class ProfileModifyActivity extends BaseCompatActivity {
         mLlSexSelected.setOnClickListener(mOnSexSelectedClickListener);
         mLlBirthday.setOnClickListener(mOnBirthdayClickListener);
         mLlLocation.setOnClickListener(mOnLocationClickListener);
+        mLlSignature.setOnClickListener(mOnSignatureClickListener);
 
         setData();
     }
@@ -62,6 +69,20 @@ public class ProfileModifyActivity extends BaseCompatActivity {
     private void setData() {
         mUserBean = new UserBean();
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == SignatureEditActivity.RESULT_CODE && data != null) {
+            String newSignature = data.getStringExtra(SignatureEditActivity.INTENT_EXTRA_SIGNATURE_CONTENT);
+            if (TextUtils.isEmpty(newSignature)) {
+                mTvSignature.setText(R.string.ProfileModifyActivity_NoSet);
+            } else {
+                mTvSignature.setText(newSignature);
+            }
+            mUserBean.setSignature(newSignature);
+        }
     }
 
     private final View.OnClickListener mOnLocationClickListener = new View.OnClickListener() {
@@ -77,13 +98,16 @@ public class ProfileModifyActivity extends BaseCompatActivity {
             new MaterialDialog.Builder(ProfileModifyActivity.this)
                     .title(R.string.ProfileModifyActivity_SexDialogTitle)
                     .items(R.array.ProfileModifyActivity_SexList)
-                    .itemsCallback(new MaterialDialog.ListCallback() {
+                    .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                         @Override
-                        public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                             mTvSexSelected.setText(text);
+                            return true;
                         }
                     })
+                    .positiveText(R.string.Confirm)
                     .show();
+
         }
     };
 
@@ -91,7 +115,6 @@ public class ProfileModifyActivity extends BaseCompatActivity {
     private final View.OnClickListener mOnBirthdayClickListener = new View.OnClickListener() {
         private DatePickerDialog mDatePickerDialog;
 
-        
         @Override
         public void onClick(View v) {
             if (mDatePickerDialog == null) {
@@ -106,6 +129,15 @@ public class ProfileModifyActivity extends BaseCompatActivity {
             mDatePickerDialog.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
             mDatePickerDialog.setTitle(getString(R.string.ProfileModifyActivity_BirthdayDialogTitle));
             mDatePickerDialog.show();
+        }
+    };
+
+    private final View.OnClickListener mOnSignatureClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(ProfileModifyActivity.this, SignatureEditActivity.class);
+            intent.putExtra(SignatureEditActivity.INTENT_EXTRA_SIGNATURE_CONTENT, mUserBean.getSignature());
+            startActivityForResult(intent, 0);
         }
     };
 }
