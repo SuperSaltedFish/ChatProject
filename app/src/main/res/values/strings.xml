@@ -135,5 +135,6 @@
     <string name="SignatureEditActivity_Title">修改签名</string>
     <string name="SignatureEditActivity_SignatureContentHint">一句话介绍自己</string>
     <string name="ProfileModifyActivity_SignatureLabel">个人签名</string>
+    <string name="ProfileModifyActivity_NicknameLabel">昵称</string>
 
 </resources>

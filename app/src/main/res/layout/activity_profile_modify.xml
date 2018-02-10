@@ -79,9 +79,12 @@
                 android:background="@color/divider_color_black" />
 
             <LinearLayout
+                android:id="@+id/ProfileModifyActivity_mLlNickname"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp">
 
@@ -89,15 +92,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="昵称"
+                    android:text="@string/ProfileModifyActivity_NicknameLabel"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp" />
 
-                <TextView
+                <EditText
+                    android:id="@+id/ProfileModifyActivity_mEtNickname"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@null"
                     android:gravity="center_vertical|end"
+
                     android:text="什么东西"
+                    android:textColor="@color/text_secondary_color_black"
                     android:textSize="14sp" />
 
 

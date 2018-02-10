@@ -1,21 +1,27 @@
 package com.yzx.chat.view.activity;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Px;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.text.method.CharacterPickerDialog;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.AndroidUtil;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 
 /**
@@ -33,6 +39,8 @@ public class ProfileModifyActivity extends BaseCompatActivity {
     private TextView mTvLocation;
     private LinearLayout mLlSignature;
     private TextView mTvSignature;
+    private LinearLayout mLlNickname;
+    private EditText mEtNickname;
     private UserBean mUserBean;
 
     @Override
@@ -50,6 +58,8 @@ public class ProfileModifyActivity extends BaseCompatActivity {
         mTvLocation = findViewById(R.id.ProfileModifyActivity_mTvLocation);
         mLlSignature = findViewById(R.id.ProfileModifyActivity_mLlSignature);
         mTvSignature = findViewById(R.id.ProfileModifyActivity_mTvSignature);
+        mLlNickname = findViewById(R.id.ProfileModifyActivity_mLlNickname);
+        mEtNickname = findViewById(R.id.ProfileModifyActivity_mEtNickname);
     }
 
     @Override
@@ -62,7 +72,6 @@ public class ProfileModifyActivity extends BaseCompatActivity {
         mLlBirthday.setOnClickListener(mOnBirthdayClickListener);
         mLlLocation.setOnClickListener(mOnLocationClickListener);
         mLlSignature.setOnClickListener(mOnSignatureClickListener);
-
         setData();
     }
 
@@ -85,12 +94,6 @@ public class ProfileModifyActivity extends BaseCompatActivity {
         }
     }
 
-    private final View.OnClickListener mOnLocationClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
 
     private final View.OnClickListener mOnSexSelectedClickListener = new View.OnClickListener() {
         @Override
@@ -101,8 +104,11 @@ public class ProfileModifyActivity extends BaseCompatActivity {
                     .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                         @Override
                         public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                            mTvSexSelected.setText(text);
-                            return true;
+                            if (!TextUtils.isEmpty(text)) {
+                                mTvSexSelected.setText(text);
+                                return true;
+                            }
+                            return false;
                         }
                     })
                     .positiveText(R.string.Confirm)
@@ -132,6 +138,34 @@ public class ProfileModifyActivity extends BaseCompatActivity {
         }
     };
 
+    private final View.OnClickListener mOnLocationClickListener = new View.OnClickListener() {
+        private MaterialDialog mLocationSelectorDialog;
+        private NumberPicker mProvincePicker;
+        private NumberPicker mCityPicker;
+
+        private String[] mCities = {"北京", "上海", "广州", "深圳", "杭州", "青岛", "西安"};
+
+        @Override
+        public void onClick(View v) {
+            if (mLocationSelectorDialog == null) {
+                mLocationSelectorDialog = new MaterialDialog.Builder(ProfileModifyActivity.this)
+                        .title("请选择省市")
+                        .customView(R.layout.dialog_location_selector, false)
+                        .positiveText(R.string.Confirm)
+                        .build();
+                View view = mLocationSelectorDialog.getCustomView();
+                mProvincePicker = view.findViewById(R.id.LocationSelectorDialog_mNpProvince);
+                mCityPicker = view.findViewById(R.id.LocationSelectorDialog_mNpCity);
+
+                mProvincePicker.setDisplayedValues(mCities);//设置需要显示的数组
+                mProvincePicker.setMinValue(0);
+                mProvincePicker.setMaxValue(mCities.length - 1);
+
+            }
+            mLocationSelectorDialog.show();
+        }
+    };
+
     private final View.OnClickListener mOnSignatureClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -140,4 +174,5 @@ public class ProfileModifyActivity extends BaseCompatActivity {
             startActivityForResult(intent, 0);
         }
     };
+
 }
