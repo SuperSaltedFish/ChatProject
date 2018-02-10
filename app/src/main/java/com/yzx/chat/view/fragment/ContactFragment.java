@@ -59,7 +59,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private ContactAdapter mContactAdapter;
     private ContactSearchAdapter mSearchAdapter;
     private IndexBarView mIndexBarView;
-    private AutoCompleteTextView mSearchHarderView;
+    private View mHeaderView;
+    private AutoCompleteTextView mSearchView;
     private TextView mTvIndexBarHint;
     private Toolbar mToolbar;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -88,7 +89,9 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactMessageBadge = parentView.findViewById(R.id.ContactFragment_mContactMessageBadge);
         mSegmentedControlView = parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
         mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
-        mSearchHarderView = (AutoCompleteTextView) LayoutInflater.from(mContext).inflate(R.layout.item_contact_search, (ViewGroup) parentView, false);
+        mHeaderView= LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
+        mSearchView = mHeaderView.findViewById(R.id.ContactFragment_mSearchView);
+
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
         mContactList = new ArrayList<>(128);
@@ -139,17 +142,17 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     }
 
     private void setHarderView() {
-        mSearchHarderView.setAdapter(mSearchAdapter);
-        mSearchHarderView.setDropDownVerticalOffset((int) AndroidUtil.dip2px(8));
-        mSearchHarderView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mSearchView.setAdapter(mSearchAdapter);
+        mSearchView.setDropDownVerticalOffset((int) AndroidUtil.dip2px(8));
+        mSearchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mOnRecyclerViewItemClickListener.onItemClick(position + 1, null);
-                mSearchHarderView.setText(null);
+                mSearchView.setText(null);
             }
         });
 
-        mContactAdapter.addHeaderView(mSearchHarderView);
+        mContactAdapter.addHeaderView(mHeaderView);
     }
 
     private void setOverflowMenu() {
@@ -219,7 +222,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
             if (position == 0 && mContactAdapter.isHasHeaderView()) {
                 return;
             }
-            mContactRecyclerView.setTag(position-1);
+            mContactRecyclerView.setTag(position - 1);
             OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mContactRecyclerView.getHeight(), (int) touchX, (int) touchY);
         }
     };

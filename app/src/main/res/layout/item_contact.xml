@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:paddingEnd="8dp"
     android:paddingStart="8dp">
@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:maxLines="1"
-        android:textColor="@color/text_primary_color_black" />
+        android:textColor="@color/text_primary_color_black"
+        android:textSize="17sp" />
 
 </LinearLayout>

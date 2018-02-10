@@ -16,7 +16,10 @@
 
     <color name="text_secondary_color_black">#60000000</color>
 
+    <color name="text_secondary_color_black2">#8c8c8c</color>
+
     <color name="text_secondary_color_black_light">#cbcfd2</color>
+
 
     <color name="divider_color_black">#ced2d5</color>
 
