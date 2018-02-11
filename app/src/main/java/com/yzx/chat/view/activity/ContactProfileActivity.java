@@ -60,7 +60,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
                 Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
                 Conversation conversation = new Conversation();
                 conversation.setConversationType(Conversation.ConversationType.PRIVATE);
-                conversation.setTargetId(mContactBean.getUserID());
+                conversation.setTargetId(mContactBean.getUserProfile().getUserID());
                 conversation.setConversationTitle(mContactBean.getName());
                 intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
                 startActivity(intent);

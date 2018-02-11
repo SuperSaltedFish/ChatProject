@@ -12,8 +12,7 @@ public class ContactOperationBean implements Parcelable {
 
 
     private int indexID;
-    private String userTo;
-    private String userFrom;
+    private String userID;
     private String type;
     private String reason;
     private UserBean mUser;
@@ -29,7 +28,7 @@ public class ContactOperationBean implements Parcelable {
             return true;
         }
         ContactOperationBean operation = (ContactOperationBean) obj;
-        return userTo!=null&&userTo.equals(operation.userTo)&&userFrom!=null&&userFrom.equals(operation.userFrom);
+        return userID!=null&&userID.equals(operation.userID);
     }
 
     public int getIndexID() {
@@ -40,20 +39,12 @@ public class ContactOperationBean implements Parcelable {
         this.indexID = indexID;
     }
 
-    public String getUserTo() {
-        return userTo;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setUserTo(String userTo) {
-        this.userTo = userTo;
-    }
-
-    public String getUserFrom() {
-        return userFrom;
-    }
-
-    public void setUserFrom(String userFrom) {
-        this.userFrom = userFrom;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getType() {
@@ -105,8 +96,7 @@ public class ContactOperationBean implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.indexID);
-        dest.writeString(this.userTo);
-        dest.writeString(this.userFrom);
+        dest.writeString(this.userID);
         dest.writeString(this.type);
         dest.writeString(this.reason);
         dest.writeParcelable(this.mUser, flags);
@@ -119,8 +109,7 @@ public class ContactOperationBean implements Parcelable {
 
     protected ContactOperationBean(Parcel in) {
         this.indexID = in.readInt();
-        this.userTo = in.readString();
-        this.userFrom = in.readString();
+        this.userID = in.readString();
         this.type = in.readString();
         this.reason = in.readString();
         this.mUser = in.readParcelable(UserBean.class.getClassLoader());
@@ -128,7 +117,7 @@ public class ContactOperationBean implements Parcelable {
         this.time = in.readInt();
     }
 
-    public static final Creator<ContactOperationBean> CREATOR = new Creator<ContactOperationBean>() {
+    public static final Parcelable.Creator<ContactOperationBean> CREATOR = new Parcelable.Creator<ContactOperationBean>() {
         @Override
         public ContactOperationBean createFromParcel(Parcel source) {
             return new ContactOperationBean(source);

@@ -23,6 +23,18 @@ public class UserBean implements Parcelable {
         return (TextUtils.isEmpty(userID) || TextUtils.isEmpty(telephone) || TextUtils.isEmpty(nickname));
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj==null||!(obj instanceof UserBean)){
+            return false;
+        }
+        if(this==obj){
+            return true;
+        }
+        UserBean user = (UserBean) obj;
+        return userID != null && userID.equals(user.getUserID());
+    }
+
     public String getUserID() {
         return userID;
     }

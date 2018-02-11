@@ -7,19 +7,17 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.TokenVerifyBean;
 import com.yzx.chat.network.api.user.GetUserContactsBean;
 import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -59,9 +57,9 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void init(boolean isAlreadyLogged) {
-        if(!IdentityManager.initFromLocal()){
+        if (!IdentityManager.initFromLocal()) {
             mSplashView.startLoginActivity();
-        }else {
+        } else {
             isInitIMComplete = isAlreadyLogged;
             initHTTPServer(isAlreadyLogged);
         }
@@ -144,7 +142,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                         TokenVerifyBean tokenVerifyBean = jsonResponse.getData();
                         if (jsonResponse.getStatus() == 200 && tokenVerifyBean != null) {
                             UserBean userBean = tokenVerifyBean.getUser();
-                            if (userBean != null && !userBean.isEmpty() &&  IdentityManager.getInstance().updateUserInfo(userBean)) {
+                            if (userBean != null && !userBean.isEmpty() && IdentityManager.getInstance().updateUserInfo(userBean)) {
                                 isSuccess = true;
                                 return;
                             }
@@ -175,20 +173,13 @@ public class SplashPresenter implements SplashContract.Presenter {
         mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserContactsBean>() {
             @Override
             protected void onSuccess(GetUserContactsBean response) {
-                DBManager.getInstance().getContactDao().cleanTable();
                 List<ContactBean> contactBeans = response.getContacts();
-                String myID = IdentityManager.getInstance().getUserID();
                 if (contactBeans != null) {
-                    for (ContactBean bean : contactBeans) {
-                        bean.setContactOf(myID);
-                    }
-                    if (!DBManager.getInstance().getContactDao().insertAll(contactBeans)) {
-                        LogUtil.e("insertAll contact error");
-                    }
+                    IMClient.getInstance().contactManager().initContacts(contactBeans);
                 } else {
                     LogUtil.e("response.getContacts() is null");
+                    IMClient.getInstance().contactManager().initContactsFromDB();
                 }
-                IMClient.getInstance().contactManager().loadAllContact(myID);
                 isInitHTTPComplete = true;
                 initComplete();
             }
@@ -196,7 +187,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             @Override
             protected void onFailure(String message) {
                 LogUtil.e(message);
-                IMClient.getInstance().contactManager().loadAllContact(IdentityManager.getInstance().getUserID());
+                IMClient.getInstance().contactManager().initContactsFromDB();
                 initComplete();
             }
         });

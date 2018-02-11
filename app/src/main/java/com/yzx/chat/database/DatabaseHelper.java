@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(UserDao.CREATE_TABLE_SQL);
         db.execSQL(ContactOperationDao.CREATE_TABLE_SQL);
         db.execSQL(ContactDao.CREATE_TABLE_SQL);
-        db.execSQL(ConversationDao.CREATE_TABLE_SQL);
+//        db.execSQL(ConversationDao.CREATE_TABLE_SQL);
         db.setTransactionSuccessful();
         db.endTransaction();
     }

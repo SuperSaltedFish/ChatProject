@@ -203,7 +203,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactOperationBean>(lists[0], newList) {
                 @Override
                 public boolean isItemEquals(ContactOperationBean oldItem, ContactOperationBean newItem) {
-                    return oldItem.getUserFrom().equals(newItem.getUserFrom());
+                    return oldItem.getUserID().equals(newItem.getUserID());
                 }
 
                 @Override

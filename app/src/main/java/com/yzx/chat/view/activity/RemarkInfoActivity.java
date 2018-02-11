@@ -74,7 +74,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     private void setData() {
         mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-        if (mContactBean == null || mContactBean.getRemark() == null) {
+        if (mContactBean == null || mContactBean.getRemark() == null||mContactBean.getUserProfile()==null) {
             LogUtil.e("mContactBean == null");
             finish();
         } else {

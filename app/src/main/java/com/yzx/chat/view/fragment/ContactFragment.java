@@ -15,30 +15,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactContract;
 import com.yzx.chat.presenter.ContactPresenter;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.view.activity.ContactOperationActivity;
-import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.ContactProfileActivity;
+import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.RemarkInfoActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
-import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
+import com.yzx.chat.widget.animation.NoAnimations;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
-import com.yzx.chat.util.AnimationUtil;
-import com.yzx.chat.widget.view.BadgeImageView;
+import com.yzx.chat.widget.view.BadgeView;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
-import com.yzx.chat.widget.animation.NoAnimations;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
 import com.yzx.chat.widget.view.SegmentedControlView;
@@ -65,7 +66,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private Toolbar mToolbar;
     private SmartRefreshLayout mSmartRefreshLayout;
     private SegmentedControlView mSegmentedControlView;
-    private BadgeImageView mContactMessageBadge;
+    private LinearLayout mLlContactOperation;
+    private BadgeView mBadgeView;
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
@@ -86,11 +88,12 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mIndexBarView = parentView.findViewById(R.id.ContactFragment_mIndexBarView);
         mTvIndexBarHint = parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
         mFBtnAdd = parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
-        mContactMessageBadge = parentView.findViewById(R.id.ContactFragment_mContactMessageBadge);
         mSegmentedControlView = parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
         mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
-        mHeaderView= LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
+        mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
         mSearchView = mHeaderView.findViewById(R.id.ContactFragment_mSearchView);
+        mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragment_mLlContactOperation);
+        mBadgeView = mHeaderView.findViewById(R.id.ContactFragment_mBadgeView);
 
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
@@ -119,9 +122,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
-        mContactMessageBadge.setBadgeTextPadding((int) AndroidUtil.dip2px(2));
-        mContactMessageBadge.setBadgePadding(0, (int) AndroidUtil.dip2px(6), (int) AndroidUtil.dip2px(4), 0);
-        mContactMessageBadge.setOnClickListener(mOnContactRequestBadgeClick);
+
+        mLlContactOperation.setOnClickListener(mOnContactOperationClick);
 
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black));
@@ -183,7 +185,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mPresenter.loadAllContact();
     }
 
-    private final View.OnClickListener mOnContactRequestBadgeClick = new View.OnClickListener() {
+    private final View.OnClickListener mOnContactOperationClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(mContext, ContactOperationActivity.class);
@@ -285,11 +287,11 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     @Override
     public void updateUnreadBadge(int unreadCount) {
         if (unreadCount == 0) {
-            mContactMessageBadge.setBadgeMode(BadgeImageView.MODE_HIDE);
+            mBadgeView.setVisibility(View.INVISIBLE);
         } else {
-            mContactMessageBadge.setBadgeText(unreadCount);
-            mContactMessageBadge.setBadgeMode(BadgeImageView.MODE_SHOW);
+            mBadgeView.setVisibility(View.VISIBLE);
         }
+        mBadgeView.setBadgeNumber(unreadCount);
     }
 
     @Override

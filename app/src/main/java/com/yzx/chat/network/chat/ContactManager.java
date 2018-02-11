@@ -52,8 +52,6 @@ public class ContactManager {
     private int mContactOperationUnreadNumber;
     private final Object mUpdateContactUnreadNumberLock = new Object();
 
-    private String mUserID;
-
     public ContactManager(IMClient.SubManagerCallback subManagerCallback) {
         if (subManagerCallback == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
@@ -69,14 +67,20 @@ public class ContactManager {
         mGson = new GsonBuilder().serializeNulls().create();
     }
 
-    public void loadAllContact(String userID) {
-        List<ContactBean> contacts = mContactDao.loadAllContacts(userID);
+    public void initContacts(List<ContactBean> contactList) {
+        if (!mContactDao.replaceAll(contactList)) {
+            LogUtil.e("initContacts fail");
+        }
+        initContactsFromDB();
+    }
+
+    public void initContactsFromDB() {
+        List<ContactBean> contacts = mContactDao.loadAllContacts();
         if (contacts != null) {
             for (ContactBean contact : contacts) {
-                mContactsMap.put(contact.getUserID(), contact);
+                mContactsMap.put(contact.getUserProfile().getUserID(), contact);
             }
         }
-        mUserID = userID;
     }
 
     public ContactBean getContact(String userID) {
@@ -90,7 +94,7 @@ public class ContactManager {
     public boolean updateContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.update(contact);
         if (result) {
-            mContactsMap.put(contact.getUserID(), contact);
+            mContactsMap.put(contact.getUserProfile().getUserID(), contact);
             if (isCallListener) {
                 for (OnContactChangeListener listener : mContactChangeListeners) {
                     listener.onContactUpdate(contact);
@@ -109,7 +113,7 @@ public class ContactManager {
     public boolean addContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.insert(contact);
         if (result) {
-            mContactsMap.put(contact.getUserID(), contact);
+            mContactsMap.put(contact.getUserProfile().getUserID(), contact);
             if (isCallListener) {
                 for (OnContactChangeListener listener : mContactChangeListeners) {
                     listener.onContactAdded(contact);
@@ -128,7 +132,7 @@ public class ContactManager {
     public boolean deleteContact(ContactBean contact, boolean isCallListener) {
         boolean result = mContactDao.delete(contact);
         if (result) {
-            mContactsMap.remove(contact.getUserID());
+            mContactsMap.remove(contact.getUserProfile().getUserID());
             if (isCallListener) {
                 for (OnContactChangeListener listener : mContactChangeListeners) {
                     listener.onContactDeleted(contact);
@@ -151,7 +155,7 @@ public class ContactManager {
             @Override
             public void run() {
                 synchronized (mUpdateContactUnreadNumberLock) {
-                    int count = mContactOperationDao.loadRemindCount(mUserID);
+                    int count = mContactOperationDao.loadRemindCount();
                     if (count != mContactOperationUnreadNumber) {
                         mContactOperationUnreadNumber = count;
                         for (OnContactOperationUnreadCountChangeListener listener : mContactOperationUnreadCountChangeListeners) {
@@ -167,7 +171,7 @@ public class ContactManager {
         mSubManagerCallback.execute(new Runnable() {
             @Override
             public void run() {
-                mContactOperationDao.makeAllRemindAsRemind(mUserID);
+                mContactOperationDao.makeAllRemindAsRemind();
                 if (mContactOperationUnreadNumber != 0) {
                     updateContactUnreadCount();
                 }
@@ -206,11 +210,11 @@ public class ContactManager {
 
 
     public List<ContactOperationBean> loadAllContactOperation() {
-        return mContactOperationDao.loadAllContactOperation(mUserID);
+        return mContactOperationDao.loadAllContactOperation();
     }
 
     public List<ContactOperationBean> loadMoreContactOperation(int startID, int count) {
-        return mContactOperationDao.loadMoreContactOperation(mUserID, startID, count);
+        return mContactOperationDao.loadMoreContactOperation(startID, count);
     }
 
     public void addContactOperationListener(OnContactOperationListener listener) {
@@ -261,8 +265,7 @@ public class ContactManager {
             return;
         }
         bean.setUser(user);
-        bean.setUserTo(contactMessage.getTargetUserId());
-        bean.setUserFrom(contactMessage.getSourceUserId());
+        bean.setUserID(contactMessage.getSourceUserId());
         bean.setRemind(true);
         bean.setTime((int) (message.getReceivedTime() / 1000));
         bean.setType(operation);

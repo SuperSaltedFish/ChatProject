@@ -128,7 +128,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     private final ContactOperationAdapter.OnAcceptContactRequestListener mOnAcceptContactRequestListener = new ContactOperationAdapter.OnAcceptContactRequestListener() {
         @Override
         public void onAcceptContactRequest(int position) {
-            mPresenter.acceptContactRequest(mContactOperationList.get(position).getUserFrom());
+            mPresenter.acceptContactRequest(mContactOperationList.get(position).getUserID());
         }
     };
 

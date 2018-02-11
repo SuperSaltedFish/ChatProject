@@ -44,10 +44,10 @@ public class ContactInfoPresenter implements ContactInfoContract.Presenter {
     @Override
     public void init(ContactBean contact) {
         mContactBean = contact;
-        mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserID());
+        mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserProfile().getUserID());
         if (mConversation == null) {
             mConversation = new Conversation();
-            mConversation.setTargetId(mContactBean.getUserID());
+            mConversation.setTargetId(mContactBean.getUserProfile().getUserID());
             mConversation.setTop(false);
             mConversation.setConversationType(Conversation.ConversationType.PRIVATE);
         }

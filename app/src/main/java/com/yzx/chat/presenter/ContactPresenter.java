@@ -158,18 +158,18 @@ public class ContactPresenter implements ContactContract.Presenter {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactBean>(oldList, newList) {
                 @Override
                 public boolean isItemEquals(ContactBean oldItem, ContactBean newItem) {
-                    return oldItem.getUserID().equals(newItem.getUserID());
+                    return oldItem.equals(newItem);
                 }
 
                 @Override
                 public boolean isContentsEquals(ContactBean oldItem, ContactBean newItem) {
-                    if (!oldItem.getAvatar().equals(newItem.getAvatar())) {
-                        return false;
-                    }
                     if (!oldItem.getName().equals(newItem.getName())) {
                         return false;
                     }
-                    if (!oldItem.getNickname().equals(newItem.getNickname())) {
+                    if (!oldItem.getUserProfile().getAvatar().equals(newItem.getUserProfile().getAvatar())) {
+                        return false;
+                    }
+                    if (!oldItem.getUserProfile().getNickname().equals(newItem.getUserProfile().getNickname())) {
                         return false;
                     }
                     return true;

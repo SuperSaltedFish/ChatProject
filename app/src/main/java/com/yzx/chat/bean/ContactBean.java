@@ -15,38 +15,17 @@ import com.yzx.chat.util.PinYinUtil;
 
 public class ContactBean implements Parcelable {
 
-    private String contactOf;
-    private String abbreviation;
-
-    private String userID;
-    private String nickname;
-    private String avatar;
-    private String type;
+    private UserBean userProfile;
     private ContactRemarkBean remark;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof ContactBean)) {
-            return false;
-        }
-        ContactBean bean = (ContactBean) obj;
-
-        if (TextUtils.isEmpty(contactOf) || TextUtils.isEmpty(userID)) {
-            return false;
-        }
-
-        return userID.equals(bean.getUserID()) && contactOf.equals(bean.getContactOf());
-    }
+    private String abbreviation;
 
     public String getName() {
         String remarkName = null;
         if (remark != null) {
             remarkName = remark.getRemarkName();
         }
-        return TextUtils.isEmpty(remarkName) ? nickname : remarkName;
+        return TextUtils.isEmpty(remarkName) ? userProfile.getNickname() : remarkName;
     }
 
     public String getAbbreviation() {
@@ -56,49 +35,27 @@ public class ContactBean implements Parcelable {
         return abbreviation;
     }
 
-
-    public String getContactOf() {
-        return contactOf;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof ContactBean)) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        ContactBean contact = (ContactBean) obj;
+        if (userProfile == null || !userProfile.equals(contact.getUserProfile())) {
+            return false;
+        }
+        return true;
     }
 
-    public void setContactOf(String contactOf) {
-        this.contactOf = contactOf;
+    public UserBean getUserProfile() {
+        return userProfile;
     }
 
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
+    public void setUserProfile(UserBean userProfile) {
+        this.userProfile = userProfile;
     }
 
     public ContactRemarkBean getRemark() {
@@ -117,12 +74,7 @@ public class ContactBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.contactOf);
-        dest.writeString(this.userID);
-        dest.writeString(this.nickname);
-        dest.writeString(this.avatar);
-        dest.writeString(this.type);
-        dest.writeString(this.abbreviation);
+        dest.writeParcelable(this.userProfile, flags);
         dest.writeParcelable(this.remark, flags);
     }
 
@@ -130,12 +82,7 @@ public class ContactBean implements Parcelable {
     }
 
     protected ContactBean(Parcel in) {
-        this.contactOf = in.readString();
-        this.userID = in.readString();
-        this.nickname = in.readString();
-        this.avatar = in.readString();
-        this.type = in.readString();
-        this.abbreviation = in.readString();
+        this.userProfile = in.readParcelable(UserBean.class.getClassLoader());
         this.remark = in.readParcelable(ContactRemarkBean.class.getClassLoader());
     }
 

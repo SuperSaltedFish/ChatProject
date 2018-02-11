@@ -5,14 +5,13 @@
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:paddingEnd="8dp"
-    android:paddingStart="8dp">
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
 
     <ImageView
         android:id="@+id/ContactAdapter_mIvHeadImage"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:padding="4dp" />
+        android:layout_width="44dp"
+        android:layout_height="44dp" />
 
     <TextView
         android:id="@+id/ContactAdapter_mTvName"
@@ -21,6 +20,6 @@
         android:layout_marginStart="8dp"
         android:maxLines="1"
         android:textColor="@color/text_primary_color_black"
-        android:textSize="17sp" />
+        android:textSize="16sp" />
 
 </LinearLayout>

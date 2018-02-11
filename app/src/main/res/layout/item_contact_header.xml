@@ -7,32 +7,51 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <AutoCompleteTextView
-        android:id="@+id/ContactFragment_mSearchView"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:background="@null"
-        android:completionThreshold="1"
-        android:drawablePadding="8dp"
-        android:drawableStart="@drawable/ic_search"
-        android:hint="@string/ContactFragment_SearchContact"
-        android:maxLength="16"
-        android:maxLines="1"
-        android:overScrollMode="never"
-        android:textColor="@color/text_primary_color_black"
-        android:textColorHint="@color/text_secondary_color_black2"
-        android:textSize="17sp" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.yzx.chat.widget.view.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
+            android:src="@drawable/ic_search"
+            android:tint="@android:color/white" />
+
+
+        <AutoCompleteTextView
+            android:id="@+id/ContactFragment_mSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:completionThreshold="1"
+            android:hint="@string/ContactFragment_SearchContact"
+            android:maxLength="16"
+            android:maxLines="1"
+            android:overScrollMode="never"
+            android:textColor="@color/text_primary_color_black"
+            android:textColorHint="@color/text_primary_color_black"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ContactFragment_mLlContactOperation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.yzx.chat.widget.view.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
             android:src="@drawable/ic_friend"
-            android:tint="@color/text_secondary_color_black2" />
+            android:tint="@android:color/white" />
 
         <TextView
             android:layout_width="0dp"
@@ -40,38 +59,38 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:text="新的朋友"
-            android:textColor="@color/text_secondary_color_black2"
-            android:textSize="17sp" />
+            android:textColor="@color/text_primary_color_black"
+            android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:gravity="center"
-            android:text="12"
-            android:layout_marginEnd="24dp"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
+        <com.yzx.chat.widget.view.BadgeView
+            android:id="@+id/ContactFragment_mBadgeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="56dp"
+        android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.yzx.chat.widget.view.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/colorAccent"
+            android:padding="7dp"
             android:src="@drawable/ic_label"
-            android:tint="@color/text_secondary_color_black2" />
+            android:tint="@android:color/white" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="标签"
-            android:textColor="@color/text_secondary_color_black2"
-            android:textSize="17sp" />
+            android:text="标签(0)"
+            android:textColor="@color/text_primary_color_black"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </LinearLayout>

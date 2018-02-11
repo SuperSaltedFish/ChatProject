@@ -18,8 +18,10 @@ public class ContactRemarkBean implements Parcelable {
     private String remarkName;
     private ArrayList<String> telephone;
     private ArrayList<String> tags;
+
     @Expose
     private int uploadFlag = 1;
+
 
     public String getDescription() {
         return description;

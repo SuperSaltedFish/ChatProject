@@ -22,13 +22,6 @@
             android:layout_height="28dp"
             android:layout_gravity="center" />
 
-        <com.yzx.chat.widget.view.BadgeImageView
-            android:id="@+id/ContactFragment_mContactMessageBadge"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_contact_add" />
 
     </android.support.v7.widget.Toolbar>
 

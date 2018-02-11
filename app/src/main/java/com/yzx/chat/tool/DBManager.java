@@ -2,10 +2,9 @@ package com.yzx.chat.tool;
 
 import android.content.Context;
 
-import com.yzx.chat.database.ContactOperationDao;
-import com.yzx.chat.database.ConversationDao;
-import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.database.ContactDao;
+import com.yzx.chat.database.ContactOperationDao;
+import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.database.UserDao;
 
 import java.util.HashMap;
@@ -65,12 +64,12 @@ public class DBManager {
         return dao;
     }
 
-    public ConversationDao getConversationDao() {
-        ConversationDao dao = (ConversationDao) mDaoInstanceMap.get(ConversationDao.class);
-        if (dao == null) {
-            dao = mDBHelper.getDaoInstance(new ConversationDao());
-            mDaoInstanceMap.put(ConversationDao.class, dao);
-        }
-        return dao;
-    }
+//    public ConversationDao getConversationDao() {
+//        ConversationDao dao = (ConversationDao) mDaoInstanceMap.get(ConversationDao.class);
+//        if (dao == null) {
+//            dao = mDBHelper.getDaoInstance(new ConversationDao());
+//            mDaoInstanceMap.put(ConversationDao.class, dao);
+//        }
+//        return dao;
+//    }
 }
