@@ -64,7 +64,7 @@
 
         </activity>
         <activity
-            android:name=".view.activity.ImageSelectorActivity"
+            android:name=".view.activity.ImageMultiSelectorActivity"
             android:theme="@style/BaseDarkTheme">
 
         </activity>
@@ -113,6 +113,7 @@
         <activity android:name=".view.activity.SignatureEditActivity">
 
         </activity>
+        <activity android:name=".view.activity.ImageSingleSelectorActivity" />
 
     </application>
 

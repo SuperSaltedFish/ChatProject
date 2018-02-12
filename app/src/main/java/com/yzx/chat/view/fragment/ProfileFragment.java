@@ -16,23 +16,25 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.yzx.chat.R;
-//import com.yzx.chat.adapter.ProfileNavigatorAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.contract.ProfileModifyContract;
+import com.yzx.chat.presenter.ProfileModifyPresenter;
 import com.yzx.chat.view.activity.ProfileModifyActivity;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
 
-//import net.lucode.hackware.magicindicator.MagicIndicator;
-
 import java.util.ArrayList;
 import java.util.List;
+
+//import com.yzx.chat.adapter.ProfileNavigatorAdapter;
+//import net.lucode.hackware.magicindicator.MagicIndicator;
 
 /**
  * Created by YZX on 2017年09月01日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class ProfileFragment extends BaseFragment {
+public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presenter> implements ProfileModifyContract.View {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
@@ -120,4 +122,8 @@ public class ProfileFragment extends BaseFragment {
         }
     };
 
+    @Override
+    public ProfileModifyContract.Presenter getPresenter() {
+        return new ProfileModifyPresenter();
+    }
 }

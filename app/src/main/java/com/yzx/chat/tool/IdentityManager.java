@@ -255,15 +255,26 @@ public class IdentityManager {
     }
 
     public String getToken() {
+        if(TextUtils.isEmpty(mToken)){
+            logout();
+        }
         return mToken;
     }
 
     @Nullable
     public String getUserID() {
+        if(mUserBean==null||TextUtils.isEmpty(mUserBean.getUserID())){
+            logout();
+            return null;
+        }
         return mUserBean.getUserID();
     }
 
     public UserBean getUser() {
+        if(mUserBean==null||TextUtils.isEmpty(mUserBean.getUserID())){
+            logout();
+            return null;
+        }
         return mUserBean;
     }
 

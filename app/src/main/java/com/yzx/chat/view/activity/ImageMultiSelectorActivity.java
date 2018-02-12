@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalImageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -34,7 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class ImageSelectorActivity extends BaseCompatActivity {
+public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     public static final int RESULT_CODE = 1;
     public static final String RESULT = "ImageSelectedList";
@@ -63,18 +62,18 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_image_selector;
+        return R.layout.activity_image_multi_selector;
     }
 
     @Override
     protected void init() {
-        mBtnConfirm = (Button) findViewById(R.id.ImageSelectorActivity_mBtnConfirm);
-        mRvImage = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageList);
-        mRBtnOriginal = findViewById(R.id.ImageSelectorActivity_mRBtnOriginal);
-        mTvChooseDir = (TextView) findViewById(R.id.ImageSelectorActivity_mTvChooseDir);
-        mRvImageDir = (RecyclerView) findViewById(R.id.ImageSelectorActivity_mRvImageDirList);
-        mBtnPreview = findViewById(R.id.ImageSelectorActivity_mBtnPreview);
-        mMaskView = findViewById(R.id.ImageSelectorActivity_mMaskView);
+        mBtnConfirm = (Button) findViewById(R.id.ImageMultiSelectorActivity_mBtnConfirm);
+        mRvImage = (RecyclerView) findViewById(R.id.ImageMultiSelectorActivity_mRvImageList);
+        mRBtnOriginal = findViewById(R.id.ImageMultiSelectorActivity_mRBtnOriginal);
+        mTvChooseDir = (TextView) findViewById(R.id.ImageMultiSelectorActivity_mTvChooseDir);
+        mRvImageDir = (RecyclerView) findViewById(R.id.ImageMultiSelectorActivity_mRvImageDirList);
+        mBtnPreview = findViewById(R.id.ImageMultiSelectorActivity_mBtnPreview);
+        mMaskView = findViewById(R.id.ImageMultiSelectorActivity_mMaskView);
 
         mCurrentImagePathList = new ArrayList<>(128);
         mImageDirPath = new ArrayList<>();
@@ -126,7 +125,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
 
     private void setData() {
-        new LoadImageAsyncTask(ImageSelectorActivity.this).execute();
+        new LoadImageAsyncTask(ImageMultiSelectorActivity.this).execute();
     }
 
     private void loadLocalResource(HashMap<String, List<String>> groupingMap) {
@@ -218,7 +217,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
     private final View.OnClickListener mOnPreviewClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(ImageSelectorActivity.this, ImageViewPagerActivity.class);
+            Intent intent = new Intent(ImageMultiSelectorActivity.this, ImageViewPagerActivity.class);
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_LIST, mSelectedList);
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, 0);
@@ -288,7 +287,7 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
         @Override
         public void onItemClick(int position) {
-            Intent intent = new Intent(ImageSelectorActivity.this, ImageViewPagerActivity.class);
+            Intent intent = new Intent(ImageMultiSelectorActivity.this, ImageViewPagerActivity.class);
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_LIST, mCurrentImagePathList);
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, position);
@@ -299,12 +298,12 @@ public class ImageSelectorActivity extends BaseCompatActivity {
 
     private static class LoadImageAsyncTask extends AsyncTask<Void, Void, HashMap<String, List<String>>> {
 
-        private WeakReference<ImageSelectorActivity> mWReference;
+        private WeakReference<ImageMultiSelectorActivity> mWReference;
         private ContentResolver mContentResolver;
 
-        LoadImageAsyncTask(ImageSelectorActivity imageSelectorActivity) {
-            mContentResolver = imageSelectorActivity.getContentResolver();
-            mWReference = new WeakReference<>(imageSelectorActivity);
+        LoadImageAsyncTask(ImageMultiSelectorActivity imageMultiSelectorActivity) {
+            mContentResolver = imageMultiSelectorActivity.getContentResolver();
+            mWReference = new WeakReference<>(imageMultiSelectorActivity);
         }
 
         @Override
@@ -336,11 +335,11 @@ public class ImageSelectorActivity extends BaseCompatActivity {
         @Override
         protected void onPostExecute(HashMap<String, List<String>> stringListHashMap) {
             super.onPostExecute(stringListHashMap);
-            ImageSelectorActivity imageSelectorActivity = mWReference.get();
-            if (imageSelectorActivity == null || stringListHashMap == null) {
+            ImageMultiSelectorActivity imageMultiSelectorActivity = mWReference.get();
+            if (imageMultiSelectorActivity == null || stringListHashMap == null) {
                 return;
             }
-            imageSelectorActivity.loadLocalResource(stringListHashMap);
+            imageMultiSelectorActivity.loadLocalResource(stringListHashMap);
         }
     }
 }

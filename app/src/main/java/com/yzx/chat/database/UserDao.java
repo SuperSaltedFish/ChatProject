@@ -42,7 +42,7 @@ public class UserDao extends AbstractDao<UserBean> {
                     + COLUMN_NAME_Avatar + " TEXT,"
                     + COLUMN_NAME_Signature + " TEXT,"
                     + COLUMN_NAME_Location + " TEXT,"
-                    + COLUMN_NAME_Birthday + " INTEGER,"
+                    + COLUMN_NAME_Birthday + " TEXT,"
                     + COLUMN_NAME_Sex + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_UserID + ")"
                     + ")";
@@ -85,7 +85,7 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setAvatar(cursor.getString(COLUMN_INDEX_Avatar));
         bean.setSignature(cursor.getString(COLUMN_INDEX_Signature));
         bean.setLocation(cursor.getString(COLUMN_INDEX_Location));
-        bean.setBirthday(cursor.getLong(COLUMN_INDEX_Birthday));
+        bean.setBirthday(cursor.getString(COLUMN_INDEX_Birthday));
         bean.setSex(cursor.getInt(COLUMN_INDEX_Sex));
         return bean;
     }
@@ -98,7 +98,7 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setAvatar(cursor.getString(COLUMN_INDEX_Avatar));
         bean.setSignature(cursor.getString(COLUMN_INDEX_Signature));
         bean.setLocation(cursor.getString(COLUMN_INDEX_Location));
-        bean.setBirthday(cursor.getLong(COLUMN_INDEX_Birthday));
+        bean.setBirthday(cursor.getString(COLUMN_INDEX_Birthday));
         bean.setSex(cursor.getInt(COLUMN_INDEX_Sex));
         return bean;
     }

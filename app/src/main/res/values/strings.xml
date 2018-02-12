@@ -136,5 +136,10 @@
     <string name="SignatureEditActivity_SignatureContentHint">一句话介绍自己</string>
     <string name="ProfileModifyActivity_SignatureLabel">个人签名</string>
     <string name="ProfileModifyActivity_NicknameLabel">昵称</string>
+    <string name="ImageSingleSelectorActivity_Title">选择头像</string>
+    <string name="ProfileModifyActivity_Man">男</string>
+    <string name="ProfileModifyActivity_Woman">女</string>
+    <string name="ProfileModifyActivity_AvatarLabel">头像</string>
+    <string name="ProfileModifyActivity_NoneNickname">昵称不能为空</string>
 
 </resources>

@@ -57,7 +57,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start|center_vertical"
                     android:gravity="center"
-                    android:text="头像"
+                    android:text="@string/ProfileModifyActivity_AvatarLabel"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="17sp" />
 
@@ -99,11 +99,12 @@
                 <EditText
                     android:id="@+id/ProfileModifyActivity_mEtNickname"
                     android:layout_width="match_parent"
+                    android:singleLine="true"
+                    android:maxLength="20"
+                    android:imeOptions="actionDone"
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:gravity="center_vertical|end"
-
-                    android:text="什么东西"
                     android:textColor="@color/text_secondary_color_black"
                     android:textSize="14sp" />
 
@@ -138,7 +139,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|end"
-                    android:text="@string/ProfileModifyActivity_NoSet"
                     android:textSize="14sp" />
 
 
@@ -172,7 +172,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|end"
-                    android:text="@string/ProfileModifyActivity_NoSet"
                     android:textSize="14sp" />
 
 

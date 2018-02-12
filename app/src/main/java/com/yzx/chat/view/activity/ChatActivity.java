@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -153,7 +152,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 }
                 break;
             case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
-                startActivity(new Intent(this, ImageSelectorActivity.class));
+                startActivity(new Intent(this, ImageMultiSelectorActivity.class));
                 break;
         }
     }

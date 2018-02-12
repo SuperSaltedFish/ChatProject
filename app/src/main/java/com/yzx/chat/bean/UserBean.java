@@ -9,14 +9,14 @@ import android.text.TextUtils;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class UserBean implements Parcelable {
+public class UserBean implements Parcelable, Cloneable {
     private String userID;
     private String telephone;
     private String nickname;
     private String avatar;
     private String signature;
     private String location;
-    private long birthday;
+    private String birthday;
     private int sex;
 
     public boolean isEmpty() {
@@ -25,14 +25,24 @@ public class UserBean implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj==null||!(obj instanceof UserBean)){
+        if (obj == null || !(obj instanceof UserBean)) {
             return false;
         }
-        if(this==obj){
+        if (this == obj) {
             return true;
         }
         UserBean user = (UserBean) obj;
         return userID != null && userID.equals(user.getUserID());
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public String getUserID() {
@@ -83,11 +93,11 @@ public class UserBean implements Parcelable {
         this.location = location;
     }
 
-    public long getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(long birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
@@ -113,7 +123,7 @@ public class UserBean implements Parcelable {
         dest.writeString(this.avatar);
         dest.writeString(this.signature);
         dest.writeString(this.location);
-        dest.writeLong(this.birthday);
+        dest.writeString(this.birthday);
         dest.writeInt(this.sex);
     }
 
@@ -127,7 +137,7 @@ public class UserBean implements Parcelable {
         this.avatar = in.readString();
         this.signature = in.readString();
         this.location = in.readString();
-        this.birthday = in.readLong();
+        this.birthday = in.readString();
         this.sex = in.readInt();
     }
 

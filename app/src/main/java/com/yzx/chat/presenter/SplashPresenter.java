@@ -11,8 +11,8 @@ import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.TokenVerifyBean;
-import com.yzx.chat.network.api.user.GetUserContactsBean;
-import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.api.contact.ContactApi;
+import com.yzx.chat.network.api.contact.GetUserContactsBean;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
@@ -126,7 +126,7 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     private void initHTTPServer(boolean isAlreadyLogged) {
-        UserApi userApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        ContactApi contactApi = (ContactApi) ApiManager.getProxyInstance(ContactApi.class);
         AuthApi authApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
 
         NetworkUtil.cancelCall(mTokenVerify);
@@ -169,7 +169,7 @@ public class SplashPresenter implements SplashContract.Presenter {
         });
 
         NetworkUtil.cancelCall(mGetUserFriendsTask);
-        mGetUserFriendsTask = userApi.getUserContacts();
+        mGetUserFriendsTask = contactApi.getUserContacts();
         mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserContactsBean>() {
             @Override
             protected void onSuccess(GetUserContactsBean response) {

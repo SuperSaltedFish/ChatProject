@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.activity.ImageSelectorActivity">
+    tools:context=".view.activity.ImageSingleSelectorActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,29 +19,11 @@
             android:background="@color/colorPrimary"
             android:elevation="4dp"
             app:theme="@style/ToolbarTheme"
-            app:title="@string/ImageSelectorActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
-
-            <Button
-                android:id="@+id/ImageSelectorActivity_mBtnConfirm"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|end"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/radius_default_bt"
-                android:elevation="2dp"
-                android:minWidth="60dp"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:text="@string/ImageSelectorActivity_Send"
-                android:textColor="@android:color/white" />
-
-        </android.support.v7.widget.Toolbar>
+            app:title="@string/ImageSingleSelectorActivity_Title"
+            app:titleTextAppearance="@style/ToolbarTitleTheme.Light"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/ImageSelectorActivity_mRvImageList"
+            android:id="@+id/ImageSingleSelectorActivity_mRvImageList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="56dp"
@@ -49,13 +31,13 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/ImageSelectorActivity_mMaskView"
+        android:id="@+id/ImageSingleSelectorActivity_mMaskView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/ImageSelectorActivity_mRvImageDirList"
+        android:id="@+id/ImageSingleSelectorActivity_mRvImageDirList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -75,7 +57,7 @@
         android:paddingTop="8dp">
 
         <TextView
-            android:id="@+id/ImageSelectorActivity_mTvChooseDir"
+            android:id="@+id/ImageSingleSelectorActivity_mTvChooseDir"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -91,11 +73,11 @@
             android:layout_height="16dp"
             android:layout_gravity="bottom"
             android:src="@drawable/ic_drop_down_arrow"
-            app:layout_constraintBottom_toBottomOf="@+id/ImageSelectorActivity_mTvChooseDir"
-            app:layout_constraintStart_toEndOf="@+id/ImageSelectorActivity_mTvChooseDir" />
+            app:layout_constraintBottom_toBottomOf="@+id/ImageSingleSelectorActivity_mTvChooseDir"
+            app:layout_constraintStart_toEndOf="@+id/ImageSingleSelectorActivity_mTvChooseDir" />
 
         <RadioButton
-            android:id="@+id/ImageSelectorActivity_mRBtnOriginal"
+            android:id="@+id/ImageSingleSelectorActivity_mRBtnOriginal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -107,7 +89,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/ImageSelectorActivity_mBtnPreview"
+            android:id="@+id/ImageSingleSelectorActivity_mBtnPreview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"

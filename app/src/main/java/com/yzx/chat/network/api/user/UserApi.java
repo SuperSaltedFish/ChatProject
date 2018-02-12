@@ -1,7 +1,5 @@
 package com.yzx.chat.network.api.user;
 
-import com.yzx.chat.bean.ContactRemarkBean;
-import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
@@ -20,22 +18,11 @@ public interface UserApi {
     @HttpApi(RequestMethod = "POST", Path = "user/searchUser")
     Call<JsonResponse<SearchUserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/getUserContacts")
-    Call<JsonResponse<GetUserContactsBean>> getUserContacts();
 
-    @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
-    Call<JsonResponse<Void>> requestContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
-
-    @HttpApi(RequestMethod = "POST", Path = "user/rejectContact")
-    Call<JsonResponse<Void>> rejectContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
-
-    @HttpApi(RequestMethod = "POST", Path = "user/requestContact")
-    Call<JsonResponse<Void>> acceptContact(@HttpParam("contactID") String contactID);
-
-    @HttpApi(RequestMethod = "POST", Path = "user/deleteContact")
-    Call<JsonResponse<Void>> deleteContact(@HttpParam("contactID") String contactID);
-
-    @HttpApi(RequestMethod = "POST", Path = "user/updateRemark")
-    Call<JsonResponse<Void>> updateRemark(@HttpParam("contactID") String friendUserID,
-                                          @HttpParam("remark") ContactRemarkBean contactRemark);
+    @HttpApi(RequestMethod = "POST", Path = "user/updateUserProfile")
+    Call<JsonResponse<Void>> updateUserProfile(@HttpParam("nickname") String nickname,
+                                          @HttpParam("sex") int sex,
+                                          @HttpParam("birthday") String birthday,
+                                          @HttpParam("location") String location,
+                                          @HttpParam("signature") String signature);
 }

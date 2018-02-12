@@ -5,7 +5,7 @@ import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.StrangerProfileContract;
 import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
@@ -22,12 +22,12 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
     private StrangerProfileContract.View mStrangerProfileView;
     private Call<JsonResponse<Void>> mRequestContactCall;
 
-    private UserApi mUserApi;
+    private ContactApi mContactApi;
 
     @Override
     public void attachView(StrangerProfileContract.View view) {
         mStrangerProfileView = view;
-        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        mContactApi = (ContactApi) ApiManager.getProxyInstance(ContactApi.class);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
     @Override
     public void requestContact(final UserBean user, final String verifyContent) {
         NetworkUtil.cancelCall(mRequestContactCall);
-        mRequestContactCall = mUserApi.requestContact(user.getUserID(), verifyContent);
+        mRequestContactCall = mContactApi.requestContact(user.getUserID(), verifyContent);
         mRequestContactCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {

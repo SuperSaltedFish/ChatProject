@@ -10,7 +10,7 @@ import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ContactOperationContract;
 import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
@@ -36,7 +36,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     private Call<JsonResponse<Void>> mAcceptContactCall;
     private IMClient mIMClient;
     private Handler mHandler;
-    private UserApi mUserApi;
+    private ContactApi mContactApi;
 
     private String mUserID;
 
@@ -48,7 +48,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mContactOperationContractView = view;
         mContactOperationList = new ArrayList<>(32);
         mHandler = new Handler();
-        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        mContactApi = (ContactApi) ApiManager.getProxyInstance(ContactApi.class);
         mIMClient = IMClient.getInstance();
         mIMClient.contactManager().addContactOperationListener(mOnContactOperationListener);
         hasLoadingMore = true;
@@ -75,7 +75,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @Override
     public void acceptContactRequest(String contactID) {
         NetworkUtil.cancelCall(mAcceptContactCall);
-        mAcceptContactCall = mUserApi.acceptContact(contactID);
+        mAcceptContactCall = mContactApi.acceptContact(contactID);
         mAcceptContactCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {

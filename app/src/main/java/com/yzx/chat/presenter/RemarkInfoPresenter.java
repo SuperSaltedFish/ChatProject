@@ -4,6 +4,7 @@ import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.RemarkInfoContract;
 import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
@@ -21,11 +22,11 @@ import com.yzx.chat.util.NetworkUtil;
 public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
     private Call<JsonResponse<Void>> mUpdateRemarkCall;
-    private UserApi mUserApi;
+    private ContactApi mContactApi;
 
     @Override
     public void attachView(RemarkInfoContract.View view) {
-        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        mContactApi = (ContactApi) ApiManager.getProxyInstance(UserApi.class);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
         contact.getRemark().setUploadFlag(0);
         DBManager.getInstance().getContactDao().replace(contact);
         NetworkUtil.cancelCall(mUpdateRemarkCall);
-        mUpdateRemarkCall = mUserApi.updateRemark(contact.getUserProfile().getUserID(),contact.getRemark());
+        mUpdateRemarkCall = mContactApi.updateRemark(contact.getUserProfile().getUserID(),contact.getRemark());
         mUpdateRemarkCall.setCallback(new UpdateResponseCallback(contact));
         NetworkExecutor.getInstance().submit(mUpdateRemarkCall);
         IMClient.getInstance().contactManager().updateContact(contact);

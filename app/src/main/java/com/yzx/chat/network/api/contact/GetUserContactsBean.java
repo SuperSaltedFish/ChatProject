@@ -1,4 +1,4 @@
-package com.yzx.chat.network.api.user;
+package com.yzx.chat.network.api.contact;
 
 import com.yzx.chat.bean.ContactBean;
 
