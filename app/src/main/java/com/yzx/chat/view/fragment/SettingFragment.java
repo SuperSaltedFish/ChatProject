@@ -1,17 +1,9 @@
 package com.yzx.chat.view.fragment;
 
 import android.view.View;
-import android.widget.Button;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.base.BaseHttpCallback;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.util.LogUtil;
 
 /**
  * Created by YZX on 2017年09月02日.

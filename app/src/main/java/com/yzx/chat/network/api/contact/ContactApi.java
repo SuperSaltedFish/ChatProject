@@ -21,7 +21,7 @@ public interface ContactApi {
     @HttpApi(RequestMethod = "POST", Path = "contact/rejectContact")
     Call<JsonResponse<Void>> rejectContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
 
-    @HttpApi(RequestMethod = "POST", Path = "contact/requestContact")
+    @HttpApi(RequestMethod = "POST", Path = "contact/acceptContact")
     Call<JsonResponse<Void>> acceptContact(@HttpParam("contactID") String contactID);
 
     @HttpApi(RequestMethod = "POST", Path = "contact/deleteContact")

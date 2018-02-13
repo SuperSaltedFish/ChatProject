@@ -34,7 +34,6 @@ import com.yzx.chat.view.activity.FindNewContactActivity;
 import com.yzx.chat.view.activity.RemarkInfoActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
-import com.yzx.chat.widget.animation.NoAnimations;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.BadgeView;
@@ -117,7 +116,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.setLayoutManager(mLinearLayoutManager);
         mContactRecyclerView.setAdapter(mContactAdapter);
         mContactRecyclerView.setHasFixedSize(true);
-        mContactRecyclerView.setItemAnimator(new NoAnimations());
+       // mContactRecyclerView.setItemAnimator(new NoAnimations());
         mContactRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
@@ -305,8 +304,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList) {
+        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));
         mContactList.clear();
         mContactList.addAll(newFriendList);
-        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));
     }
 }

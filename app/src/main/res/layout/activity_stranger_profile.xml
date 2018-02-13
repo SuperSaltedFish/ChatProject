@@ -35,15 +35,11 @@
 
                 <Button
                     android:id="@+id/StrangerProfileActivity_mBtnConfirm"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/radius_default_bt"
-                    android:elevation="2dp"
-                    android:text="发送"
+                    android:background="@null"
+                    android:text="请求添加"
                     android:textColor="@android:color/white" />
 
             </android.support.v7.widget.Toolbar>
@@ -80,7 +76,7 @@
                 android:paddingEnd="80dp"
                 android:paddingStart="80dp"
                 android:text="生活就像海洋，只有意志坚强的人才能到彼岸"
-                android:textColor="#aaaaaa"
+                android:textColor="@color/text_main_color_white"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

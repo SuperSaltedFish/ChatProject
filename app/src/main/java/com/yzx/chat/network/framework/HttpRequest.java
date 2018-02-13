@@ -1,14 +1,17 @@
 package com.yzx.chat.network.framework;
 
 
+import java.util.List;
 import java.util.Map;
 
 public interface HttpRequest {
 
     String url();
 
-    Map<String, Object> getParams();
+    Map<String, Object> params();
 
     String requestMethod();
+
+    List<String> uploadList();
 
 }

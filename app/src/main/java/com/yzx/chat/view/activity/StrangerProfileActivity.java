@@ -9,6 +9,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.StrangerProfileContract;
 import com.yzx.chat.presenter.StrangerProfilePresenter;
+import com.yzx.chat.widget.view.ProgressDialog;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -22,6 +23,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private EditText mEtVerifyContent;
     private Button mBtnConfirm;
     private UserBean mUserBean;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected int getLayoutID() {
@@ -32,6 +34,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     protected void init() {
         mEtVerifyContent = findViewById(R.id.StrangerProfileActivity_mEtVerifyContent);
         mBtnConfirm = findViewById(R.id.StrangerProfileActivity_mBtnConfirm);
+        mProgressDialog = new ProgressDialog(this, getString(R.string.StrangerProfileActivity_ProgressHint));
     }
 
     @Override
@@ -56,6 +59,9 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
             mPresenter.requestContact(mUserBean, mEtVerifyContent.getText().toString());
         }
     };
@@ -67,6 +73,13 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     @Override
     public void goBack() {
+        mProgressDialog.dismiss();
         finish();
+    }
+
+    @Override
+    public void showError(String error) {
+        mProgressDialog.dismiss();
+        showToast(error);
     }
 }

@@ -20,7 +20,7 @@ public class ContactRemarkBean implements Parcelable {
     private ArrayList<String> tags;
 
     @Expose
-    private int uploadFlag = 1;
+    private int uploadFlag ;
 
 
     public String getDescription() {

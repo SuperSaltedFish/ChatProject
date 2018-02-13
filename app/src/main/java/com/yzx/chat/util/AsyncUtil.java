@@ -7,7 +7,7 @@ import com.yzx.chat.network.framework.Call;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
-public class NetworkUtil {
+public class AsyncUtil {
 
     public static void cancelTask(NetworkAsyncTask task){
         if(task!=null){
@@ -16,6 +16,12 @@ public class NetworkUtil {
     }
 
     public static void cancelCall(Call call){
+        if(call!=null){
+            call.cancel();
+        }
+    }
+
+    public static void cancelResult(AsyncResult call){
         if(call!=null){
             call.cancel();
         }

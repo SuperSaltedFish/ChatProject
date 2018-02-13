@@ -1,18 +1,8 @@
 package com.yzx.chat.presenter;
 
-import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.RemarkInfoContract;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.contact.ContactApi;
-import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.tool.DBManager;
-import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkUtil;
 
 /**
  * Created by YZX on 2018年01月24日.
@@ -21,12 +11,10 @@ import com.yzx.chat.util.NetworkUtil;
 
 public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
-    private Call<JsonResponse<Void>> mUpdateRemarkCall;
-    private ContactApi mContactApi;
 
     @Override
     public void attachView(RemarkInfoContract.View view) {
-        mContactApi = (ContactApi) ApiManager.getProxyInstance(UserApi.class);
+
     }
 
     @Override
@@ -36,33 +24,9 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
     @Override
     public void save(ContactBean contact) {
-        contact.getRemark().setUploadFlag(0);
-        DBManager.getInstance().getContactDao().replace(contact);
-        NetworkUtil.cancelCall(mUpdateRemarkCall);
-        mUpdateRemarkCall = mContactApi.updateRemark(contact.getUserProfile().getUserID(),contact.getRemark());
-        mUpdateRemarkCall.setCallback(new UpdateResponseCallback(contact));
-        NetworkExecutor.getInstance().submit(mUpdateRemarkCall);
-        IMClient.getInstance().contactManager().updateContact(contact);
+        IMClient.getInstance().contactManager().updateContact(contact,null);
     }
 
-    private final static class UpdateResponseCallback extends BaseHttpCallback<Void>{
 
-        private ContactBean mContactBean;
-
-        private UpdateResponseCallback(ContactBean contact) {
-            mContactBean = contact;
-        }
-
-        @Override
-        protected void onSuccess(Void response) {
-            mContactBean.getRemark().setUploadFlag(1);
-            IMClient.getInstance().contactManager().updateContact(mContactBean,false);
-        }
-
-        @Override
-        protected void onFailure(String message) {
-            LogUtil.e(message);
-        }
-    }
 
 }

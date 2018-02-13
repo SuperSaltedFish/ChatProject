@@ -5,15 +5,12 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -26,11 +23,11 @@ import java.util.List;
 
 public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemView> {
 
-    private List<ContactBean> mFriendList;
+    private List<ContactBean> mContactList;
     private SparseArray<String> mIdentitySparseArray;
 
-    public ContactAdapter(List<ContactBean> friendList) {
-        mFriendList = friendList;
+    public ContactAdapter(List<ContactBean> contactList) {
+        mContactList = contactList;
         mIdentitySparseArray = new SparseArray<>(32);
         registerAdapterDataObserver(mDataObserver);
     }
@@ -50,14 +47,14 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         } else {
             holder.itemView.setTag(null);
         }
-        ContactBean contactBean = mFriendList.get(position);
+        ContactBean contactBean = mContactList.get(position);
         friendHolder.mTvName.setText(contactBean.getName());
         GlideUtil.loadFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
     }
 
     @Override
     public int getViewHolderCount() {
-        return mFriendList == null ? 0 : mFriendList.size();
+        return mContactList == null ? 0 : mContactList.size();
     }
 
     public int findPositionByLetter(String letter) {
@@ -69,12 +66,12 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
     }
 
     private void resetLetter() {
-        if (mFriendList != null && mFriendList.size() != 0) {
+        if (mContactList != null && mContactList.size() != 0) {
             String identity;
             String abbreviation;
             String currentIdentity = null;
-            for (int i = 0, length = mFriendList.size(); i < length; i++) {
-                abbreviation = mFriendList.get(i).getAbbreviation();
+            for (int i = 0, length = mContactList.size(); i < length; i++) {
+                abbreviation = mContactList.get(i).getAbbreviation();
                 if (abbreviation != null) {
                     identity = abbreviation.substring(0, 1);
                     if (!identity.equals(currentIdentity)) {

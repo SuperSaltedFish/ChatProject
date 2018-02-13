@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
-import com.yzx.chat.widget.adapter.LocalImageAdapter;
+import com.yzx.chat.widget.adapter.LocalMultiImageAdapter;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
@@ -45,7 +45,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     private Button mBtnConfirm;
     private RadioButton mRBtnOriginal;
     private Button mBtnPreview;
-    private LocalImageAdapter mLocalImageAdapter;
+    private LocalMultiImageAdapter mLocalMultiImageAdapter;
     private BottomSheetBehavior mBottomBehavior;
     private ImageDirAdapter mImageDirAdapter;
     private View mMaskView;
@@ -81,7 +81,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mGroupingMap = new HashMap<>();
         mCurrentShowDir = "";
         mBottomBehavior = BottomSheetBehavior.from(mRvImageDir);
-        mLocalImageAdapter = new LocalImageAdapter(mCurrentImagePathList, mSelectedList, HORIZONTAL_ITEM_COUNT);
+        mLocalMultiImageAdapter = new LocalMultiImageAdapter(mCurrentImagePathList, mSelectedList, HORIZONTAL_ITEM_COUNT);
         mImageDirAdapter = new ImageDirAdapter(mImageDirPath, mGroupingMap);
         mMaskColorDrawable = new ColorDrawable(Color.BLACK);
     }
@@ -94,7 +94,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);
-        mRvImage.setAdapter(mLocalImageAdapter);
+        mRvImage.setAdapter(mLocalMultiImageAdapter);
 
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
         mRvImageDir.setHasFixedSize(true);
@@ -109,11 +109,11 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mMaskColorDrawable.setAlpha(0);
         mMaskView.setBackground(mMaskColorDrawable);
 
-        mTvChooseDir.setOnClickListener(mOnClickListener);
+        mTvChooseDir.setOnClickListener(mOnChooseDirClickListener);
 
         mBtnConfirm.setOnClickListener(mOnBtnConfirmClickListener);
 
-        mLocalImageAdapter.setOnImageItemChangeListener(mOnImageItemChangeListener);
+        mLocalMultiImageAdapter.setOnImageItemChangeListener(mOnImageItemChangeListener);
 
         mRBtnOriginal.setOnClickListener(mOnOriginalClickListener);
 
@@ -157,7 +157,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             mCurrentImagePathList.addAll(mGroupingMap.get(folder));
             mTvChooseDir.setText(folder.substring(folder.lastIndexOf("/") + 1));
         }
-        mLocalImageAdapter.notifyDataSetChanged();
+        mLocalMultiImageAdapter.notifyDataSetChanged();
     }
 
     private void updateCountText() {
@@ -183,12 +183,12 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             if (selectList != null) {
                 mSelectedList.clear();
                 mSelectedList.addAll(selectList);
-                mLocalImageAdapter.notifyDataSetChanged();
+                mLocalMultiImageAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnChooseDirClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mBottomBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
@@ -272,7 +272,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     };
 
 
-    private final LocalImageAdapter.OnImageItemChangeListener mOnImageItemChangeListener = new LocalImageAdapter.OnImageItemChangeListener() {
+    private final LocalMultiImageAdapter.OnImageItemChangeListener mOnImageItemChangeListener = new LocalMultiImageAdapter.OnImageItemChangeListener() {
         @Override
         public void onItemSelect(int position, boolean isSelect) {
             if (isSelect) {

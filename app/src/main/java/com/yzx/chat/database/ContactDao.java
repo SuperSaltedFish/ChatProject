@@ -7,9 +7,12 @@ import android.text.TextUtils;
 
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.tool.DBManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,14 +24,14 @@ public class ContactDao extends AbstractDao<ContactBean> {
 
     private static final String TABLE_NAME = "Contact";
 
-    private static final String COLUMN_NAME_UserID = "UserID";
+    private static final String COLUMN_NAME_ContactID = "ContactID";
     private static final String COLUMN_NAME_RemarkName = "RemarkName";
     private static final String COLUMN_NAME_Description = "Description";
-    private static final String COLUMN_NAME_Telephone = "Telephone";
+    private static final String COLUMN_NAME_Telephone = "TelephoneList";
     private static final String COLUMN_NAME_Tags = "Tags";
     private static final String COLUMN_NAME_UploadFlag = "UploadFlag";
 
-    private static final int COLUMN_INDEX_UserID = 0;
+    private static final int COLUMN_INDEX_ContactID = 0;
     private static final int COLUMN_INDEX_RemarkName = 1;
     private static final int COLUMN_INDEX_Description = 2;
     private static final int COLUMN_INDEX_Telephone = 3;
@@ -38,19 +41,33 @@ public class ContactDao extends AbstractDao<ContactBean> {
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                    + COLUMN_NAME_UserID + " TEXT NOT NULL , "
+                    + COLUMN_NAME_ContactID + " TEXT NOT NULL , "
                     + COLUMN_NAME_RemarkName + " TEXT,"
                     + COLUMN_NAME_Description + " TEXT,"
                     + COLUMN_NAME_Telephone + " TEXT,"
                     + COLUMN_NAME_Tags + " TEXT,"
                     + COLUMN_NAME_UploadFlag + " INTEGER,"
-                    + "PRIMARY KEY (" + COLUMN_NAME_UserID + ")"
+                    + "PRIMARY KEY (" + COLUMN_NAME_ContactID + ")"
                     + ")";
 
+    public ContactBean getContact(String contactID) {
+        if (TextUtils.isEmpty(contactID)) {
+            return null;
+        }
+        SQLiteDatabase database = mHelper.openReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " LEFT OUTER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID + " AND " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=?", null);
+        ContactBean contact = null;
+        while (cursor.moveToNext()) {
+            contact = toEntity(cursor);
+        }
+        cursor.close();
+        mHelper.closeReadableDatabase();
+        return contact;
+    }
 
     public List<ContactBean> loadAllContacts() {
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " LEFT OUTER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_UserID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " LEFT OUTER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
         List<ContactBean> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
@@ -58,6 +75,19 @@ public class ContactDao extends AbstractDao<ContactBean> {
         cursor.close();
         mHelper.closeReadableDatabase();
         return contactList;
+    }
+
+    public boolean updateAllContacts(List<ContactBean> contactList) {
+        if (contactList == null || contactList.size() == 0) {
+            return true;
+        }
+        List<UserBean> userList = new LinkedList<>();
+        for (ContactBean contact : contactList) {
+            userList.add(contact.getUserProfile());
+        }
+        cleanTable();
+        return DBManager.getInstance().getUserDao().replaceAll(userList) && insertAll(contactList);
+
     }
 
 
@@ -68,7 +98,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
 
     @Override
     protected String getWhereClauseOfKey() {
-        return COLUMN_NAME_UserID + "=?";
+        return COLUMN_NAME_ContactID + "=?";
     }
 
     @Override
@@ -78,34 +108,36 @@ public class ContactDao extends AbstractDao<ContactBean> {
 
     @Override
     protected ContentValues toContentValues(ContactBean entity, ContentValues values) {
+        values.put(COLUMN_NAME_ContactID, entity.getUserProfile().getUserID());
         ContactRemarkBean remark = entity.getRemark();
-        values.put(COLUMN_NAME_UserID, entity.getUserProfile().getUserID());
-        values.put(COLUMN_NAME_RemarkName, remark.getRemarkName());
-        values.put(COLUMN_NAME_Description, remark.getDescription());
-        values.put(COLUMN_NAME_UploadFlag, remark.getUploadFlag());
+        if (remark != null) {
+            values.put(COLUMN_NAME_RemarkName, remark.getRemarkName());
+            values.put(COLUMN_NAME_Description, remark.getDescription());
+            values.put(COLUMN_NAME_UploadFlag, remark.getUploadFlag());
 
-        List<String> telephone = remark.getTelephone();
-        if (telephone != null && telephone.size() > 0) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0, size = telephone.size(); i < size; i++) {
-                stringBuilder.append(telephone.get(i));
-                if (i != size - 1) {
-                    stringBuilder.append(";");
+            List<String> telephone = remark.getTelephone();
+            if (telephone != null && telephone.size() > 0) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0, size = telephone.size(); i < size; i++) {
+                    stringBuilder.append(telephone.get(i));
+                    if (i != size - 1) {
+                        stringBuilder.append(";");
+                    }
                 }
+                values.put(COLUMN_NAME_Telephone, stringBuilder.toString());
             }
-            values.put(COLUMN_NAME_Telephone, stringBuilder.toString());
-        }
 
-        List<String> tags = remark.getTags();
-        if (tags != null && tags.size() > 0) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0, size = tags.size(); i < size; i++) {
-                stringBuilder.append(tags.get(i));
-                if (i != size - 1) {
-                    stringBuilder.append(";");
+            List<String> tags = remark.getTags();
+            if (tags != null && tags.size() > 0) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0, size = tags.size(); i < size; i++) {
+                    stringBuilder.append(tags.get(i));
+                    if (i != size - 1) {
+                        stringBuilder.append(";");
+                    }
                 }
+                values.put(COLUMN_NAME_Tags, stringBuilder.toString());
             }
-            values.put(COLUMN_NAME_Tags, stringBuilder.toString());
         }
         return values;
     }
@@ -114,21 +146,23 @@ public class ContactDao extends AbstractDao<ContactBean> {
     protected ContactBean toEntity(Cursor cursor) {
         ContactBean contact = new ContactBean();
         ContactRemarkBean remark = new ContactRemarkBean();
-        remark.setRemarkName(cursor.getString(COLUMN_INDEX_RemarkName));
-        remark.setDescription(cursor.getString(COLUMN_INDEX_Description));
-        remark.setUploadFlag(cursor.getInt(COLUMN_INDEX_UploadFlag));
 
-        String telephone = cursor.getString(COLUMN_INDEX_Telephone);
+        remark.setRemarkName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_RemarkName)));
+        remark.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Description)));
+        remark.setUploadFlag(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_UploadFlag)));
+
+        String telephone = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Telephone));
         if (!TextUtils.isEmpty(telephone)) {
             String[] telephones = telephone.split(";");
             remark.setTelephone(new ArrayList<>(Arrays.asList(telephones)));
         }
 
-        String tag = cursor.getString(COLUMN_INDEX_Tags);
+        String tag = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Tags));
         if (!TextUtils.isEmpty(tag)) {
             String[] tags = tag.split(";");
             remark.setTags(new ArrayList<>(Arrays.asList(tags)));
         }
+
         contact.setRemark(remark);
         contact.setUserProfile(UserDao.toEntityFromCursor(cursor));
         return contact;

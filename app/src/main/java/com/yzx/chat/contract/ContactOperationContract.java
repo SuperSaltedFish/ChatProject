@@ -29,6 +29,8 @@ public class ContactOperationContract {
 
         void enableLoadMoreHint(boolean isEnable);
 
+        void showError(String error);
+
     }
 
 
@@ -36,7 +38,7 @@ public class ContactOperationContract {
 
         void init(String userID);
 
-        void acceptContactRequest(String contactID);
+        void acceptContactRequest(ContactOperationBean contactOperation);
 
         boolean isLoadingMore();
 

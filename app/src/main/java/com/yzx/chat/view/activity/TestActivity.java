@@ -3,14 +3,11 @@ package com.yzx.chat.view.activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-
 import com.yzx.chat.util.RSAUtil;
 import com.yzx.chat.widget.view.Alerter;
-import com.yzx.chat.widget.view.FlowLayout;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -29,46 +26,16 @@ public class TestActivity extends BaseCompatActivity {
 
     }
 
-    private EditText mEditText;
-    private FlowLayout mFlowLayout;
-
     @Override
     protected void setup() {
 
-
     }
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-//        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-//        Call<JsonResponse<Void>> task = api.addFriend("5a3789ff2889040e1822fe88");
-//        task.setCallback(new BaseHttpCallback<Void>() {
-//            @Override
-//            protected void onSuccess(Void response) {
-//                LogUtil.e("onSuccess");
-//
-//            }
-//
-//            @Override
-//            protected void onFailure(String message) {
-//                LogUtil.e("onFailure");
-//            }
-//        });
-//        NetworkExecutor.getInstance().submit(task);
-
-
-//        Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
-//            @Override
-//            public boolean queueIdle() {
-//                new Alerter(TestActivity.this,R.layout.item_conversation_single).show();
-//                return false;
-//            }
-//        });
     }
 
     Alerter mAlerter;

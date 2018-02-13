@@ -9,8 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
-import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.contract.LoginContract;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
@@ -23,12 +21,11 @@ import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.tool.IdentityManager;
-import com.yzx.chat.tool.ApiManager;
+import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.RSAUtil;
 
 
@@ -64,7 +61,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private Handler mHandler;
 
     public LoginPresenter() {
-        mAuthApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
+        mAuthApi = (AuthApi) ApiHelper.getProxyInstance(AuthApi.class);
         mGson = new GsonBuilder().serializeNulls().create();
         mHandler = new Handler(Looper.myLooper());
 
@@ -88,10 +85,10 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void reset() {
-        NetworkUtil.cancelCall(mGetSecretKeyCall);
-        NetworkUtil.cancelCall(mLoginCall);
-        NetworkUtil.cancelCall(mRegisterCall);
-        NetworkUtil.cancelCall(mObtainSMSCodeCall);
+        AsyncUtil.cancelCall(mGetSecretKeyCall);
+        AsyncUtil.cancelCall(mLoginCall);
+        AsyncUtil.cancelCall(mRegisterCall);
+        AsyncUtil.cancelCall(mObtainSMSCodeCall);
     }
 
     @Override
@@ -127,7 +124,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initSecretKeyCall() {
-        NetworkUtil.cancelCall(mGetSecretKeyCall);
+        AsyncUtil.cancelCall(mGetSecretKeyCall);
         mGetSecretKeyCall = mAuthApi.getSignature();
         mGetSecretKeyCall.setCallback(new BaseHttpCallback<GetSecretKeyBean>() {
             @Override
@@ -166,7 +163,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initSMSCodeCall(String username, String type, Map<String, Object> data) {
-        NetworkUtil.cancelCall(mObtainSMSCodeCall);
+        AsyncUtil.cancelCall(mObtainSMSCodeCall);
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
@@ -200,7 +197,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initLoginCall(String username, String password, String verifyCode) {
-        NetworkUtil.cancelCall(mLoginCall);
+        AsyncUtil.cancelCall(mLoginCall);
         mLoginCall = mAuthApi.login(
                 username,
                 password,
@@ -230,7 +227,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void initRegisterCall(String username, String password, String nickname, String verifyCode) {
-        NetworkUtil.cancelCall(mRegisterCall);
+        AsyncUtil.cancelCall(mRegisterCall);
         mRegisterCall = mAuthApi.register(
                 username,
                 password,

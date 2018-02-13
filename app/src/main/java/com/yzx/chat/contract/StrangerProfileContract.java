@@ -13,6 +13,7 @@ public class StrangerProfileContract {
 
     public interface View extends BaseView<Presenter> {
         void goBack();
+        void showError(String error);
     }
 
 

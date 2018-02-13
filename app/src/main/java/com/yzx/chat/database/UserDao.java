@@ -90,16 +90,16 @@ public class UserDao extends AbstractDao<UserBean> {
         return bean;
     }
 
-    public static UserBean toEntityFromCursor(Cursor cursor){
+    public static UserBean toEntityFromCursor(Cursor cursor) {
         UserBean bean = new UserBean();
-        bean.setTelephone(cursor.getString(COLUMN_INDEX_Telephone));
-        bean.setUserID(cursor.getString(COLUMN_INDEX_UserID));
-        bean.setNickname(cursor.getString(COLUMN_INDEX_Nickname));
-        bean.setAvatar(cursor.getString(COLUMN_INDEX_Avatar));
-        bean.setSignature(cursor.getString(COLUMN_INDEX_Signature));
-        bean.setLocation(cursor.getString(COLUMN_INDEX_Location));
-        bean.setBirthday(cursor.getString(COLUMN_INDEX_Birthday));
-        bean.setSex(cursor.getInt(COLUMN_INDEX_Sex));
+        bean.setTelephone(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Telephone)));
+        bean.setUserID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_UserID)));
+        bean.setNickname(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Nickname)));
+        bean.setAvatar(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Avatar)));
+        bean.setSignature(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Signature)));
+        bean.setLocation(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Location)));
+        bean.setBirthday(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Birthday)));
+        bean.setSex(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_Sex)));
         return bean;
     }
 }

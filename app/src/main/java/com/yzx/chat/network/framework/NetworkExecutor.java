@@ -3,9 +3,6 @@ package com.yzx.chat.network.framework;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.yzx.chat.util.LogUtil;
-
-import java.lang.reflect.Type;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +55,7 @@ public class NetworkExecutor {
         mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, startIndex, length, this));
     }
 
-    public void cleanAllTask(){
+    public void cleanAllTask() {
         mThreadPoolExecutor.purge();
         mThreadPoolExecutor.getQueue().clear();
     }
@@ -85,12 +82,21 @@ public class NetworkExecutor {
             }
             HttpDataFormatAdapter adapter = call.getHttpDataFormatAdapter();
             final HttpRequest request = call.getHttpRequest();
-            String resultParams = adapter.requestToString(request.url(), request.getParams(), request.requestMethod());
+            String resultParams = adapter.requestToString(request.url(), request.params(), request.requestMethod());
             Http.Result result;
-            if ("POST".equals(request.requestMethod())) {
-                result = Http.doPost(request.url(), resultParams);
-            } else {
-                result = Http.doGet(request.url(), resultParams);
+            switch (request.requestMethod()) {
+                case "GET":
+                    result = Http.doGet(request.url(), resultParams);
+                    break;
+                case "POST":
+                    if (request.uploadList() != null && request.uploadList().size() > 0) {
+                        result = Http.doUpload(request.url(), resultParams, request.uploadList());
+                    } else {
+                        result = Http.doPost(request.url(), resultParams);
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("unknown request method:" + request.requestMethod());
             }
             Throwable throwable = result.getThrowable();
             if (throwable != null) {
@@ -107,7 +113,7 @@ public class NetworkExecutor {
                     } catch (Exception e) {
                         error(call, e);
                     }
-                }else {
+                } else {
                     success(call, response);
                 }
             }
@@ -123,7 +129,7 @@ public class NetworkExecutor {
                         HttpCallback callback = call.getCallback();
                         if (!call.isCancel() && callback != null) {
                             callback.onResponse(httpResponse);
-                            if(isExecuteNextTask(call)){
+                            if (isExecuteNextTask(call)) {
                                 mExecutor.submit(mCalls[mStartIndex]);
                             }
                         }
@@ -133,7 +139,7 @@ public class NetworkExecutor {
                 HttpCallback callback = call.getCallback();
                 if (!call.isCancel() && callback != null) {
                     callback.onResponse(httpResponse);
-                    if(isExecuteNextTask(call)){
+                    if (isExecuteNextTask(call)) {
                         mExecutor.submit(mCalls[mStartIndex]);
                     }
                 }
@@ -148,7 +154,7 @@ public class NetworkExecutor {
                         HttpCallback callback = call.getCallback();
                         if (!call.isCancel() && callback != null) {
                             callback.onError(e);
-                            if(isExecuteNextTask(call)){
+                            if (isExecuteNextTask(call)) {
                                 mExecutor.submit(mCalls[mStartIndex]);
                             }
                         }
@@ -158,7 +164,7 @@ public class NetworkExecutor {
                 HttpCallback callback = call.getCallback();
                 if (!call.isCancel() && callback != null) {
                     callback.onError(e);
-                    if(isExecuteNextTask(call)){
+                    if (isExecuteNextTask(call)) {
                         mExecutor.submit(mCalls[mStartIndex]);
                     }
                 }
@@ -167,7 +173,7 @@ public class NetworkExecutor {
 
         private boolean isExecuteNextTask(final Call call) {
             HttpCallback callback = call.getCallback();
-            return mStartIndex<mLength&&!call.isCancel() && callback != null && callback.isExecuteNextTask();
+            return mStartIndex < mLength && !call.isCancel() && callback != null && callback.isExecuteNextTask();
         }
     }
 

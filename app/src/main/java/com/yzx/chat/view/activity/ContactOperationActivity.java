@@ -25,6 +25,7 @@ import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
+import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     private View mFooterView;
     private TextView mTvLoadMoreHint;
     private OverflowPopupMenu mContactOperationMenu;
+    private ProgressDialog mProgressDialog;
     private ContactOperationAdapter mAdapter;
     private List<ContactOperationBean> mContactOperationList;
 
@@ -57,6 +59,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         mRecyclerView = findViewById(R.id.ContactOperationActivity_mRecyclerView);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ContactOperationActivity_ProgressHint));
         mContactOperationMenu = new OverflowPopupMenu(this);
         mContactOperationList = new ArrayList<>(32);
         mAdapter = new ContactOperationAdapter(mContactOperationList);
@@ -128,7 +131,10 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     private final ContactOperationAdapter.OnAcceptContactRequestListener mOnAcceptContactRequestListener = new ContactOperationAdapter.OnAcceptContactRequestListener() {
         @Override
         public void onAcceptContactRequest(int position) {
-            mPresenter.acceptContactRequest(mContactOperationList.get(position).getUserID());
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
+            mPresenter.acceptContactRequest(mContactOperationList.get(position));
         }
     };
 
@@ -185,6 +191,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
             mAdapter.notifyItemChangedEx(index);
             mContactOperationList.set(index, ContactOperation);
         }
+        mProgressDialog.dismiss();
     }
 
     @Override
@@ -192,6 +199,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
         mContactOperationList.clear();
         mContactOperationList.addAll(newDataList);
+        mProgressDialog.dismiss();
     }
 
     @Override
@@ -214,5 +222,10 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         } else {
             mAdapter.addFooterView(null);
         }
+    }
+
+    @Override
+    public void showError(String error) {
+        showToast(error);
     }
 }

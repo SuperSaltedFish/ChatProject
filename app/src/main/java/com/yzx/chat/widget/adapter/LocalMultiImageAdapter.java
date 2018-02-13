@@ -22,14 +22,14 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-public class LocalImageAdapter extends BaseRecyclerViewAdapter<LocalImageAdapter.ItemView> {
+public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiImageAdapter.ItemView> {
 
     private List<String> mImagePathList;
     private List<String> mImageSelectedList;
     private int mHorizontalItemCount;
     private OnImageItemChangeListener mOnImageItemChangeListener;
 
-    public LocalImageAdapter(List<String> currentImagePathList, List<String> imageSelectedList, int horizontalItemCount) {
+    public LocalMultiImageAdapter(List<String> currentImagePathList, List<String> imageSelectedList, int horizontalItemCount) {
         mImagePathList = currentImagePathList;
         mImageSelectedList = imageSelectedList;
         mHorizontalItemCount = horizontalItemCount;

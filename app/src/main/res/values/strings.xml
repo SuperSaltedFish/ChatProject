@@ -141,5 +141,8 @@
     <string name="ProfileModifyActivity_Woman">女</string>
     <string name="ProfileModifyActivity_AvatarLabel">头像</string>
     <string name="ProfileModifyActivity_NoneNickname">昵称不能为空</string>
+    <string name="StrangerProfileActivity_ProgressHint">正在发送...</string>
+    <string name="ContactOperationActivity_ProgressHint">正在添加...</string>
+    <string name="ContactProfileActivity_DeleteProgressHint">正在删除...</string>
 
 </resources>

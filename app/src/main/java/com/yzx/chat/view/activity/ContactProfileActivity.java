@@ -14,6 +14,7 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactProfileContract;
 import com.yzx.chat.presenter.ContactProfilePresenter;
 import com.yzx.chat.widget.adapter.ContactProfilePagerAdapter;
+import com.yzx.chat.widget.view.ProgressDialog;
 
 import io.rong.imlib.model.Conversation;
 
@@ -25,6 +26,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private ViewPager mViewPager;
     private ImageView mIvStartChat;
     private ContactProfilePagerAdapter mPagerAdapter;
+    private ProgressDialog mProgressDialog;
 
     private ContactBean mContactBean;
 
@@ -42,7 +44,8 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mTabLayout = findViewById(R.id.FriendProfileActivity_mTabLayout);
         mViewPager = findViewById(R.id.FriendProfileActivity_mViewPager);
         mIvStartChat = findViewById(R.id.FriendProfileActivity_mIvStartChat);
-        mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle),mContactBean);
+        mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle), mContactBean);
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ContactProfileActivity_DeleteProgressHint));
     }
 
     @Override
@@ -85,6 +88,12 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
                 intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactBean);
                 startActivityForResult(intent, 0);
                 break;
+            case R.id.ContactMenu_DeleteContact:
+                if (!mProgressDialog.isShowing()) {
+                    mProgressDialog.show();
+                }
+                mPresenter.deleteContact();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -97,6 +106,12 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     @Override
+    protected void onDestroy() {
+        mProgressDialog.dismiss();
+        super.onDestroy();
+    }
+
+    @Override
     public ContactProfileContract.Presenter getPresenter() {
         return new ContactProfilePresenter();
     }
@@ -104,5 +119,16 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     @Override
     public void updateContactInfo(ContactBean contact) {
         mContactBean = contact;
+    }
+
+    @Override
+    public void showError(String error) {
+        mProgressDialog.dismiss();
+        showToast(error);
+    }
+
+    @Override
+    public void goBack() {
+        finish();
     }
 }

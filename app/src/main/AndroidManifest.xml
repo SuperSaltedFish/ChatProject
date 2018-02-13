@@ -100,6 +100,18 @@
 
         </activity>
 
+        <activity android:name=".view.activity.ProfileModifyActivity">
+
+        </activity>
+        <activity android:name=".view.activity.SignatureEditActivity">
+
+        </activity>
+        <activity
+            android:name=".view.activity.ImageSingleSelectorActivity"
+            android:theme="@style/BaseDarkTheme">
+
+        </activity>
+
         <activity android:name=".view.activity.TestActivity">
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
@@ -107,14 +119,6 @@
             <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
-        <activity android:name=".view.activity.ProfileModifyActivity">
-
-        </activity>
-        <activity android:name=".view.activity.SignatureEditActivity">
-
-        </activity>
-        <activity android:name=".view.activity.ImageSingleSelectorActivity" />
-
     </application>
 
 </manifest>

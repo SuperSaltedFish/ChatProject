@@ -92,6 +92,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+                hideSoftKeyboard();
                 String searchText = mEtSearch.getText().toString();
                 if (!TextUtils.isEmpty(searchText)) {
                     mPresenter.searchUser(searchText);

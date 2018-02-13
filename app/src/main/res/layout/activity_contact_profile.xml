@@ -41,12 +41,12 @@
                     android:src="@drawable/temp_head_image"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.yzx.chat.widget.view.CircleImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@color/colorAccent"
+                    android:background="@color/green"
                     android:elevation="2dp"
                     android:padding="10dp"
                     android:src="@drawable/ic_voice_call"
@@ -88,7 +88,7 @@
                     android:paddingEnd="80dp"
                     android:paddingStart="80dp"
                     android:text="生活就像海洋，只有意志坚强的人才能到彼岸"
-                    android:textColor="@color/text_main_color_white_alpha"
+                    android:textColor="@color/text_main_color_white"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

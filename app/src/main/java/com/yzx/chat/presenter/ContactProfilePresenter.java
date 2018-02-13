@@ -6,6 +6,8 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactProfileContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.util.AsyncResult;
+import com.yzx.chat.util.AsyncUtil;
 
 /**
  * Created by YZX on 2018年01月25日.
@@ -17,17 +19,21 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     private ContactProfileContract.View mContactProfileView;
     private ContactBean mContactBean;
     private Handler mHandler;
+    private DeleteContactResult mDeleteContactResult;
+    private IMClient mIMClient;
 
     @Override
     public void attachView(ContactProfileContract.View view) {
         mContactProfileView = view;
         mHandler = new Handler();
-        IMClient.getInstance().contactManager().addContactChangeListener(mOnContactChangeListener);
+        mIMClient = IMClient.getInstance();
+        mIMClient.contactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
     public void detachView() {
-        IMClient.getInstance().contactManager().removeContactChangeListener(mOnContactChangeListener);
+        AsyncUtil.cancelResult(mDeleteContactResult);
+        mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mContactProfileView = null;
     }
@@ -36,6 +42,22 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     public void init(ContactBean contact) {
         mContactBean = contact;
     }
+
+    @Override
+    public void deleteContact() {
+        AsyncUtil.cancelResult(mDeleteContactResult);
+        mDeleteContactResult = new DeleteContactResult(this);
+        mIMClient.contactManager().deleteContact(mContactBean, mDeleteContactResult);
+    }
+
+    public void deleteContactSuccess() {
+        mContactProfileView.goBack();
+    }
+
+    public void deleteContactFailure(String error) {
+        mContactProfileView.showError(error);
+    }
+
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
@@ -60,4 +82,22 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
             }
         }
     };
+
+    private static class DeleteContactResult extends AsyncResult<ContactProfilePresenter, Boolean> {
+
+
+        public DeleteContactResult(ContactProfilePresenter dependent) {
+            super(dependent);
+        }
+
+        @Override
+        protected void onSuccessResult(ContactProfilePresenter dependent, Boolean result) {
+            dependent.deleteContactSuccess();
+        }
+
+        @Override
+        protected void onFailureResult(ContactProfilePresenter dependent, String error) {
+            dependent.deleteContactFailure(error);
+        }
+    }
 }

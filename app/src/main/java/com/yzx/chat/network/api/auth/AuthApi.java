@@ -1,6 +1,5 @@
 package com.yzx.chat.network.api.auth;
 
-import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;

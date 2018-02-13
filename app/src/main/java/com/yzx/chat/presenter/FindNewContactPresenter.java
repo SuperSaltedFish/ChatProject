@@ -6,12 +6,11 @@ import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.FindNewContactContract;
 import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.GetUserProfileBean;
 import com.yzx.chat.network.api.user.SearchUserBean;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AsyncUtil;
 
 import java.util.List;
 
@@ -33,13 +32,13 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
     @Override
     public void attachView(FindNewContactContract.View view) {
         mFindNewContactContractView = view;
-        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
         mHandler = new Handler();
     }
 
     @Override
     public void detachView() {
-        NetworkUtil.cancelCall(mSearchUserCall);
+        AsyncUtil.cancelCall(mSearchUserCall);
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
     }
@@ -51,7 +50,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
             return;
         }
         isSearching = true;
-        NetworkUtil.cancelCall(mSearchUserCall);
+        AsyncUtil.cancelCall(mSearchUserCall);
         mSearchUserCall = mUserApi.searchUser(nicknameOrTelephone);
         mSearchUserCall.setCallback(new BaseHttpCallback<SearchUserBean>() {
             @Override

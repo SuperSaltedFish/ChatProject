@@ -1,16 +1,10 @@
 package com.yzx.chat.presenter;
 
-import com.yzx.chat.base.BaseHttpCallback;
-import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.StrangerProfileContract;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.contact.ContactApi;
-import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.util.AsyncResult;
+import com.yzx.chat.util.AsyncUtil;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -20,43 +14,49 @@ import com.yzx.chat.util.NetworkUtil;
 public class StrangerProfilePresenter implements StrangerProfileContract.Presenter {
 
     private StrangerProfileContract.View mStrangerProfileView;
-    private Call<JsonResponse<Void>> mRequestContactCall;
-
-    private ContactApi mContactApi;
+    private RequestContactResult mRequestContactResult;
 
     @Override
     public void attachView(StrangerProfileContract.View view) {
         mStrangerProfileView = view;
-        mContactApi = (ContactApi) ApiManager.getProxyInstance(ContactApi.class);
+
     }
 
     @Override
     public void detachView() {
+        AsyncUtil.cancelResult(mRequestContactResult);
         mStrangerProfileView = null;
     }
 
     @Override
     public void requestContact(final UserBean user, final String verifyContent) {
-        NetworkUtil.cancelCall(mRequestContactCall);
-        mRequestContactCall = mContactApi.requestContact(user.getUserID(), verifyContent);
-        mRequestContactCall.setCallback(new BaseHttpCallback<Void>() {
-            @Override
-            protected void onSuccess(Void response) {
-                ContactOperationBean operation = new ContactOperationBean();
-                operation.setReason(verifyContent);
-                operation.setUserID(user.getUserID());
-                operation.setTime((int) (System.currentTimeMillis() / 1000));
-                operation.setUser(user);
-                operation.setType(ContactManager.CONTACT_OPERATION_VERIFYING);
-                IMClient.getInstance().contactManager().replaceContactOperationAsync(operation);
-                mStrangerProfileView.goBack();
-            }
+        AsyncUtil.cancelResult(mRequestContactResult);
+        mRequestContactResult = new RequestContactResult(this);
+        IMClient.getInstance().contactManager().requestContact(user, verifyContent, mRequestContactResult);
+    }
 
-            @Override
-            protected void onFailure(String message) {
+    private void requestComplete() {
+        mStrangerProfileView.goBack();
+    }
 
-            }
-        });
-        sHttpExecutor.submit(mRequestContactCall);
+    private void requestFailure(String error) {
+        mStrangerProfileView.showError(error);
+    }
+
+    private static class RequestContactResult extends AsyncResult<StrangerProfilePresenter, Boolean> {
+
+        RequestContactResult(StrangerProfilePresenter dependent) {
+            super(dependent);
+        }
+
+        @Override
+        protected void onSuccessResult(StrangerProfilePresenter dependent, Boolean result) {
+            dependent.requestComplete();
+        }
+
+        @Override
+        protected void onFailureResult(StrangerProfilePresenter dependent, String error) {
+            dependent.requestFailure(error);
+        }
     }
 }

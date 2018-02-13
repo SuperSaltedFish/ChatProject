@@ -10,7 +10,7 @@ import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkAsyncTask;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.util.AsyncUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +47,8 @@ public class ContactPresenter implements ContactContract.Presenter {
     public void detachView() {
         mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
-        NetworkUtil.cancelTask(mLoadUnreadCountTask);
-        NetworkUtil.cancelTask(mRefreshContactsTask);
+        AsyncUtil.cancelTask(mLoadUnreadCountTask);
+        AsyncUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mHandler.removeCallbacksAndMessages(null);
         mContactList.clear();
@@ -58,7 +58,7 @@ public class ContactPresenter implements ContactContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
-        NetworkUtil.cancelTask(mLoadUnreadCountTask);
+        AsyncUtil.cancelTask(mLoadUnreadCountTask);
         mLoadUnreadCountTask = new LoadUnreadCountTask();
         mLoadUnreadCountTask.execute();
     }
@@ -67,7 +67,7 @@ public class ContactPresenter implements ContactContract.Presenter {
     @Override
     public void loadAllContact() {
         LogUtil.e("loadAllContact");
-        NetworkUtil.cancelTask(mRefreshContactsTask);
+        AsyncUtil.cancelTask(mRefreshContactsTask);
         mRefreshContactsTask = new RefreshAllContactsTask(this);
         mRefreshContactsTask.execute(mContactList);
 

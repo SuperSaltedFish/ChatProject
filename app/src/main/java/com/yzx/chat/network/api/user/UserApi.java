@@ -4,6 +4,7 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
+import com.yzx.chat.network.framework.UploadPath;
 
 /**
  * Created by YZX on 2017年11月17日.
@@ -25,4 +26,7 @@ public interface UserApi {
                                           @HttpParam("birthday") String birthday,
                                           @HttpParam("location") String location,
                                           @HttpParam("signature") String signature);
+
+    @HttpApi(RequestMethod = "POST", Path = "user/uploadAvatar")
+    Call<JsonResponse<Void>> uploadAvatar(@UploadPath String path);
 }

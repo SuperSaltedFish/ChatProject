@@ -14,7 +14,7 @@ import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.util.AsyncUtil;
 
 import java.util.ArrayList;
 
@@ -58,14 +58,14 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
-        NetworkUtil.cancelTask(mRefreshTask);
+        AsyncUtil.cancelTask(mRefreshTask);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void refreshAllConversations() {
         LogUtil.e("refreshAllConversations");
-        NetworkUtil.cancelTask(mRefreshTask);
+        AsyncUtil.cancelTask(mRefreshTask);
         mRefreshTask = new RefreshAllConversationTask(this);
         mRefreshTask.execute(mConversationList);
     }

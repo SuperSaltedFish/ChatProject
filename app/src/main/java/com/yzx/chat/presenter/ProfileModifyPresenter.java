@@ -8,8 +8,8 @@ import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpResponse;
-import com.yzx.chat.tool.ApiManager;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AsyncUtil;
 
 /**
  * Created by YZX on 2018年02月12日.
@@ -25,7 +25,7 @@ public class ProfileModifyPresenter implements ProfileModifyContract.Presenter {
     @Override
     public void attachView(ProfileModifyContract.View view) {
         mProfileModifyView = view;
-        mUserApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
+        mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ProfileModifyPresenter implements ProfileModifyContract.Presenter {
 
     @Override
     public void updateProfile(String nickname, int sex, String birthday, String location, String signature) {
-        NetworkUtil.cancelCall(mUpdateUserProfileCall);
+        AsyncUtil.cancelCall(mUpdateUserProfileCall);
         mUpdateUserProfileCall = mUserApi.updateUserProfile(nickname, sex, birthday, location, signature);
         mUpdateUserProfileCall.setCallback(new HttpCallback<JsonResponse<Void>>() {
             @Override

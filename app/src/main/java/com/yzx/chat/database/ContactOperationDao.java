@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.bean.UserBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +23,12 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
     private static final String COLUMN_NAME_Reason = "Reason";
     private static final String COLUMN_NAME_IsRemind = "IsRemind";
     private static final String COLUMN_NAME_Time = "Time";
-    private static final String COLUMN_NAME_Nickname = "Nickname";
-    private static final String COLUMN_NAME_AvatarUrl = "AvatarUrl";
 
     private static final int COLUMN_INDEX_UserID = 0;
     private static final int COLUMN_INDEX_Type = 1;
     private static final int COLUMN_INDEX_Reason = 2;
     private static final int COLUMN_INDEX_IsRemind = 3;
     private static final int COLUMN_INDEX_Time = 4;
-    private static final int COLUMN_INDEX_Nickname = 5;
-    private static final int COLUMN_INDEX_AvatarUrl = 6;
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
@@ -42,8 +37,6 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
                     + COLUMN_NAME_Reason + " TEXT,"
                     + COLUMN_NAME_IsRemind + " INTEGER,"
                     + COLUMN_NAME_Time + " INTEGER,"
-                    + COLUMN_NAME_Nickname + " TEXT,"
-                    + COLUMN_NAME_AvatarUrl + " TEXT,"
                     + "PRIMARY KEY (" + COLUMN_NAME_UserID + ")"
                     + ")";
 
@@ -106,7 +99,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
     @Override
     protected String getWhereClauseOfKey() {
-        return COLUMN_INDEX_UserID + "=?";
+        return COLUMN_NAME_UserID + "=?";
     }
 
     @Override
@@ -121,8 +114,6 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
         values.put(ContactOperationDao.COLUMN_NAME_Reason, entity.getReason());
         values.put(ContactOperationDao.COLUMN_NAME_IsRemind, entity.isRemind() ? 1 : 0);
         values.put(ContactOperationDao.COLUMN_NAME_Time, entity.getTime());
-        values.put(ContactOperationDao.COLUMN_NAME_Nickname, entity.getUser().getNickname());
-        values.put(ContactOperationDao.COLUMN_NAME_AvatarUrl, entity.getUser().getAvatar());
         return values;
     }
 
@@ -135,10 +126,6 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
         bean.setRemind(cursor.getInt(COLUMN_INDEX_IsRemind) == 1);
         bean.setTime(cursor.getInt(COLUMN_INDEX_Time));
         bean.setIndexID(cursor.getInt(cursor.getColumnCount() - 1));
-        UserBean user = new UserBean();
-        user.setNickname(cursor.getString(COLUMN_INDEX_Nickname));
-        user.setAvatar(cursor.getString(COLUMN_INDEX_AvatarUrl));
-        bean.setUser(user);
         return bean;
     }
 

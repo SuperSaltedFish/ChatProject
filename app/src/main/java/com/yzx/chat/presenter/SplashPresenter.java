@@ -17,11 +17,11 @@ import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpResponse;
-import com.yzx.chat.tool.ApiManager;
+import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkUtil;
+import com.yzx.chat.util.AsyncUtil;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -50,8 +50,8 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void detachView() {
-        NetworkUtil.cancelCall(mTokenVerify);
-        NetworkUtil.cancelCall(mGetUserFriendsTask);
+        AsyncUtil.cancelCall(mTokenVerify);
+        AsyncUtil.cancelCall(mGetUserFriendsTask);
         mSplashView = null;
     }
 
@@ -126,10 +126,10 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     private void initHTTPServer(boolean isAlreadyLogged) {
-        ContactApi contactApi = (ContactApi) ApiManager.getProxyInstance(ContactApi.class);
-        AuthApi authApi = (AuthApi) ApiManager.getProxyInstance(AuthApi.class);
+        ContactApi contactApi = (ContactApi) ApiHelper.getProxyInstance(ContactApi.class);
+        AuthApi authApi = (AuthApi) ApiHelper.getProxyInstance(AuthApi.class);
 
-        NetworkUtil.cancelCall(mTokenVerify);
+        AsyncUtil.cancelCall(mTokenVerify);
         mTokenVerify = authApi.tokenVerify();
         mTokenVerify.setCallback(new HttpCallback<JsonResponse<TokenVerifyBean>>() {
             private boolean isSuccess;
@@ -168,7 +168,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             }
         });
 
-        NetworkUtil.cancelCall(mGetUserFriendsTask);
+        AsyncUtil.cancelCall(mGetUserFriendsTask);
         mGetUserFriendsTask = contactApi.getUserContacts();
         mGetUserFriendsTask.setCallback(new BaseHttpCallback<GetUserContactsBean>() {
             @Override

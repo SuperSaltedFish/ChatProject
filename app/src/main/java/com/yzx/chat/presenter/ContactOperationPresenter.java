@@ -4,20 +4,18 @@ import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 import android.text.TextUtils;
 
-import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ContactOperationContract;
-import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.tool.ApiManager;
+import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AsyncResult;
+import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkAsyncTask;
-import com.yzx.chat.util.NetworkUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     private LoadAllContactOperationTask mLoadAllContactOperationTask;
     private LoadMoreContactOperationTask mLoadMoreContactOperationTask;
     private List<ContactOperationBean> mContactOperationList;
-    private Call<JsonResponse<Void>> mAcceptContactCall;
+    private AcceptContactResult mAcceptContactResult;
     private IMClient mIMClient;
     private Handler mHandler;
     private ContactApi mContactApi;
@@ -48,7 +46,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mContactOperationContractView = view;
         mContactOperationList = new ArrayList<>(32);
         mHandler = new Handler();
-        mContactApi = (ContactApi) ApiManager.getProxyInstance(ContactApi.class);
+        mContactApi = (ContactApi) ApiHelper.getProxyInstance(ContactApi.class);
         mIMClient = IMClient.getInstance();
         mIMClient.contactManager().addContactOperationListener(mOnContactOperationListener);
         hasLoadingMore = true;
@@ -56,6 +54,9 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void detachView() {
+        AsyncUtil.cancelTask(mLoadAllContactOperationTask);
+        AsyncUtil.cancelTask(mLoadMoreContactOperationTask);
+        AsyncUtil.cancelResult(mAcceptContactResult);
         mIMClient.contactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
@@ -73,22 +74,12 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
-    public void acceptContactRequest(String contactID) {
-        NetworkUtil.cancelCall(mAcceptContactCall);
-        mAcceptContactCall = mContactApi.acceptContact(contactID);
-        mAcceptContactCall.setCallback(new BaseHttpCallback<Void>() {
-            @Override
-            protected void onSuccess(Void response) {
-
-            }
-
-            @Override
-            protected void onFailure(String message) {
-
-            }
-        });
-        sHttpExecutor.submit(mAcceptContactCall);
+    public void acceptContactRequest(final ContactOperationBean contactOperation) {
+        AsyncUtil.cancelResult(mAcceptContactResult);
+        mAcceptContactResult = new AcceptContactResult(this);
+        mIMClient.contactManager().acceptContact(contactOperation, mAcceptContactResult);
     }
+
 
     @Override
     public boolean isLoadingMore() {
@@ -108,14 +99,14 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @SuppressWarnings("unchecked")
     @Override
     public void loadAllContactOperation() {
-        NetworkUtil.cancelTask(mLoadAllContactOperationTask);
+        AsyncUtil.cancelTask(mLoadAllContactOperationTask);
         mLoadAllContactOperationTask = new LoadAllContactOperationTask(this);
         mLoadAllContactOperationTask.execute(mContactOperationList);
     }
 
     @Override
     public void loadMoreContactOperation(int startID) {
-        NetworkUtil.cancelTask(mLoadMoreContactOperationTask);
+        AsyncUtil.cancelTask(mLoadMoreContactOperationTask);
         mLoadMoreContactOperationTask = new LoadMoreContactOperationTask(this);
         mLoadMoreContactOperationTask.execute(startID, Constants.CONTACT_MESSAGE_PAGE_SIZE);
         isLoadingMore = true;
@@ -149,8 +140,30 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mContactOperationList.add(0, message);
-                    mContactOperationContractView.addContactOperationToList(message);
+                    int index = mContactOperationList.indexOf(message);
+                    if (index < 0) {
+                        mContactOperationList.add(0, message);
+                        mContactOperationContractView.addContactOperationToList(message);
+                    } else {
+                        mContactOperationList.set(index, message);
+                        mContactOperationContractView.updateContactOperationFromList(message);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onContactOperationUpdate(final ContactOperationBean message) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    int index = mContactOperationList.indexOf(message);
+                    if (index < 0) {
+                        LogUtil.e("search ContactOperation fail from mContactOperationList");
+                    } else {
+                        mContactOperationList.set(index, message);
+                    }
+                    mContactOperationContractView.updateContactOperationFromList(message);
                 }
             });
         }
@@ -169,6 +182,10 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
             });
         }
     };
+
+    public void acceptContactRequestFailure(String error) {
+        mContactOperationContractView.showError(error);
+    }
 
 
     private static class LoadMoreContactOperationTask extends NetworkAsyncTask<ContactOperationPresenter, Integer, List<ContactOperationBean>> {
@@ -208,7 +225,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
                 @Override
                 public boolean isContentsEquals(ContactOperationBean oldItem, ContactOperationBean newItem) {
-                    return oldItem.getType() == newItem.getType();
+                    return oldItem.getType().equals(newItem.getType()) && oldItem.getReason().equals(newItem.getReason());
                 }
             });
             oldList.clear();
@@ -222,6 +239,23 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
             lifeDependentObject.loadAllContactOperationComplete(diffResult);
         }
 
+    }
+
+    private static class AcceptContactResult extends AsyncResult<ContactOperationPresenter, Boolean> {
+
+        public AcceptContactResult(ContactOperationPresenter dependent) {
+            super(dependent);
+        }
+
+        @Override
+        protected void onSuccessResult(ContactOperationPresenter dependent, Boolean result) {
+
+        }
+
+        @Override
+        protected void onFailureResult(ContactOperationPresenter dependent, String error) {
+            dependent.acceptContactRequestFailure(error);
+        }
     }
 
 
