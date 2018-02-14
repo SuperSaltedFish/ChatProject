@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactOperationBean;
@@ -43,10 +44,12 @@ public class ContactManager {
 
     public static final String CONTACT_OPERATION_REQUEST = "Request";//被请求
     public static final String CONTACT_OPERATION_DISAGREE = "Disagree";//被拒绝
-    public static final String CONTACT_OPERATION_ACCEPT = "AcceptResponse";//同意添加
-    public static final String CONTACT_OPERATION_REFUSED = "RefusedResponse";//拒绝添加
+
+    public static final String CONTACT_OPERATION_ACCEPT = "AcceptResponse";//对方已经添加
+    public static final String CONTACT_OPERATION_REFUSED = "RefusedResponse";//对方拒绝添加
+
     public static final String CONTACT_OPERATION_ADDED = "Added";//已经添加
-    public static final String CONTACT_OPERATION_VERIFYING = "VERIFYING";//等待验证
+    public static final String CONTACT_OPERATION_VERIFYING = "Verifying";//等待验证
 
     private Set<String> mContactOperationSet;
     private Map<String, ContactBean> mContactsMap;
@@ -137,7 +140,7 @@ public class ContactManager {
                     result.onFailure(message);
                 }
             }
-        });
+        }, false);
         mNetworkExecutor.submit(mRequestContact);
     }
 
@@ -153,7 +156,10 @@ public class ContactManager {
                 contactOperation.setRemind(false);
                 boolean success = mContactOperationDao.replace(contactOperation);
                 if (!success) {
-                    LogUtil.e("requestContact:Failure of operating database");
+                    LogUtil.e("rejectContact:Failure of operating database");
+                }
+                for (OnContactOperationListener listener : mContactOperationListeners) {
+                    listener.onContactOperationUpdate(contactOperation);
                 }
                 if (result != null) {
                     result.onSuccess(success);
@@ -166,7 +172,7 @@ public class ContactManager {
                     result.onFailure(message);
                 }
             }
-        });
+        }, false);
         mNetworkExecutor.submit(mRejectContact);
     }
 
@@ -183,7 +189,10 @@ public class ContactManager {
                 ContactBean contactBean = new ContactBean();
                 contactBean.setUserProfile(contactOperation.getUser());
 
-                boolean success = mContactOperationDao.replace(contactOperation) & mContactDao.replace(contactBean);
+                boolean success = mContactOperationDao.replace(contactOperation) & mContactDao.insert(contactBean);
+                for (OnContactOperationListener listener : mContactOperationListeners) {
+                    listener.onContactOperationUpdate(contactOperation);
+                }
                 if (result != null) {
                     result.onSuccess(success);
                 }
@@ -193,12 +202,15 @@ public class ContactManager {
                     if (newContact == null) {
                         LogUtil.e("Contact is null after acceptContact");
                     } else {
+                        mContactsMap.put(newContact.getUserProfile().getUserID(), newContact);
+
+
                         for (OnContactChangeListener listener : mContactChangeListeners) {
                             listener.onContactAdded(newContact);
                         }
                     }
                 } else {
-                    LogUtil.e("requestContact:Failure of operating database");
+                    LogUtil.e("acceptContact:Failure of operating database");
                 }
             }
 
@@ -208,7 +220,7 @@ public class ContactManager {
                     result.onFailure(message);
                 }
             }
-        });
+        }, false);
         mNetworkExecutor.submit(mAcceptContact);
     }
 
@@ -220,12 +232,14 @@ public class ContactManager {
             protected void onSuccess(Void response) {
                 boolean success = mContactDao.delete(contact);
                 if (!success) {
-                    LogUtil.e("requestContact:Failure of operating database");
+                    LogUtil.e("deleteContact:Failure of operating database");
                 }
+
                 if (result != null) {
                     result.onSuccess(success);
                 }
                 if (success) {
+                    mContactsMap.remove(contact.getUserProfile().getUserID());
                     for (OnContactChangeListener listener : mContactChangeListeners) {
                         listener.onContactDeleted(contact);
                     }
@@ -239,7 +253,7 @@ public class ContactManager {
                     result.onFailure(message);
                 }
             }
-        });
+        }, false);
         mNetworkExecutor.submit(mDeleteContact);
     }
 
@@ -260,25 +274,25 @@ public class ContactManager {
                         listener.onContactUpdate(contact);
                     }
                 } else {
-                    LogUtil.e("requestContact:Failure of operating database");
+                    LogUtil.e("updateContact:Failure of operating database");
                 }
             }
 
             @Override
             protected void onFailure(String message) {
                 contact.getRemark().setUploadFlag(1);
-                if (mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
+                if (!mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
                     for (OnContactChangeListener listener : mContactChangeListeners) {
                         listener.onContactUpdate(contact);
                     }
                 } else {
-                    LogUtil.e("requestContact:Failure of operating database");
+                    LogUtil.e("updateContact:Failure of operating database");
                 }
                 if (result != null) {
                     result.onFailure(message);
                 }
             }
-        });
+        }, false);
         mNetworkExecutor.submit(mUpdateContact);
     }
 
@@ -343,10 +357,6 @@ public class ContactManager {
         return mContactOperationDao.loadAllContactOperation();
     }
 
-    public List<ContactOperationBean> loadMoreContactOperation(int startID, int count) {
-        return mContactOperationDao.loadMoreContactOperation(startID, count);
-    }
-
     public void addContactOperationListener(OnContactOperationListener listener) {
         if (!mContactOperationListeners.contains(listener)) {
             mContactOperationListeners.add(listener);
@@ -389,12 +399,28 @@ public class ContactManager {
             LogUtil.e("contact operation extra is empty");
             return;
         }
-        UserBean user = mGson.fromJson(contactMessage.getExtra(), UserBean.class);
-        if (TextUtils.isEmpty(user.getNickname())) {
-            LogUtil.e(" ContactOperation : Nickname is empty");
+        LogUtil.d("ContactOperationExtra" + contactMessage.getExtra());
+
+        ContactMessageExtra extra;
+        try {
+            extra = mGson.fromJson(contactMessage.getExtra(), ContactMessageExtra.class);
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            LogUtil.e("fromJson ContactMessageExtra.class fail,json content:" + contactMessage.getExtra());
             return;
         }
-        contactOperation.setUser(user);
+
+        if (extra.userProfile != null) {
+            if (!mUserDao.replace(extra.userProfile)) {
+                LogUtil.e(" ContactOperation : replace user fail");
+                return;
+            }
+        } else {
+            LogUtil.e(" ContactOperation : userProfile is empty");
+            return;
+        }
+
+        contactOperation.setUser(extra.userProfile);
         contactOperation.setUserID(contactMessage.getSourceUserId());
         contactOperation.setReason(contactMessage.getMessage());
         contactOperation.setRemind(true);
@@ -439,6 +465,12 @@ public class ContactManager {
         void onContactDeleted(ContactBean contact);
 
         void onContactUpdate(ContactBean contact);
+    }
+
+    private static final class ContactMessageExtra {
+        String sourceUserNickname;
+        long version;
+        UserBean userProfile;
     }
 
 }

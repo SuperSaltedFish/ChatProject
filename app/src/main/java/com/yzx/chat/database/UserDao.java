@@ -64,7 +64,7 @@ public class UserDao extends AbstractDao<UserBean> {
     }
 
     @Override
-    protected ContentValues toContentValues(UserBean entity, ContentValues values) {
+    protected void parseToContentValues(UserBean entity, ContentValues values) {
         values.put(COLUMN_NAME_Telephone, entity.getTelephone());
         values.put(COLUMN_NAME_UserID, entity.getUserID());
         values.put(COLUMN_NAME_Nickname, entity.getNickname());
@@ -73,7 +73,6 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Location, entity.getLocation());
         values.put(COLUMN_NAME_Birthday, entity.getBirthday());
         values.put(COLUMN_NAME_Sex, entity.getSex());
-        return values;
     }
 
     @Override

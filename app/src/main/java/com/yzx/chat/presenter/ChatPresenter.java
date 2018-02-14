@@ -6,9 +6,9 @@ import android.text.TextUtils;
 
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
+import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
@@ -18,6 +18,7 @@ import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -97,6 +98,13 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void sendVoiceMessage(String filePath, int timeLengthSec) {
         sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLengthSec));
+    }
+
+    @Override
+    public void sendImageMessage(Uri imageUri, boolean isOriginal) {
+            sendMessage(ImageMessage.obtain(imageUri, imageUri, isOriginal));
+        // sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLengthSec));
+
     }
 
     @Override
@@ -206,7 +214,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
         @Override
         public void onConversationStateChange(Conversation conversation, int typeCode) {
-            if(typeCode==ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE){
+            if (typeCode == ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {

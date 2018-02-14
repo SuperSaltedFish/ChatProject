@@ -36,7 +36,8 @@ import java.util.Map;
 public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     public static final int RESULT_CODE = 1;
-    public static final String RESULT = "ImageSelectedList";
+    public static final String INTENT_EXTRA_IMAGE_PATH_LIST = "ImagePathList";
+    public static final String INTENT_EXTRA_IS_ORIGINAL = "IsOriginal";
 
     private static final int HORIZONTAL_ITEM_COUNT = 4;
 
@@ -231,7 +232,8 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         public void onClick(View v) {
             if (mSelectedList.size() != 0) {
                 Intent intent = new Intent();
-                intent.putStringArrayListExtra(RESULT, mSelectedList);
+                intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_PATH_LIST, mSelectedList);
+                intent.putExtra(INTENT_EXTRA_IS_ORIGINAL, isOriginal);
                 setResult(RESULT_CODE, intent);
             }
             finish();

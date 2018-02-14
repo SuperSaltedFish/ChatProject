@@ -49,6 +49,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         }
         switch (type) {
             case ContactManager.CONTACT_OPERATION_ADDED:
+            case ContactManager.CONTACT_OPERATION_ACCEPT:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Added);
                 break;
             case ContactManager.CONTACT_OPERATION_DISAGREE:

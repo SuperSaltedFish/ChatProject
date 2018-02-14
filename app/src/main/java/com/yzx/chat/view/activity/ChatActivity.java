@@ -4,6 +4,7 @@ package com.yzx.chat.view.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -27,20 +28,20 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryManager;
-import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.SharePreferenceManager;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
-import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.Alerter;
@@ -152,8 +153,26 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 }
                 break;
             case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
-                startActivity(new Intent(this, ImageMultiSelectorActivity.class));
+                startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
+        if (resultCode == ImageMultiSelectorActivity.RESULT_CODE) {
+            boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
+            ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
+            if (imageList != null && imageList.size() > 0) {
+                for (String path : imageList) {
+                    mPresenter.sendImageMessage(Uri.parse("file://" + path), isOriginal);
+                }
+
+            }
         }
     }
 

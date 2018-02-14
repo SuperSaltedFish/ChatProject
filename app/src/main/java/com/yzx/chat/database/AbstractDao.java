@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public abstract class AbstractDao<T> {
 
-    protected static final String COLUMN_NAME_RowID = "rowid";
+    protected static final String COLUMN_NAME_RowID = "ROWID";
 
     protected ReadWriteHelper mHelper;
 
@@ -21,7 +21,7 @@ public abstract class AbstractDao<T> {
 
     protected abstract String[] toWhereArgsOfKey(T entity);
 
-    protected abstract ContentValues toContentValues(T entity, ContentValues values);
+    protected abstract void parseToContentValues(T entity, ContentValues values);
 
     protected abstract T toEntity(Cursor cursor);
 
@@ -49,10 +49,8 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        ContentValues values = toContentValues(entity, new ContentValues());
-        if (values == null) {
-            return false;
-        }
+        ContentValues values =new ContentValues();
+        parseToContentValues(entity, values);
         boolean result = mHelper.openWritableDatabase().insert(getTableName(), null, values) > 0;
         mHelper.closeWritableDatabase();
         return result;
@@ -69,8 +67,8 @@ public abstract class AbstractDao<T> {
             ContentValues values = new ContentValues();
             for (T entity : entityIterable) {
                 values.clear();
-                values = toContentValues(entity, values);
-                if (values == null || database.insert(getTableName(), null, values) <= 0) {
+                parseToContentValues(entity, values);
+                if (database.insert(getTableName(), null, values) <= 0) {
                     result = false;
                     break;
                 }
@@ -89,10 +87,8 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        ContentValues values = toContentValues(entity, new ContentValues());
-        if (values == null) {
-            return false;
-        }
+        ContentValues values =new ContentValues();
+        parseToContentValues(entity, values);
         boolean result = mHelper.openWritableDatabase().replace(getTableName(), null, values) > 0;
         mHelper.closeWritableDatabase();
         return result;
@@ -109,8 +105,8 @@ public abstract class AbstractDao<T> {
             ContentValues values = new ContentValues();
             for (T entity : entityIterable) {
                 values.clear();
-                values = toContentValues(entity, values);
-                if (values == null || database.replace(getTableName(), null, values) <= 0) {
+                parseToContentValues(entity, values);
+                if (database.replace(getTableName(), null, values) <= 0) {
                     result = false;
                     break;
                 }
@@ -129,11 +125,8 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        ContentValues values = toContentValues(entity, new ContentValues());
-        if (values == null) {
-            return false;
-        }
-
+        ContentValues values =new ContentValues();
+        parseToContentValues(entity, values);
         boolean result = mHelper.openWritableDatabase().update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
         mHelper.closeWritableDatabase();
         return result;
@@ -150,8 +143,8 @@ public abstract class AbstractDao<T> {
             ContentValues values = new ContentValues();
             for (T entity : entityIterable) {
                 values.clear();
-                values = toContentValues(entity, values);
-                if (values == null || database.update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) <= 0) {
+                parseToContentValues(entity, values);
+                if (database.update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) <= 0) {
                     result = false;
                     break;
                 }

@@ -1,6 +1,7 @@
 package com.yzx.chat.view.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -18,9 +19,9 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.contract.ProfileModifyContract;
 import com.yzx.chat.presenter.ProfileModifyPresenter;
+import com.yzx.chat.view.activity.ProfileModifyActivity;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,9 +118,8 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-         //   startActivity(new Intent(mContext, ProfileModifyActivity.class));
-            ProgressDialog progressDialog = new ProgressDialog(mContext,"ndwuanda");
-            progressDialog.show();
+            startActivity(new Intent(mContext, ProfileModifyActivity.class));
+//
 
             ///storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg
 //            UserApi userApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);

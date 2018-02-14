@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,7 +36,6 @@ import java.util.List;
 
 public class ContactOperationActivity extends BaseCompatActivity<ContactOperationContract.Presenter> implements ContactOperationContract.View {
 
-    public static final String INTENT_EXTRA_USER_ID = "UserID";
 
     private RecyclerView mRecyclerView;
     private Button mBtnFindNewContact;
@@ -82,7 +80,8 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         mBtnFindNewContact.setOnClickListener(mOnBtnAddNewContactClickListener);
 
         mAdapter.setOnAcceptContactRequestListener(mOnAcceptContactRequestListener);
-        mAdapter.setScrollToBottomListener(mOnScrollToBottomListener);
+
+        mTvLoadMoreHint.setText(R.string.LoadMoreHint_Default);
 
         setOverflowMenu();
 
@@ -106,14 +105,17 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     }
 
     private void setData() {
-        String userID = getIntent().getStringExtra(INTENT_EXTRA_USER_ID);
-        if (!TextUtils.isEmpty(userID)) {
-            mPresenter.init(userID);
+        mPresenter.init();
+    }
+
+    public void enableLoadMoreHint(boolean isEnable) {
+        if (isEnable) {
+            mAdapter.addFooterView(mFooterView);
         } else {
-            LogUtil.e("userID == null in ContactOperationActivity Intent");
-            finish();
+            mAdapter.addFooterView(null);
         }
     }
+
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
@@ -131,27 +133,10 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     private final ContactOperationAdapter.OnAcceptContactRequestListener mOnAcceptContactRequestListener = new ContactOperationAdapter.OnAcceptContactRequestListener() {
         @Override
         public void onAcceptContactRequest(int position) {
-            if (!mProgressDialog.isShowing()) {
-                mProgressDialog.show();
-            }
             mPresenter.acceptContactRequest(mContactOperationList.get(position));
         }
     };
 
-    private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
-        @Override
-        public void OnScrollToBottom() {
-            if (mPresenter.isLoadingMore()) {
-                return;
-            }
-            if (mPresenter.hasMoreMessage()) {
-                mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_Loading));
-                mPresenter.loadMoreContactOperation(mContactOperationList.get(mContactOperationList.size() - 1).getIndexID());
-            } else {
-                mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
-            }
-        }
-    };
 
     private final View.OnClickListener mOnBtnAddNewContactClickListener = new View.OnClickListener() {
         @Override
@@ -169,6 +154,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     public void addContactOperationToList(ContactOperationBean ContactOperation) {
         mAdapter.notifyItemInsertedEx(0);
         mContactOperationList.add(0, ContactOperation);
+        enableLoadMoreHint(mContactOperationList.size() > 12);
     }
 
     @Override
@@ -177,6 +163,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         if (removePosition >= 0) {
             mAdapter.notifyItemRemovedEx(removePosition);
             mContactOperationList.remove(removePosition);
+            enableLoadMoreHint(mContactOperationList.size() > 12);
         } else {
             LogUtil.e("remove ContactOperationItem fail in ui");
         }
@@ -191,7 +178,6 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
             mAdapter.notifyItemChangedEx(index);
             mContactOperationList.set(index, ContactOperation);
         }
-        mProgressDialog.dismiss();
     }
 
     @Override
@@ -199,28 +185,17 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
         mContactOperationList.clear();
         mContactOperationList.addAll(newDataList);
-        mProgressDialog.dismiss();
+        enableLoadMoreHint(mContactOperationList.size() > 12);
     }
 
     @Override
-    public void addMoreContactOperationToList(List<ContactOperationBean> ContactOperationList, boolean isHasMore) {
-        if (ContactOperationList != null && ContactOperationList.size() != 0) {
-            mAdapter.notifyItemRangeInsertedEx(mContactOperationList.size(), ContactOperationList.size());
-            mContactOperationList.addAll(ContactOperationList);
-        }
-        if (!isHasMore) {
-            mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
-        } else if (ContactOperationList == null) {
-            mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_LoadFail));
-        }
-    }
-
-    @Override
-    public void enableLoadMoreHint(boolean isEnable) {
+    public void enableProgressDialog(boolean isEnable) {
         if (isEnable) {
-            mAdapter.addFooterView(mFooterView);
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
         } else {
-            mAdapter.addFooterView(null);
+            mProgressDialog.dismiss();
         }
     }
 

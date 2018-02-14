@@ -12,15 +12,14 @@ public static final String RONG_CLOUD_APP_KEY = "82hegw5u8dlsx";
 //    public static final String URL_API_BASE = "http://192.168.16.116:3000/v1/api/";
     public static final String URL_API_BASE = "http://118.89.17.132:3000/v1/api/";
 
-    public static final String DATABASE_NAME = "dffkk.db";
+    public static final String DATABASE_NAME = "dffdkk.db";
     public static final int DATABASE_VERSION = 1;
 
-    public static final String RSA_KEY_ALIAS = "RSA_SecretKey";
+    public static final String RSA_KEY_ALIAS = "RSA_SecretKddey";
     public static final String AES_KEY_ALIAS = "AES_SecretKey";
     public static final String TOKEN_ALIAS = "Token";
     public static final String DEVICE_ID_ALIAS = "DeviceID";
 
 
     public static final int CHAT_MESSAGE_PAGE_SIZE = 16;
-    public static final int CONTACT_MESSAGE_PAGE_SIZE = 16;
 }

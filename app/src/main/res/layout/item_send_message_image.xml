@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ChatAdapter_mFlRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="56dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
+    android:gravity="end|center_vertical"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/ChatMessageAdapter_mIvMessageState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="2dp" />
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        app:cardElevation="3dp"
+        app:cardCornerRadius="4dp"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ChatMessageAdapter_mIvImageContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxHeight="160dp"
+            android:maxWidth="160dp"
+            android:scaleType="fitEnd"
+            android:src="@drawable/scsc" />
+    </android.support.v7.widget.CardView>
+
+
+
+</LinearLayout>

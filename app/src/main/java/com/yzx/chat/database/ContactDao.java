@@ -55,7 +55,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
             return null;
         }
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " LEFT OUTER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID + " AND " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=?", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID + " AND " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=?", new String[]{contactID});
         ContactBean contact = null;
         while (cursor.moveToNext()) {
             contact = toEntity(cursor);
@@ -67,7 +67,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
 
     public List<ContactBean> loadAllContacts() {
         SQLiteDatabase database = mHelper.openReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " LEFT OUTER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
         List<ContactBean> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
@@ -87,7 +87,6 @@ public class ContactDao extends AbstractDao<ContactBean> {
         }
         cleanTable();
         return DBManager.getInstance().getUserDao().replaceAll(userList) && insertAll(contactList);
-
     }
 
 
@@ -107,7 +106,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
     }
 
     @Override
-    protected ContentValues toContentValues(ContactBean entity, ContentValues values) {
+    protected void parseToContentValues(ContactBean entity, ContentValues values) {
         values.put(COLUMN_NAME_ContactID, entity.getUserProfile().getUserID());
         ContactRemarkBean remark = entity.getRemark();
         if (remark != null) {
@@ -139,7 +138,6 @@ public class ContactDao extends AbstractDao<ContactBean> {
                 values.put(COLUMN_NAME_Tags, stringBuilder.toString());
             }
         }
-        return values;
     }
 
     @Override

@@ -2,16 +2,12 @@ package com.yzx.chat.presenter;
 
 import android.os.Handler;
 import android.support.v7.util.DiffUtil;
-import android.text.TextUtils;
 
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ContactOperationContract;
-import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AsyncResult;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
@@ -29,33 +25,23 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     private ContactOperationContract.View mContactOperationContractView;
     private LoadAllContactOperationTask mLoadAllContactOperationTask;
-    private LoadMoreContactOperationTask mLoadMoreContactOperationTask;
     private List<ContactOperationBean> mContactOperationList;
     private AcceptContactResult mAcceptContactResult;
     private IMClient mIMClient;
     private Handler mHandler;
-    private ContactApi mContactApi;
-
-    private String mUserID;
-
-    private boolean isLoadingMore;
-    private boolean hasLoadingMore;
 
     @Override
     public void attachView(ContactOperationContract.View view) {
         mContactOperationContractView = view;
         mContactOperationList = new ArrayList<>(32);
         mHandler = new Handler();
-        mContactApi = (ContactApi) ApiHelper.getProxyInstance(ContactApi.class);
         mIMClient = IMClient.getInstance();
         mIMClient.contactManager().addContactOperationListener(mOnContactOperationListener);
-        hasLoadingMore = true;
     }
 
     @Override
     public void detachView() {
         AsyncUtil.cancelTask(mLoadAllContactOperationTask);
-        AsyncUtil.cancelTask(mLoadMoreContactOperationTask);
         AsyncUtil.cancelResult(mAcceptContactResult);
         mIMClient.contactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
@@ -65,30 +51,17 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
-    public void init(String userID) {
-        mUserID = userID;
-        if (!TextUtils.isEmpty(mUserID)) {
-            mIMClient.contactManager().makeAllContactOperationAsRead();
-            loadMoreContactOperation(Integer.MAX_VALUE);
-        }
+    public void init() {
+        mIMClient.contactManager().makeAllContactOperationAsRead();
+        loadAllContactOperation();
     }
 
     @Override
     public void acceptContactRequest(final ContactOperationBean contactOperation) {
         AsyncUtil.cancelResult(mAcceptContactResult);
+        mContactOperationContractView.enableProgressDialog(true);
         mAcceptContactResult = new AcceptContactResult(this);
         mIMClient.contactManager().acceptContact(contactOperation, mAcceptContactResult);
-    }
-
-
-    @Override
-    public boolean isLoadingMore() {
-        return isLoadingMore;
-    }
-
-    @Override
-    public boolean hasMoreMessage() {
-        return hasLoadingMore;
     }
 
     @Override
@@ -104,29 +77,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mLoadAllContactOperationTask.execute(mContactOperationList);
     }
 
-    @Override
-    public void loadMoreContactOperation(int startID) {
-        AsyncUtil.cancelTask(mLoadMoreContactOperationTask);
-        mLoadMoreContactOperationTask = new LoadMoreContactOperationTask(this);
-        mLoadMoreContactOperationTask.execute(startID, Constants.CONTACT_MESSAGE_PAGE_SIZE);
-        isLoadingMore = true;
-    }
-
-    public void loadMoreContactOperationComplete(List<ContactOperationBean> ContactOperationList) {
-        if (ContactOperationList == null) {
-            hasLoadingMore = false;
-        } else {
-            mContactOperationList.addAll(ContactOperationList);
-            if (ContactOperationList.size() < Constants.CONTACT_MESSAGE_PAGE_SIZE) {
-                hasLoadingMore = false;
-            } else {
-                hasLoadingMore = true;
-            }
-        }
-        mContactOperationContractView.addMoreContactOperationToList(ContactOperationList, hasLoadingMore);
-        mContactOperationContractView.enableLoadMoreHint(mContactOperationList.size() >= Constants.CONTACT_MESSAGE_PAGE_SIZE);
-        isLoadingMore = false;
-    }
 
     public void loadAllContactOperationComplete(DiffUtil.DiffResult diffResult) {
         mContactOperationContractView.updateAllContactOperationList(diffResult, mContactOperationList);
@@ -177,35 +127,20 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
                         LogUtil.e("remove ContactOperation fail from mContactOperationList");
                     }
                     mContactOperationContractView.removeContactOperationFromList(message);
-                    mContactOperationContractView.enableLoadMoreHint(mContactOperationList.size() >= Constants.CONTACT_MESSAGE_PAGE_SIZE);
                 }
             });
         }
     };
 
+    public void acceptContactRequestSuccess() {
+        mContactOperationContractView.enableProgressDialog(false);
+    }
+
     public void acceptContactRequestFailure(String error) {
         mContactOperationContractView.showError(error);
+        mContactOperationContractView.enableProgressDialog(false);
     }
 
-
-    private static class LoadMoreContactOperationTask extends NetworkAsyncTask<ContactOperationPresenter, Integer, List<ContactOperationBean>> {
-
-
-        LoadMoreContactOperationTask(ContactOperationPresenter lifeCycleDependence) {
-            super(lifeCycleDependence);
-        }
-
-        @Override
-        protected List<ContactOperationBean> doInBackground(Integer... params) {
-            return IMClient.getInstance().contactManager().loadMoreContactOperation(params[0], params[1]);
-        }
-
-        @Override
-        protected void onPostExecute(List<ContactOperationBean> ContactOperationList, ContactOperationPresenter lifeDependentObject) {
-            super.onPostExecute(ContactOperationList, lifeDependentObject);
-            lifeDependentObject.loadMoreContactOperationComplete(ContactOperationList);
-        }
-    }
 
     private static class LoadAllContactOperationTask extends NetworkAsyncTask<ContactOperationPresenter, List<ContactOperationBean>, DiffUtil.DiffResult> {
 
@@ -249,7 +184,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         protected void onSuccessResult(ContactOperationPresenter dependent, Boolean result) {
-
+            dependent.acceptContactRequestSuccess();
         }
 
         @Override

@@ -25,9 +25,7 @@ public class ContactOperationContract {
 
         void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationBean> newDataList);
 
-        void addMoreContactOperationToList(List<ContactOperationBean> ContactOperationList, boolean isHasMore);
-
-        void enableLoadMoreHint(boolean isEnable);
+        void enableProgressDialog(boolean isEnable);
 
         void showError(String error);
 
@@ -36,19 +34,14 @@ public class ContactOperationContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void init(String userID);
+        void init();
 
         void acceptContactRequest(ContactOperationBean contactOperation);
-
-        boolean isLoadingMore();
-
-        boolean hasMoreMessage();
 
         void removeContactOperation(ContactOperationBean ContactOperation);
 
         void loadAllContactOperation();
 
-        void loadMoreContactOperation(int startID);
     }
 
 }

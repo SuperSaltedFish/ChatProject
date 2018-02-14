@@ -7,22 +7,18 @@ import android.net.Uri;
 import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.widget.CircularProgressDrawable;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
-
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.view.activity.ChatActivity;
@@ -32,6 +28,7 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -64,6 +61,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
             case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                 return new VoiceReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
+            case MessageHolder.HOLDER_TYPE_SEND_MESSAGE_IMAGE:
+                return new ImageSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_image, parent, false));
+            case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
+                return new ImageReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_image, parent, false));
+
             default:
                 return null;
         }
@@ -78,7 +80,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public int getViewHolderCount() {
-        return mMessageList == null ? 0 : mMessageList.size() ;
+        return mMessageList == null ? 0 : mMessageList.size();
     }
 
     @Override
@@ -89,6 +91,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_TEXT : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT;
             case "RC:VcMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_VOICE : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE;
+            case "RC:ImgMsg":
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_IMAGE : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE;
             default:
                 throw new NoSuchElementException("unknown type");
         }
@@ -321,6 +325,37 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     }
 
+    private static class ImageSendMessageHolder extends SendMessageHolder {
+        ImageView mIvContent;
+
+        ImageSendMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_SEND_MESSAGE_IMAGE);
+            mIvContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
+        }
+
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            ImageMessage imageMessage = (ImageMessage) message.getContent();
+            //GlideUtil.loadFromUrl(mIvContent.getContext(), mIvContent, imageMessage.getThumUri());
+        }
+    }
+
+    private static class ImageReceiveMessageHolder extends ReceiveMessageHolder {
+        ImageView mIvContent;
+
+        ImageReceiveMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE);
+            mIvContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
+        }
+
+        @Override
+        public void setDate(Message message) {
+            super.setDate(message);
+            ImageMessage imageMessage = (ImageMessage) message.getContent();
+            GlideUtil.loadFromUrl(mIvContent.getContext(), mIvContent, imageMessage.getThumUri());
+        }
+    }
 
     static abstract class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         Message mMessage;
@@ -331,6 +366,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
         static final int HOLDER_TYPE_SEND_MESSAGE_VOICE = 3;
         static final int HOLDER_TYPE_RECEIVE_MESSAGE_VOICE = 4;
+        static final int HOLDER_TYPE_SEND_MESSAGE_IMAGE = 5;
+        static final int HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE = 6;
 
         MessageHolder(View itemView, int type) {
             super(itemView);

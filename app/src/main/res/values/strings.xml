@@ -53,6 +53,7 @@
 
     <string name="Server_Error">服务器繁忙，请稍候再试！</string>
 
+    <string name="LoadMoreHint_Default">没有更多的消息</string>
     <string name="LoadMoreHint_NoMore">没有更多的消息</string>
     <string name="LoadMoreHint_Loading">正在加载更多消息</string>
     <string name="LoadMoreHint_LoadFail">加载更多消息失败</string>
@@ -94,7 +95,7 @@
     <string name="ContactOperationActivity_Title">新的朋友</string>
     <string name="ImageSelectorActivity_Title">选择图片</string>
     <string name="ContactMessageAdapter_Added">已添加</string>
-    <string name="ContactMessageAdapter_Disagree">对方已拒绝</string>
+    <string name="ContactMessageAdapter_Disagree">对方拒绝添加</string>
     <string name="ContactMessageAdapter_Refused">已拒绝</string>
     <string name="ContactMessageAdapter_Requesting">添加</string>
     <string name="ContactMessageAdapter_Verifying">等待验证</string>
