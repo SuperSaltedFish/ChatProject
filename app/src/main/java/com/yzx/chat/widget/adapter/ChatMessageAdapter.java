@@ -8,6 +8,7 @@ import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.text.TextUtils;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
@@ -106,6 +108,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             if (sendMessageHolder.mProgressDrawable != null) {
                 sendMessageHolder.mProgressDrawable.stop();
             }
+        }
+        if (holder instanceof ImageSendMessageHolder) {
+            ImageSendMessageHolder imageSendMessageHolder = (ImageSendMessageHolder) holder;
+            GlideUtil.clear(mContext, imageSendMessageHolder.mIvContent);
+            imageSendMessageHolder.mIvContent.setImageBitmap(null);
         }
     }
 
@@ -337,7 +344,24 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         public void setDate(Message message) {
             super.setDate(message);
             ImageMessage imageMessage = (ImageMessage) message.getContent();
-            //GlideUtil.loadFromUrl(mIvContent.getContext(), mIvContent, imageMessage.getThumUri());
+            Size size = BitmapUtil.getBitmapBoundsSize(imageMessage.getThumUri().getPath());
+            int imageWidth = size.getWidth();
+            int imageHeight = size.getHeight();
+
+            if (imageWidth != 0 && imageHeight != 0) {
+                float scale;
+                if (imageWidth >= imageHeight) {
+                    scale = mIvContent.getMaxWidth() / (float) imageWidth;
+                } else {
+                    scale = mIvContent.getMaxHeight() / (float) imageHeight;
+                }
+                imageWidth = (int) (imageWidth * scale);
+                imageHeight = (int) (imageHeight * scale);
+                ViewGroup.LayoutParams params = mIvContent.getLayoutParams();
+                params.width = imageWidth;
+                params.height = imageHeight;
+            }
+            GlideUtil.loadFromUrl(mIvContent.getContext(), mIvContent, imageMessage.getThumUri());
         }
     }
 
@@ -353,6 +377,23 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         public void setDate(Message message) {
             super.setDate(message);
             ImageMessage imageMessage = (ImageMessage) message.getContent();
+            Size size = BitmapUtil.getBitmapBoundsSize(imageMessage.getThumUri().getPath());
+            int imageWidth = size.getWidth();
+            int imageHeight = size.getHeight();
+
+            if (imageWidth != 0 && imageHeight != 0) {
+                float scale;
+                if (imageWidth >= imageHeight) {
+                    scale = mIvContent.getMaxWidth() / (float) imageWidth;
+                } else {
+                    scale = mIvContent.getMaxHeight() / (float) imageHeight;
+                }
+                imageWidth = (int) (imageWidth * scale);
+                imageHeight = (int) (imageHeight * scale);
+                ViewGroup.LayoutParams params = mIvContent.getLayoutParams();
+                params.width = imageWidth;
+                params.height = imageHeight;
+            }
             GlideUtil.loadFromUrl(mIvContent.getContext(), mIvContent, imageMessage.getThumUri());
         }
     }

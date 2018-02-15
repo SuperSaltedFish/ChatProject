@@ -101,10 +101,9 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public void sendImageMessage(Uri imageUri, boolean isOriginal) {
-            sendMessage(ImageMessage.obtain(imageUri, imageUri, isOriginal));
-        // sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLengthSec));
-
+    public void sendImageMessage(String imagePath, boolean isOriginal) {
+        Uri uri = Uri.parse("file://" + imagePath);
+        sendMessage(ImageMessage.obtain(uri, uri, isOriginal));
     }
 
     @Override

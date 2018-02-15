@@ -4,7 +4,6 @@ package com.yzx.chat.view.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -169,7 +168,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
             if (imageList != null && imageList.size() > 0) {
                 for (String path : imageList) {
-                    mPresenter.sendImageMessage(Uri.parse("file://" + path), isOriginal);
+                    mPresenter.sendImageMessage(path, isOriginal);
                 }
 
             }

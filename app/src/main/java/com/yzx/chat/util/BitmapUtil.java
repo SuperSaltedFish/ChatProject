@@ -3,6 +3,7 @@ package com.yzx.chat.util;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Size;
 
 
 public class BitmapUtil {
@@ -22,8 +23,7 @@ public class BitmapUtil {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(res, resId, options); // 读取图片长款
-        options.inSampleSize = getScaleSampleSize(options, reqWidth,
-                reqHeight); // 计算inSampleSize
+        options.inSampleSize = getScaleSampleSize(options, reqWidth, reqHeight); // 计算inSampleSize
         options.inJustDecodeBounds = false;
         Bitmap src = BitmapFactory.decodeResource(res, resId, options); // 载入一个稍大的缩略图
         return createScaleBitmap(src, reqWidth, reqHeight); // 进一步得到目标大小的缩略图
@@ -73,11 +73,19 @@ public class BitmapUtil {
         BitmapFactory.decodeStream(res.openRawResource(resId), null, options);
         float inSampleSize = 1f;
         if (options.outWidth > viewWidth || options.outHeight > viewHeight) {
-            float heightScale = options.outWidth /(float) viewHeight;
-            float widthScale = options.outHeight /(float) viewHeight;
+            float heightScale = options.outWidth / (float) viewHeight;
+            float widthScale = options.outHeight / (float) viewHeight;
             inSampleSize = Math.min(widthScale, heightScale);
         }
         return inSampleSize;
+    }
+
+
+    public static Size getBitmapBoundsSize(String filePath) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+        return new Size(options.outWidth, options.outHeight);
     }
 
 

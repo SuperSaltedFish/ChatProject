@@ -1,7 +1,5 @@
 package com.yzx.chat.contract;
 
-import android.net.Uri;
-
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
@@ -41,7 +39,7 @@ public class ChatContract {
 
         void sendVoiceMessage(String filePath, int timeLengthSec);
 
-        public void sendImageMessage(Uri imageUri, boolean isOriginal);
+        void sendImageMessage(String imagePath, boolean isOriginal);
 
         void loadMoreMessage(int lastMessageID);
 

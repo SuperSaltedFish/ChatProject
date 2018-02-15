@@ -1,6 +1,7 @@
 package com.yzx.chat.presenter;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.yzx.chat.R;
@@ -69,7 +70,7 @@ public class SplashPresenter implements SplashContract.Presenter {
     private synchronized void initComplete() {
         switch (mTaskCount.decrementAndGet()) {
             case 0:
-                new Handler().post(new Runnable() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         if (isInitHTTPComplete && isInitIMComplete) {
@@ -81,7 +82,12 @@ public class SplashPresenter implements SplashContract.Presenter {
                 });
                 break;
             case 1:
-                initIMServer();
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        initIMServer();
+                    }
+                });
                 break;
         }
     }
@@ -118,7 +124,6 @@ public class SplashPresenter implements SplashContract.Presenter {
                         break;
                     default:
                         isInitIMComplete = true;
-                        initComplete();
                 }
                 initComplete();
             }
