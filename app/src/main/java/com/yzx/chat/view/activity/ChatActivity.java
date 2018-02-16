@@ -8,7 +8,10 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.text.emoji.widget.EmojiEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -56,6 +59,7 @@ import java.util.List;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 
 /**
  * Created by YZX on 2017年06月03日.
@@ -255,6 +259,37 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         // mRvChatView.setItemAnimator(new NoAnimations());
         mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
+        mRvChatView.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
+            @Override
+            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+                switch (mAdapter.getViewHolderType(position)) {
+                    case ChatMessageAdapter.HOLDER_TYPE_SEND_MESSAGE_TEXT:
+                    case ChatMessageAdapter.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
+                        break;
+                    case ChatMessageAdapter.HOLDER_TYPE_SEND_MESSAGE_VOICE:
+                    case ChatMessageAdapter.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
+                        break;
+                    case ChatMessageAdapter.HOLDER_TYPE_SEND_MESSAGE_IMAGE:
+                    case ChatMessageAdapter.HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
+                        ImageMessage imageMessage = (ImageMessage) mMessageList.get(position).getContent();
+                        String imagePath = imageMessage.getLocalUri().getPath();
+                        if (TextUtils.isEmpty(imagePath) || !new File(imagePath).exists()) {
+                            showToast(getString(R.string.ChatActivity_ImageAlreadyDeleted));
+                        } else {
+                            Intent intent = new Intent(ChatActivity.this, ImageOriginalActivity.class);
+                            intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
+                            ChatMessageAdapter.ImageSendMessageHolder h = (ChatMessageAdapter.ImageSendMessageHolder) viewHolder;
+                            ViewCompat.setTransitionName(h.mIvContent,ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(ChatActivity.this, h.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                            ActivityCompat.startActivity(ChatActivity.this, intent, options.toBundle());
+
+                            //startActivity(intent);
+                        }
+                        break;
+                }
+            }
+        });
+
         mAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
             @Override
             public void OnScrollToBottom() {
@@ -282,7 +317,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 mPresenter.setVoiceMessageAsListened(message);
             }
         });
-
     }
 
     private void setEditAndSendStateChangeListener() {

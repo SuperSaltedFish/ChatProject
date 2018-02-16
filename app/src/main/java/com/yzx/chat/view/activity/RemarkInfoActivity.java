@@ -74,12 +74,12 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     private void setData() {
         mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-        if (mContactBean == null || mContactBean.getRemark() == null||mContactBean.getUserProfile()==null) {
+        if (mContactBean == null || mContactBean.getRemark() == null || mContactBean.getUserProfile() == null) {
             LogUtil.e("mContactBean == null");
             finish();
         } else {
             ContactRemarkBean contactRemark = mContactBean.getRemark();
-            mEtRemarkName.setText(contactRemark.getRemarkName());
+            mEtRemarkName.setText(mContactBean.getName());
             mEtDescription.setText(contactRemark.getDescription());
             List<String> telephones = contactRemark.getTelephone();
             if (telephones != null && telephones.size() > 0) {

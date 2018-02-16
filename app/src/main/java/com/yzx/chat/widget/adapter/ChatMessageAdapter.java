@@ -42,9 +42,14 @@ import io.rong.message.VoiceMessage;
 
 public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageHolder> {
 
+    public static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
+    public static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
+    public static final int HOLDER_TYPE_SEND_MESSAGE_VOICE = 3;
+    public static final int HOLDER_TYPE_RECEIVE_MESSAGE_VOICE = 4;
+    public static final int HOLDER_TYPE_SEND_MESSAGE_IMAGE = 5;
+    public static final int HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE = 6;
+
     private List<Message> mMessageList;
-    private String mLoadMoreHint;
-    private boolean isEnable;
 
     private MessageCallback mMessageCallback;
 
@@ -55,17 +60,17 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     @Override
     public MessageHolder getViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case MessageHolder.HOLDER_TYPE_SEND_MESSAGE_TEXT:
+            case HOLDER_TYPE_SEND_MESSAGE_TEXT:
                 return new TextSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false));
-            case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
+            case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
                 return new TextReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false));
-            case MessageHolder.HOLDER_TYPE_SEND_MESSAGE_VOICE:
+            case HOLDER_TYPE_SEND_MESSAGE_VOICE:
                 return new VoiceSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false));
-            case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
+            case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                 return new VoiceReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false));
-            case MessageHolder.HOLDER_TYPE_SEND_MESSAGE_IMAGE:
+            case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
                 return new ImageSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_image, parent, false));
-            case MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
+            case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
                 return new ImageReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_image, parent, false));
 
             default:
@@ -90,11 +95,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         Message message = mMessageList.get(position);
         switch (message.getObjectName()) {
             case "RC:TxtMsg":
-                return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_TEXT : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT;
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_TEXT : HOLDER_TYPE_RECEIVE_MESSAGE_TEXT;
             case "RC:VcMsg":
-                return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_VOICE : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE;
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VOICE : HOLDER_TYPE_RECEIVE_MESSAGE_VOICE;
             case "RC:ImgMsg":
-                return message.getMessageDirection() == Message.MessageDirection.SEND ? MessageHolder.HOLDER_TYPE_SEND_MESSAGE_IMAGE : MessageHolder.HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE;
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_IMAGE : HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE;
             default:
                 throw new NoSuchElementException("unknown type");
         }
@@ -120,7 +125,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         mMessageCallback = messageCallback;
     }
 
-    private static class TextSendMessageHolder extends SendMessageHolder {
+    static class TextSendMessageHolder extends SendMessageHolder {
         private TextView mTvTextContent;
 
         TextSendMessageHolder(View itemView) {
@@ -129,14 +134,14 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             TextMessage textMessage = (TextMessage) message.getContent();
             mTvTextContent.setText(textMessage.getContent());
         }
     }
 
-    private static class TextReceiveMessageHolder extends ReceiveMessageHolder {
+    static class TextReceiveMessageHolder extends ReceiveMessageHolder {
         private EmojiTextView mTvTextContent;
 
         TextReceiveMessageHolder(View itemView) {
@@ -145,14 +150,14 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             TextMessage textMessage = (TextMessage) message.getContent();
             mTvTextContent.setText(textMessage.getContent());
         }
     }
 
-    private static class VoiceSendMessageHolder extends SendMessageHolder {
+    static class VoiceSendMessageHolder extends SendMessageHolder {
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
         private ImageView mIvPlayIcon;
@@ -211,7 +216,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
             int timeLength_ms = voiceMessage.getDuration() * 1000;
@@ -237,7 +242,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    private static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
+    static class VoiceReceiveMessageHolder extends ReceiveMessageHolder {
         private TextView mTvVoiceTimeLength;
         private FrameLayout mFlPlayLayout;
         private VoicePlayer mVoicePlayer;
@@ -300,7 +305,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
             int timeLength_ms = voiceMessage.getDuration() * 1000;
@@ -332,8 +337,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     }
 
-    private static class ImageSendMessageHolder extends SendMessageHolder {
-        ImageView mIvContent;
+   public static class ImageSendMessageHolder extends SendMessageHolder {
+       public ImageView mIvContent;
 
         ImageSendMessageHolder(View itemView) {
             super(itemView, HOLDER_TYPE_SEND_MESSAGE_IMAGE);
@@ -341,7 +346,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             ImageMessage imageMessage = (ImageMessage) message.getContent();
             Size size = BitmapUtil.getBitmapBoundsSize(imageMessage.getThumUri().getPath());
@@ -365,7 +370,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    private static class ImageReceiveMessageHolder extends ReceiveMessageHolder {
+    static class ImageReceiveMessageHolder extends ReceiveMessageHolder {
         ImageView mIvContent;
 
         ImageReceiveMessageHolder(View itemView) {
@@ -374,7 +379,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             ImageMessage imageMessage = (ImageMessage) message.getContent();
             Size size = BitmapUtil.getBitmapBoundsSize(imageMessage.getThumUri().getPath());
@@ -403,24 +408,17 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         MessageCallback mMessageCallback;
         int mHolderType;
 
-        static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
-        static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
-        static final int HOLDER_TYPE_SEND_MESSAGE_VOICE = 3;
-        static final int HOLDER_TYPE_RECEIVE_MESSAGE_VOICE = 4;
-        static final int HOLDER_TYPE_SEND_MESSAGE_IMAGE = 5;
-        static final int HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE = 6;
-
         MessageHolder(View itemView, int type) {
             super(itemView);
             mHolderType = type;
         }
 
         @CallSuper
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             mMessage = message;
         }
 
-        public void setMessageCallback(MessageCallback messageCallback) {
+        protected void setMessageCallback(MessageCallback messageCallback) {
             mMessageCallback = messageCallback;
         }
     }
@@ -448,7 +446,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
 
         @Override
-        public void setDate(Message message) {
+        protected void setDate(Message message) {
             super.setDate(message);
             setMessageState(message.getSentStatus());
         }

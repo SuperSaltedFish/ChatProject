@@ -129,6 +129,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
         @Override
         public void onConversationStateChange(final Conversation conversation, int typeCode) {
+            LogUtil.e("Conversation change,code: " + typeCode);
             switch (typeCode) {
                 case ConversationManager.UPDATE_TYPE_REMOVE:
                     if (conversation.getUnreadMessageCount() != 0) {
@@ -158,7 +159,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     refreshAllConversations();
                     break;
             }
-            LogUtil.e("Conversation change,code: " + typeCode);
         }
     };
 

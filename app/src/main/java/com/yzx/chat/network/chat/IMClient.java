@@ -152,6 +152,7 @@ public class IMClient {
             switch (message.getObjectName()) {
                 case "RC:TxtMsg":
                 case "RC:VcMsg":
+                case "RC:ImgMsg":
                     mChatManager.onReceiveContactNotificationMessage(message, i);
                     break;
                 case "RC:ContactNtf":

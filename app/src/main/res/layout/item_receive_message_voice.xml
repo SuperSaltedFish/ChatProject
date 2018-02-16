@@ -8,8 +8,8 @@
 
     <com.yzx.chat.widget.view.CircleImageView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
-        android:layout_width="44dp"
-        android:layout_height="44dp" />
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
 
     <FrameLayout
         android:id="@+id/ChatAdapter_mFlPlayLayout"

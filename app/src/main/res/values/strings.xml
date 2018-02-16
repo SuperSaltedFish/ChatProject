@@ -145,5 +145,6 @@
     <string name="StrangerProfileActivity_ProgressHint">正在发送...</string>
     <string name="ContactOperationActivity_ProgressHint">正在添加...</string>
     <string name="ContactProfileActivity_DeleteProgressHint">正在删除...</string>
+    <string name="ChatActivity_ImageAlreadyDeleted">图片已经删除，无法查看</string>
 
 </resources>
