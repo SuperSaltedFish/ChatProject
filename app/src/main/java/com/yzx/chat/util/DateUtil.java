@@ -33,9 +33,20 @@ public class DateUtil {
         return null;
     }
 
+    public static String isoFormatTo(String pattern, String isoTime) {
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        SimpleDateFormat customFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        try {
+            return customFormat.format(isoFormat.parse(isoTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Calendar isoToCalendar(String isoTime) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        Calendar calendar =  Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         try {
             Date date = format.parse(isoTime);
             calendar.setTime(date);
@@ -46,7 +57,7 @@ public class DateUtil {
         return calendar;
     }
 
-    public static String msecToISO(long milliseconds){
+    public static String msecToISO(long milliseconds) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
         return format.format(new Date(milliseconds));
     }

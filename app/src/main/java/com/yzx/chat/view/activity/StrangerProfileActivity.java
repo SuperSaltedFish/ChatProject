@@ -1,14 +1,17 @@
 package com.yzx.chat.view.activity;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.StrangerProfileContract;
 import com.yzx.chat.presenter.StrangerProfilePresenter;
+import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.widget.view.ProgressDialog;
 
 /**
@@ -24,6 +27,9 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private Button mBtnConfirm;
     private UserBean mUserBean;
     private ProgressDialog mProgressDialog;
+    private TextView mTvContentNickname;
+    private TextView mTvContentLocation;
+    private TextView mTvContentBirthday;
 
     @Override
     protected int getLayoutID() {
@@ -34,6 +40,9 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     protected void init() {
         mEtVerifyContent = findViewById(R.id.StrangerProfileActivity_mEtVerifyContent);
         mBtnConfirm = findViewById(R.id.StrangerProfileActivity_mBtnConfirm);
+        mTvContentNickname = findViewById(R.id.Profile_mTvContentNickname);
+        mTvContentLocation = findViewById(R.id.Profile_mTvContentLocation);
+        mTvContentBirthday = findViewById(R.id.Profile_mTvContentBirthday);
         mProgressDialog = new ProgressDialog(this, getString(R.string.StrangerProfileActivity_ProgressHint));
     }
 
@@ -53,6 +62,25 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         mUserBean = getIntent().getParcelableExtra(INTENT_EXTRA_USER);
         if (mUserBean == null) {
             finish();
+            return;
+        }
+
+        mTvContentNickname.setText(mUserBean.getNickname());
+        if (TextUtils.isEmpty(mUserBean.getLocation())) {
+            mTvContentLocation.setText(R.string.ProfileModifyActivity_NoSet);
+        } else {
+            mTvContentLocation.setText(mUserBean.getLocation());
+        }
+        String birthday = mUserBean.getBirthday();
+        if (!TextUtils.isEmpty(mUserBean.getBirthday())) {
+            birthday = DateUtil.isoFormatTo(getString(R.string.DateFormat_yyyyMMdd), birthday);
+            if (!TextUtils.isEmpty(birthday)) {
+                mTvContentBirthday.setText(birthday);
+            } else {
+                mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+            }
+        } else {
+            mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
         }
     }
 

@@ -279,7 +279,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                             Intent intent = new Intent(ChatActivity.this, ImageOriginalActivity.class);
                             intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
                             ChatMessageAdapter.ImageSendMessageHolder h = (ChatMessageAdapter.ImageSendMessageHolder) viewHolder;
-                            ViewCompat.setTransitionName(h.mIvContent,ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                            ViewCompat.setTransitionName(h.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
                             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(ChatActivity.this, h.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
                             ActivityCompat.startActivity(ChatActivity.this, intent, options.toBundle());
 
@@ -640,7 +640,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             ContactBean contactBean = IMClient.getInstance().contactManager().getContact(mConversation.getTargetId());
             if (contactBean != null) {
                 Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
-                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, contactBean);
+                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contactBean.getUserProfile().getUserID());
                 startActivity(intent);
             } else {
                 LogUtil.e("contactBean == null,open ContactProfileActivity fail");

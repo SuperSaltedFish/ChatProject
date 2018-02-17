@@ -109,7 +109,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
                 public void run() {
                     int index = mContactOperationList.indexOf(message);
                     if (index < 0) {
-                        LogUtil.e("search ContactOperation fail from mContactOperationList");
+                        loadAllContactOperation();
                     } else {
                         mContactOperationList.set(index, message);
                     }

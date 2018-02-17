@@ -42,8 +42,9 @@ public class ContactInfoPresenter implements ContactInfoContract.Presenter {
 
 
     @Override
-    public void init(ContactBean contact) {
-        mContactBean = contact;
+    public void init(String contactID) {
+        mContactBean = mIMClient.contactManager().getContact(contactID);
+        mContactInfoContractView.updateContactInfo(mContactBean);
         mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserProfile().getUserID());
         if (mConversation == null) {
             mConversation = new Conversation();

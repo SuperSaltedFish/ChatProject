@@ -123,18 +123,22 @@ public class PinYinUtil {
         if (chs == null)
             return "";
         String key, value;
+        byte[] bytes;
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < chs.length(); i++) {
             key = chs.substring(i, i + 1);
-            if (key.getBytes().length >= 2) {
+            bytes = key.getBytes();
+            if (bytes.length >= 2 && RegexUtil.isChinese(key)) {
                 value = convert(key);
                 if (value == null || value.length() == 0) {
                     value = "#";
                 } else {
                     value = value.substring(0, 1);
                 }
-            } else {
+            } else if (RegexUtil.isCharacter(key)) {
                 value = key;
+            } else {
+                value = "#";
             }
             buffer.append(value);
         }

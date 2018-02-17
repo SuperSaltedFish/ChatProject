@@ -18,6 +18,8 @@
         <item name="moments">女</item>
     </string-array>
 
+    <string name="DateFormat_yyyyMMdd">yyyy年MM月dd日</string>
+
     <string name="PermissionDialog_Help">无法使用该功能</string>
     <string name="PermissionDialog_MissPermissionHint">当前应用缺少必要权限。\n请点击“设置”-“权限”-开启所需权限。\n最后点击两次后退按钮，即可返回。</string>
     <string name="PermissionDialog_Cancel">取消</string>
@@ -146,5 +148,8 @@
     <string name="ContactOperationActivity_ProgressHint">正在添加...</string>
     <string name="ContactProfileActivity_DeleteProgressHint">正在删除...</string>
     <string name="ChatActivity_ImageAlreadyDeleted">图片已经删除，无法查看</string>
+    <string name="Profile_LabelNickname">昵称</string>
+    <string name="Profile_LabelLocation">所在地区</string>
+    <string name="Profile_LabelBirthday">出生日期</string>
 
 </resources>

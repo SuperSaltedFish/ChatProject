@@ -208,7 +208,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
                 @Override
                 public void run() {
                     Intent intent = new Intent(mContext, ContactProfileActivity.class);
-                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT, mContactList.get(position - 1));
+                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactList.get(position - 1).getUserProfile().getUserID());
                     startActivity(intent);
                 }
             });
@@ -301,8 +301,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList) {
-        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));
         mContactList.clear();
         mContactList.addAll(newFriendList);
+        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));
     }
 }

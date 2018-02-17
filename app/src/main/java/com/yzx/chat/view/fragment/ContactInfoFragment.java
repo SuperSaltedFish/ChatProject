@@ -8,10 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -25,10 +22,11 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.ContactInfoContract;
 import com.yzx.chat.presenter.ContactInfoPresenter;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.widget.view.FlowLayout;
 
 import java.util.List;
@@ -41,19 +39,18 @@ import java.util.List;
 
 public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presenter> implements ContactInfoContract.View {
 
-    private static final String ARGUMENT_CONTACT = "Contact";
+    private static final String ARGUMENT_CONTACT_ID = "ContactID";
 
-    public static ContactInfoFragment newInstance(ContactBean contactBean) {
+    public static ContactInfoFragment newInstance(String contactBean) {
 
         Bundle args = new Bundle();
 
         ContactInfoFragment fragment = new ContactInfoFragment();
-        args.putParcelable(ARGUMENT_CONTACT, contactBean);
+        args.putString(ARGUMENT_CONTACT_ID, contactBean);
         fragment.setArguments(args);
         return fragment;
     }
 
-    private ContactBean mContactBean;
     private ConstraintLayout mClClearMessage;
     private Switch mSwitchTop;
     private Switch mSwitchRemind;
@@ -64,6 +61,11 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
     private ConstraintLayout mDescriptionLayout;
     private FlowLayout mFlContentLabel;
     private LinearLayout mLlContentTelephone;
+    private TextView mTvContentNickname;
+    private TextView mTvContentLocation;
+    private TextView mTvContentBirthday;
+
+    private String mContactID;
 
     @Override
     protected int getLayoutID() {
@@ -72,6 +74,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
 
     @Override
     protected void init(View parentView) {
+        mContactID = getArguments().getString(ARGUMENT_CONTACT_ID);
         mSwitchTop = parentView.findViewById(R.id.FriendProfileActivity_mSwitchTop);
         mSwitchRemind = parentView.findViewById(R.id.FriendProfileActivity_mSwitchRemind);
         mClClearMessage = parentView.findViewById(R.id.FriendProfileActivity_mClClearMessage);
@@ -82,6 +85,10 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         mFlContentLabel = parentView.findViewById(R.id.FriendProfileActivity_mFlContentLabel);
         mLlContentTelephone = parentView.findViewById(R.id.FriendProfileActivity_mLlContentTelephone);
         mTvContentDescription = parentView.findViewById(R.id.FriendProfileActivity_mTvContentDescription);
+        mTvContentNickname = parentView.findViewById(R.id.Profile_mTvContentNickname);
+        mTvContentLocation = parentView.findViewById(R.id.Profile_mTvContentLocation);
+        mTvContentBirthday = parentView.findViewById(R.id.Profile_mTvContentBirthday);
+
     }
 
     @Override
@@ -90,12 +97,29 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
         mClClearMessage.setOnClickListener(mOnClearMessageClickListener);
 
-        setData((ContactBean) getArguments().getParcelable(ARGUMENT_CONTACT));
-
-        mPresenter.init(mContactBean);
+        mPresenter.init(mContactID);
     }
 
     private void setData(ContactBean contact) {
+        UserBean user = contact.getUserProfile();
+        mTvContentNickname.setText(user.getNickname());
+        if (TextUtils.isEmpty(user.getLocation())) {
+            mTvContentLocation.setText(R.string.ProfileModifyActivity_NoSet);
+        } else {
+            mTvContentLocation.setText(user.getLocation());
+        }
+        String birthday = user.getBirthday();
+        if (!TextUtils.isEmpty(user.getBirthday())) {
+            birthday = DateUtil.isoFormatTo(getString(R.string.DateFormat_yyyyMMdd), birthday);
+            if (!TextUtils.isEmpty(birthday)) {
+                mTvContentBirthday.setText(birthday);
+            } else {
+                mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+            }
+        } else {
+            mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+        }
+
         ContactRemarkBean contactRemark = contact.getRemark();
         boolean isShowRemarkTitle = false;
         if (contactRemark != null) {
@@ -168,7 +192,6 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
                 mTvRemarkTitle.setVisibility(View.VISIBLE);
             }
         }
-        mContactBean = contact;
     }
 
     private final CompoundButton.OnCheckedChangeListener mOnTopSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -231,10 +254,6 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
 
     @Override
     public void updateContactInfo(ContactBean contact) {
-        if (mContactBean.equals(contact)) {
-            setData(contact);
-        } else {
-            LogUtil.e("unknown contact");
-        }
+        setData(contact);
     }
 }

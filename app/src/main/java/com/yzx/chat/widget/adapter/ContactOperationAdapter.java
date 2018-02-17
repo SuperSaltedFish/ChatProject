@@ -48,20 +48,20 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
             holder.setAcceptContactRequestListener(null);
         }
         switch (type) {
-            case ContactManager.CONTACT_OPERATION_ADDED:
             case ContactManager.CONTACT_OPERATION_ACCEPT:
+            case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Added);
                 break;
-            case ContactManager.CONTACT_OPERATION_DISAGREE:
+            case ContactManager.CONTACT_OPERATION_REFUSED:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Disagree);
                 break;
-            case ContactManager.CONTACT_OPERATION_REFUSED:
+            case ContactManager.CONTACT_OPERATION_REFUSED_ACTIVE:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Refused);
                 break;
             case ContactManager.CONTACT_OPERATION_REQUEST:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Requesting);
                 break;
-            case ContactManager.CONTACT_OPERATION_VERIFYING:
+            case ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE:
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Verifying);
                 break;
         }

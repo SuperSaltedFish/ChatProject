@@ -109,6 +109,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
         public void onItemRangeRemoved(int positionStart, int itemCount) {
             resetLetter();
         }
+
     };
 
     static abstract class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {

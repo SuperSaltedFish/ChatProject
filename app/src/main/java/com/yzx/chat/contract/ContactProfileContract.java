@@ -13,13 +13,18 @@ public class ContactProfileContract {
 
     public interface View extends BaseView<Presenter> {
         void updateContactInfo(ContactBean contact);
+
         void showError(String error);
+
         void goBack();
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void init(ContactBean contact);
+        void init(String contactID);
+
+        ContactBean getContact();
+
         void deleteContact();
     }
 }

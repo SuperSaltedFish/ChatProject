@@ -42,14 +42,14 @@ import io.rong.message.ContactNotificationMessage;
 
 public class ContactManager {
 
-    public static final String CONTACT_OPERATION_REQUEST = "Request";//被请求
-    public static final String CONTACT_OPERATION_DISAGREE = "Disagree";//被拒绝
+    public static final String CONTACT_OPERATION_REQUEST = "Request";//对方请求
+    public static final String CONTACT_OPERATION_ACCEPT = "Accept";//对方同意添加
+    public static final String CONTACT_OPERATION_REFUSED = "Refused";//对方拒绝添加
+    public static final String CONTACT_OPERATION_DELETE = "Delete";//对方删除好友
 
-    public static final String CONTACT_OPERATION_ACCEPT = "AcceptResponse";//对方已经添加
-    public static final String CONTACT_OPERATION_REFUSED = "RefusedResponse";//对方拒绝添加
-
-    public static final String CONTACT_OPERATION_ADDED = "Added";//已经添加
-    public static final String CONTACT_OPERATION_VERIFYING = "Verifying";//等待验证
+    public static final String CONTACT_OPERATION_REQUEST_ACTIVE = "ActiveRequest";//主动请求
+    public static final String CONTACT_OPERATION_ACCEPT_ACTIVE = "ActiveAccept";//主动同意添加
+    public static final String CONTACT_OPERATION_REFUSED_ACTIVE = "ActiveRefused";//主动拒绝添加
 
     private Set<String> mContactOperationSet;
     private Map<String, ContactBean> mContactsMap;
@@ -78,7 +78,7 @@ public class ContactManager {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
         mSubManagerCallback = subManagerCallback;
-        mContactOperationSet = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_DISAGREE, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_ADDED, CONTACT_OPERATION_VERIFYING));
+        mContactOperationSet = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
         mContactsMap = new HashMap<>(256);
         mContactOperationDao = DBManager.getInstance().getContactOperationDao();
         mContactDao = DBManager.getInstance().getContactDao();
@@ -123,14 +123,18 @@ public class ContactManager {
                 operation.setReason(reason);
                 operation.setUserID(user.getUserID());
                 operation.setTime((int) (System.currentTimeMillis() / 1000));
-                operation.setType(ContactManager.CONTACT_OPERATION_VERIFYING);
+                operation.setType(ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE);
                 operation.setRemind(false);
                 boolean success = mContactOperationDao.replace(operation) & mUserDao.replace(user);
-                if (!success) {
-                    LogUtil.e("requestContact:Failure of operating database");
-                }
                 if (result != null) {
                     result.onSuccess(success);
+                }
+                if (!success) {
+                    LogUtil.e("requestContact:Failure of operating database");
+                } else {
+                    for (OnContactOperationListener listener : mContactOperationListeners) {
+                        listener.onContactOperationUpdate(operation);
+                    }
                 }
             }
 
@@ -152,7 +156,7 @@ public class ContactManager {
             protected void onSuccess(Void response) {
                 contactOperation.setReason(reason);
                 contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
-                contactOperation.setType(ContactManager.CONTACT_OPERATION_REFUSED);
+                contactOperation.setType(ContactManager.CONTACT_OPERATION_REFUSED_ACTIVE);
                 contactOperation.setRemind(false);
                 boolean success = mContactOperationDao.replace(contactOperation);
                 if (!success) {
@@ -183,7 +187,7 @@ public class ContactManager {
             @Override
             protected void onSuccess(Void response) {
                 contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
-                contactOperation.setType(ContactManager.CONTACT_OPERATION_ACCEPT);
+                contactOperation.setType(ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE);
                 contactOperation.setRemind(false);
 
                 ContactBean contactBean = new ContactBean();
@@ -270,6 +274,7 @@ public class ContactManager {
                 }
 
                 if (success) {
+                    mContactsMap.put(contact.getUserProfile().getUserID(), contact);
                     for (OnContactChangeListener listener : mContactChangeListeners) {
                         listener.onContactUpdate(contact);
                     }

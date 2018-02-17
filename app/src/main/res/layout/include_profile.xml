@@ -14,7 +14,7 @@
         android:paddingStart="16dp">
 
         <ImageView
-            android:id="@+id/FriendProfileActivity_mIvIconAccount"
+            android:id="@+id/Profile_mIvIconNickname"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_sex_man"
@@ -23,32 +23,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/FriendProfileActivity_mTvLabelAccount"
+            android:id="@+id/Profile_mTvLabelNickname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:maxLines="1"
-            android:text="帐号"
+            android:text="@string/Profile_LabelNickname"
             android:textColor="@color/text_primary_color_black"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentAccount"
+            app:layout_constraintBottom_toTopOf="@+id/Profile_mTvContentNickname"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconNickname"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:paddingTop="2dp"
-            android:id="@+id/FriendProfileActivity_mTvContentAccount"
+            android:id="@+id/Profile_mTvContentNickname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="244546875@qq.com"
+            android:paddingTop="2dp"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconAccount"
-            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelAccount" />
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconNickname"
+            app:layout_constraintTop_toBottomOf="@+id/Profile_mTvLabelNickname" />
 
         <View
             android:layout_width="0dp"
@@ -56,7 +55,7 @@
             android:layout_marginStart="20dp"
             android:background="@color/divider_color_black"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconAccount" />
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconNickname" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -70,7 +69,7 @@
         android:paddingStart="16dp">
 
         <ImageView
-            android:id="@+id/FriendProfileActivity_mIvIconLocation"
+            android:id="@+id/Profile_mIvIconLocation"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_map"
@@ -79,32 +78,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/FriendProfileActivity_mTvLabelLocation"
+            android:id="@+id/Profile_mTvLabelLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:maxLines="1"
-            android:text="所在地区"
+            android:text="@string/Profile_LabelLocation"
             android:textColor="@color/text_primary_color_black"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentLocation"
+            app:layout_constraintBottom_toTopOf="@+id/Profile_mTvContentLocation"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconLocation"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:paddingTop="2dp"
-            android:id="@+id/FriendProfileActivity_mTvContentLocation"
+            android:id="@+id/Profile_mTvContentLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="广东 珠海"
+            android:paddingTop="2dp"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLocation"
-            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelLocation" />
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconLocation"
+            app:layout_constraintTop_toBottomOf="@+id/Profile_mTvLabelLocation" />
 
         <View
             android:layout_width="0dp"
@@ -112,7 +110,7 @@
             android:layout_marginStart="20dp"
             android:background="@color/divider_color_black"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLocation" />
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconLocation" />
     </android.support.constraint.ConstraintLayout>
 
 
@@ -126,7 +124,7 @@
         android:paddingStart="16dp">
 
         <ImageView
-            android:id="@+id/FriendProfileActivity_mIvIconDateOfBirth"
+            android:id="@+id/Profile_mIvIconDateOfBirth"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_date_of_birth"
@@ -135,32 +133,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/FriendProfileActivity_mTvLabelDateOfBirth"
+            android:id="@+id/Profile_mTvLabelBirthday"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:maxLines="1"
-            android:text="出生日期"
+            android:text="@string/Profile_LabelBirthday"
             android:textColor="@color/text_primary_color_black"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mTvContentDateOfBirth"
+            app:layout_constraintBottom_toTopOf="@+id/Profile_mTvContentBirthday"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDateOfBirth"
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconDateOfBirth"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:paddingTop="2dp"
-            android:id="@+id/FriendProfileActivity_mTvContentDateOfBirth"
+            android:id="@+id/Profile_mTvContentBirthday"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="2017年12月32号"
+            android:paddingTop="2dp"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDateOfBirth"
-            app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvLabelDateOfBirth" />
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconDateOfBirth"
+            app:layout_constraintTop_toBottomOf="@+id/Profile_mTvLabelBirthday" />
 
         <View
             android:layout_width="0dp"
@@ -168,7 +165,7 @@
             android:layout_marginStart="20dp"
             android:background="@color/divider_color_black"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDateOfBirth" />
+            app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconDateOfBirth" />
     </android.support.constraint.ConstraintLayout>
 
 

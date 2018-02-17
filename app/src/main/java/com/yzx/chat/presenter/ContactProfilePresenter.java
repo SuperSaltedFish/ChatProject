@@ -38,9 +38,20 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         mContactProfileView = null;
     }
 
+
     @Override
-    public void init(ContactBean contact) {
-        mContactBean = contact;
+    public void init(String contactID) {
+        mContactBean = mIMClient.contactManager().getContact(contactID);
+        if (mContactBean == null) {
+            mContactProfileView.goBack();
+        }else {
+            mContactProfileView.updateContactInfo(mContactBean);
+        }
+    }
+
+    @Override
+    public ContactBean getContact() {
+        return mContactBean;
     }
 
     @Override
@@ -50,11 +61,11 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         mIMClient.contactManager().deleteContact(mContactBean, mDeleteContactResult);
     }
 
-    public void deleteContactSuccess() {
+    void deleteContactSuccess() {
         mContactProfileView.goBack();
     }
 
-    public void deleteContactFailure(String error) {
+    void deleteContactFailure(String error) {
         mContactProfileView.showError(error);
     }
 
@@ -86,7 +97,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     private static class DeleteContactResult extends AsyncResult<ContactProfilePresenter, Boolean> {
 
 
-        public DeleteContactResult(ContactProfilePresenter dependent) {
+        DeleteContactResult(ContactProfilePresenter dependent) {
             super(dependent);
         }
 

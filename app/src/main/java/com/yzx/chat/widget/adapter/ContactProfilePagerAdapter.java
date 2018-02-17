@@ -17,19 +17,19 @@ import com.yzx.chat.view.fragment.ContactMomentsFragment;
 public class ContactProfilePagerAdapter extends FragmentPagerAdapter {
 
     private String[] mTitle;
-    private ContactBean mContactBean;
+    private String mContactID;
 
-    public ContactProfilePagerAdapter(FragmentManager fm, String title[], ContactBean contactBean) {
+    public ContactProfilePagerAdapter(FragmentManager fm, String title[], String contactID) {
         super(fm);
         mTitle = title;
-        mContactBean = contactBean;
+        mContactID = contactID;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return ContactInfoFragment.newInstance(mContactBean);
+                return ContactInfoFragment.newInstance(mContactID);
             case 1:
                 return new ContactMomentsFragment();
             default:
