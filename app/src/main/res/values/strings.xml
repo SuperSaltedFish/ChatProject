@@ -151,5 +151,6 @@
     <string name="Profile_LabelNickname">昵称</string>
     <string name="Profile_LabelLocation">所在地区</string>
     <string name="Profile_LabelBirthday">出生日期</string>
+    <string name="ProfileModifyActivity_ReadCityInfoError">读取城市信息失败</string>
 
 </resources>

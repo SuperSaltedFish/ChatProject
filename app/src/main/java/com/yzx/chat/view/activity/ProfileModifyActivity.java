@@ -2,6 +2,7 @@ package com.yzx.chat.view.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -11,16 +12,24 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.CityBean;
+import com.yzx.chat.bean.ProvinceBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.ProfileModifyContract;
 import com.yzx.chat.presenter.ProfileModifyPresenter;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.DateUtil;
+import com.yzx.chat.util.GsonUtil;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by YZX on 2018年02月05日.
@@ -173,7 +182,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
             new MaterialDialog.Builder(ProfileModifyActivity.this)
                     .title(R.string.ProfileModifyActivity_SexDialogTitle)
                     .items(R.array.ProfileModifyActivity_SexList)
-                    .itemsCallbackSingleChoice(mUserBean.getSex()-1, new MaterialDialog.ListCallbackSingleChoice() {
+                    .itemsCallbackSingleChoice(mUserBean.getSex() - 1, new MaterialDialog.ListCallbackSingleChoice() {
                         @Override
                         public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                             if (!TextUtils.isEmpty(text)) {
@@ -226,26 +235,75 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         private NumberPicker mProvincePicker;
         private NumberPicker mCityPicker;
 
-        private String[] mCities = {"北京", "上海", "广州", "深圳", "杭州", "青岛", "西安"};
+        private String[] mProvinceArray;
+        private Map<String, String[]> mProvinceCityMap;
 
         @Override
         public void onClick(View v) {
             if (mLocationSelectorDialog == null) {
+                List<ProvinceBean> provinceList = GsonUtil.readJsonStream(getResources().openRawResource(R.raw.city));
+                if (provinceList == null || provinceList.size() == 0) {
+                    showToast(getString(R.string.ProfileModifyActivity_ReadCityInfoError));
+                    return;
+                }
+                mProvinceCityMap = new HashMap<>(provinceList.size() * 2);
+                ProvinceBean province;
+                mProvinceArray = new String[provinceList.size()];
+                for (int n = 0, count = provinceList.size(); n < count; n++) {
+                    province = provinceList.get(n);
+                    ArrayList<CityBean> cityList = province.getCity();
+                    if (cityList != null && cityList.size() > 0) {
+                        mProvinceArray[n] = province.getProvince();
+                        String[] strCityArray = new String[cityList.size()];
+                        for (int i = 0, size = cityList.size(); i < size; i++) {
+                            strCityArray[i] = cityList.get(i).getCountry();
+                        }
+                        mProvinceCityMap.put(province.getProvince(), strCityArray);
+                    }
+
+                }
+
+
                 mLocationSelectorDialog = new MaterialDialog.Builder(ProfileModifyActivity.this)
                         .title("请选择省市")
                         .customView(R.layout.dialog_location_selector, false)
                         .positiveText(R.string.Confirm)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                int provinceIndex = mProvincePicker.getValue();
+                                int cityIndex = mCityPicker.getValue();
+                                mUserBean.setLocation(mProvinceArray[provinceIndex] + " " + mProvinceCityMap.get(mProvinceArray[provinceIndex])[cityIndex]);
+                                mTvLocation.setText(mUserBean.getLocation());
+                            }
+                        })
                         .build();
+
                 View view = mLocationSelectorDialog.getCustomView();
                 mProvincePicker = view.findViewById(R.id.LocationSelectorDialog_mNpProvince);
                 mCityPicker = view.findViewById(R.id.LocationSelectorDialog_mNpCity);
 
-                mProvincePicker.setDisplayedValues(mCities);//设置需要显示的数组
+                mProvincePicker.setDisplayedValues(mProvinceArray);//设置需要显示的数组
                 mProvincePicker.setMinValue(0);
-                mProvincePicker.setMaxValue(mCities.length - 1);
+                mProvincePicker.setMaxValue(mProvinceArray.length - 1);
+                mProvincePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                    @Override
+                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                        String[] cityArray = mProvinceCityMap.get(mProvinceArray[newVal]);
+                        mCityPicker.setDisplayedValues(cityArray);//设置需要显示的数组
+                        mCityPicker.setMinValue(0);
+                        mCityPicker.setMaxValue(cityArray.length - 1);
+                        mCityPicker.setValue(0);
+                    }
+                });
+
+                String[] defaultCityArray = mProvinceCityMap.get(mProvinceArray[0]);
+                mCityPicker.setDisplayedValues(defaultCityArray);//设置需要显示的数组
+                mCityPicker.setMinValue(0);
+                mCityPicker.setMaxValue(defaultCityArray.length - 1);
 
             }
-            mUserBean.setLocation("广东 韶关");
+
             mLocationSelectorDialog.show();
         }
     };
