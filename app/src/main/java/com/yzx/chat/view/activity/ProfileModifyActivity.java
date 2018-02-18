@@ -150,24 +150,24 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                 mEtNickname.setError(getString(R.string.ProfileModifyActivity_NoneNickname));
                 return;
             }
-            boolean isChangle = false;
+            boolean isChange = false;
             UserBean userBean = IdentityManager.getInstance().getUser();
             if (!userBean.getNickname().equals(nickname)) {
-                isChangle = true;
+                isChange = true;
             }
             if (!userBean.getLocation().equals(mUserBean.getLocation())) {
-                isChangle = true;
+                isChange = true;
             }
             if (!userBean.getSignature().equals(mUserBean.getSignature())) {
-                isChangle = true;
+                isChange = true;
             }
             if (userBean.getSex() != mUserBean.getSex()) {
-                isChangle = true;
+                isChange = true;
             }
             if (!userBean.getBirthday().equals(mUserBean.getBirthday())) {
-                isChangle = true;
+                isChange = true;
             }
-            if (isChangle) {
+            if (isChange) {
                 mPresenter.updateProfile(nickname, mUserBean.getSex(), mUserBean.getBirthday(), mUserBean.getLocation(), mUserBean.getSignature());
             } else {
                 finish();
@@ -290,10 +290,10 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                     @Override
                     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                         String[] cityArray = mProvinceCityMap.get(mProvinceArray[newVal]);
+                        mCityPicker.setValue(0);
                         mCityPicker.setDisplayedValues(cityArray);//设置需要显示的数组
                         mCityPicker.setMinValue(0);
                         mCityPicker.setMaxValue(cityArray.length - 1);
-                        mCityPicker.setValue(0);
                     }
                 });
 
@@ -302,6 +302,34 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                 mCityPicker.setMinValue(0);
                 mCityPicker.setMaxValue(defaultCityArray.length - 1);
 
+            }
+
+            int provinceIndex = 0;
+            int cityIndex = 0;
+            if (!TextUtils.isEmpty(mUserBean.getLocation())) {
+                String[] location = mUserBean.getLocation().split(" ");
+                if (location.length == 2) {
+                    for (int i = 0, size = mProvinceArray.length; i < size; i++) {
+                        if (location[0].equals(mProvinceArray[i])) {
+                            provinceIndex = i;
+                            String[] cityList = mProvinceCityMap.get(location[0]);
+                            for (int j = 0, length = cityList.length; j < length; j++) {
+                                if (location[1].equals(cityList[j])) {
+                                    cityIndex = j;
+                                    mCityPicker.setDisplayedValues(cityList);//设置需要显示的数组
+                                    mCityPicker.setMinValue(0);
+                                    mCityPicker.setMaxValue(cityList.length - 1);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            if (provinceIndex >= 0 && cityIndex >= 0) {
+                mProvincePicker.setValue(provinceIndex);
+                mCityPicker.setValue(cityIndex);
             }
 
             mLocationSelectorDialog.show();
