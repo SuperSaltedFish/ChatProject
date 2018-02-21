@@ -26,7 +26,7 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
 
     private List<String> mImagePathList;
     private List<String> mImageSelectedList;
-    private int mHorizontalItemCount;
+    private final int mHorizontalItemCount;
     private OnImageItemChangeListener mOnImageItemChangeListener;
 
     public LocalMultiImageAdapter(List<String> currentImagePathList, List<String> imageSelectedList, int horizontalItemCount) {

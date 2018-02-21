@@ -148,4 +148,14 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     public ProfileModifyContract.Presenter getPresenter() {
         return new ProfileModifyPresenter();
     }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void goBack() {
+
+    }
 }

@@ -24,6 +24,7 @@ import com.yzx.chat.presenter.ProfileModifyPresenter;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GsonUtil;
+import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContract.Presenter> implements ProfileModifyContract.View {
 
+    private ProgressDialog mProgressDialog;
     private LinearLayout mLlBirthday;
     private TextView mTvBirthday;
     private LinearLayout mLlSexSelected;
@@ -67,6 +69,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         mTvSignature = findViewById(R.id.ProfileModifyActivity_mTvSignature);
         mEtNickname = findViewById(R.id.ProfileModifyActivity_mEtNickname);
         mBtnConfirm = findViewById(R.id.ProfileModifyActivity_mBtnConfirm);
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProfileModifyActivity_ProgressHint));
     }
 
     @Override
@@ -115,16 +118,16 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                 mTvSexSelected.setText(R.string.ProfileModifyActivity_NoSet);
         }
 
-
-        if (TextUtils.isEmpty(mUserBean.getBirthday())) {
-            mTvBirthday.setText(R.string.ProfileModifyActivity_NoSet);
-        } else {
-            String date = DateUtil.isoToDate_yyyy_MM_dd(mUserBean.getBirthday());
-            if (TextUtils.isEmpty(date)) {
-                mTvBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+        String birthday = mUserBean.getBirthday();
+        if (!TextUtils.isEmpty(mUserBean.getBirthday())) {
+            birthday = DateUtil.isoFormatTo(getString(R.string.DateFormat_yyyyMMdd), birthday);
+            if (!TextUtils.isEmpty(birthday)) {
+                mTvBirthday.setText(birthday);
             } else {
-                mTvBirthday.setText(date);
+                mTvBirthday.setText(R.string.ProfileModifyActivity_NoSet);
             }
+        } else {
+            mTvBirthday.setText(R.string.ProfileModifyActivity_NoSet);
         }
     }
 
@@ -168,7 +171,8 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                 isChange = true;
             }
             if (isChange) {
-                mPresenter.updateProfile(nickname, mUserBean.getSex(), mUserBean.getBirthday(), mUserBean.getLocation(), mUserBean.getSignature());
+                mProgressDialog.show();
+                mPresenter.updateProfile(mUserBean);
             } else {
                 finish();
             }
@@ -348,5 +352,17 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     @Override
     public ProfileModifyContract.Presenter getPresenter() {
         return new ProfileModifyPresenter();
+    }
+
+    @Override
+    public void showError(String error) {
+        mProgressDialog.dismiss();
+        showToast(error);
+    }
+
+    @Override
+    public void goBack() {
+        mProgressDialog.dismiss();
+        finish();
     }
 }

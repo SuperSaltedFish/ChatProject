@@ -2,6 +2,7 @@ package com.yzx.chat.contract;
 
         import com.yzx.chat.base.BasePresenter;
         import com.yzx.chat.base.BaseView;
+        import com.yzx.chat.bean.UserBean;
 
 /**
  * Created by YZX on 2018年02月12日.
@@ -10,11 +11,12 @@ package com.yzx.chat.contract;
 
 public class ProfileModifyContract {
     public interface View extends BaseView<Presenter> {
-
+        void showError(String error);
+        void goBack();
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void updateProfile(String nickname,int sex,String birthday,String location,String signature);
+        void updateProfile(UserBean user);
     }
 }

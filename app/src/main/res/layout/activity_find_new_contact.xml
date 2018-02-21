@@ -18,7 +18,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:tint="@color/colorAccent_alpha"
-
         android:scaleType="centerCrop"
         android:src="@drawable/temp_share_image"
         app:layout_constraintBottom_toTopOf="@+id/FindNewContactActivity_mGuideline"

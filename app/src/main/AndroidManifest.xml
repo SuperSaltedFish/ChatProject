@@ -35,11 +35,7 @@
         <activity
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -119,9 +115,19 @@
             <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
-        <activity android:name=".view.activity.ImageOriginalActivity"
+        <activity
+            android:name=".view.activity.ImageOriginalActivity"
             android:theme="@style/FullScreenDarkTheme">
 
+        </activity>
+        <activity
+            android:name=".view.activity.GroupProfileActivity"
+            android:theme="@style/TransparentStatusBarLightTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

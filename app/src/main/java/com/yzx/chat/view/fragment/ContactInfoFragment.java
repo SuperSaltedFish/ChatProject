@@ -75,9 +75,9 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
     @Override
     protected void init(View parentView) {
         mContactID = getArguments().getString(ARGUMENT_CONTACT_ID);
-        mSwitchTop = parentView.findViewById(R.id.FriendProfileActivity_mSwitchTop);
-        mSwitchRemind = parentView.findViewById(R.id.FriendProfileActivity_mSwitchRemind);
-        mClClearMessage = parentView.findViewById(R.id.FriendProfileActivity_mClClearMessage);
+        mSwitchTop = parentView.findViewById(R.id.ChatSetup_mSwitchTop);
+        mSwitchRemind = parentView.findViewById(R.id.ChatSetup_mSwitchRemind);
+        mClClearMessage = parentView.findViewById(R.id.ChatSetup_mClClearMessage);
         mLabelLayout = parentView.findViewById(R.id.FriendProfileActivity_mLabelLayout);
         mTelephoneLayout = parentView.findViewById(R.id.FriendProfileActivity_mTelephoneLayout);
         mDescriptionLayout = parentView.findViewById(R.id.FriendProfileActivity_mDescriptionLayout);

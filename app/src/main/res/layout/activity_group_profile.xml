@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".view.activity.GroupProfileActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/GroupProfileActivity_mAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/GroupProfileActivity_mCollapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorAccent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/colorAccent"
+            app:toolbarId="@+id/Default_mToolbar">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/temp_share_image"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.7" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/Default_mToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:layout_collapseMode="pin"
+                app:theme="@style/ToolbarTheme"
+                app:title="咸鱼部落"
+                app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="群聊成员"
+                android:textSize="12sp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/GroupProfileActivity_mRvGroupMembers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:overScrollMode="never"
+                android:paddingEnd="4dp"
+                android:paddingStart="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="center"
+                android:text="查看全部成员"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="群聊设置"
+                android:textSize="12sp" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ChatSetup_mClGroupName"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvLabelGroupName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="群聊名称"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentGroupName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvContentGroupName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="咸鱼部落"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelGroupName" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:background="@color/divider_color_black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageView
+                    android:id="@+id/ChatSetup_mSwitchGroupName"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:padding="18dp"
+                    android:src="@drawable/ic_edit2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ChatSetup_mClMyGroupNickname"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvLabelMyGroupNickname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="我在本群的昵称"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentMyGroupNickname"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvContentMyGroupNickname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="叶智星"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelMyGroupNickname" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:background="@color/divider_color_black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageView
+                    android:id="@+id/ChatSetup_mSwitchGroupNickname"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:padding="18dp"
+                    android:src="@drawable/ic_edit2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/ChatSetup_mClQRCode"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvLabelQRCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="群二维码"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentQRCode"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvContentQRCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="通过扫描二维码可加入该群聊"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelQRCode" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:background="@color/divider_color_black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvLabelGroupNotice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:maxLines="1"
+                    android:text="群公告"
+                    android:textColor="@color/text_primary_color_black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentGroupNotice"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/ChatSetup_mTvContentGroupNotice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:ellipsize="end"
+                    android:maxLines="4"
+                    android:text="但老天似乎跟他开了个玩笑。贾宗洋最后一跳得到128.05分，与冠军乌克兰选手阿布拉门科只差了0.46分。从2006年都灵冬奥会韩晓鹏的“惊天一跳”后，中国队一次次向冰雪之巅发起进攻，却总与金牌“咫尺天涯”。"
+                    android:textSize="13sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelGroupNotice" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:background="@color/divider_color_black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="24dp" />
+
+            <include layout="@layout/include_chat_setup" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/GroupProfileActivity_mBtnStartChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@color/green"
+        app:layout_anchor="@+id/GroupProfileActivity_mAppBarLayout"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@drawable/ic_chat"
+        app:useCompatPadding="true" />
+
+
+</android.support.design.widget.CoordinatorLayout>
