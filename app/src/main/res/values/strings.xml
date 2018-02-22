@@ -161,5 +161,12 @@
     <string name="ChatSetup_HintClearMessage">清空本地聊天记录（不可恢复）</string>
     <string name="ChatSetup_Title">聊天信息</string>
     <string name="GroupMembersAdapter_Add">添加</string>
+    <string name="ProfileModifyActivity_LocationDialogTitle">请选择省市</string>
+    <string name="Cancel">取消</string>
+    <string name="GroupProfileActivity_MyGroupNicknameDialogTitle">我在本群的昵称</string>
+    <string name="GroupProfileActivity_MyGroupNicknameDialogContent">设置你在群里的昵称，这个昵称只会在这个群内显示。</string>
+    <string name="GroupProfileActivity_GroupNameDialogTitle">群聊名称</string>
+    <string name="GroupProfileActivity_GroupNameDialogContent">设置该群聊的名称</string>
+    <string name="CreateGroupActivity_Title">创建群聊</string>
 
 </resources>

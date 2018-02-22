@@ -198,6 +198,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                         }
                     })
                     .positiveText(R.string.Confirm)
+                    .negativeText(R.string.Cancel)
                     .show();
 
         }
@@ -269,9 +270,10 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
 
 
                 mLocationSelectorDialog = new MaterialDialog.Builder(ProfileModifyActivity.this)
-                        .title("请选择省市")
+                        .title(R.string.ProfileModifyActivity_LocationDialogTitle)
                         .customView(R.layout.dialog_location_selector, false)
                         .positiveText(R.string.Confirm)
+                        .negativeText(R.string.Cancel)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

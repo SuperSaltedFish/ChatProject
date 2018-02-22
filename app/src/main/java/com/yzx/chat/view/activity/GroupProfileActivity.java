@@ -1,13 +1,16 @@
 package com.yzx.chat.view.activity;
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidUtil;
@@ -55,6 +58,7 @@ public class GroupProfileActivity extends BaseCompatActivity {
         mCollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         mCollapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
 
+        mRvGroupMembers.setHasFixedSize(true);
         mRvGroupMembers.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
         mRvGroupMembers.setLayoutManager(new GridLayoutManager(this, GROUP_MEMBERS_LINE_MAX_COUNT));
         mRvGroupMembers.setAdapter(mAdapter);
@@ -69,14 +73,54 @@ public class GroupProfileActivity extends BaseCompatActivity {
     private final View.OnClickListener mOnGroupNameClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            new MaterialDialog.Builder(GroupProfileActivity.this)
+                    .title(R.string.GroupProfileActivity_GroupNameDialogTitle)
+                    .content(R.string.GroupProfileActivity_GroupNameDialogContent)
+                    .inputType(
+                            InputType.TYPE_CLASS_TEXT
+                                    | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+                                    | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                    .inputRange(1, 16)
+                    .positiveText(R.string.Confirm)
+                    .negativeText(R.string.Cancel)
+                    .input(
+                            null,
+                            null,
+                            false,
+                            new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
+                                }
+                            })
+                    .show();
         }
     };
 
     private final View.OnClickListener mOnMyGroupNicknameClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            new MaterialDialog.Builder(GroupProfileActivity.this)
+                    .title(R.string.GroupProfileActivity_MyGroupNicknameDialogTitle)
+                    .content(R.string.GroupProfileActivity_MyGroupNicknameDialogContent)
+                    .inputType(
+                            InputType.TYPE_CLASS_TEXT
+                                    | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+                                    | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                    .inputRange(0, 16)
+                    .positiveText(R.string.Confirm)
+                    .negativeText(R.string.Cancel)
+                    .input(
+                            null,
+                            null,
+                            false,
+                            new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
+                                }
+                            })
+                    .show();
         }
     };
 

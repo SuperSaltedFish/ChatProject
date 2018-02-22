@@ -123,6 +123,9 @@
         <activity
             android:name=".view.activity.GroupProfileActivity"
             android:theme="@style/TransparentStatusBarLightTheme">
+
+        </activity>
+        <activity android:name=".view.activity.CreateGroupActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
