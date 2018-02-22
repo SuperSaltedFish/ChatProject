@@ -54,7 +54,7 @@ public class CreateGroupActivity extends BaseCompatActivity {
         mRecyclerView.setAdapter(mCreateGroupAdapter);
         mRecyclerView.setHasFixedSize(true);
         // mContactRecyclerView.setItemAnimator(new NoAnimations());
-        mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
+     //   mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
 
         mCreateGroupAdapter.addHeaderView(mHeaderView);
     }

@@ -27,7 +27,7 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
 
     @Override
     public int getViewHolderCount() {
-        return 0;
+        return 5;
     }
 
     final static class CreateGroupHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
@@ -35,7 +35,6 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
 
         CreateGroupHolder(View itemView) {
             super(itemView);
-
 
         }
 
