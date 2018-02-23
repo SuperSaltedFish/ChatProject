@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
@@ -32,12 +34,12 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
 
     @Override
     public void bindDataToViewHolder(CreateGroupHolder holder, int position) {
-
+        holder.mTvName.setText(mContactList.get(position).getName());
     }
 
     @Override
     public int getViewHolderCount() {
-        return 5;
+        return mContactList == null ? 0 : mContactList.size();
     }
 
     public void setOnItemSelectedChangeListener(OnItemSelectedChangeListener onItemSelectedChangeListener) {
@@ -56,12 +58,16 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
     final static class CreateGroupHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         private OnItemSelectedChangeListener mOnItemSelectedChangeListener;
+        ImageView mIvAvatar;
+        TextView mTvName;
         CheckBox mCbIsSelected;
 
         CreateGroupHolder(View itemView, OnItemSelectedChangeListener onItemSelectedChangeListener) {
             super(itemView);
             mOnItemSelectedChangeListener = onItemSelectedChangeListener;
+            mIvAvatar = itemView.findViewById(R.id.CreateGroupAdapter_mIvAvatar);
             mCbIsSelected = itemView.findViewById(R.id.CreateGroupAdapter_mCbIsSelected);
+            mTvName = itemView.findViewById(R.id.CreateGroupAdapter_mTvName);
             itemView.setOnClickListener(mOnItemClickListener);
         }
 

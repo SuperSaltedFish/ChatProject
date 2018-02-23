@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public class FindNewContactActivity extends BaseCompatActivity<FindNewContactContract.Presenter> implements FindNewContactContract.View {
 
-    private ConstraintLayout mClScanLayout;
+    private ConstraintLayout mClScan;
     private SmartRefreshLayout mSmartRefreshLayout;
     private EditText mEtSearch;
     private TextView mTvSearchHint;
@@ -35,6 +35,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private RecyclerView mRecyclerView;
     private LinearLayout mLlSearchHintLayout;
     private TextView mTvMyPhoneNumber;
+    private ConstraintLayout mClCreateGroup;
     private MaybeKnowAdapter mAdapter;
 
     @Override
@@ -43,7 +44,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     protected void init() {
-        mClScanLayout = findViewById(R.id.FindNewContactActivity_mClScanLayout);
+        mClScan = findViewById(R.id.FindNewContactActivity_mClScan);
         mRecyclerView = findViewById(R.id.FindNewContactActivity_mRecyclerView);
         mEtSearch = findViewById(R.id.FindNewContactActivity_mEtSearch);
         mSmartRefreshLayout = findViewById(R.id.FindNewContactActivity_mSmartRefreshLayout);
@@ -51,6 +52,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mTvMyPhoneNumber = findViewById(R.id.FindNewContactActivity_mTvMyPhoneNumber);
         mTvSearchHint = findViewById(R.id.FindNewContactActivity_mTvSearchHint);
         mPbSearch = findViewById(R.id.FindNewContactActivity_mPbSearch);
+        mClCreateGroup = findViewById(R.id.FindNewContactActivity_mClCreateGroup);
         mAdapter = new MaybeKnowAdapter();
     }
 
@@ -66,7 +68,8 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
 
-        mClScanLayout.setOnClickListener(mOnClScanLayoutClickListener);
+        mClScan.setOnClickListener(mOnScanLayoutClickListener);
+        mClCreateGroup.setOnClickListener(mOnCreateGroupClickListener);
 
         mEtSearch.setOnEditorActionListener(mOnEditorActionListener);
 
@@ -105,7 +108,14 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         }
     };
 
-    private final View.OnClickListener mOnClScanLayoutClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnCreateGroupClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(FindNewContactActivity.this,CreateGroupActivity.class));
+        }
+    };
+
+    private final View.OnClickListener mOnScanLayoutClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
