@@ -95,7 +95,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
-        mContactList = new ArrayList<>(128);
+        mContactList = new ArrayList<>(256);
         mContactAdapter = new ContactAdapter(mContactList);
         mSearchAdapter = new ContactSearchAdapter(mContactList);
     }

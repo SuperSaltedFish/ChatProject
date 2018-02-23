@@ -8,9 +8,15 @@ import android.view.ViewGroup;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by YZX on 2018年02月22日.
@@ -19,11 +25,14 @@ import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
 
 public class CreateGroupActivity extends BaseCompatActivity {
 
+
     private RecyclerView mRecyclerView;
     private View mHeaderView;
     private CreateGroupAdapter mCreateGroupAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
+    private List<ContactBean> mContactList;
+    private List<ContactBean> mSelectedContactList;
 
     @Override
     protected int getLayoutID() {
@@ -34,11 +43,20 @@ public class CreateGroupActivity extends BaseCompatActivity {
     protected void init() {
         mRecyclerView = findViewById(R.id.CreateGroupActivity_mRecyclerView);
         mHeaderView = getLayoutInflater().inflate(R.layout.item_create_group_header, (ViewGroup) getWindow().getDecorView(), false);
-        mCreateGroupAdapter = new CreateGroupAdapter();
+        mContactList = IMClient.getInstance().contactManager().getAllContacts();
+//        if(mContactList==null){
+//            return;
+//        }
+        mSelectedContactList = new ArrayList<>(32);
+        mCreateGroupAdapter = new CreateGroupAdapter(mContactList);
     }
 
     @Override
     protected void setup() {
+//        if(mContactList==null){
+//            finish();
+//            return;
+//        }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -54,8 +72,21 @@ public class CreateGroupActivity extends BaseCompatActivity {
         mRecyclerView.setAdapter(mCreateGroupAdapter);
         mRecyclerView.setHasFixedSize(true);
         // mContactRecyclerView.setItemAnimator(new NoAnimations());
-     //   mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
+        mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
 
         mCreateGroupAdapter.addHeaderView(mHeaderView);
+        mCreateGroupAdapter.setOnItemSelectedChangeListener(mOnItemSelectedChangeListener);
     }
+
+    private final CreateGroupAdapter.OnItemSelectedChangeListener mOnItemSelectedChangeListener = new CreateGroupAdapter.OnItemSelectedChangeListener() {
+        @Override
+        public void onItemSelectedChange(int position, boolean isSelect) {
+//            if (isSelect) {
+//                mSelectedContactList.add(mContactList.get(position));
+//            } else {
+//                mSelectedContactList.remove(mContactList.get(position));
+//            }
+            LogUtil.e(position+"  " +isSelect);
+        }
+    };
 }

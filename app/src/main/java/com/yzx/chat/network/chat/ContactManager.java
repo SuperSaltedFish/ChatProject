@@ -79,7 +79,6 @@ public class ContactManager {
         }
         mSubManagerCallback = subManagerCallback;
         mContactOperationSet = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
-        mContactsMap = new HashMap<>(256);
         mContactOperationDao = DBManager.getInstance().getContactOperationDao();
         mContactDao = DBManager.getInstance().getContactDao();
         mUserDao = DBManager.getInstance().getUserDao();
@@ -99,6 +98,10 @@ public class ContactManager {
     }
 
     public void initContactsFromDB() {
+        if(mContactsMap==null){
+            mContactsMap = new HashMap<>(256);
+        }
+        mContactsMap.clear();
         List<ContactBean> contacts = mContactDao.loadAllContacts();
         mContactsMap.clear();
         if (contacts != null) {
@@ -106,6 +109,15 @@ public class ContactManager {
                 mContactsMap.put(contact.getUserProfile().getUserID(), contact);
             }
         }
+    }
+
+    public List<ContactBean> getAllContacts() {
+        if(mContactsMap==null){
+            return null;
+        }
+        List<ContactBean> contacts = new ArrayList<>(mContactsMap.size() + 16);
+        contacts.addAll(mContactsMap.values());
+        return contacts;
     }
 
     public ContactBean getContact(String userID) {
@@ -301,12 +313,6 @@ public class ContactManager {
         mNetworkExecutor.submit(mUpdateContact);
     }
 
-
-    public List<ContactBean> getAllContacts() {
-        List<ContactBean> contacts = new ArrayList<>(mContactsMap.size() + 16);
-        contacts.addAll(mContactsMap.values());
-        return contacts;
-    }
 
     public void updateContactUnreadCount() {
         mSubManagerCallback.execute(new Runnable() {
