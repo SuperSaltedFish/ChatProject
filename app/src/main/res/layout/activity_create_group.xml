@@ -23,12 +23,13 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
             android:background="@null"
+            android:enabled="false"
             android:elevation="2dp"
             android:minWidth="0dp"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:text="@string/Confirm"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/selector_btn_text_enable_change_light" />
 
     </android.support.v7.widget.Toolbar>
 
@@ -39,15 +40,38 @@
         android:layout_marginTop="48dp"
         android:overScrollMode="never" />
 
-    <com.yzx.chat.widget.view.IndexBarView
-        android:id="@+id/CreateGroupActivity_mIndexBarView"
-        android:layout_width="16dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="48dp"
         android:layout_gravity="end|bottom"
-        android:background="@drawable/bg_index_bar"
-        android:paddingBottom="2dp"
-        android:paddingTop="4dp" />
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/CreateGroupActivity_mTvIndexBarHint"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_index_bar_hint"
+            android:gravity="center"
+            android:textColor="@color/text_main_color_white"
+            android:textSize="44sp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/ContactFragment_mIndexBarView"
+            app:layout_constraintTop_toTopOf="@+id/ContactFragment_mIndexBarView" />
+
+
+        <com.yzx.chat.widget.view.IndexBarView
+            android:id="@+id/CreateGroupActivity_mIndexBarView"
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_index_bar"
+            android:paddingBottom="2dp"
+            android:paddingTop="4dp" />
+
+    </LinearLayout>
+
 
 </merge>

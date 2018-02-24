@@ -64,7 +64,7 @@
         android:gravity="center"
         android:scaleX="0"
         android:scaleY="0"
-        android:textColor="@color/text_main_color_white_alpha"
+        android:textColor="@color/text_main_color_white"
         android:textSize="44sp"
         app:layout_constraintEnd_toStartOf="@+id/ContactFragment_mIndexBarView"
         app:layout_constraintTop_toTopOf="@+id/ContactFragment_mIndexBarView" />

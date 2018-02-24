@@ -5,6 +5,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -12,6 +15,8 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
+import com.yzx.chat.widget.view.CircleImageView;
+import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
 
@@ -32,6 +37,9 @@ public class CreateGroupActivity extends BaseCompatActivity {
     private LinearLayoutManager mLinearLayoutManager;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
     private IndexBarView mIndexBarView;
+    private TextView mTvIndexBarHint;
+    private FlowLayout mFlowLayout;
+    private Button mBtnConfirm;
     private List<ContactBean> mContactList;
     private List<ContactBean> mSelectedContactList;
 
@@ -44,7 +52,10 @@ public class CreateGroupActivity extends BaseCompatActivity {
     protected void init() {
         mRecyclerView = findViewById(R.id.CreateGroupActivity_mRecyclerView);
         mIndexBarView = findViewById(R.id.CreateGroupActivity_mIndexBarView);
+        mTvIndexBarHint = findViewById(R.id.CreateGroupActivity_mTvIndexBarHint);
+        mBtnConfirm = findViewById(R.id.ProfileModifyActivity_mBtnConfirm);
         mHeaderView = getLayoutInflater().inflate(R.layout.item_create_group_header, (ViewGroup) getWindow().getDecorView(), false);
+        mFlowLayout = mHeaderView.findViewById(R.id.CreateGroupActivity_mFlowLayout);
         mContactList = IMClient.getInstance().contactManager().getAllContacts();
         if (mContactList == null) {
             return;
@@ -63,6 +74,9 @@ public class CreateGroupActivity extends BaseCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mFlowLayout.setItemSpace((int) AndroidUtil.dip2px(4));
+        mFlowLayout.setLineSpace((int) AndroidUtil.dip2px(4));
+
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(this, R.color.divider_color_black));
         mLetterSegmentationItemDecoration.setLineWidth(1);
@@ -77,7 +91,7 @@ public class CreateGroupActivity extends BaseCompatActivity {
         mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.text_secondary_color_black));
-       // mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
+        mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
 
         mCreateGroupAdapter.addHeaderView(mHeaderView);
@@ -89,8 +103,58 @@ public class CreateGroupActivity extends BaseCompatActivity {
         public void onItemSelectedChange(int position, boolean isSelect) {
             if (isSelect) {
                 mSelectedContactList.add(mContactList.get(position - 1));
+                CircleImageView avatar = new CircleImageView(CreateGroupActivity.this);
+                avatar.setId(position);
+                avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                avatar.setImageResource(R.drawable.temp_head_image);
+                mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidUtil.dip2px(40), (int) AndroidUtil.dip2px(40)));
             } else {
                 mSelectedContactList.remove(mContactList.get(position - 1));
+                View needRemoveView = mFlowLayout.findViewById(position);
+                if(needRemoveView!=null) {
+                    mFlowLayout.removeView(needRemoveView);
+                }
+            }
+            mBtnConfirm.setEnabled(mSelectedContactList.size()>0);
+        }
+    };
+
+    private final IndexBarView.OnTouchSelectedListener mIndexBarSelectedListener = new IndexBarView.OnTouchSelectedListener() {
+        @Override
+        public void onSelected(int position, String text) {
+            final int scrollPosition = mCreateGroupAdapter.findPositionByLetter(text);
+            if (scrollPosition >= 0) {
+                mRecyclerView.scrollToPosition(scrollPosition);
+                mRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+                        if (scrollPosition > firstPosition) {
+                            View childView = mRecyclerView.getChildAt(scrollPosition - firstPosition);
+                            int scrollY = childView.getTop() - mLetterSegmentationItemDecoration.getSpace();
+                            mRecyclerView.scrollBy(0, scrollY);
+                        }
+                    }
+                });
+            }
+            mTvIndexBarHint.setVisibility(View.VISIBLE);
+            mTvIndexBarHint.setText(text);
+        }
+
+        @Override
+        public void onCancelSelected() {
+            mTvIndexBarHint.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        public void onMove(int offsetPixelsY) {
+            int startOffset = mTvIndexBarHint.getHeight() / 2;
+            if (startOffset > offsetPixelsY) {
+                mTvIndexBarHint.setTranslationY(0);
+            } else if (offsetPixelsY > mIndexBarView.getHeight() - startOffset) {
+                mTvIndexBarHint.setTranslationY(mIndexBarView.getHeight() - startOffset * 2);
+            } else {
+                mTvIndexBarHint.setTranslationY(offsetPixelsY - startOffset);
             }
         }
     };

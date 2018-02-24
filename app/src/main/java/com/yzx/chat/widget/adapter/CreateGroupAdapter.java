@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,12 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
 
     private OnItemSelectedChangeListener mOnItemSelectedChangeListener;
     private List<ContactBean> mContactList;
+    private SparseArray<String> mIdentitySparseArray;
 
     public CreateGroupAdapter(List<ContactBean> contactList) {
         mContactList = contactList;
+        mIdentitySparseArray = new SparseArray<>(32);
+        resetLetter();
     }
 
     @Override
@@ -34,6 +38,12 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
 
     @Override
     public void bindDataToViewHolder(CreateGroupHolder holder, int position) {
+        String identity = mIdentitySparseArray.get(position);
+        if (identity != null) {
+            holder.itemView.setTag(identity);
+        } else {
+            holder.itemView.setTag(null);
+        }
         holder.mTvName.setText(mContactList.get(position).getName());
     }
 
@@ -41,6 +51,33 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
     public int getViewHolderCount() {
         return mContactList == null ? 0 : mContactList.size();
     }
+
+    public int findPositionByLetter(String letter) {
+        int keyIndex = mIdentitySparseArray.indexOfValue(letter);
+        if (keyIndex != -1) {
+            return mIdentitySparseArray.keyAt(keyIndex);
+        }
+        return -1;
+    }
+
+    private void resetLetter() {
+        if (mContactList != null && mContactList.size() != 0) {
+            String identity;
+            String abbreviation;
+            String currentIdentity = null;
+            for (int i = 0, length = mContactList.size(); i < length; i++) {
+                abbreviation = mContactList.get(i).getAbbreviation();
+                if (abbreviation != null) {
+                    identity = abbreviation.substring(0, 1);
+                    if (!identity.equals(currentIdentity)) {
+                        mIdentitySparseArray.append(i, identity.toUpperCase().intern());
+                        currentIdentity = identity;
+                    }
+                }
+            }
+        }
+    }
+
 
     public void setOnItemSelectedChangeListener(OnItemSelectedChangeListener onItemSelectedChangeListener) {
         mOnItemSelectedChangeListener = onItemSelectedChangeListener;

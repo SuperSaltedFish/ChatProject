@@ -5,17 +5,27 @@
     android:layout_height="56dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:paddingEnd="12dp"
+    android:paddingEnd="32dp"
     android:paddingStart="12dp">
+
+    <CheckBox
+        android:id="@+id/CreateGroupAdapter_mCbIsSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <com.yzx.chat.widget.view.CircleImageView
         android:id="@+id/CreateGroupAdapter_mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
+        android:layout_marginStart="8dp"
         android:src="@drawable/temp_head_image"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/CreateGroupAdapter_mCbIsSelected"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -28,17 +38,8 @@
         android:textColor="@color/text_primary_color_black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/CreateGroupAdapter_mCbIsSelected"
-        app:layout_constraintStart_toEndOf="@id/CreateGroupAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <CheckBox
-        android:id="@+id/CreateGroupAdapter_mCbIsSelected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/CreateGroupAdapter_mIvAvatar"
         app:layout_constraintTop_toTopOf="parent" />
 
 
