@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,18 +12,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+
+    <com.yzx.chat.widget.view.MaskView
+        android:id="@+id/QrCodeScanActivity_mMaskView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <Toolbar
         android:id="@+id/QrCodeScanActivity_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/mask_color_black"
         android:minHeight="48dp" />
-
-    <com.yzx.chat.widget.view.MaskView
-        android:id="@+id/QrCodeScanActivity_mMaskView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="48dp" />
 
     <ImageView
         android:id="@+id/QrCodeScanActivity_mIvToggleFlash"
@@ -39,7 +38,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -47,7 +45,6 @@
             android:id="@+id/QrCodeScanActivity_mScanLayout"
             android:layout_width="256dp"
             android:layout_height="256dp"
-            android:layout_centerInParent="true"
             android:background="@drawable/frame_capture">
 
             <View

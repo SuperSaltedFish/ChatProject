@@ -132,12 +132,12 @@ public class Camera2TextureView extends TextureView implements TextureView.Surfa
                 try {
                     if (mOnCaptureCallback != null) {
                         if (mImageBuffer == null) {
-                            mImageBuffer = new byte[mPictureSize.getWidth() * mPictureSize.getHeight()];
+                            mImageBuffer = new byte[mImageReader.getWidth() * mImageReader.getHeight()];
                         }
                         Image.Plane[] planes = image.getPlanes();
                         ByteBuffer byteBuffer = planes[0].getBuffer();
                         byteBuffer.get(mImageBuffer);
-                        mOnCaptureCallback.onCaptureFrameAtFocus(mImageBuffer);
+                        mOnCaptureCallback.onCaptureFrameAtFocus(mImageBuffer, mImageReader.getWidth(), mImageReader.getHeight());
                     }
                 } finally {
                     image.close();
@@ -148,7 +148,7 @@ public class Camera2TextureView extends TextureView implements TextureView.Surfa
     };
 
     public interface OnCaptureCallback {
-        void onCaptureFrameAtFocus(byte[] data);
+        void onCaptureFrameAtFocus(byte[] data, int width, int height);
     }
 
     private int mPreviewWidth;
@@ -204,16 +204,10 @@ public class Camera2TextureView extends TextureView implements TextureView.Surfa
         if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
             float ratio = mRatioH / (float) mRatioW;
             int height = (int) (MeasureSpec.getSize(widthMeasureSpec) * ratio);
-            if (heightMode == MeasureSpec.AT_MOST) {
-                height = Math.min(height, MeasureSpec.getSize(heightMeasureSpec));
-            }
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
         } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
             float ratio = mRatioW / (float) mRatioH;
             int width = (int) (MeasureSpec.getSize(heightMeasureSpec) * ratio);
-            if (widthMode == MeasureSpec.AT_MOST) {
-                width = Math.min(width, MeasureSpec.getSize(widthMeasureSpec));
-            }
             super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), heightMeasureSpec);
         } else {
             int width = MeasureSpec.getSize(widthMeasureSpec);

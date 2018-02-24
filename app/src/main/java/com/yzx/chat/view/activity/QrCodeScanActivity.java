@@ -2,7 +2,6 @@ package com.yzx.chat.view.activity;
 
 import android.app.ActionBar;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,12 +10,23 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toolbar;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.PlanarYUVLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.GlobalHistogramBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.widget.view.Camera2TextureView;
 import com.yzx.chat.widget.view.MaskView;
+
+import java.util.Hashtable;
 
 public class QrCodeScanActivity extends BaseCompatActivity {
 
@@ -33,11 +43,11 @@ public class QrCodeScanActivity extends BaseCompatActivity {
 
     @Override
     protected void init() {
-        mCamera2TextureView = (Camera2TextureView) findViewById(R.id.QrCodeScanActivity_mCamera2TextureView);
+        mCamera2TextureView = findViewById(R.id.QrCodeScanActivity_mCamera2TextureView);
         mScanAnimationView = findViewById(R.id.QrCodeScanActivity_mScanAnimationView);
-        mMaskView = (MaskView) findViewById(R.id.QrCodeScanActivity_mMaskView);
-        mScanLayout = (FrameLayout) findViewById(R.id.QrCodeScanActivity_mScanLayout);
-        mIvToggleFlash = (ImageView) findViewById(R.id.QrCodeScanActivity_mIvToggleFlash);
+        mMaskView = findViewById(R.id.QrCodeScanActivity_mMaskView);
+        mScanLayout = findViewById(R.id.QrCodeScanActivity_mScanLayout);
+        mIvToggleFlash = findViewById(R.id.QrCodeScanActivity_mIvToggleFlash);
     }
 
     @Override
@@ -64,7 +74,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_qr_code_scan,menu);
+        getMenuInflater().inflate(R.menu.menu_qr_code_scan, menu);
         return true;
     }
 
@@ -81,19 +91,51 @@ public class QrCodeScanActivity extends BaseCompatActivity {
 
 
     private final Camera2TextureView.OnCaptureCallback mOnCaptureCallback = new Camera2TextureView.OnCaptureCallback() {
-        @Override
-        public void onCaptureFrameAtFocus(byte[] data) {
+        private QRCodeReader mQRCodeReader;
+        private Hashtable<DecodeHintType, Object> mHints;
 
+        @Override
+        public void onCaptureFrameAtFocus(final byte[] data, final int width, final int height) {
+
+//            float horizontalScale = (float) height / mCamera2TextureView.getWidth();
+//            float verticalScale = (float) width / mCamera2TextureView.getHeight();
+//            int scanLeft = (int) (mCamera2TextureView.getBottom()-mScanLayout.getBottom() * horizontalScale);
+//            int scanTop = (int) (mScanLayout.getLeft() * verticalScale);
+//            int scanWidth = (int) (mScanLayout.getHeight() * horizontalScale);
+//            int scanHeight = (int) (mScanLayout.getWidth() * verticalScale);
+            PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(data, width, height, 0, 0, width, height, false);
+            BinaryBitmap bitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
+            if (mQRCodeReader == null) {
+                mQRCodeReader = new QRCodeReader();
+                mHints = new Hashtable<>();
+                mHints.put(DecodeHintType.CHARACTER_SET, "utf-8");
+                mHints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
+            }
+            try {
+                Result result = mQRCodeReader.decode(bitmap, mHints);
+                showToast(result.getText()+"      "+(i++));
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            } catch (ChecksumException e) {
+                e.printStackTrace();
+            } catch (FormatException e) {
+                e.printStackTrace();
+            }
         }
+
     };
+
+    int i;
+
+
 
     private final View.OnClickListener mOnToggleFlashClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(mCamera2TextureView.isOpenFlash()){
+            if (mCamera2TextureView.isOpenFlash()) {
                 mCamera2TextureView.setOpenFlash(false);
                 mIvToggleFlash.setImageResource(R.drawable.ic_flash_close);
-            }else {
+            } else {
                 mCamera2TextureView.setOpenFlash(true);
                 mIvToggleFlash.setImageResource(R.drawable.ic_flash_open);
             }
@@ -103,7 +145,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     private final Animation.AnimationListener mAnimationListener = new Animation.AnimationListener() {
         @Override
         public void onAnimationStart(Animation animation) {
-            mMaskView.setSpaceRect(mScanLayout.getLeft(),mScanLayout.getTop(),mScanLayout.getRight(),mScanLayout.getBottom());
+            mMaskView.setSpaceRect(mScanLayout.getLeft(), mScanLayout.getTop(), mScanLayout.getRight(), mScanLayout.getBottom());
         }
 
         @Override
