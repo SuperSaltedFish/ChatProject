@@ -4,11 +4,14 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.MyQRCodeActivityContract;
 import com.yzx.chat.presenter.MyQRCodeActivityPresenter;
+import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.QREncodingUtils;
 
 /**
@@ -23,6 +26,8 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
     private FrameLayout mFlScan;
     private FrameLayout mFlReset;
     private FrameLayout mFlSave;
+    private TextView mTvLocation;
+    private TextView mTvNickname;
 
 
     @Override
@@ -37,10 +42,17 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
         mFlScan = findViewById(R.id.MyQRCodeActivity_mFlScan);
         mFlReset = findViewById(R.id.MyQRCodeActivity_mFlReset);
         mFlSave = findViewById(R.id.MyQRCodeActivity_mFlSave);
+        mTvLocation = findViewById(R.id.MyQRCodeActivity_mTvLocation);
+        mTvNickname = findViewById(R.id.MyQRCodeActivity_mTvNickname);
     }
 
     @Override
     protected void setup() {
+        UserBean user = IdentityManager.getInstance().getUser();
+        if (user == null) {
+            finish();
+            return;
+        }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -49,7 +61,11 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
         mFlReset.setOnClickListener(mOnResetClickListener);
         mFlSave.setOnClickListener(mOnSaveClickListener);
 
+        mTvLocation.setText(user.getLocation());
+        mTvNickname.setText(user.getNickname());
+        
         mPresenter.updateQRCode();
+
     }
 
     private final View.OnClickListener mOnScanClickListener = new View.OnClickListener() {
