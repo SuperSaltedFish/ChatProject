@@ -67,9 +67,19 @@
             app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mIvAvatar"
             app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mTvNickname" />
 
+        <ProgressBar
+            android:id="@+id/MyQRCodeActivity_mProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/MyQRCodeActivity_mIvQRCode"
+            app:layout_constraintEnd_toEndOf="@id/MyQRCodeActivity_mIvQRCode"
+            app:layout_constraintStart_toStartOf="@id/MyQRCodeActivity_mIvQRCode"
+            app:layout_constraintTop_toTopOf="@id/MyQRCodeActivity_mIvQRCode" />
+
         <ImageView
             android:id="@+id/MyQRCodeActivity_mIvQRCode"
             android:layout_width="280dp"
+            android:visibility="invisible"
             android:layout_height="280dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvHint"

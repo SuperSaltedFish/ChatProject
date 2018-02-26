@@ -20,7 +20,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/temp_share_image"
         android:tint="@color/colorAccent_alpha"
-        app:layout_constraintBottom_toTopOf="@+id/FindNewContactActivity_mGuideline"
+        app:layout_constraintBottom_toTopOf="@id/FindNewContactActivity_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fitsSystemWindows="true"
-        app:layout_constraintBottom_toTopOf="@+id/FindNewContactActivity_mGuideline"
+        app:layout_constraintBottom_toTopOf="@id/FindNewContactActivity_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -55,10 +55,10 @@
         android:elevation="2dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        app:layout_constraintBottom_toBottomOf="@+id/FindNewContactActivity_mGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/FindNewContactActivity_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/FindNewContactActivity_mGuideline">
+        app:layout_constraintTop_toTopOf="@id/FindNewContactActivity_mGuideline">
 
         <EditText
             android:id="@+id/FindNewContactActivity_mEtSearch"
@@ -84,13 +84,15 @@
 
     <TextView
         android:id="@+id/FindNewContactActivity_mTvMyPhoneNumber"
-        android:layout_width="0dp"
-        android:layout_height="26dp"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:drawablePadding="4dp"
+        android:drawableEnd="@drawable/ic_qrcode"
         android:gravity="center"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mFlSearchLayout" />
+        app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mFlSearchLayout" />
 
     <LinearLayout
         android:id="@+id/FindNewContactActivity_mLlSearchHintLayout"
@@ -99,7 +101,7 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mTvMyPhoneNumber">
+        app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mTvMyPhoneNumber">
 
         <ProgressBar
             android:id="@+id/FindNewContactActivity_mPbSearch"
@@ -114,21 +116,14 @@
 
     </LinearLayout>
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/FindNewContactActivity_mSmartRefreshLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingTop="46dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FindNewContactActivity_mIvBackground"
-        app:srlEnablePureScrollMode="true">
-
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/FindNewContactActivity_mLlMoreOperation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mTvMyPhoneNumber"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:orientation="vertical">
 
             <android.support.constraint.ConstraintLayout
@@ -162,10 +157,10 @@
                     android:text="创建群聊"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toTopOf="@+id/ConversationFragment_mTvCreateGroupHint"
+                    app:layout_constraintBottom_toTopOf="@id/ConversationFragment_mTvCreateGroupHint"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvCreateGroup"
-                    app:layout_constraintTop_toTopOf="@+id/ConversationFragment_mIvCreateGroup"
+                    app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvCreateGroup"
+                    app:layout_constraintTop_toTopOf="@id/ConversationFragment_mIvCreateGroup"
                     app:layout_constraintVertical_chainStyle="packed" />
 
 
@@ -179,10 +174,10 @@
                     android:maxLines="1"
                     android:text="与身边的朋友进入同一个群聊"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/ConversationFragment_mIvCreateGroup"
+                    app:layout_constraintBottom_toBottomOf="@id/ConversationFragment_mIvCreateGroup"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvCreateGroup"
-                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mTvCreateGroup" />
+                    app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvCreateGroup"
+                    app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvCreateGroup" />
 
                 <View
                     android:layout_width="0dp"
@@ -192,7 +187,7 @@
                     android:background="@color/divider_color_black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mIvCreateGroup" />
+                    app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mIvCreateGroup" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -227,9 +222,9 @@
                     android:text="扫一扫"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toTopOf="@+id/ConversationFragment_mTvScanHint"
+                    app:layout_constraintBottom_toTopOf="@id/ConversationFragment_mTvScanHint"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvScan"
+                    app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvScan"
                     app:layout_constraintTop_toTopOf="@+id/ConversationFragment_mIvScan"
                     app:layout_constraintVertical_chainStyle="packed" />
 
@@ -244,10 +239,10 @@
                     android:maxLines="1"
                     android:text="扫描二维码名片"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/ConversationFragment_mIvScan"
+                    app:layout_constraintBottom_toBottomOf="@id/ConversationFragment_mIvScan"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvScan"
-                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mTvScan" />
+                    app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvScan"
+                    app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvScan" />
 
                 <View
                     android:layout_width="0dp"
@@ -257,7 +252,7 @@
                     android:background="@color/divider_color_black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mIvScan" />
+                    app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mIvScan" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -293,10 +288,10 @@
                     android:text="手机联系人"
                     android:textColor="@color/text_primary_color_black"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toTopOf="@+id/ConversationFragment_mTvAddPhoneContactHint"
+                    app:layout_constraintBottom_toTopOf="@id/ConversationFragment_mTvAddPhoneContactHint"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvAddPhoneContact"
-                    app:layout_constraintTop_toTopOf="@+id/ConversationFragment_mIvAddPhoneContact"
+                    app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvAddPhoneContact"
+                    app:layout_constraintTop_toTopOf="@id/ConversationFragment_mIvAddPhoneContact"
                     app:layout_constraintVertical_chainStyle="packed" />
 
 
@@ -310,10 +305,10 @@
                     android:maxLines="1"
                     android:text="添加或邀请通讯录中的好友"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/ConversationFragment_mIvAddPhoneContact"
+                    app:layout_constraintBottom_toBottomOf="@id/ConversationFragment_mIvAddPhoneContact"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ConversationFragment_mIvAddPhoneContact"
-                    app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mTvAddPhoneContact" />
+                    app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvAddPhoneContact"
+                    app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvAddPhoneContact" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -366,7 +361,6 @@
 
         </LinearLayout>
 
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 
 </android.support.constraint.ConstraintLayout>

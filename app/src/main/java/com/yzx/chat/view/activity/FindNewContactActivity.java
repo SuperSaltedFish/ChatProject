@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
@@ -28,12 +27,13 @@ import java.util.Locale;
 public class FindNewContactActivity extends BaseCompatActivity<FindNewContactContract.Presenter> implements FindNewContactContract.View {
 
     private ConstraintLayout mClScan;
-    private SmartRefreshLayout mSmartRefreshLayout;
+
     private EditText mEtSearch;
     private TextView mTvSearchHint;
     private ProgressBar mPbSearch;
     private RecyclerView mRecyclerView;
     private LinearLayout mLlSearchHintLayout;
+    private LinearLayout mLlMoreOperation;
     private TextView mTvMyPhoneNumber;
     private ConstraintLayout mClCreateGroup;
     private MaybeKnowAdapter mAdapter;
@@ -47,10 +47,10 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mClScan = findViewById(R.id.FindNewContactActivity_mClScan);
         mRecyclerView = findViewById(R.id.FindNewContactActivity_mRecyclerView);
         mEtSearch = findViewById(R.id.FindNewContactActivity_mEtSearch);
-        mSmartRefreshLayout = findViewById(R.id.FindNewContactActivity_mSmartRefreshLayout);
         mLlSearchHintLayout = findViewById(R.id.FindNewContactActivity_mLlSearchHintLayout);
         mTvMyPhoneNumber = findViewById(R.id.FindNewContactActivity_mTvMyPhoneNumber);
         mTvSearchHint = findViewById(R.id.FindNewContactActivity_mTvSearchHint);
+        mLlMoreOperation = findViewById(R.id.FindNewContactActivity_mLlMoreOperation);
         mPbSearch = findViewById(R.id.FindNewContactActivity_mPbSearch);
         mClCreateGroup = findViewById(R.id.FindNewContactActivity_mClCreateGroup);
         mAdapter = new MaybeKnowAdapter();
@@ -70,7 +70,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
         mClScan.setOnClickListener(mOnScanLayoutClickListener);
         mClCreateGroup.setOnClickListener(mOnCreateGroupClickListener);
-
+        mTvMyPhoneNumber.setOnClickListener(mOnMyPhoneClickListener);
         mEtSearch.setOnEditorActionListener(mOnEditorActionListener);
 
         setData();
@@ -83,10 +83,10 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     private void enableSearchHint(boolean isEnable) {
         if (isEnable) {
-            mSmartRefreshLayout.animate().translationY(mLlSearchHintLayout.getHeight()).start();
+            mLlMoreOperation.animate().translationY(mLlSearchHintLayout.getHeight()).start();
             mLlSearchHintLayout.setVisibility(View.VISIBLE);
         } else {
-            mSmartRefreshLayout.animate().translationY(0).start();
+            mLlMoreOperation.animate().translationY(0).start();
             mLlSearchHintLayout.setVisibility(View.INVISIBLE);
         }
     }
@@ -108,10 +108,17 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         }
     };
 
+    private final View.OnClickListener mOnMyPhoneClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(FindNewContactActivity.this, MyQRCodeActivity.class));
+        }
+    };
+
     private final View.OnClickListener mOnCreateGroupClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(FindNewContactActivity.this,CreateGroupActivity.class));
+            startActivity(new Intent(FindNewContactActivity.this, CreateGroupActivity.class));
         }
     };
 
