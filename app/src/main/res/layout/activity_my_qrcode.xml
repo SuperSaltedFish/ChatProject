@@ -1,6 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/Default_mToolbar"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/ToolbarTheme"
+        app:title="@string/MyQRCodeActivity_Title"
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/white"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mClMore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar">
+
+        <com.yzx.chat.widget.view.CircleImageView
+            android:id="@+id/MyQRCodeActivity_mIvAvatar"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/temp_head_image"
+            app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mIvQRCode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/MyQRCodeActivity_mTvNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="叶智星"
+            android:textColor="@color/text_primary_color_black"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvLocation"
+            app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mIvAvatar"
+            app:layout_constraintTop_toTopOf="@id/MyQRCodeActivity_mIvAvatar"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/MyQRCodeActivity_mTvLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="广东 深圳"
+            app:layout_constraintBottom_toBottomOf="@id/MyQRCodeActivity_mIvAvatar"
+            app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mIvAvatar"
+            app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mTvNickname" />
+
+        <ImageView
+            android:id="@+id/MyQRCodeActivity_mIvQRCode"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvHint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mIvAvatar" />
+
+        <TextView
+            android:id="@+id/MyQRCodeActivity_mTvHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="扫描上面的二维码，添加我好友"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mIvQRCode" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/MyQRCodeActivity_mClMore"
+        android:layout_width="0dp"
+        android:layout_height="88dp"
+        android:background="@color/colorAccent_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <FrameLayout
+            android:id="@+id/MyQRCodeActivity_mFlScan"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/MyQRCodeActivity_mDivider1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="4dp"
+                android:drawableTop="@drawable/ic_scan"
+                android:text="@string/Scan"
+                android:textColor="@color/text_main_color_white"
+                android:textSize="14sp" />
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/MyQRCodeActivity_mDivider1"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/MyQRCodeActivity_mFlReset"
+            app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mFlScan"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/MyQRCodeActivity_mFlReset"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/MyQRCodeActivity_mDivider2"
+            app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mDivider1"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="4dp"
+                android:drawableTop="@drawable/ic_reset"
+                android:text="@string/MyQRCodeActivity_ResetQRCode"
+                android:textColor="@color/text_main_color_white"
+                android:textSize="14sp" />
+
+        </FrameLayout>
+
+
+        <View
+            android:id="@+id/MyQRCodeActivity_mDivider2"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/MyQRCodeActivity_mFlSave"
+            app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mFlReset"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/MyQRCodeActivity_mFlSave"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mDivider2"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="4dp"
+                android:drawableTop="@drawable/ic_save"
+                android:text="@string/MyQRCodeActivity_SaveQRCode"
+                android:textColor="@color/text_main_color_white"
+                android:textSize="14sp" />
+        </FrameLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
 
 </android.support.constraint.ConstraintLayout>

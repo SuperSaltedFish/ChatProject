@@ -168,5 +168,9 @@
     <string name="GroupProfileActivity_GroupNameDialogTitle">群聊名称</string>
     <string name="GroupProfileActivity_GroupNameDialogContent">设置该群聊的名称</string>
     <string name="CreateGroupActivity_Title">创建群聊</string>
+    <string name="MyQRCodeActivity_Title">我的二维码</string>
+    <string name="Scan">扫一扫</string>
+    <string name="MyQRCodeActivity_ResetQRCode">刷新二维码</string>
+    <string name="MyQRCodeActivity_SaveQRCode">保存到手机</string>
 
 </resources>

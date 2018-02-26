@@ -19,7 +19,7 @@ import com.google.zxing.FormatException;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
-import com.google.zxing.common.GlobalHistogramBinarizer;
+import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -104,7 +104,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
 //            int scanWidth = (int) (mScanLayout.getHeight() * horizontalScale);
 //            int scanHeight = (int) (mScanLayout.getWidth() * verticalScale);
             PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(data, width, height, 0, 0, width, height, false);
-            BinaryBitmap bitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             if (mQRCodeReader == null) {
                 mQRCodeReader = new QRCodeReader();
                 mHints = new Hashtable<>();
