@@ -63,7 +63,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
 
         mTvLocation.setText(user.getLocation());
         mTvNickname.setText(user.getNickname());
-        
+
         mPresenter.updateQRCode();
 
     }
