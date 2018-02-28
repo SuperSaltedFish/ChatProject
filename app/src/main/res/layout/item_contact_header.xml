@@ -7,19 +7,18 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@color/colorAccent"
-            android:padding="10dp"
+            android:layout_width="36dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="36dp"
+            android:padding="4dp"
             android:src="@drawable/ic_search"
-            android:tint="@android:color/white" />
+            android:tint="@color/colorAccent" />
 
 
         <AutoCompleteTextView
@@ -31,12 +30,15 @@
             android:completionThreshold="1"
             android:hint="@string/ContactFragment_SearchContact"
             android:maxLength="16"
+            android:layout_gravity="center_vertical"
             android:maxLines="1"
             android:overScrollMode="never"
+            android:paddingEnd="8dp"
+            android:paddingStart="36dp"
             android:textColor="@color/text_primary_color_black"
             android:textColorHint="@color/text_primary_color_black"
             android:textSize="16sp" />
-    </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/ContactFragment_mLlContactOperation"
@@ -46,12 +48,11 @@
         android:gravity="center_vertical">
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@color/colorAccent"
-            android:padding="10dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="4dp"
             android:src="@drawable/ic_friend"
-            android:tint="@android:color/white" />
+            android:tint="@color/colorAccent" />
 
         <TextView
             android:layout_width="0dp"
@@ -78,12 +79,10 @@
         android:gravity="center_vertical">
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@color/colorAccent"
-            android:padding="7dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_label"
-            android:tint="@android:color/white" />
+            android:tint="@color/colorAccent" />
 
         <TextView
             android:layout_width="wrap_content"
