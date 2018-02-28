@@ -12,7 +12,9 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.contract.CreateGroupContract;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.presenter.CreateGroupPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
 import com.yzx.chat.widget.view.CircleImageView;
@@ -28,7 +30,7 @@ import java.util.List;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
-public class CreateGroupActivity extends BaseCompatActivity {
+public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.Presenter> implements CreateGroupContract.View {
 
 
     private RecyclerView mRecyclerView;
@@ -158,4 +160,20 @@ public class CreateGroupActivity extends BaseCompatActivity {
             }
         }
     };
+
+    @Override
+    public CreateGroupContract.Presenter getPresenter() {
+        return new CreateGroupPresenter();
+    }
+
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void goBack() {
+
+    }
 }
