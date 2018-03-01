@@ -3,6 +3,10 @@ package com.yzx.chat.view.activity;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
@@ -25,6 +29,7 @@ import com.yzx.chat.util.LogUtil;
 public class LocationMapActivity extends BaseCompatActivity {
 
     private MapView mMapView;
+    private SearchView mSearchView;
 
     @Override
     protected int getLayoutID() {
@@ -39,6 +44,10 @@ public class LocationMapActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         AMap aMap = mMapView.getMap();
         aMap.setMyLocationStyle(new MyLocationStyle()
                 .myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE)
@@ -46,12 +55,18 @@ public class LocationMapActivity extends BaseCompatActivity {
         aMap.setMyLocationEnabled(true);
         aMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
         aMap.setOnCameraChangeListener(mOnCameraChangeListener);
-        aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+        aMap.moveCamera(CameraUpdateFactory.zoomTo(3));
 
         UiSettings uiSettings = aMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(false);
 
         mMapView.onCreate(savedInstanceState);
+
+    }
+
+    private void setupSearchView(){
+        mSearchView.setQueryHint("请输入搜索内容...");
+      //  mSearchView.setOnQueryTextListener();
 
     }
 
@@ -78,6 +93,16 @@ public class LocationMapActivity extends BaseCompatActivity {
         super.onSaveInstanceState(outState);
         mMapView.onSaveInstanceState(outState);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_location_map, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        mSearchView = (SearchView) searchItem.getActionView();
+        setupSearchView();
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
