@@ -233,6 +233,5 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             mSearchTipList.addAll(poiItemList);
         }
     }
-
-    shomore
+    //showmore
 }
