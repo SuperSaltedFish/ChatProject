@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -41,7 +42,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mContactID = getIntent().getStringExtra(INTENT_EXTRA_CONTACT_ID);
         if (TextUtils.isEmpty(mContactID)) {
             LogUtil.e("contactID==NULL");
@@ -57,7 +58,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

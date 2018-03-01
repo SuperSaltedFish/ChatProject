@@ -4,6 +4,7 @@ package com.yzx.chat.view.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -184,7 +185,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         return R.layout.activity_chat;
     }
 
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mRvChatView = findViewById(R.id.ChatActivity_mRvChatView);
         mIsvSendMessage = findViewById(R.id.ChatActivity_mIsvSendMessage);
         mEtContent = findViewById(R.id.ChatActivity_mEtContent);
@@ -209,7 +210,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

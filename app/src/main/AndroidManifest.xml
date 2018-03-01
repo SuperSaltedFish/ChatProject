@@ -16,6 +16,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 允许程序使用录音设备 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--允许程序访问WiFi网络信息-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--允许程序读写手机状态和身份-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 
     <application
@@ -28,6 +34,10 @@
         android:theme="@style/DefaultLightTheme">
 
         <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="810aa1b6f44962b87f87059d20335acf" />
+
+        <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />
 
@@ -35,11 +45,7 @@
         <activity
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -129,12 +135,21 @@
             android:theme="@style/TransparentStatusBarLightTheme">
 
         </activity>
-        <activity android:name=".view.activity.CreateGroupActivity" >
+        <activity android:name=".view.activity.CreateGroupActivity">
 
         </activity>
-        <activity android:name=".view.activity.MyQRCodeActivity"
+        <activity
+            android:name=".view.activity.MyQRCodeActivity"
             android:theme="@style/NoBackgroundLightTheme">
 
+        </activity>
+
+        <activity android:name=".view.activity.LocationMapActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

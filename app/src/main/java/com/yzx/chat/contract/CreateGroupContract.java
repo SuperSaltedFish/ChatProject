@@ -22,7 +22,7 @@ public class CreateGroupContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void createGroup(String name, List<ContactBean> members);
+        void createGroup(List<ContactBean> members);
 
     }
 }

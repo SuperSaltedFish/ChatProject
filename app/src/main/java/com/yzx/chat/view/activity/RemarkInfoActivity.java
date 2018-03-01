@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -50,7 +51,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         return R.layout.activity_remark_info;
     }
 
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mBtnConfirm = findViewById(R.id.RemarkInfoActivity_mBtnConfirm);
         mEtRemarkName = findViewById(R.id.RemarkInfoActivity_mEtRemarkName);
         mEtTelephone = findViewById(R.id.RemarkInfoActivity_mEtTelephone);
@@ -61,7 +62,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -35,14 +36,14 @@ public class SignatureEditActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mEtSignatureContent = findViewById(R.id.SignatureEditActivity_mEtSignatureContent);
         mTvTextLengthHint = findViewById(R.id.SignatureEditActivity_mTvTextLengthHint);
         mBtnConfirm = findViewById(R.id.SignatureEditActivity_mBtnConfirm);
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

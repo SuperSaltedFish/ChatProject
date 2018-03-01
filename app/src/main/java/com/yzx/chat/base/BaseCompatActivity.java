@@ -40,9 +40,9 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     @LayoutRes
     protected abstract int getLayoutID();
 
-    protected abstract void init();
+    protected abstract void init(Bundle savedInstanceState);
 
-    protected abstract void setup();
+    protected abstract void setup(Bundle savedInstanceState);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +57,8 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             setSupportActionBar(toolbar);
             setTitle(null);
         }
-        init();
-        setup();
+        init(savedInstanceState);
+        setup(savedInstanceState);
     }
 
     @Override

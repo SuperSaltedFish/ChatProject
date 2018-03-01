@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -67,7 +68,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mBtnConfirm = (Button) findViewById(R.id.ImageMultiSelectorActivity_mBtnConfirm);
         mRvImage = (RecyclerView) findViewById(R.id.ImageMultiSelectorActivity_mRvImageList);
         mRBtnOriginal = findViewById(R.id.ImageMultiSelectorActivity_mRBtnOriginal);
@@ -88,7 +89,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

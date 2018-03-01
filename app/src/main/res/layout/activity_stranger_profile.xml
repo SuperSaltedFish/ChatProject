@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:background="@null"
-                    android:text="请求添加"
+                    android:text="@string/StrangerProfileActivity_RequestAdd"
                     android:textColor="@android:color/white" />
 
             </android.support.v7.widget.Toolbar>

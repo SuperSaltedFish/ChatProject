@@ -172,5 +172,9 @@
     <string name="Scan">扫一扫</string>
     <string name="MyQRCodeActivity_ResetQRCode">刷新二维码</string>
     <string name="MyQRCodeActivity_SaveQRCode">保存到手机</string>
+    <string name="CreateGroupActivity_Creating">正在创建...</string>
+    <string name="LocationMapActivity_Title">发送位置</string>
+    <string name="StrangerProfileActivity_RequestAdd">请求添加</string>
+    <string name="Send">发送</string>
 
 </resources>

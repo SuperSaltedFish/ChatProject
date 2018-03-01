@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -40,7 +41,7 @@ public class GroupProfileActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mCollapsingToolbarLayout = findViewById(R.id.GroupProfileActivity_mCollapsingToolbarLayout);
         mRvGroupMembers = findViewById(R.id.GroupProfileActivity_mRvGroupMembers);
         mFooterView = getLayoutInflater().inflate(R.layout.item_group_member_footer, (ViewGroup) getWindow().getDecorView(), false);
@@ -51,7 +52,7 @@ public class GroupProfileActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

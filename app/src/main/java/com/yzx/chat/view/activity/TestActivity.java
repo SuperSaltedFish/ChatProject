@@ -22,12 +22,12 @@ public class TestActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
 
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
 
     }
 

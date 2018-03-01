@@ -71,7 +71,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     }
 
 
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mVfPageSwitch = (ViewFlipper) findViewById(R.id.LoginActivity_mVfPageSwitch);
         mBtnLogin = (Button) findViewById(R.id.FlipperLogin_mBtnLogin);
         mBtnRegister = (Button) findViewById(R.id.FlipperRegister_mBtnRegister);
@@ -99,7 +99,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mBtnLogin.setOnClickListener(mOnBtnLoginClick);
         mBtnRegister.setOnClickListener(mOnBtnRegisterClick);
         mBtnVerify.setOnClickListener(mOnBtnVerifyClick);

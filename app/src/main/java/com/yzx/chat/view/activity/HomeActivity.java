@@ -35,7 +35,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mFragments = new Fragment[4];
         mFragments[0] = new ConversationFragment();
         mFragments[1] = new ContactFragment();
@@ -53,7 +53,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mNavigationController.addTabItemSelectedListener(mOnTabSelectedListener);
 
         mFragmentManager.beginTransaction()

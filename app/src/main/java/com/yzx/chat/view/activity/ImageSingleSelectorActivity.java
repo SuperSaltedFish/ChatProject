@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -61,7 +62,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mRvImage = findViewById(R.id.ImageSingleSelectorActivity_mRvImageList);
         mTvChooseDir = findViewById(R.id.ImageSingleSelectorActivity_mTvChooseDir);
         mRvImageDir = findViewById(R.id.ImageSingleSelectorActivity_mRvImageDirList);
@@ -78,7 +79,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

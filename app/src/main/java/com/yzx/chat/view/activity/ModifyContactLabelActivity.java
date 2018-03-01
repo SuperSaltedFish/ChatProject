@@ -3,6 +3,7 @@ package com.yzx.chat.view.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -50,7 +51,7 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mFlowLayout = findViewById(R.id.ModifyContactLabelActivity_mFlowLayout);
         mEtInput = findViewById(R.id.ModifyContactLabelActivity_mEtInput);
         mBtnConfirm = findViewById(R.id.ModifyContactLabelActivity_mBtnConfirm);
@@ -58,7 +59,7 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

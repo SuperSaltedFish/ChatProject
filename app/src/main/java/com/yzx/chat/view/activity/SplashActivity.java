@@ -22,12 +22,12 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
 
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         requestPermissionsInCompatMode(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
     }
 

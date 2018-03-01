@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 
@@ -26,13 +27,13 @@ public class ImageOriginalActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mPhotoView = findViewById(R.id.ImageOriginal_mPhotoView);
         ViewCompat.setTransitionName(mPhotoView, TRANSITION_NAME_IMAGE);
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         String imagePath = getIntent().getStringExtra(INTENT_EXTRA_IMAGE_PATH);
         if (TextUtils.isEmpty(imagePath)) {
             finish();

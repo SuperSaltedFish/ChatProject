@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,7 +37,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mIvQRCode = findViewById(R.id.MyQRCodeActivity_mIvQRCode);
         mProgressBar = findViewById(R.id.MyQRCodeActivity_mProgressBar);
         mFlScan = findViewById(R.id.MyQRCodeActivity_mFlScan);
@@ -47,7 +48,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         UserBean user = IdentityManager.getInstance().getUser();
         if (user == null) {
             finish();

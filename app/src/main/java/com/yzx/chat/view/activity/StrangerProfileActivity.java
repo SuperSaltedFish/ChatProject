@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -37,7 +38,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mEtVerifyContent = findViewById(R.id.StrangerProfileActivity_mEtVerifyContent);
         mBtnConfirm = findViewById(R.id.StrangerProfileActivity_mBtnConfirm);
         mTvContentNickname = findViewById(R.id.Profile_mTvContentNickname);
@@ -47,7 +48,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             setTitle(null);

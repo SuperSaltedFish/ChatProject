@@ -2,6 +2,7 @@ package com.yzx.chat.view.activity;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,7 +53,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     }
 
 
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mBtnFindNewContact = findViewById(R.id.ContactOperationActivity_mBtnFindNewContact);
         mRecyclerView = findViewById(R.id.ContactOperationActivity_mRecyclerView);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
@@ -64,7 +65,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

@@ -2,6 +2,7 @@ package com.yzx.chat.view.activity;
 
 import android.app.ActionBar;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +43,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mCamera2TextureView = findViewById(R.id.QrCodeScanActivity_mCamera2TextureView);
         mScanAnimationView = findViewById(R.id.QrCodeScanActivity_mScanAnimationView);
         mMaskView = findViewById(R.id.QrCodeScanActivity_mMaskView);
@@ -51,7 +52,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

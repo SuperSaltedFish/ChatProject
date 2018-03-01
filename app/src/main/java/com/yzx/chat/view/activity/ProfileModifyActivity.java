@@ -2,6 +2,7 @@ package com.yzx.chat.view.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
@@ -58,7 +59,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mLlBirthday = findViewById(R.id.ProfileModifyActivity_mLlBirthday);
         mTvBirthday = findViewById(R.id.ProfileModifyActivity_mTvBirthday);
         mLlSexSelected = findViewById(R.id.ProfileModifyActivity_mLlSexSelected);
@@ -73,7 +74,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

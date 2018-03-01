@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,7 @@ import com.yzx.chat.widget.view.CircleImageView;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
+import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private TextView mTvIndexBarHint;
     private FlowLayout mFlowLayout;
     private Button mBtnConfirm;
+    private ProgressDialog mProgressDialog;
     private List<ContactBean> mContactList;
     private List<ContactBean> mSelectedContactList;
 
@@ -51,7 +54,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mRecyclerView = findViewById(R.id.CreateGroupActivity_mRecyclerView);
         mIndexBarView = findViewById(R.id.CreateGroupActivity_mIndexBarView);
         mTvIndexBarHint = findViewById(R.id.CreateGroupActivity_mTvIndexBarHint);
@@ -62,12 +65,13 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         if (mContactList == null) {
             return;
         }
+        mProgressDialog = new ProgressDialog(this, getString(R.string.CreateGroupActivity_Creating));
         mSelectedContactList = new ArrayList<>(32);
         mCreateGroupAdapter = new CreateGroupAdapter(mContactList);
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (mContactList == null) {
             finish();
             return;
@@ -98,6 +102,9 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
         mCreateGroupAdapter.addHeaderView(mHeaderView);
         mCreateGroupAdapter.setOnItemSelectedChangeListener(mOnItemSelectedChangeListener);
+
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
     }
 
     private final CreateGroupAdapter.OnItemSelectedChangeListener mOnItemSelectedChangeListener = new CreateGroupAdapter.OnItemSelectedChangeListener() {
@@ -113,11 +120,11 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
             } else {
                 mSelectedContactList.remove(mContactList.get(position - 1));
                 View needRemoveView = mFlowLayout.findViewById(position);
-                if(needRemoveView!=null) {
+                if (needRemoveView != null) {
                     mFlowLayout.removeView(needRemoveView);
                 }
             }
-            mBtnConfirm.setEnabled(mSelectedContactList.size()>0);
+            mBtnConfirm.setEnabled(mSelectedContactList.size() > 0);
         }
     };
 

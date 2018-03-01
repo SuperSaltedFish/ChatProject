@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +54,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         mViewPager = findViewById(R.id.ImageViewpagerActivity_mViewPager);
         mCbSelected = findViewById(R.id.ImageViewPagerActivity_mCbSelected);
         mBtnConfirm = findViewById(R.id.ImageViewpagerActivity_mBtnConfirm);
@@ -77,7 +78,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
