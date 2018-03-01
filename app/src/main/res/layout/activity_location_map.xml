@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,43 +8,55 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
         app:title="@string/LocationMapActivity_Title"
         app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
         <!--<Button-->
-            <!--android:id="@+id/StrangerProfileActivity_mBtnConfirm"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_vertical|end"-->
-            <!--android:background="@null"-->
-            <!--android:text="@string/Send"-->
-            <!--android:textColor="@android:color/white" />-->
+        <!--android:id="@+id/StrangerProfileActivity_mBtnConfirm"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_vertical|end"-->
+        <!--android:background="@null"-->
+        <!--android:text="@string/Send"-->
+        <!--android:textColor="@android:color/white" />-->
 
     </android.support.v7.widget.Toolbar>
 
-    <com.amap.api.maps2d.MapView
-        android:id="@+id/LocationMapActivity_mMapView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/LocationMapActivity_mRvPOI"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar"
-        app:layout_constraintStart_toStartOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/LocationMapActivity_mClLocationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="48dp">
+
+        <com.amap.api.maps2d.MapView
+            android:id="@+id/LocationMapActivity_mMapView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/LocationMapActivity_mRvCurrentLocation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/LocationMapActivity_mRvCurrentLocation"
+            android:layout_width="0dp"
+            android:layout_height="240dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/LocationMapActivity_mRvPOI"
-        android:layout_width="0dp"
-        android:layout_height="240dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/LocationMapActivity_mRvSearchLocation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="48dp" />
 
-</android.support.constraint.ConstraintLayout>
+
+</merge>

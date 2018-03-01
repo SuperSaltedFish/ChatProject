@@ -1,36 +1,37 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
-import com.amap.api.maps2d.model.BitmapDescriptor;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.MyLocationStyle;
-import com.amap.api.services.help.Inputtips;
-import com.amap.api.services.help.InputtipsQuery;
-import com.amap.api.services.help.Tip;
+import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.contract.LocationMapActivityContract;
+import com.yzx.chat.presenter.LocationMapActivityPresenter;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.widget.adapter.LocationAdapter;
+import com.yzx.chat.widget.view.DividerItemDecoration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,10 +39,18 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class LocationMapActivity extends BaseCompatActivity {
+public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityContract.Presenter> implements LocationMapActivityContract.View {
 
     private MapView mMapView;
     private SearchView mSearchView;
+    private SearchView.SearchAutoComplete mSearchAutoComplete;
+    private RecyclerView mRvSearchLocation;
+    private ConstraintLayout mClLocationLayout;
+    private LocationAdapter mCurrentLocationAdapter;
+    private LocationAdapter mSearchLocationAdapter;
+    private Handler mSearchHandler;
+    private List<PoiItem> mCurrentLocationList;
+    private List<PoiItem> mSearchTipList;
 
     @Override
     protected int getLayoutID() {
@@ -51,7 +60,13 @@ public class LocationMapActivity extends BaseCompatActivity {
     @Override
     protected void init(Bundle savedInstanceState) {
         mMapView = findViewById(R.id.LocationMapActivity_mMapView);
-
+        mRvSearchLocation = findViewById(R.id.LocationMapActivity_mRvSearchLocation);
+        mClLocationLayout = findViewById(R.id.LocationMapActivity_mClLocationLayout);
+        mCurrentLocationList = new ArrayList<>(20);
+        mSearchTipList = new ArrayList<>(20);
+        mCurrentLocationAdapter = new LocationAdapter(mCurrentLocationList);
+        mSearchLocationAdapter = new LocationAdapter(mSearchTipList);
+        mSearchHandler = new Handler();
     }
 
     @Override
@@ -60,10 +75,15 @@ public class LocationMapActivity extends BaseCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mRvSearchLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRvSearchLocation.setAdapter(mSearchLocationAdapter);
+        mRvSearchLocation.setHasFixedSize(true);
+        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+
         AMap aMap = mMapView.getMap();
         aMap.setMyLocationStyle(new MyLocationStyle()
                 .myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE)
-                .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.ic_location_point))));
+                .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_point))));
         aMap.setMyLocationEnabled(true);
         aMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
         aMap.setOnCameraChangeListener(mOnCameraChangeListener);
@@ -76,8 +96,24 @@ public class LocationMapActivity extends BaseCompatActivity {
 
     }
 
-    private void setupSearchView(){
+    private void setupSearchView() {
         mSearchView.setQueryHint("请输入搜索内容...");
+        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClLocationLayout.setVisibility(View.GONE);
+                mRvSearchLocation.setVisibility(View.VISIBLE);
+            }
+        });
+        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                mClLocationLayout.setVisibility(View.VISIBLE);
+                mRvSearchLocation.setVisibility(View.GONE);
+                return false;
+            }
+        });
+
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -85,19 +121,17 @@ public class LocationMapActivity extends BaseCompatActivity {
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                if(TextUtils.isEmpty(newText)){
-
-                }else {
-                    InputtipsQuery inputtipsQuery = new InputtipsQuery(newText, "");
-                    inputtipsQuery.setCityLimit(true);//限制在当前城市
-                    Inputtips inputTips = new Inputtips(LocationMapActivity.this, inputtipsQuery);
-                    inputTips.setInputtipsListener(new Inputtips.InputtipsListener() {
+            public boolean onQueryTextChange(final String newText) {
+                mSearchHandler.removeCallbacksAndMessages(null);
+                if (TextUtils.isEmpty(newText)) {
+                    showNewSearchContent(null);
+                } else {
+                    mSearchHandler.postDelayed(new Runnable() {
                         @Override
-                        public void onGetInputtips(List<Tip> list, int i) {
-
+                        public void run() {
+                            mPresenter.searchPOIByKeyword(newText);
                         }
-                    });
+                    }, 300);
                 }
                 return false;
             }
@@ -134,8 +168,31 @@ public class LocationMapActivity extends BaseCompatActivity {
         getMenuInflater().inflate(R.menu.menu_location_map, menu);
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchItem.getActionView();
+        mSearchAutoComplete = mSearchView.findViewById(R.id.search_src_text);
         setupSearchView();
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (!mSearchView.isIconified()) {
+                    try {
+                        mSearchAutoComplete.setText("");
+                        mSearchView.setIconified(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    super.onOptionsItemSelected(item);
+                }
+
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
 
@@ -158,4 +215,24 @@ public class LocationMapActivity extends BaseCompatActivity {
         }
     };
 
+    @Override
+    public LocationMapActivityContract.Presenter getPresenter() {
+        return new LocationMapActivityPresenter();
+    }
+
+    @Override
+    public Context getContent() {
+        return this;
+    }
+
+    @Override
+    public void showNewSearchContent(List<PoiItem> poiItemList) {
+        mSearchLocationAdapter.notifyDataSetChanged();
+        mSearchTipList.clear();
+        if (poiItemList != null && poiItemList.size() > 0) {
+            mSearchTipList.addAll(poiItemList);
+        }
+    }
+
+    shomore
 }
