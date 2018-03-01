@@ -1,12 +1,19 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
@@ -17,9 +24,14 @@ import com.amap.api.maps2d.model.BitmapDescriptor;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.LogUtil;
+
+import java.util.List;
 
 /**
  * Created by YZX on 2018年02月28日.
@@ -66,7 +78,30 @@ public class LocationMapActivity extends BaseCompatActivity {
 
     private void setupSearchView(){
         mSearchView.setQueryHint("请输入搜索内容...");
-      //  mSearchView.setOnQueryTextListener();
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(TextUtils.isEmpty(newText)){
+
+                }else {
+                    InputtipsQuery inputtipsQuery = new InputtipsQuery(newText, "");
+                    inputtipsQuery.setCityLimit(true);//限制在当前城市
+                    Inputtips inputTips = new Inputtips(LocationMapActivity.this, inputtipsQuery);
+                    inputTips.setInputtipsListener(new Inputtips.InputtipsListener() {
+                        @Override
+                        public void onGetInputtips(List<Tip> list, int i) {
+
+                        }
+                    });
+                }
+                return false;
+            }
+        });
 
     }
 
@@ -122,4 +157,5 @@ public class LocationMapActivity extends BaseCompatActivity {
             LogUtil.e("onCameraChangeFinish " + cameraPosition.toString());
         }
     };
+
 }
