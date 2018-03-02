@@ -105,7 +105,16 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
         mProgressDialog.setCancelable(false);
         mProgressDialog.setCanceledOnTouchOutside(false);
+
+        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
     }
+
+    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mPresenter.createGroup(mSelectedContactList);
+        }
+    };
 
     private final CreateGroupAdapter.OnItemSelectedChangeListener mOnItemSelectedChangeListener = new CreateGroupAdapter.OnItemSelectedChangeListener() {
         @Override

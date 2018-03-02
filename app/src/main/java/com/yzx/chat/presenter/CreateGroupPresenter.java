@@ -2,6 +2,7 @@ package com.yzx.chat.presenter;
 
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.contract.CreateGroupContract;
 import com.yzx.chat.network.api.Group.CreateGroupBean;
 import com.yzx.chat.network.api.Group.GroupApi;
@@ -43,7 +44,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             return;
         }
         StringBuilder stringBuilder = new StringBuilder(64);
-        List<String> userIDList = new ArrayList<>(members.size());
+        List<CreateGroupMemberBean> memberList = new ArrayList<>(members.size());
         for (int i = 0, count = members.size(); i < count; i++) {
             stringBuilder.append(members.get(i).getUserProfile().getNickname());
             if (i != count - 1) {
@@ -51,9 +52,12 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             } else {
                 stringBuilder.append("的群聊");
             }
-            userIDList.add(members.get(i).getUserProfile().getUserID());
+            CreateGroupMemberBean  groupMemberBean = new CreateGroupMemberBean();
+            groupMemberBean.setUserID(members.get(i).getUserProfile().getUserID());
+            memberList.add(groupMemberBean);
         }
-        mCreateGroupCall = mGroupApi.createGroup(stringBuilder.toString(),userIDList);
+
+        mCreateGroupCall = mGroupApi.createGroup(stringBuilder.toString(),memberList);
         mCreateGroupCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {

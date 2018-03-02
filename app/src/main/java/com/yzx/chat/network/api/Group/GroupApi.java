@@ -1,5 +1,6 @@
 package com.yzx.chat.network.api.Group;
 
+import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
@@ -15,5 +16,5 @@ import java.util.List;
 public interface GroupApi {
 
     @HttpApi(RequestMethod = "POST", Path = "group/create")
-    Call<JsonResponse<CreateGroupBean>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") List<String> userIDList);
+    Call<JsonResponse<CreateGroupBean>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
 }
