@@ -22,4 +22,5 @@ public static final String RONG_CLOUD_APP_KEY = "82hegw5u8dlsx";
 
 
     public static final int CHAT_MESSAGE_PAGE_SIZE = 16;
+    public static final int SEARCH_LOCATION_PAGE_SIZE = 13;
 }

@@ -210,9 +210,9 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             return;
         }
         if (isEnable) {
-            mAdapter.addHeaderView(mHeaderView);
+            mAdapter.setHeaderView(mHeaderView);
         } else {
-            mAdapter.addHeaderView(null);
+            mAdapter.setHeaderView(null);
         }
     }
 

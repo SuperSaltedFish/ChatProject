@@ -298,7 +298,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     return;
                 }
                 if (mPresenter.hasMoreMessage()) {
-                    mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_Loading));
+                    mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_LoadingMore));
                     mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
                 } else {
                     mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
@@ -712,9 +712,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void enableLoadMoreHint(boolean isEnable) {
         if (isEnable) {
-            mAdapter.addFooterView(mFooterView);
+            mAdapter.setFooterView(mFooterView);
         } else {
-            mAdapter.addFooterView(null);
+            mAdapter.setFooterView(null);
         }
     }
 

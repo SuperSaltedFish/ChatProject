@@ -100,7 +100,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
 
-        mCreateGroupAdapter.addHeaderView(mHeaderView);
+        mCreateGroupAdapter.setHeaderView(mHeaderView);
         mCreateGroupAdapter.setOnItemSelectedChangeListener(mOnItemSelectedChangeListener);
 
         mProgressDialog.setCancelable(false);

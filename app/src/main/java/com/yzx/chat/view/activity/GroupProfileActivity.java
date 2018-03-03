@@ -63,7 +63,7 @@ public class GroupProfileActivity extends BaseCompatActivity {
         mRvGroupMembers.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
         mRvGroupMembers.setLayoutManager(new GridLayoutManager(this, GROUP_MEMBERS_LINE_MAX_COUNT));
         mRvGroupMembers.setAdapter(mAdapter);
-        mAdapter.addFooterView(mFooterView);
+        mAdapter.setFooterView(mFooterView);
 
         mClGroupName.setOnClickListener(mOnGroupNameClickListener);
         mClMyGroupNickname.setOnClickListener(mOnMyGroupNicknameClickListener);

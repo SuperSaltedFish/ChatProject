@@ -17,4 +17,7 @@ public interface GroupApi {
 
     @HttpApi(RequestMethod = "POST", Path = "group/create")
     Call<JsonResponse<CreateGroupBean>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
+
+    @HttpApi(RequestMethod = "POST", Path = "group/getGroupList")
+    Call<JsonResponse<Void>> getGroupList();
 }

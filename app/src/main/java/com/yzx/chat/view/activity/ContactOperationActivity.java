@@ -111,9 +111,9 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
 
     public void enableLoadMoreHint(boolean isEnable) {
         if (isEnable) {
-            mAdapter.addFooterView(mFooterView);
+            mAdapter.setFooterView(mFooterView);
         } else {
-            mAdapter.addFooterView(null);
+            mAdapter.setFooterView(null);
         }
     }
 

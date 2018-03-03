@@ -152,7 +152,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
             }
         });
 
-        mContactAdapter.addHeaderView(mHeaderView);
+        mContactAdapter.setHeaderView(mHeaderView);
     }
 
     private void setOverflowMenu() {

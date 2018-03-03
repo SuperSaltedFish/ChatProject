@@ -55,9 +55,10 @@
 
     <string name="Server_Error">服务器繁忙，请稍候再试！</string>
 
-    <string name="LoadMoreHint_Default">没有更多的消息</string>
-    <string name="LoadMoreHint_NoMore">没有更多的消息</string>
-    <string name="LoadMoreHint_Loading">正在加载更多消息</string>
+    <string name="LoadMoreHint_Default">我是有底线的</string>
+    <string name="LoadMoreHint_NoMore">没有更多的信息</string>
+    <string name="LoadMoreHint_Loading">正在加载信息</string>
+    <string name="LoadMoreHint_LoadingMore">正在加载更多信息</string>
     <string name="LoadMoreHint_LoadFail">加载更多消息失败</string>
 
     <string name="ContactFragment_SearchContact">搜索好友</string>

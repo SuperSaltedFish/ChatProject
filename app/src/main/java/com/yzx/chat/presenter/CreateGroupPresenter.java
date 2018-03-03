@@ -40,7 +40,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
     @Override
     public void createGroup(List<ContactBean> members) {
-        if(isCreating){
+        if (isCreating) {
             return;
         }
         StringBuilder stringBuilder = new StringBuilder(64);
@@ -52,12 +52,12 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             } else {
                 stringBuilder.append("的群聊");
             }
-            CreateGroupMemberBean  groupMemberBean = new CreateGroupMemberBean();
+            CreateGroupMemberBean groupMemberBean = new CreateGroupMemberBean();
             groupMemberBean.setUserID(members.get(i).getUserProfile().getUserID());
             memberList.add(groupMemberBean);
         }
 
-        mCreateGroupCall = mGroupApi.createGroup(stringBuilder.toString(),memberList);
+        mCreateGroupCall = mGroupApi.createGroup(stringBuilder.toString(), memberList);
         mCreateGroupCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
@@ -72,5 +72,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         });
         isCreating = true;
         sHttpExecutor.submit(mCreateGroupCall);
+
+
     }
 }
