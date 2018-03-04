@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.services.core.PoiItem;
+import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
@@ -29,9 +30,11 @@ public class LocationMapActivityContract {
 
 
     public interface Presenter extends BasePresenter<View> {
-        void searchCurrentLocation(LatLng latLng);
+        void initLocation(Inner_3dMap_location location);
 
-        void searchMoreLocation(LatLng latLng);
+        void searchCurrentLocation(double latitude,double longitude);
+
+        void searchCurrentMoreLocation(double latitude, double longitude);
 
         void searchPOIByKeyword(String keyword);
 

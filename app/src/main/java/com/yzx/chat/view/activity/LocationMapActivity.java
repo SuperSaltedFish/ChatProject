@@ -24,10 +24,12 @@ import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.amap.api.services.core.PoiItem;
+import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
@@ -62,7 +64,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private Handler mSearchHandler;
     private Marker mMapMarker;
     private List<PoiItem> mCurrentLocationList;
-    private List<PoiItem> mSearchTipList;
+    private List<PoiItem> mSearchLocationList;
+    private LatLng mCurrentLatLng;
 
     private boolean isPositionComplete;
 
@@ -75,16 +78,16 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     protected void init(Bundle savedInstanceState) {
         mMapView = findViewById(R.id.LocationMapActivity_mMapView);
         mRvSearchLocation = findViewById(R.id.LocationMapActivity_mRvSearchLocation);
-        mClLocationLayout = findViewById(R.id.LocationMapActivity_mClLocationLayout);
         mRvCurrentLocation = findViewById(R.id.LocationMapActivity_mRvCurrentLocation);
+        mClLocationLayout = findViewById(R.id.LocationMapActivity_mClLocationLayout);
         mSearchLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mCurrentLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvSearchLocationLoadMoreHint = mSearchLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mTvCurrentLocationLoadMoreHint = mCurrentLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
-        mCurrentLocationList = new ArrayList<>(20);
-        mSearchTipList = new ArrayList<>(20);
+        mCurrentLocationList = new ArrayList<>(32);
+        mSearchLocationList = new ArrayList<>(32);
         mCurrentLocationAdapter = new LocationAdapter(mCurrentLocationList);
-        mSearchLocationAdapter = new LocationAdapter(mSearchTipList);
+        mSearchLocationAdapter = new LocationAdapter(mSearchLocationList);
         mSearchHandler = new Handler();
     }
 
@@ -94,16 +97,19 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mRvSearchLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRvSearchLocation.setAdapter(mSearchLocationAdapter);
-        mRvSearchLocation.setHasFixedSize(true);
-        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
-        mSearchLocationAdapter.setScrollToBottomListener(mOnSearchScrollToBottomListener);
-
         mRvCurrentLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvCurrentLocation.setAdapter(mCurrentLocationAdapter);
         mRvCurrentLocation.setHasFixedSize(true);
         mRvCurrentLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+        mCurrentLocationAdapter.setScrollToBottomListener(mOnCurrentLocationScrollToBottomListener);
+
+        mRvSearchLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRvSearchLocation.setAdapter(mSearchLocationAdapter);
+        mRvSearchLocation.setRecycledViewPool(mRvCurrentLocation.getRecycledViewPool());
+        mRvSearchLocation.setHasFixedSize(true);
+        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+        mSearchLocationAdapter.setScrollToBottomListener(mOnSearchLocationScrollToBottomListener);
+
 
         setupMap(savedInstanceState);
 
@@ -121,7 +127,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         aMap.setMyLocationEnabled(true);
         aMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
         aMap.setOnCameraChangeListener(mOnCameraChangeListener);
-        aMap.moveCamera(CameraUpdateFactory.zoomTo(4));
+        aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.draggable(false);//可拖放性
@@ -146,7 +152,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mSearchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClLocationLayout.setVisibility(View.GONE);
+                mClLocationLayout.setVisibility(View.INVISIBLE);
                 mRvSearchLocation.setVisibility(View.VISIBLE);
             }
         });
@@ -154,7 +160,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             @Override
             public boolean onClose() {
                 mClLocationLayout.setVisibility(View.VISIBLE);
-                mRvSearchLocation.setVisibility(View.GONE);
+                mRvSearchLocation.setVisibility(View.INVISIBLE);
                 return false;
             }
         });
@@ -244,6 +250,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
+            mPresenter.initLocation((Inner_3dMap_location) location);
             isPositionComplete = true;
         }
     };
@@ -256,21 +263,30 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         @Override
         public void onCameraChangeFinish(final CameraPosition cameraPosition) {
             if (isPositionComplete) {
+                showNewCurrentLocation(null);
                 mSearchHandler.removeCallbacksAndMessages(null);
                 mSearchHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mPresenter.searchCurrentLocation(cameraPosition.target);
+                        mCurrentLatLng = cameraPosition.target;
+                        mPresenter.searchCurrentLocation(mCurrentLatLng.latitude, mCurrentLatLng.longitude);
                     }
                 }, 200);
             }
         }
     };
 
-    private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnSearchScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
+    private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnSearchLocationScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
         @Override
         public void OnScrollToBottom() {
             mPresenter.searchMorePOIByKeyword(mSearchAutoComplete.getText().toString());
+        }
+    };
+
+    private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnCurrentLocationScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
+        @Override
+        public void OnScrollToBottom() {
+            mPresenter.searchCurrentMoreLocation(mCurrentLatLng.latitude, mCurrentLatLng.longitude);
         }
     };
 
@@ -286,16 +302,27 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public void showNewCurrentLocation(List<PoiItem> poiItemList) {
-        mSearchLocationAdapter.notifyDataSetChanged();
-        mSearchTipList.clear();
+        mCurrentLocationAdapter.setFooterView(null);
+        if (!mCurrentLocationAdapter.isHasFooterView() && (poiItemList != null && poiItemList.size() >= Constants.SEARCH_LOCATION_PAGE_SIZE)) {
+            mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
+            mCurrentLocationAdapter.setFooterView(mCurrentLocationFooterView);
+        }
+        mCurrentLocationAdapter.notifyDataSetChanged();
+        mCurrentLocationList.clear();
         if (poiItemList != null && poiItemList.size() > 0) {
-            mSearchTipList.addAll(poiItemList);
+            mCurrentLocationList.addAll(poiItemList);
         }
     }
 
     @Override
     public void showMoreCurrentLocation(List<PoiItem> poiItemList, boolean hasMore) {
-
+        if (hasMore) {
+            mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
+        } else {
+            mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_NoMore);
+        }
+        mCurrentLocationAdapter.notifyItemRangeInsertedEx(mCurrentLocationList.size(), poiItemList.size());
+        mCurrentLocationList.addAll(poiItemList);
     }
 
     @Override
@@ -306,9 +333,9 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             mSearchLocationAdapter.setFooterView(mSearchLocationFooterView);
         }
         mSearchLocationAdapter.notifyDataSetChanged();
-        mSearchTipList.clear();
+        mSearchLocationList.clear();
         if (poiItemList != null && poiItemList.size() > 0) {
-            mSearchTipList.addAll(poiItemList);
+            mSearchLocationList.addAll(poiItemList);
         }
     }
 
@@ -319,8 +346,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         } else {
             mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_NoMore);
         }
-        mSearchLocationAdapter.notifyItemRangeInsertedEx(mSearchTipList.size(), poiItemList.size());
-        mSearchTipList.addAll(poiItemList);
+        mSearchLocationAdapter.notifyItemRangeInsertedEx(mSearchLocationList.size(), poiItemList.size());
+        mSearchLocationList.addAll(poiItemList);
     }
 
 }

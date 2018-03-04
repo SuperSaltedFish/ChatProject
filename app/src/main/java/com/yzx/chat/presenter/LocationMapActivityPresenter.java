@@ -1,9 +1,10 @@
 package com.yzx.chat.presenter;
 
-import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
+import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.LocationMapActivityContract;
 import com.yzx.chat.util.LogUtil;
@@ -17,9 +18,12 @@ import java.util.List;
 
 public class LocationMapActivityPresenter implements LocationMapActivityContract.Presenter {
 
+    private static final String POI_TYPE = "汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施";
+
     private LocationMapActivityContract.View mLocationMapActivityView;
     private PoiSearch mPoiSearchLocation;
     private PoiSearch mPoiCurrentLocation;
+    private Inner_3dMap_location mLocation;
 
     private int mSearchLocationPageNum;
     private boolean mHasMoreSearchLocation;
@@ -46,17 +50,23 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
     }
 
     @Override
-    public void searchCurrentLocation(LatLng latLng) {
+    public void initLocation(Inner_3dMap_location location) {
+        mLocation = location;
+    }
+
+    @Override
+    public void searchCurrentLocation(double latitude, double longitude) {
         isSearchingMoreCurrentLocation = true;
         if (mPoiCurrentLocation != null) {
             mPoiCurrentLocation.setOnPoiSearchListener(null);
         }
         mCurrentLocationPageNum = 1;
         mHasMoreCurrentLocation = true;
-        PoiSearch.Query query = new PoiSearch.Query(keyword, "", "深圳");
+        PoiSearch.Query query = new PoiSearch.Query("", POI_TYPE, mLocation.getCityCode());
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mCurrentLocationPageNum);
         mPoiCurrentLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);
+        mPoiCurrentLocation.setBound(new PoiSearch.SearchBound(new LatLonPoint(latitude, longitude), 1500));
         mPoiCurrentLocation.setOnPoiSearchListener(new PoiSearch.OnPoiSearchListener() {
             @Override
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
@@ -82,8 +92,42 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
     }
 
     @Override
-    public void searchMoreLocation(LatLng latLng) {
+    public void searchCurrentMoreLocation(double latitude, double longitude) {
+        if (isSearchingMoreCurrentLocation) {
+            return;
+        }
+        isSearchingMoreCurrentLocation = true;
+        if (mPoiCurrentLocation != null) {
+            mPoiCurrentLocation.setOnPoiSearchListener(null);
+        }
+        mCurrentLocationPageNum++;
+        PoiSearch.Query query = new PoiSearch.Query("", POI_TYPE, mLocation.getCityCode());
+        query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
+        query.setPageNum(mCurrentLocationPageNum);
+        mPoiCurrentLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);
+        mPoiCurrentLocation.setBound(new PoiSearch.SearchBound(new LatLonPoint(latitude, longitude), 1500));
+        mPoiCurrentLocation.setOnPoiSearchListener(new PoiSearch.OnPoiSearchListener() {
+            @Override
+            public void onPoiSearched(PoiResult poiResult, int errorCode) {
+                if (errorCode == 1000 && poiResult != null) {
+                    List<PoiItem> poiItemList = poiResult.getPois();
+                    if (poiItemList == null || poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
+                        mHasMoreCurrentLocation = false;
+                    }
+                    isSearchingMoreCurrentLocation = false;
+                    mLocationMapActivityView.showMoreCurrentLocation(poiItemList, mHasMoreCurrentLocation);
+                } else {
+                    LogUtil.e("search more fail,code:" + errorCode);
+                }
 
+            }
+
+            @Override
+            public void onPoiItemSearched(PoiItem poiItem, int errorCode) {
+                isSearchingMoreCurrentLocation = false;
+            }
+        });
+        mPoiCurrentLocation.searchPOIAsyn();
     }
 
     @Override
@@ -94,7 +138,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
         }
         mSearchLocationPageNum = 1;
         mHasMoreSearchLocation = true;
-        PoiSearch.Query query = new PoiSearch.Query(keyword, "", "深圳");
+        PoiSearch.Query query = new PoiSearch.Query(keyword, POI_TYPE, mLocation.getCityCode());
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mSearchLocationPageNum);
         mPoiSearchLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);
@@ -132,7 +176,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             mPoiSearchLocation.setOnPoiSearchListener(null);
         }
         mSearchLocationPageNum++;
-        PoiSearch.Query query = new PoiSearch.Query(keyword, "", "深圳");
+        PoiSearch.Query query = new PoiSearch.Query(keyword, POI_TYPE, mLocation.getCityCode());
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mSearchLocationPageNum);
         mPoiSearchLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);

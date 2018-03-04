@@ -15,12 +15,12 @@ public static final String RONG_CLOUD_APP_KEY = "82hegw5u8dlsx";
     public static final String DATABASE_NAME = "dffdkk.db";
     public static final int DATABASE_VERSION = 1;
 
-    public static final String RSA_KEY_ALIAS = "RSA_SecretKddey";
+    public static final String RSA_KEY_ALIAS = "RSA_SecretKey";
     public static final String AES_KEY_ALIAS = "AES_SecretKey";
     public static final String TOKEN_ALIAS = "Token";
     public static final String DEVICE_ID_ALIAS = "DeviceID";
 
 
     public static final int CHAT_MESSAGE_PAGE_SIZE = 16;
-    public static final int SEARCH_LOCATION_PAGE_SIZE = 13;
+    public static final int SEARCH_LOCATION_PAGE_SIZE = 16;
 }
