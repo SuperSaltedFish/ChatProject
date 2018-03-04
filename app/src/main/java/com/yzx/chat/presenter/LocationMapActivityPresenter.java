@@ -9,6 +9,7 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.LocationMapActivityContract;
 import com.yzx.chat.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,6 +73,9 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
+                    if(poiItemList==null){
+                        poiItemList = new ArrayList<>(0);
+                    }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
                         mHasMoreCurrentLocation = false;
                     }
@@ -111,7 +115,10 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
-                    if (poiItemList == null || poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
+                    if(poiItemList==null){
+                        poiItemList = new ArrayList<>(0);
+                    }
+                    if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
                         mHasMoreCurrentLocation = false;
                     }
                     isSearchingMoreCurrentLocation = false;
@@ -147,6 +154,9 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
+                    if(poiItemList==null){
+                        poiItemList = new ArrayList<>(0);
+                    }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
                         mHasMoreSearchLocation = false;
                     }
@@ -185,7 +195,10 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
-                    if (poiItemList == null || poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
+                    if(poiItemList==null){
+                        poiItemList = new ArrayList<>(0);
+                    }
+                    if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
                         mHasMoreSearchLocation = false;
                     }
                     isSearchingMoreSearchLocation = false;

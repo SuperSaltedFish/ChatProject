@@ -2,10 +2,14 @@ package com.yzx.chat.view.activity;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
@@ -24,6 +30,7 @@ import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.CircleOptions;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
@@ -58,11 +65,16 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private TextView mTvCurrentLocationLoadMoreHint;
     private RecyclerView mRvSearchLocation;
     private RecyclerView mRvCurrentLocation;
-    private ConstraintLayout mClLocationLayout;
+    private FrameLayout mRvSearchLocationLayout;
+    private FrameLayout mRvCurrentLocationLayout;
+    private ProgressBar mPbSearchLocation;
+    private ProgressBar mPbCurrentLocation;
     private LocationAdapter mCurrentLocationAdapter;
     private LocationAdapter mSearchLocationAdapter;
     private Handler mSearchHandler;
+    private AMap mAMap;
     private Marker mMapMarker;
+    private SensorManager mSensorManager;
     private List<PoiItem> mCurrentLocationList;
     private List<PoiItem> mSearchLocationList;
     private LatLng mCurrentLatLng;
@@ -79,7 +91,10 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mMapView = findViewById(R.id.LocationMapActivity_mMapView);
         mRvSearchLocation = findViewById(R.id.LocationMapActivity_mRvSearchLocation);
         mRvCurrentLocation = findViewById(R.id.LocationMapActivity_mRvCurrentLocation);
-        mClLocationLayout = findViewById(R.id.LocationMapActivity_mClLocationLayout);
+        mRvSearchLocationLayout = findViewById(R.id.LocationMapActivity_mRvSearchLocationLayout);
+        mRvCurrentLocationLayout = findViewById(R.id.LocationMapActivity_mRvCurrentLocationLayout);
+        mPbSearchLocation = findViewById(R.id.LocationMapActivity_mPbSearchLocation);
+        mPbCurrentLocation = findViewById(R.id.LocationMapActivity_mPbCurrentLocation);
         mSearchLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mCurrentLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvSearchLocationLoadMoreHint = mSearchLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
@@ -89,6 +104,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mCurrentLocationAdapter = new LocationAdapter(mCurrentLocationList);
         mSearchLocationAdapter = new LocationAdapter(mSearchLocationList);
         mSearchHandler = new Handler();
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
     @Override
@@ -110,29 +126,33 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
         mSearchLocationAdapter.setScrollToBottomListener(mOnSearchLocationScrollToBottomListener);
 
-
         setupMap(savedInstanceState);
-
     }
 
-
     private void setupMap(Bundle savedInstanceState) {
-        AMap aMap = mMapView.getMap();
-        aMap.setMyLocationStyle(new MyLocationStyle()
-                .myLocationType(MyLocationStyle.LOCATION_TYPE_SHOW)
-                .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_point)))
-                .radiusFillColor(ContextCompat.getColor(this, R.color.location_radius_fill_color))
-                .strokeColor(ContextCompat.getColor(this, R.color.colorAccent)));
+        mAMap = mMapView.getMap();
 
-        aMap.setMyLocationEnabled(true);
-        aMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
-        aMap.setOnCameraChangeListener(mOnCameraChangeListener);
-        aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+        mAMap.setMyLocationStyle(new MyLocationStyle()
+                .myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW)
+                .interval(Constants.LOCATION_INTERVAL)
+                .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_point)))
+                .radiusFillColor(Color.TRANSPARENT)
+                .strokeColor(Color.TRANSPARENT));
+        mAMap.addCircle(new CircleOptions().radius(20));
+        mAMap.setMyLocationEnabled(true);
+        mAMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
+        mAMap.setOnCameraChangeListener(mOnCameraChangeListener);
+        mAMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+
+        UiSettings uiSettings = mAMap.getUiSettings();
+        uiSettings.setZoomControlsEnabled(false);
+        uiSettings.setScaleControlsEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(true);
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.draggable(false);//可拖放性
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.temp_head_image));
-        mMapMarker = aMap.addMarker(markerOptions);
+        mMapMarker = mAMap.addMarker(markerOptions);
         mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -141,31 +161,33 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             }
         });
 
-        UiSettings uiSettings = aMap.getUiSettings();
-        uiSettings.setZoomControlsEnabled(false);
 
         mMapView.onCreate(savedInstanceState);
     }
 
     private void setupSearchView() {
-        mSearchView.setQueryHint("请输入搜索内容...");
+        mSearchView.setQueryHint(getString(R.string.LocationMapActivity_SearchHint));
         mSearchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mClLocationLayout.setVisibility(View.INVISIBLE);
-                mRvSearchLocation.setVisibility(View.VISIBLE);
+                mMapView.setVisibility(View.INVISIBLE);
+                mRvCurrentLocationLayout.setVisibility(View.INVISIBLE);
+                mRvSearchLocationLayout.setVisibility(View.VISIBLE);
             }
         });
+
         mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                mClLocationLayout.setVisibility(View.VISIBLE);
-                mRvSearchLocation.setVisibility(View.INVISIBLE);
+                mMapView.setVisibility(View.VISIBLE);
+                mRvCurrentLocationLayout.setVisibility(View.VISIBLE);
+                mRvSearchLocationLayout.setVisibility(View.INVISIBLE);
                 return false;
             }
         });
 
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -175,11 +197,13 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             public boolean onQueryTextChange(final String newText) {
                 mSearchHandler.removeCallbacksAndMessages(null);
                 if (TextUtils.isEmpty(newText)) {
+                    mPbSearchLocation.setVisibility(View.INVISIBLE);
                     showNewSearchLocation(null);
                 } else {
                     mSearchHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            mPbSearchLocation.setVisibility(View.VISIBLE);
                             mPresenter.searchPOIByKeyword(newText);
                         }
                     }, 250);
@@ -194,11 +218,14 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        mSensorManager.registerListener(mGyroscopeEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mGyroscopeEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mSensorManager.unregisterListener(mGyroscopeEventListener);
         mMapView.onPause();
     }
 
@@ -217,7 +244,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_location_map, menu);
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        MenuItem searchItem = menu.findItem(R.id.LocationMapMenu_Search);
         mSearchView = (SearchView) searchItem.getActionView();
         mSearchAutoComplete = mSearchView.findViewById(R.id.search_src_text);
         setupSearchView();
@@ -238,7 +265,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                 } else {
                     super.onOptionsItemSelected(item);
                 }
-
+                break;
+            case R.id.LocationMapMenu_Send:
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -268,6 +296,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                 mSearchHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        mPbCurrentLocation.setVisibility(View.VISIBLE);
                         mCurrentLatLng = cameraPosition.target;
                         mPresenter.searchCurrentLocation(mCurrentLatLng.latitude, mCurrentLatLng.longitude);
                     }
@@ -290,6 +319,34 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         }
     };
 
+
+    private SensorEventListener mGyroscopeEventListener = new SensorEventListener() {
+        private float[] mMagneticFieldValues;
+        private float mCurrentDegrees;
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                mMagneticFieldValues = event.values;
+            } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && mMagneticFieldValues != null) {
+                float[] values = new float[3];
+                float[] R = new float[9];
+                SensorManager.getRotationMatrix(R, null, event.values, mMagneticFieldValues);
+                SensorManager.getOrientation(R, values);
+                float newDegrees = -(float) Math.toDegrees(values[0]);
+                if (Math.abs(mCurrentDegrees - newDegrees) > 3) {//角度变化幅度大于3的时候才旋转
+                    mAMap.setMyLocationRotateAngle(newDegrees);
+                    mCurrentDegrees = newDegrees;
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
     @Override
     public LocationMapActivityContract.Presenter getPresenter() {
         return new LocationMapActivityPresenter();
@@ -302,9 +359,17 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public void showNewCurrentLocation(List<PoiItem> poiItemList) {
+        mPbCurrentLocation.setVisibility(View.INVISIBLE);
         mCurrentLocationAdapter.setFooterView(null);
-        if (!mCurrentLocationAdapter.isHasFooterView() && (poiItemList != null && poiItemList.size() >= Constants.SEARCH_LOCATION_PAGE_SIZE)) {
-            mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
+        if (poiItemList != null) {
+            int size = poiItemList.size();
+            if (size >= Constants.SEARCH_LOCATION_PAGE_SIZE) {
+                mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
+            } else if (size == 0) {
+                mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_None);
+            } else {
+                mTvCurrentLocationLoadMoreHint.setText(R.string.LoadMoreHint_Default);
+            }
             mCurrentLocationAdapter.setFooterView(mCurrentLocationFooterView);
         }
         mCurrentLocationAdapter.notifyDataSetChanged();
@@ -327,9 +392,17 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public void showNewSearchLocation(List<PoiItem> poiItemList) {
+        mPbSearchLocation.setVisibility(View.INVISIBLE);
         mSearchLocationAdapter.setFooterView(null);
-        if (!mSearchLocationAdapter.isHasFooterView() && (poiItemList != null && poiItemList.size() >= Constants.SEARCH_LOCATION_PAGE_SIZE)) {
-            mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
+        if (poiItemList != null) {
+            int size = poiItemList.size();
+            if (size >= Constants.SEARCH_LOCATION_PAGE_SIZE) {
+                mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
+            } else if (size == 0) {
+                mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_None);
+            } else {
+                mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_Default);
+            }
             mSearchLocationAdapter.setFooterView(mSearchLocationFooterView);
         }
         mSearchLocationAdapter.notifyDataSetChanged();

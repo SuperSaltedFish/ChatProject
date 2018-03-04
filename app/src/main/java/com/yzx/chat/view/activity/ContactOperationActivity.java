@@ -7,9 +7,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -39,7 +40,6 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
 
 
     private RecyclerView mRecyclerView;
-    private Button mBtnFindNewContact;
     private View mFooterView;
     private TextView mTvLoadMoreHint;
     private OverflowPopupMenu mContactOperationMenu;
@@ -54,7 +54,6 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
 
 
     protected void init(Bundle savedInstanceState) {
-        mBtnFindNewContact = findViewById(R.id.ContactOperationActivity_mBtnFindNewContact);
         mRecyclerView = findViewById(R.id.ContactOperationActivity_mRecyclerView);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
@@ -77,8 +76,6 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
-
-        mBtnFindNewContact.setOnClickListener(mOnBtnAddNewContactClickListener);
 
         mAdapter.setOnAcceptContactRequestListener(mOnAcceptContactRequestListener);
 
@@ -117,6 +114,23 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_contact_operation, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.ContactOperationMenu_JumpToFindFriendPage) {
+            startActivity(new Intent(ContactOperationActivity.this, FindNewContactActivity.class));
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
@@ -135,14 +149,6 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         @Override
         public void onAcceptContactRequest(int position) {
             mPresenter.acceptContactRequest(mContactOperationList.get(position));
-        }
-    };
-
-
-    private final View.OnClickListener mOnBtnAddNewContactClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(ContactOperationActivity.this, FindNewContactActivity.class));
         }
     };
 

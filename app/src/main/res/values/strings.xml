@@ -56,6 +56,7 @@
     <string name="Server_Error">服务器繁忙，请稍候再试！</string>
 
     <string name="LoadMoreHint_Default">我是有底线的</string>
+    <string name="LoadMoreHint_None">没有找到任何的信息</string>
     <string name="LoadMoreHint_NoMore">没有更多的信息</string>
     <string name="LoadMoreHint_Loading">正在加载信息</string>
     <string name="LoadMoreHint_LoadingMore">正在加载更多信息</string>
@@ -177,5 +178,8 @@
     <string name="LocationMapActivity_Title">发送位置</string>
     <string name="StrangerProfileActivity_RequestAdd">请求添加</string>
     <string name="Send">发送</string>
+    <string name="Search">搜索</string>
+    <string name="ContactOperationActivity_FindFriend">添加好友</string>
+    <string name="LocationMapActivity_SearchHint">请输入搜索内容...</string>
 
 </resources>

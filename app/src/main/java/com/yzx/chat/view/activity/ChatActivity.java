@@ -78,6 +78,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 2;
+    private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 3;
 
     public static final String INTENT_EXTRA_CONVERSATION = "Conversation";
 
@@ -97,6 +98,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private TextView mTvRecorderHint;
     private ImageView mIvProfile;
     private ImageView mIvSendImage;
+    private ImageView mIvSendLocation;
     private VoiceRecorder mVoiceRecorder;
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
@@ -159,6 +161,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
                 startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
                 break;
+            case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
+                startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
+                break;
         }
     }
 
@@ -200,6 +205,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mClOtherPanelLayout = findViewById(R.id.ChatActivity_mClOtherPanelLayout);
         mIvProfile = findViewById(R.id.ChatActivity_mIvProfile);
         mIvSendImage = findViewById(R.id.ChatActivity_mIvSendImage);
+        mIvSendLocation = findViewById(R.id.ChatActivity_mIvSendLocation);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
@@ -425,6 +431,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+            }
+        });
+
+        mIvSendLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
             }
         });
     }

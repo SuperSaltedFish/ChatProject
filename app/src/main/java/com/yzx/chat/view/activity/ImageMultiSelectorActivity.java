@@ -13,6 +13,8 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -44,13 +46,13 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     private RecyclerView mRvImage;
     private RecyclerView mRvImageDir;
-    private Button mBtnConfirm;
     private RadioButton mRBtnOriginal;
     private Button mBtnPreview;
     private LocalMultiImageAdapter mLocalMultiImageAdapter;
     private BottomSheetBehavior mBottomBehavior;
     private ImageDirAdapter mImageDirAdapter;
     private View mMaskView;
+    private MenuItem mSendMenuItem;
     private String mCurrentShowDir;
     private ColorDrawable mMaskColorDrawable;
     private HashMap<String, List<String>> mGroupingMap;
@@ -69,11 +71,10 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mBtnConfirm = (Button) findViewById(R.id.ImageMultiSelectorActivity_mBtnConfirm);
-        mRvImage = (RecyclerView) findViewById(R.id.ImageMultiSelectorActivity_mRvImageList);
+        mRvImage = findViewById(R.id.ImageMultiSelectorActivity_mRvImageList);
         mRBtnOriginal = findViewById(R.id.ImageMultiSelectorActivity_mRBtnOriginal);
-        mTvChooseDir = (TextView) findViewById(R.id.ImageMultiSelectorActivity_mTvChooseDir);
-        mRvImageDir = (RecyclerView) findViewById(R.id.ImageMultiSelectorActivity_mRvImageDirList);
+        mTvChooseDir = findViewById(R.id.ImageMultiSelectorActivity_mTvChooseDir);
+        mRvImageDir = findViewById(R.id.ImageMultiSelectorActivity_mRvImageDirList);
         mBtnPreview = findViewById(R.id.ImageMultiSelectorActivity_mBtnPreview);
         mMaskView = findViewById(R.id.ImageMultiSelectorActivity_mMaskView);
 
@@ -113,15 +114,12 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
         mTvChooseDir.setOnClickListener(mOnChooseDirClickListener);
 
-        mBtnConfirm.setOnClickListener(mOnBtnConfirmClickListener);
-
         mLocalMultiImageAdapter.setOnImageItemChangeListener(mOnImageItemChangeListener);
 
         mRBtnOriginal.setOnClickListener(mOnOriginalClickListener);
 
         mBtnPreview.setOnClickListener(mOnPreviewClickListener);
 
-        updateCountText();
         setData();
     }
 
@@ -149,7 +147,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mCurrentShowDir = folder;
         mCurrentImagePathList.clear();
         mSelectedList.clear();
-        mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
+        mSendMenuItem.setTitle(R.string.ImageSelectorActivity_Send);
         if (folder == null) {
             for (Map.Entry<String, List<String>> entry : mGroupingMap.entrySet()) {
                 mCurrentImagePathList.addAll(entry.getValue());
@@ -165,14 +163,41 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     private void updateCountText() {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
-            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), mCurrentImagePathList.size()));
+            mSendMenuItem.setTitle(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), mCurrentImagePathList.size()));
             mBtnPreview.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.ImageSelectorActivity_Preview), mSelectedList.size()));
+            mSendMenuItem.setEnabled(true);
             mBtnPreview.setEnabled(true);
         } else {
-            mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
-            mBtnPreview.setEnabled(false);
+            mSendMenuItem.setTitle(R.string.ImageSelectorActivity_Send);
             mBtnPreview.setText(R.string.ImageSelectorActivity_Preview);
+            mSendMenuItem.setEnabled(false);
+            mBtnPreview.setEnabled(false);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_image_multi_selector, menu);
+        mSendMenuItem = menu.findItem(R.id.ImageMultiSelectorMenu_Send);
+        updateCountText();
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.ImageMultiSelectorMenu_Send) {
+            if (mSelectedList.size() != 0) {
+                Intent intent = new Intent();
+                intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_PATH_LIST, mSelectedList);
+                intent.putExtra(INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+                setResult(RESULT_CODE, intent);
+            }
+            finish();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override
@@ -225,19 +250,6 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, 0);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
             startActivityForResult(intent, 0);
-        }
-    };
-
-    private final View.OnClickListener mOnBtnConfirmClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (mSelectedList.size() != 0) {
-                Intent intent = new Intent();
-                intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_PATH_LIST, mSelectedList);
-                intent.putExtra(INTENT_EXTRA_IS_ORIGINAL, isOriginal);
-                setResult(RESULT_CODE, intent);
-            }
-            finish();
         }
     };
 

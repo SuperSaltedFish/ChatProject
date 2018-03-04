@@ -15,23 +15,7 @@
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/ContactOperationActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
-
-
-        <Button
-            android:id="@+id/ContactOperationActivity_mBtnFindNewContact"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="16dp"
-            android:background="@null"
-            android:gravity="center"
-            android:minWidth="0dp"
-            android:text="添加好友"
-            android:textColor="@android:color/white"
-            android:textSize="13sp" />
-
-    </android.support.v7.widget.Toolbar>
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:layout_width="match_parent"

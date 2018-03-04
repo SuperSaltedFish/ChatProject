@@ -2,10 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_search"
-        android:orderInCategory="100"
-        android:title="搜索"
+        android:id="@+id/LocationMapMenu_Search"
+        android:title="@string/Search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/LocationMapMenu_Send"
+        android:title="@string/Send"
+        app:showAsAction="always" />
+
 
 </menu>

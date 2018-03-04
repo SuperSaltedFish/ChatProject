@@ -2,8 +2,8 @@ package com.yzx.chat.view.activity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -25,7 +25,6 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     public static final String INTENT_EXTRA_USER = "User";
 
     private EditText mEtVerifyContent;
-    private Button mBtnConfirm;
     private UserBean mUserBean;
     private ProgressDialog mProgressDialog;
     private TextView mTvContentNickname;
@@ -40,7 +39,6 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     @Override
     protected void init(Bundle savedInstanceState) {
         mEtVerifyContent = findViewById(R.id.StrangerProfileActivity_mEtVerifyContent);
-        mBtnConfirm = findViewById(R.id.StrangerProfileActivity_mBtnConfirm);
         mTvContentNickname = findViewById(R.id.Profile_mTvContentNickname);
         mTvContentLocation = findViewById(R.id.Profile_mTvContentLocation);
         mTvContentBirthday = findViewById(R.id.Profile_mTvContentBirthday);
@@ -54,7 +52,6 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
             setTitle(null);
         }
 
-        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
 
         setData();
     }
@@ -85,15 +82,25 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         }
     }
 
-    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_stranger_profile, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.StrangerProfileMenu_Request){
             if (!mProgressDialog.isShowing()) {
                 mProgressDialog.show();
             }
             mPresenter.requestContact(mUserBean, mEtVerifyContent.getText().toString());
+        }else {
+            return super.onOptionsItemSelected(item);
         }
-    };
+        return true;
+    }
 
     @Override
     public StrangerProfileContract.Presenter getPresenter() {

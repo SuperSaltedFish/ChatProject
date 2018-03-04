@@ -43,8 +43,6 @@
 
     <color name="progress_dialog_background">#80000000</color>
 
-    <color name="location_radius_fill_color">#605c95fe</color>
-
     <color name="red">#FD5B5C</color>
 
     <color name="green">#00cd76</color>

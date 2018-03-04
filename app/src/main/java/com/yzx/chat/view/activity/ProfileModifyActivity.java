@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -50,7 +51,6 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     private LinearLayout mLlSignature;
     private TextView mTvSignature;
     private EditText mEtNickname;
-    private Button mBtnConfirm;
     private UserBean mUserBean;
 
     @Override
@@ -69,7 +69,6 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         mLlSignature = findViewById(R.id.ProfileModifyActivity_mLlSignature);
         mTvSignature = findViewById(R.id.ProfileModifyActivity_mTvSignature);
         mEtNickname = findViewById(R.id.ProfileModifyActivity_mEtNickname);
-        mBtnConfirm = findViewById(R.id.ProfileModifyActivity_mBtnConfirm);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProfileModifyActivity_ProgressHint));
     }
 
@@ -83,7 +82,6 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         mLlBirthday.setOnClickListener(mOnBirthdayClickListener);
         mLlLocation.setOnClickListener(mOnLocationClickListener);
         mLlSignature.setOnClickListener(mOnSignatureClickListener);
-        mBtnConfirm.setOnClickListener(mOnConfirmListener);
         setData();
     }
 
@@ -132,6 +130,54 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         }
     }
 
+    private void save() {
+        String nickname = mEtNickname.getText().toString();
+        if (TextUtils.isEmpty(nickname)) {
+            mEtNickname.setError(getString(R.string.ProfileModifyActivity_NoneNickname));
+            return;
+        }
+        boolean isChange = false;
+        UserBean userBean = IdentityManager.getInstance().getUser();
+        if (!userBean.getNickname().equals(nickname)) {
+            isChange = true;
+        }
+        if (!userBean.getLocation().equals(mUserBean.getLocation())) {
+            isChange = true;
+        }
+        if (!userBean.getSignature().equals(mUserBean.getSignature())) {
+            isChange = true;
+        }
+        if (userBean.getSex() != mUserBean.getSex()) {
+            isChange = true;
+        }
+        if (!userBean.getBirthday().equals(mUserBean.getBirthday())) {
+            isChange = true;
+        }
+        if (isChange) {
+            mProgressDialog.show();
+            mPresenter.updateProfile(mUserBean);
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_profile_modify, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.ProfileModifyMenu_Save) {
+            save();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -145,41 +191,6 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
             mUserBean.setSignature(newSignature);
         }
     }
-
-    private final View.OnClickListener mOnConfirmListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            String nickname = mEtNickname.getText().toString();
-            if (TextUtils.isEmpty(nickname)) {
-                mEtNickname.setError(getString(R.string.ProfileModifyActivity_NoneNickname));
-                return;
-            }
-            boolean isChange = false;
-            UserBean userBean = IdentityManager.getInstance().getUser();
-            if (!userBean.getNickname().equals(nickname)) {
-                isChange = true;
-            }
-            if (!userBean.getLocation().equals(mUserBean.getLocation())) {
-                isChange = true;
-            }
-            if (!userBean.getSignature().equals(mUserBean.getSignature())) {
-                isChange = true;
-            }
-            if (userBean.getSex() != mUserBean.getSex()) {
-                isChange = true;
-            }
-            if (!userBean.getBirthday().equals(mUserBean.getBirthday())) {
-                isChange = true;
-            }
-            if (isChange) {
-                mProgressDialog.show();
-                mPresenter.updateProfile(mUserBean);
-            } else {
-                finish();
-            }
-        }
-    };
-
 
     private final View.OnClickListener mOnSexSelectedClickListener = new View.OnClickListener() {
         @Override
