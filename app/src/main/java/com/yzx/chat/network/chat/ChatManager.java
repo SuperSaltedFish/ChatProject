@@ -30,7 +30,7 @@ public class ChatManager {
     private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
     private List<OnChatMessageUnreadCountChangeListener> mChatMessageUnreadCountChangeListeners;
 
-    private int mUnreadChatMessageCount;
+    private volatile int mUnreadChatMessageCount;
     private final Object mUpdateChatUnreadCountLock = new Object();
 
     public ChatManager(IMClient.SubManagerCallback subManagerCallback) {
@@ -63,6 +63,10 @@ public class ChatManager {
         }
         status.setListened();
         mRongIMClient.setMessageReceivedStatus(message.getMessageId(), status, null);
+    }
+
+    public int getChatUnreadCount() {
+        return mUnreadChatMessageCount;
     }
 
     public void updateChatUnreadCount() {
@@ -114,6 +118,15 @@ public class ChatManager {
 
     public void removeChatMessageUnreadCountChangeListener(OnChatMessageUnreadCountChangeListener listener) {
         mChatMessageUnreadCountChangeListeners.remove(listener);
+    }
+
+    void destroy() {
+        mMessageListenerMap.clear();
+        mMessageSendStateChangeListenerMap.clear();
+        mChatMessageUnreadCountChangeListeners.clear();
+        mMessageListenerMap = null;
+        mMessageSendStateChangeListenerMap = null;
+        mChatMessageUnreadCountChangeListeners = null;
     }
 
     void onReceiveContactNotificationMessage(Message message, int untreatedCount) {

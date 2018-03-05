@@ -25,8 +25,7 @@ public abstract class AbstractDao<T> {
 
     protected abstract T toEntity(Cursor cursor);
 
-
-    public void setReadWriteHelper(ReadWriteHelper helper) {
+    public AbstractDao(ReadWriteHelper helper) {
         mHelper = helper;
     }
 

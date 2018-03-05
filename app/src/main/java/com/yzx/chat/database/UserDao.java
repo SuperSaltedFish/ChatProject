@@ -47,6 +47,10 @@ public class UserDao extends AbstractDao<UserBean> {
                     + "PRIMARY KEY (" + COLUMN_NAME_UserID + ")"
                     + ")";
 
+    public UserDao(ReadWriteHelper helper) {
+        super(helper);
+    }
+
 
     @Override
     protected String getTableName() {

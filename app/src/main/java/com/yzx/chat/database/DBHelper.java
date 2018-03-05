@@ -19,14 +19,22 @@ public class DBHelper {
     private int mReadingCount;
     private int mWritingCount;
 
+    private boolean isNeedDestroy;
 
     public DBHelper(Context context, String name, int version) {
         mHelper = new DatabaseHelper(context, name, version);
     }
 
-    public <T extends AbstractDao> T getDaoInstance(T t) {
-        t.setReadWriteHelper(mReadWriteHelper);
-        return t;
+    public AbstractDao.ReadWriteHelper getReadWriteHelper() {
+        return mReadWriteHelper;
+    }
+
+    public void destroy() {
+        if (mReadingCount == 0 && mWritingCount == 0) {
+            mHelper.close();
+        } else {
+            isNeedDestroy = true;
+        }
     }
 
     private final AbstractDao.ReadWriteHelper mReadWriteHelper = new AbstractDao.ReadWriteHelper() {
@@ -63,9 +71,14 @@ public class DBHelper {
                     return;
                 }
                 mReadingCount--;
-                if (mReadingCount == 0 && mReadableDatabase != null) {
-                    mReadableDatabase.close();
-                    mReadableDatabase = null;
+                if (mReadingCount == 0) {
+                    if (mReadableDatabase != null) {
+                        mReadableDatabase.close();
+                        mReadableDatabase = null;
+                    }
+                    if (isNeedDestroy) {
+                        destroy();
+                    }
                 }
             }
         }
@@ -77,9 +90,14 @@ public class DBHelper {
                     return;
                 }
                 mWritingCount--;
-                if (mWritingCount == 0 && mWritableDatabase != null) {
-                    mWritableDatabase.close();
-                    mWritableDatabase = null;
+                if (mWritingCount == 0) {
+                    if (mWritableDatabase != null) {
+                        mWritableDatabase.close();
+                        mWritableDatabase = null;
+                    }
+                    if (isNeedDestroy) {
+                        destroy();
+                    }
                 }
             }
         }

@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.tool.DBManager;
+import com.yzx.chat.network.chat.DBManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +49,10 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     + COLUMN_NAME_UploadFlag + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_ContactID + ")"
                     + ")";
+
+    public ContactDao(ReadWriteHelper helper) {
+        super(helper);
+    }
 
     public ContactBean getContact(String contactID) {
         if (TextUtils.isEmpty(contactID)) {

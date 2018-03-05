@@ -21,9 +21,11 @@ import io.rong.imlib.model.Message;
 public class IMClient {
 
     private static IMClient sIMClient;
+    private static Context sAppContext;
 
-    public static void init(Context appContext, String imAppKey) {
-        RongIMClient.init(appContext, imAppKey);
+    public static void init(Context context, String imAppKey) {
+        sAppContext = context.getApplicationContext();
+        RongIMClient.init(sAppContext, imAppKey);
         sIMClient = new IMClient();
     }
 
@@ -39,18 +41,17 @@ public class IMClient {
     private ChatManager mChatManager;
     private ContactManager mContactManager;
     private ConversationManager mConversationManager;
-    private List<onConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
+    private List<OnConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
     private ThreadPoolExecutor mWorkExecutor;
+
+    private boolean isLogged;
 
     private IMClient() {
         mRongIMClient = RongIMClient.getInstance();
         RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
         RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
 
-        mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<onConnectionStateChangeListener>());
-        mChatManager = new ChatManager(mSubManagerCallback);
-        mContactManager = new ContactManager(mSubManagerCallback);
-        mConversationManager = new ConversationManager(mSubManagerCallback);
+        mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
 
         mWorkExecutor = new ThreadPoolExecutor(
                 0,
@@ -59,12 +60,55 @@ public class IMClient {
                 new ArrayBlockingQueue<Runnable>(32));
     }
 
-    public void login(String token, RongIMClient.ConnectCallback callback) {
-        RongIMClient.connect(token, callback);
+    public void login(String token, final OnLoginListener loginListener) {
+        RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
+            @Override
+            public void onTokenIncorrect() {
+                isLogged = false;
+                loginListener.onLoginFailure("TokenIncorrect");
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                loginSuccess(true);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                switch (errorCode) {
+                    case RC_CONN_ID_REJECT:
+                    case RC_CONN_USER_OR_PASSWD_ERROR:
+                    case RC_CONN_NOT_AUTHRORIZED:
+                    case RC_CONN_PACKAGE_NAME_INVALID:
+                    case RC_CONN_APP_BLOCKED_OR_DELETED:
+                    case RC_CONN_USER_BLOCKED:
+                    case RC_DISCONN_KICK:
+                        isLogged = false;
+                        loginListener.onLoginFailure(errorCode.getMessage());
+                        break;
+                    default:
+                        loginSuccess(false);
+                }
+            }
+
+            private void loginSuccess(boolean isConnectedToServer) {
+                isLogged = true;
+                mChatManager = new ChatManager(mSubManagerCallback);
+                mContactManager = new ContactManager(mSubManagerCallback);
+                mConversationManager = new ConversationManager(mSubManagerCallback);
+                loginListener.onLoginSuccess(isConnectedToServer);
+            }
+        });
     }
 
     public void logout() {
-        mRongIMClient.logout();
+        if (isLogged) {
+            isLogged = false;
+            mRongIMClient.logout();
+            mChatManager.destroy();
+            mContactManager.destroy();
+            mConversationManager.destroy();
+        }
     }
 
     public boolean isConnected() {
@@ -83,7 +127,7 @@ public class IMClient {
         return mConversationManager;
     }
 
-    public void addConnectionListener(onConnectionStateChangeListener listener) {
+    public void addConnectionListener(OnConnectionStateChangeListener listener) {
         if (!mOnConnectionStateChangeListenerList.contains(listener)) {
             mOnConnectionStateChangeListenerList.add(listener);
             if (isConnected()) {
@@ -94,7 +138,7 @@ public class IMClient {
         }
     }
 
-    public void removeConnectionListener(onConnectionStateChangeListener listener) {
+    public void removeConnectionListener(OnConnectionStateChangeListener listener) {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
 
@@ -136,7 +180,7 @@ public class IMClient {
                 return;
             }
             isConnected = isConnectionSuccess;
-            for (onConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
+            for (OnConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
                 if (isConnected) {
                     listener.onConnected();
                 } else {
@@ -167,7 +211,15 @@ public class IMClient {
         }
     };
 
-    public interface onConnectionStateChangeListener {
+    public interface OnLoginListener {
+
+        void onLoginSuccess(boolean isConnectedToServer);
+
+        void onLoginFailure(String error);
+
+    }
+
+    public interface OnConnectionStateChangeListener {
 
         void onConnected();
 

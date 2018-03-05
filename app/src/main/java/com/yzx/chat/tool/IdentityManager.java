@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.AppApplication;
+import com.yzx.chat.network.chat.DBManager;
 import com.yzx.chat.util.AESUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.RSAUtil;

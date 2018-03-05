@@ -39,6 +39,8 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
+        mHomeView.updateMessageUnreadBadge(mIMClient.chatManager().getChatUnreadCount());
+        mHomeView.updateContactUnreadBadge(mIMClient.contactManager().getContactUnreadCount());
         mIMClient.chatManager().updateChatUnreadCount();
         mIMClient.contactManager().updateContactUnreadCount();
     }

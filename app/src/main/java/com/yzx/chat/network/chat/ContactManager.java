@@ -18,7 +18,6 @@ import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
-import com.yzx.chat.tool.DBManager;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
 
@@ -51,7 +50,8 @@ public class ContactManager {
     public static final String CONTACT_OPERATION_ACCEPT_ACTIVE = "ActiveAccept";//主动同意添加
     public static final String CONTACT_OPERATION_REFUSED_ACTIVE = "ActiveRefused";//主动拒绝添加
 
-    private Set<String> mContactOperationSet;
+    private static final Set<String> CONTACT_OPERATION_SET =  new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
+
     private Map<String, ContactBean> mContactsMap;
     private IMClient.SubManagerCallback mSubManagerCallback;
     private List<OnContactChangeListener> mContactChangeListeners;
@@ -70,7 +70,7 @@ public class ContactManager {
     private Call<JsonResponse<Void>> mDeleteContact;
     private Call<JsonResponse<Void>> mUpdateContact;
 
-    private int mContactOperationUnreadNumber;
+    private volatile int mContactOperationUnreadNumber;
     private final Object mUpdateContactUnreadNumberLock = new Object();
 
     public ContactManager(IMClient.SubManagerCallback subManagerCallback) {
@@ -78,7 +78,6 @@ public class ContactManager {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
         mSubManagerCallback = subManagerCallback;
-        mContactOperationSet = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
         mContactOperationDao = DBManager.getInstance().getContactOperationDao();
         mContactDao = DBManager.getInstance().getContactDao();
         mUserDao = DBManager.getInstance().getUserDao();
@@ -98,7 +97,7 @@ public class ContactManager {
     }
 
     public void initContactsFromDB() {
-        if(mContactsMap==null){
+        if (mContactsMap == null) {
             mContactsMap = new HashMap<>(256);
         }
         mContactsMap.clear();
@@ -112,7 +111,7 @@ public class ContactManager {
     }
 
     public List<ContactBean> getAllContacts() {
-        if(mContactsMap==null){
+        if (mContactsMap == null) {
             return null;
         }
         List<ContactBean> contacts = new ArrayList<>(mContactsMap.size() + 16);
@@ -313,6 +312,9 @@ public class ContactManager {
         mNetworkExecutor.submit(mUpdateContact);
     }
 
+    public int getContactUnreadCount() {
+        return mContactOperationUnreadNumber;
+    }
 
     public void updateContactUnreadCount() {
         mSubManagerCallback.execute(new Runnable() {
@@ -398,11 +400,46 @@ public class ContactManager {
         mContactChangeListeners.remove(listener);
     }
 
+    void destroy() {
+        if (mRequestContact != null) {
+            mRequestContact.cancel();
+            mRequestContact = null;
+        }
+        if (mRejectContact != null) {
+            mRejectContact.cancel();
+            mRejectContact = null;
+        }
+        if (mAcceptContact != null) {
+            mAcceptContact.cancel();
+            mAcceptContact = null;
+        }
+        if (mDeleteContact != null) {
+            mDeleteContact.cancel();
+            mDeleteContact = null;
+        }
+        if (mUpdateContact != null) {
+            mUpdateContact.cancel();
+            mUpdateContact = null;
+        }
+
+        mContactsMap.clear();
+        mContactChangeListeners.clear();
+        mContactOperationListeners.clear();
+        mContactOperationUnreadCountChangeListeners.clear();
+        mContactsMap.clear();
+
+        mContactsMap = null;
+        mContactChangeListeners = null;
+        mContactOperationListeners = null;
+        mContactOperationUnreadCountChangeListeners = null;
+        mContactsMap = null;
+    }
+
     void onReceiveContactNotificationMessage(Message message) {
         ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
         ContactOperationBean contactOperation = new ContactOperationBean();
         String operation = contactMessage.getOperation();
-        if (!mContactOperationSet.contains(operation)) {
+        if (!CONTACT_OPERATION_SET.contains(operation)) {
             LogUtil.e("unknown contact operation:" + operation);
             return;
         }

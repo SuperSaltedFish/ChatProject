@@ -16,6 +16,7 @@ import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.GetSecretKeyBean;
 import com.yzx.chat.network.api.auth.LoginRegisterBean;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
+import com.yzx.chat.network.chat.DBManager;
 import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
@@ -69,6 +70,9 @@ public class LoginPresenter implements LoginContract.Presenter {
         IdentityManager.clearLocalAuthenticationData();
         sHttpExecutor.cleanAllTask();
         NetworkAsyncTask.cleanAllTask();
+        if (DBManager.getInstance() != null) {
+            DBManager.getInstance().destroy();
+        }
     }
 
     @Override
@@ -268,7 +272,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private boolean saveVerifyInfo(LoginRegisterBean bean) {
-        return IdentityManager.init( bean.getToken(), bean.getSecretKey(), bean.getUser());
+        return IdentityManager.init(bean.getToken(), bean.getSecretKey(), bean.getUser());
     }
 
     private void loginIMServer() {

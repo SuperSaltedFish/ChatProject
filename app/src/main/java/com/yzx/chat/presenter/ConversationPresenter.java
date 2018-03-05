@@ -96,7 +96,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView.updateConversationListView(diffResult, mConversationList);
     }
 
-    private final IMClient.onConnectionStateChangeListener mOnConnectionStateChangeListener = new IMClient.onConnectionStateChangeListener() {
+    private final IMClient.OnConnectionStateChangeListener mOnConnectionStateChangeListener = new IMClient.OnConnectionStateChangeListener() {
         private boolean isConnected = true;
 
         @Override

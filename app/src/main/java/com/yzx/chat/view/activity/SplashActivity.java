@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +56,11 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         startActivity(new Intent(this, HomeActivity.class));
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     @Override

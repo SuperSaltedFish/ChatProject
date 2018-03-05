@@ -40,6 +40,10 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
                     + "PRIMARY KEY (" + COLUMN_NAME_ContactID + ")"
                     + ")";
 
+    public ContactOperationDao(ReadWriteHelper helper) {
+        super(helper);
+    }
+
 
     public synchronized List<ContactOperationBean> loadAllContactOperation() {
         SQLiteDatabase database = mHelper.openReadableDatabase();

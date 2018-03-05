@@ -183,6 +183,11 @@ public class ConversationManager {
         }
     }
 
+    void destroy(){
+        mConversationStateChangeListeners.clear();
+        mConversationStateChangeListeners = null;
+    }
+
     public interface OnConversationStateChangeListener {
         void onConversationStateChange(Conversation conversation, int typeCode);
     }

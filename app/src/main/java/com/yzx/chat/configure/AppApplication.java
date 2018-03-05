@@ -9,9 +9,6 @@ import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 import com.yzx.chat.tool.ActivityTool;
 import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.tool.DBManager;
-import com.yzx.chat.tool.IdentityManager;
-import com.yzx.chat.tool.SharePreferenceManager;
 
 import java.util.List;
 
@@ -39,8 +36,6 @@ public class AppApplication extends Application {
             DirectoryManager.init();
 
             ActivityTool.init(this);
-
-            DBManager.init(this, Constants.DATABASE_NAME, Constants.DATABASE_VERSION);
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 

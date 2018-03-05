@@ -8,6 +8,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
@@ -19,10 +20,12 @@ import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.network.chat.DBManager;
 import com.yzx.chat.tool.IdentityManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.util.MD5Util;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,6 +77,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                     @Override
                     public void run() {
                         if (isInitHTTPComplete && isInitIMComplete) {
+                            DBManager.init(mSplashView.getContext(), MD5Util.encrypt(IdentityManager.getInstance().getUserID()), Constants.DATABASE_VERSION);
                             mSplashView.startHomeActivity();
                         } else {
                             mSplashView.startLoginActivity();
@@ -97,34 +101,20 @@ public class SplashPresenter implements SplashContract.Presenter {
             initComplete();
             return;
         }
-        IMClient.getInstance().login(IdentityManager.getInstance().getToken(), new RongIMClient.ConnectCallback() {
+        IMClient.getInstance().login(IdentityManager.getInstance().getToken(), new IMClient.OnLoginListener() {
             @Override
-            public void onTokenIncorrect() {
-                AndroidUtil.showToast(R.string.SplashPresenter_TokenIncorrect);
-                initComplete();
-            }
-
-            @Override
-            public void onSuccess(String s) {
+            public void onLoginSuccess(boolean isConnectedToServer) {
+                if (!isConnectedToServer) {
+                    LogUtil.e("login success, but can not connect to the server");
+                }
                 isInitIMComplete = true;
                 initComplete();
             }
 
             @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e("login im error :" + errorCode.getMessage());
-                switch (errorCode) {
-                    case RC_CONN_ID_REJECT:
-                    case RC_CONN_USER_OR_PASSWD_ERROR:
-                    case RC_CONN_NOT_AUTHRORIZED:
-                    case RC_CONN_PACKAGE_NAME_INVALID:
-                    case RC_CONN_APP_BLOCKED_OR_DELETED:
-                    case RC_CONN_USER_BLOCKED:
-                    case RC_DISCONN_KICK:
-                        break;
-                    default:
-                        isInitIMComplete = true;
-                }
+            public void onLoginFailure(String error) {
+                AndroidUtil.showToast(R.string.SplashPresenter_TokenIncorrect);
+                LogUtil.e(error);
                 initComplete();
             }
         });
