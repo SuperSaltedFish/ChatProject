@@ -159,7 +159,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.draggable(false);//可拖放性
 
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this,R.drawable.ic_location_flag)));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this,R.drawable.ic_location_flag2)));
         mMapMarker = mAMap.addMarker(markerOptions);
         mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
