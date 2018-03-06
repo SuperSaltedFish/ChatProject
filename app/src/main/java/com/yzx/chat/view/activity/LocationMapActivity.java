@@ -42,6 +42,7 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.R;
@@ -51,6 +52,7 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.LocationMapActivityContract;
 import com.yzx.chat.presenter.LocationMapActivityPresenter;
 import com.yzx.chat.widget.adapter.LocationAdapter;
+import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -124,6 +126,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvCurrentLocation.setAdapter(mCurrentLocationAdapter);
         mRvCurrentLocation.setHasFixedSize(true);
         mRvCurrentLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+        mRvCurrentLocation.addOnItemTouchListener(mOnRvCurrentLocationItemClickListener);
         mCurrentLocationAdapter.setScrollToBottomListener(mOnCurrentLocationScrollToBottomListener);
 
         mRvSearchLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -131,6 +134,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvSearchLocation.setRecycledViewPool(mRvCurrentLocation.getRecycledViewPool());
         mRvSearchLocation.setHasFixedSize(true);
         mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+        mRvSearchLocation.addOnItemTouchListener(mOnRvCurrentLocationItemClickListener);
         mSearchLocationAdapter.setScrollToBottomListener(mOnSearchLocationScrollToBottomListener);
 
         setupMap(savedInstanceState);
@@ -149,7 +153,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mAMap.setMyLocationEnabled(true);
         mAMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
         mAMap.setOnCameraChangeListener(mOnCameraChangeListener);
-        mAMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+        mAMap.moveCamera(CameraUpdateFactory.zoomTo(5));
 
         UiSettings uiSettings = mAMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(false);
@@ -159,7 +163,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.draggable(false);//可拖放性
 
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this,R.drawable.ic_location_flag2)));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
         mMapMarker = mAMap.addMarker(markerOptions);
         mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -280,12 +284,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (!mSearchView.isIconified()) {
-                    try {
-                        mSearchAutoComplete.setText("");
-                        mSearchView.setIconified(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    closeSearch();
                 } else {
                     super.onOptionsItemSelected(item);
                 }
@@ -298,6 +297,10 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         return true;
     }
 
+    private void closeSearch() {
+        mSearchAutoComplete.setText("");
+        mSearchView.setIconified(true);
+    }
 
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
@@ -326,6 +329,27 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                     }
                 }, 200);
             }
+        }
+    };
+
+    private final OnRecyclerViewItemClickListener mOnRvCurrentLocationItemClickListener = new OnRecyclerViewItemClickListener() {
+        @Override
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            mCurrentLocationAdapter.setSelectedPosition(position);
+            PoiItem poiItem = mCurrentLocationList.get(position);
+            LatLonPoint point = poiItem.getLatLonPoint();
+            mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLatitude(), point.getLongitude()), mAMap.getCameraPosition().zoom));
+        }
+    };
+
+    private final OnRecyclerViewItemClickListener mOnRvSearchLocationItemClickListener = new OnRecyclerViewItemClickListener() {
+        @Override
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            mCurrentLocationAdapter.setSelectedPosition(position);
+            PoiItem poiItem = mCurrentLocationList.get(position);
+            LatLonPoint point = poiItem.getLatLonPoint();
+            closeSearch();
+            mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLatitude(), point.getLongitude()), mAMap.getCameraPosition().zoom));
         }
     };
 

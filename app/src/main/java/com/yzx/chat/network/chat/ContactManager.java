@@ -487,9 +487,9 @@ public class ContactManager {
         ContactDao contactDao = new ContactDao(readWriteHelper);
         contactDao.cleanTable();
         if (contactDao.insertAllContacts(contacts)) {
-            LogUtil.e("updateAllContacts fail");
             return true;
         }else {
+            LogUtil.e("updateAllContacts fail");
             return false;
         }
     }

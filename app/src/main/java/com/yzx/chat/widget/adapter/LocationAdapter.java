@@ -3,6 +3,7 @@ package com.yzx.chat.widget.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
@@ -19,6 +20,7 @@ import java.util.List;
 public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.LocationSearchHolder> {
 
     private List<PoiItem> mPOIList;
+    private int mSelectedPosition;
 
     public LocationAdapter(List<PoiItem> POIList) {
         mPOIList = POIList;
@@ -26,7 +28,7 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
 
     @Override
     public LocationSearchHolder getViewHolder(ViewGroup parent, int viewType) {
-        return new LocationSearchHolder(LayoutInflater.from(mContext).inflate(R.layout.item_location,parent,false));
+        return new LocationSearchHolder(LayoutInflater.from(mContext).inflate(R.layout.item_location, parent, false));
     }
 
     @Override
@@ -34,6 +36,7 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
         PoiItem poi = mPOIList.get(position);
         holder.mTvName.setText(poi.getTitle());
         holder.mTvAddress.setText(poi.getSnippet());
+        holder.mRBtnSelected.setVisibility(position == mSelectedPosition ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -41,15 +44,30 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
         return mPOIList == null ? 0 : mPOIList.size();
     }
 
+    public void setSelectedPosition(int selectedPosition) {
+        if (mSelectedPosition == selectedPosition) {
+            return;
+        }
+        notifyItemChangedEx(mSelectedPosition);
+        notifyItemChangedEx(selectedPosition);
+        mSelectedPosition = selectedPosition;
+    }
+
     final static class LocationSearchHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         TextView mTvName;
         TextView mTvAddress;
+        RadioButton mRBtnSelected;
 
         LocationSearchHolder(View itemView) {
             super(itemView);
             mTvName = itemView.findViewById(R.id.LocationAdapter_mTvName);
             mTvAddress = itemView.findViewById(R.id.LocationAdapter_mTvAddress);
+            mRBtnSelected = itemView.findViewById(R.id.LocationAdapter_mRBtnSelected);
+        }
+
+        public void setSelected(boolean isSelected) {
+            mRBtnSelected.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
         }
     }
 }

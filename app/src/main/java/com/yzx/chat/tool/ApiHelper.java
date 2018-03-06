@@ -34,6 +34,10 @@ public class ApiHelper {
             .registerTypeAdapter(String.class, new NullStringToEmptyAdapter())
             .create();
 
+    public static Object getProxyInstance(Class<?> interfaceClass) {
+        return sApiProxy.getProxyInstance(interfaceClass);
+    }
+
     private static ApiProxy sApiProxy = new ApiProxy(Constants.URL_API_BASE, new HttpDataFormatAdapter() {
         @Nullable
         @Override
@@ -41,7 +45,6 @@ public class ApiHelper {
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
-            ;
             request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().userManager().getToken() : null);
             String json = sGson.toJson(request);
             LogUtil.e("request: " + json);
@@ -79,9 +82,6 @@ public class ApiHelper {
     });
 
 
-    public static Object getProxyInstance(Class<?> interfaceClass) {
-        return sApiProxy.getProxyInstance(interfaceClass);
-    }
 
     private static class NullStringToEmptyAdapter extends TypeAdapter<String> {
 

@@ -3,18 +3,24 @@ package com.yzx.chat.network.chat;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.DBHelper;
+import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.UserInfoBean;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
+import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.SharePreferenceManager;
@@ -23,10 +29,12 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.MD5Util;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -83,6 +91,42 @@ public class IMClient {
                 new ArrayBlockingQueue<Runnable>(32));
     }
 
+
+    public void loginByToken(Call<JsonResponse<UserInfoBean>> loginOrRegisterOrTokenVerifyCall, final ResultCallback<Void> resultCallback) {
+        loginOrRegisterOrTokenVerifyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
+            private Gson mGson = new GsonBuilder().serializeNulls().create();
+
+            @Nullable
+            @Override
+            public String requestToString(String url, Map<String, Object> params, String requestMethod) {
+                JsonRequest request = new JsonRequest();
+                request.setParams(params);
+                request.setStatus(200);
+                request.setToken(UserManager.getLocalToken());
+                String json = mGson.toJson(request);
+                LogUtil.e("request: " + json);
+                if (json != null) {
+                    return json;
+                }
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Object responseToObject(String url, String httpResponse, Type genericType) {
+                try {
+                    LogUtil.e("response: " + httpResponse);
+                    return mGson.fromJson(httpResponse, genericType);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
+        login(loginOrRegisterOrTokenVerifyCall, resultCallback);
+    }
+
+
     public void login(final Call<JsonResponse<UserInfoBean>> loginOrRegisterOrTokenVerifyCall, final ResultCallback<Void> resultCallback) {
         if (isLogged) {
             throw new RuntimeException("The user has already logged in, please do not log in again！");
@@ -92,7 +136,7 @@ public class IMClient {
             public void run() {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final Result<Boolean> result = new Result<>(true);
-                final Result<String> errorMessage = new Result<>(null);
+                final Result<String> errorMessage = new Result<>(AndroidUtil.getString(R.string.Server_Error));
                 loginOrRegisterOrTokenVerifyCall.setCallback(new HttpCallback<JsonResponse<UserInfoBean>>() {
                     @Override
                     public void onResponse(HttpResponse<JsonResponse<UserInfoBean>> response) {
@@ -106,10 +150,16 @@ public class IMClient {
                             return;
                         }
                         UserInfoBean userInfo = jsonResponse.getData();
-                        if (jsonResponse.getStatus() != 200 || userInfo == null) {
-                            failure("JsonResponse status = " + jsonResponse.getStatus() + "(userInfo=" + (userInfo == null) + ")");
+                        if (jsonResponse.getStatus() != 200) {
+                            errorMessage.setResult(jsonResponse.getMessage());
+                            failure("Status ==" + jsonResponse.getStatus());
                             return;
                         }
+                        if (userInfo == null) {
+                            failure("userInfo is null");
+                            return;
+                        }
+
                         String token = userInfo.getToken();
                         String secretKey = userInfo.getSecretKey();
                         UserBean userBean = userInfo.getUserProfile();
@@ -196,8 +246,8 @@ public class IMClient {
                     }
 
                     private void failure(String error) {
+                        LogUtil.e(error);
                         result.setResult(false);
-                        errorMessage.setResult(error);
                         latch.countDown();
                     }
 
@@ -205,7 +255,7 @@ public class IMClient {
                     public boolean isExecuteNextTask() {
                         return false;
                     }
-                },false);
+                }, false);
 
                 NetworkExecutor.getInstance().submit(loginOrRegisterOrTokenVerifyCall);
                 try {

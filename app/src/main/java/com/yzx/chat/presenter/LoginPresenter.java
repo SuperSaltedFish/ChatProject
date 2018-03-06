@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.contract.LoginContract;
 import com.yzx.chat.network.api.JsonRequest;
@@ -17,18 +16,17 @@ import com.yzx.chat.network.api.auth.GetSecretKeyBean;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.api.auth.UserInfoBean;
 import com.yzx.chat.network.chat.CryptoManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
-import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.util.RSAUtil;
-
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -241,15 +239,14 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
 
         @Override
-        public void onFailure(String error) {
-            LogUtil.e(error);
+        public void onFailure(final String error) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
-                        mLoginView.verifyFailure(AndroidUtil.getString(R.string.Server_Error));
+                        mLoginView.verifyFailure(error);
                     } else {
-                        mLoginView.loginFailure(AndroidUtil.getString(R.string.Server_Error));
+                        mLoginView.loginFailure(error);
                     }
                 }
             });

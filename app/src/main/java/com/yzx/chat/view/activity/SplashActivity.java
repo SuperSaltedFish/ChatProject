@@ -40,7 +40,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startLoginActivity();
+                        startHomeActivity();
                     }
                 }, 1000);
             } else {
