@@ -22,8 +22,6 @@ public class LoginContract {
         void registerFailure(String reason);
 
         void verifyFailure(String reason);
-
-        void reLogin();
     }
 
 

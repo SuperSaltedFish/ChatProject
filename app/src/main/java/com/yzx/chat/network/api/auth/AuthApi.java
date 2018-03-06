@@ -14,19 +14,19 @@ public interface AuthApi {
     Call<JsonResponse<GetSecretKeyBean>> getSignature();
 
     @HttpApi(RequestMethod = "POST", Path = "auth/login")
-    Call<JsonResponse<LoginRegisterBean>> login(@HttpParam("telephone") String username,
-                                                @HttpParam("password") String password,
-                                                @HttpParam("deviceID") String deviceID,
-                                                @HttpParam("clientPublicKey") String publicKey,
-                                                @HttpParam("verifyCode") String verifyCode);
+    Call<JsonResponse<UserInfoBean>> login(@HttpParam("telephone") String username,
+                                           @HttpParam("password") String password,
+                                           @HttpParam("deviceID") String deviceID,
+                                           @HttpParam("clientPublicKey") String publicKey,
+                                           @HttpParam("verifyCode") String verifyCode);
 
     @HttpApi(RequestMethod = "POST", Path = "auth/register")
-    Call<JsonResponse<LoginRegisterBean>> register(@HttpParam("telephone") String username,
-                                                   @HttpParam("password") String password,
-                                                   @HttpParam("nickname") String nickname,
-                                                   @HttpParam("deviceID") String deviceID,
-                                                   @HttpParam("clientPublicKey") String publicKey,
-                                                   @HttpParam("verifyCode") String verifyCode);
+    Call<JsonResponse<UserInfoBean>> register(@HttpParam("telephone") String username,
+                                              @HttpParam("password") String password,
+                                              @HttpParam("nickname") String nickname,
+                                              @HttpParam("deviceID") String deviceID,
+                                              @HttpParam("clientPublicKey") String publicKey,
+                                              @HttpParam("verifyCode") String verifyCode);
 
     @HttpApi(RequestMethod = "POST", Path = "auth/obtainSMSCode")
     Call<JsonResponse<ObtainSMSCode>> obtainSMSCode(@HttpParam("telephone") String username,
@@ -35,8 +35,7 @@ public interface AuthApi {
                                                     @HttpParam("data") Object data);
 
     @HttpApi(RequestMethod = "POST", Path = "auth/tokenVerify")
-    Call<JsonResponse<TokenVerifyBean>> tokenVerify();
-
+    Call<JsonResponse<UserInfoBean>> tokenVerify();
 
 
 }

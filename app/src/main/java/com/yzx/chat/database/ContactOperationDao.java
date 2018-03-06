@@ -46,14 +46,14 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
 
     public synchronized List<ContactOperationBean> loadAllContactOperation() {
-        SQLiteDatabase database = mHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + COLUMN_NAME_ContactID + "=" + UserDao.COLUMN_NAME_UserID + " ORDER BY " + COLUMN_NAME_IsRemind + " DESC," + COLUMN_NAME_Time + " DESC", null);
         List<ContactOperationBean> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
         cursor.close();
-        mHelper.closeReadableDatabase();
+        mReadWriteHelper.closeReadableDatabase();
         return contactList;
     }
 
@@ -74,7 +74,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 //    }
 
     public synchronized int loadRemindCount() {
-        SQLiteDatabase database = mHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + COLUMN_NAME_ContactID + "=" + UserDao.COLUMN_NAME_UserID + " AND " + COLUMN_NAME_IsRemind + "=1", null);
         int result;
         if (cursor.moveToFirst()) {
@@ -83,16 +83,16 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
             result = 0;
         }
         cursor.close();
-        mHelper.closeReadableDatabase();
+        mReadWriteHelper.closeReadableDatabase();
         return result;
     }
 
     public synchronized int makeAllRemindAsRemind() {
-        SQLiteDatabase database = mHelper.openWritableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME_IsRemind, 0);
         int result = database.update(getTableName(), values, null, null);
-        mHelper.closeWritableDatabase();
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 

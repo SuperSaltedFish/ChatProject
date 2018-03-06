@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.network.chat.DBManager;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,30 +58,30 @@ public class ContactDao extends AbstractDao<ContactBean> {
         if (TextUtils.isEmpty(contactID)) {
             return null;
         }
-        SQLiteDatabase database = mHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID + " AND " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=?", new String[]{contactID});
         ContactBean contact = null;
         while (cursor.moveToNext()) {
             contact = toEntity(cursor);
         }
         cursor.close();
-        mHelper.closeReadableDatabase();
+        mReadWriteHelper.closeReadableDatabase();
         return contact;
     }
 
     public List<ContactBean> loadAllContacts() {
-        SQLiteDatabase database = mHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
         List<ContactBean> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
         cursor.close();
-        mHelper.closeReadableDatabase();
+        mReadWriteHelper.closeReadableDatabase();
         return contactList;
     }
 
-    public boolean updateAllContacts(List<ContactBean> contactList) {
+    public boolean insertAllContacts(List<ContactBean> contactList) {
         if (contactList == null || contactList.size() == 0) {
             return true;
         }
@@ -89,8 +89,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
         for (ContactBean contact : contactList) {
             userList.add(contact.getUserProfile());
         }
-        cleanTable();
-        return DBManager.getInstance().getUserDao().replaceAll(userList) && insertAll(contactList);
+        return new UserDao(mReadWriteHelper).replaceAll(userList) && insertAll(contactList);
     }
 
 

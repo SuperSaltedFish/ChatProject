@@ -13,7 +13,7 @@ public abstract class AbstractDao<T> {
 
     protected static final String COLUMN_NAME_RowID = "ROWID";
 
-    protected ReadWriteHelper mHelper;
+    protected ReadWriteHelper mReadWriteHelper;
 
     protected abstract String getTableName();
 
@@ -25,22 +25,22 @@ public abstract class AbstractDao<T> {
 
     protected abstract T toEntity(Cursor cursor);
 
-    public AbstractDao(ReadWriteHelper helper) {
-        mHelper = helper;
+    public AbstractDao(ReadWriteHelper readWriteHelper) {
+        mReadWriteHelper = readWriteHelper;
     }
 
     public T loadByKey(String... keyValues) {
         if (keyValues == null || keyValues.length == 0) {
             return null;
         }
-        SQLiteDatabase database = mHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), keyValues, null, null, null);
         T entity = null;
         if (cursor.moveToFirst()) {
             entity = toEntity(cursor);
         }
         cursor.close();
-        mHelper.closeReadableDatabase();
+        mReadWriteHelper.closeReadableDatabase();
         return entity;
     }
 
@@ -50,8 +50,8 @@ public abstract class AbstractDao<T> {
         }
         ContentValues values =new ContentValues();
         parseToContentValues(entity, values);
-        boolean result = mHelper.openWritableDatabase().insert(getTableName(), null, values) > 0;
-        mHelper.closeWritableDatabase();
+        boolean result = mReadWriteHelper.openWritableDatabase().insert(getTableName(), null, values) > 0;
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractDao<T> {
             return false;
         }
         boolean result = true;
-        SQLiteDatabase database = mHelper.openWritableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             ContentValues values = new ContentValues();
@@ -78,7 +78,7 @@ public abstract class AbstractDao<T> {
         } finally {
             database.endTransaction();
         }
-        mHelper.closeWritableDatabase();
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -88,8 +88,8 @@ public abstract class AbstractDao<T> {
         }
         ContentValues values =new ContentValues();
         parseToContentValues(entity, values);
-        boolean result = mHelper.openWritableDatabase().replace(getTableName(), null, values) > 0;
-        mHelper.closeWritableDatabase();
+        boolean result = mReadWriteHelper.openWritableDatabase().replace(getTableName(), null, values) > 0;
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -98,7 +98,7 @@ public abstract class AbstractDao<T> {
             return false;
         }
         boolean result = true;
-        SQLiteDatabase database = mHelper.openWritableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             ContentValues values = new ContentValues();
@@ -116,7 +116,7 @@ public abstract class AbstractDao<T> {
         } finally {
             database.endTransaction();
         }
-        mHelper.closeWritableDatabase();
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -126,8 +126,8 @@ public abstract class AbstractDao<T> {
         }
         ContentValues values =new ContentValues();
         parseToContentValues(entity, values);
-        boolean result = mHelper.openWritableDatabase().update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
-        mHelper.closeWritableDatabase();
+        boolean result = mReadWriteHelper.openWritableDatabase().update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -136,7 +136,7 @@ public abstract class AbstractDao<T> {
             return false;
         }
         boolean result = true;
-        SQLiteDatabase database = mHelper.openWritableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             ContentValues values = new ContentValues();
@@ -154,7 +154,7 @@ public abstract class AbstractDao<T> {
         } finally {
             database.endTransaction();
         }
-        mHelper.closeWritableDatabase();
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -162,8 +162,8 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
-        mHelper.closeWritableDatabase();
+        boolean result = mReadWriteHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -171,8 +171,8 @@ public abstract class AbstractDao<T> {
         if (keyValue == null || keyValue.length == 0) {
             return false;
         }
-        boolean result = mHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), keyValue) > 0;
-        mHelper.closeWritableDatabase();
+        boolean result = mReadWriteHelper.openWritableDatabase().delete(getTableName(), getWhereClauseOfKey(), keyValue) > 0;
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
@@ -181,7 +181,7 @@ public abstract class AbstractDao<T> {
             return false;
         }
         boolean result = true;
-        SQLiteDatabase database = mHelper.openWritableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             for (T entity : entityIterable) {
@@ -196,25 +196,25 @@ public abstract class AbstractDao<T> {
         } finally {
             database.endTransaction();
         }
-        mHelper.closeWritableDatabase();
+        mReadWriteHelper.closeWritableDatabase();
         return result;
     }
 
     public void cleanTable() {
-        SQLiteDatabase database = mHelper.openWritableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.execSQL("delete from " + getTableName());
-        mHelper.closeWritableDatabase();
+        mReadWriteHelper.closeWritableDatabase();
     }
 
     public boolean isExist(T entity) {
         if (entity == null) {
             return false;
         }
-        SQLiteDatabase database = mHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.query(getTableName(), null, getWhereClauseOfKey(), toWhereArgsOfKey(entity), null, null, null, null);
         boolean result = (cursor.getCount() > 0);
         cursor.close();
-        mHelper.closeReadableDatabase();
+        mReadWriteHelper.closeReadableDatabase();
         return result;
     }
 

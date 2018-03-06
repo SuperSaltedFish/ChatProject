@@ -22,8 +22,9 @@ import com.yzx.chat.bean.CityBean;
 import com.yzx.chat.bean.ProvinceBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.ProfileModifyContract;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ProfileModifyPresenter;
-import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GsonUtil;
 import com.yzx.chat.widget.view.ProgressDialog;
@@ -52,6 +53,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     private TextView mTvSignature;
     private EditText mEtNickname;
     private UserBean mUserBean;
+    private UserBean mOldUserBean;
 
     @Override
     protected int getLayoutID() {
@@ -86,12 +88,12 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     }
 
     private void setData() {
-        mUserBean = IdentityManager.getInstance().getUser();
+        mUserBean = IMClient.getInstance().userManager().getUser();
         if (mUserBean == null || mUserBean.isEmpty()) {
             finish();
             return;
         }
-        mUserBean = (UserBean) mUserBean.clone();
+        mOldUserBean = (UserBean) mUserBean.clone();
 
         mEtNickname.setText(mUserBean.getNickname());
         if (TextUtils.isEmpty(mUserBean.getLocation())) {
@@ -137,20 +139,20 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
             return;
         }
         boolean isChange = false;
-        UserBean userBean = IdentityManager.getInstance().getUser();
-        if (!userBean.getNickname().equals(nickname)) {
+        if (!mOldUserBean.getNickname().equals(nickname)) {
+            isChange = true;
+            mUserBean.setNickname(nickname);
+        }
+        if (!mOldUserBean.getLocation().equals(mUserBean.getLocation())) {
             isChange = true;
         }
-        if (!userBean.getLocation().equals(mUserBean.getLocation())) {
+        if (!mOldUserBean.getSignature().equals(mUserBean.getSignature())) {
             isChange = true;
         }
-        if (!userBean.getSignature().equals(mUserBean.getSignature())) {
+        if (mOldUserBean.getSex() != mUserBean.getSex()) {
             isChange = true;
         }
-        if (userBean.getSex() != mUserBean.getSex()) {
-            isChange = true;
-        }
-        if (!userBean.getBirthday().equals(mUserBean.getBirthday())) {
+        if (!mOldUserBean.getBirthday().equals(mUserBean.getBirthday())) {
             isChange = true;
         }
         if (isChange) {

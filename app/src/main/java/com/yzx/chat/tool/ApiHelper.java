@@ -11,6 +11,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.network.api.JsonRequest;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.util.LogUtil;
@@ -40,7 +41,8 @@ public class ApiHelper {
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
-            request.setToken(IdentityManager.isLogged() ? IdentityManager.getInstance().getToken() : null);
+            ;
+            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().userManager().getToken() : null);
             String json = sGson.toJson(request);
             LogUtil.e("request: " + json);
 //            if (json != null) {

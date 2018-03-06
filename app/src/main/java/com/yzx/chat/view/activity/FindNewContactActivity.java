@@ -19,8 +19,9 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.FindNewContactContract;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.FindNewContactPresenter;
-import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 
 import java.util.Locale;
@@ -78,7 +79,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     private void setData() {
-        UserBean user = IdentityManager.getInstance().getUser();
+        UserBean user = IMClient.getInstance().userManager().getUser();
         mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
     }
 

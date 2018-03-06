@@ -32,11 +32,20 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         requestPermissionsInCompatMode(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
     }
 
-
     @Override
     public void onRequestPermissionsSuccess(int requestCode) {
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            mPresenter.init(getIntent().getBooleanExtra(INTENT_EXTRA_LOGGED,false));
+            boolean isAlreadyLogged = getIntent().getBooleanExtra(INTENT_EXTRA_LOGGED, false);
+            if (isAlreadyLogged) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startLoginActivity();
+                    }
+                }, 1000);
+            } else {
+                mPresenter.login();
+            }
         }
     }
 

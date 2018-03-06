@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
 
-import com.yzx.chat.network.chat.Result;
+import com.yzx.chat.network.chat.ResultCallback;
 
 import java.lang.ref.WeakReference;
 
@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
-public abstract class AsyncResult<R, T> implements Result<T> {
+public abstract class AsyncResult<R, T> implements ResultCallback<T> {
 
     @MainThread
     protected abstract void onSuccessResult(R dependent, T result);

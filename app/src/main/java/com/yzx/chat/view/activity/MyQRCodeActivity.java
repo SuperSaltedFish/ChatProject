@@ -11,8 +11,9 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.MyQRCodeActivityContract;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.MyQRCodeActivityPresenter;
-import com.yzx.chat.tool.IdentityManager;
+import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.util.QREncodingUtils;
 
 /**
@@ -49,7 +50,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        UserBean user = IdentityManager.getInstance().getUser();
+        UserBean user = IMClient.getInstance().userManager().getUser();
         if (user == null) {
             finish();
             return;

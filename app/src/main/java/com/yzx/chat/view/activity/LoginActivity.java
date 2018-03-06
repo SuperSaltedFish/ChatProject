@@ -544,9 +544,4 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         startProgressAnim(mBtnVerify, mPbVerifyProgress, false, null);
         showError(mTvVerifyHint, reason);
     }
-
-    @Override
-    public void reLogin() {
-        jumpToLoginPager();
-    }
 }
