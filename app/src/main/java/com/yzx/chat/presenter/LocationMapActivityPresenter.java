@@ -24,7 +24,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
     private LocationMapActivityContract.View mLocationMapActivityView;
     private PoiSearch mPoiSearchLocation;
     private PoiSearch mPoiCurrentLocation;
-    private Inner_3dMap_location mLocation;
+    private String mCityCode;
 
     private int mSearchLocationPageNum;
     private boolean mHasMoreSearchLocation;
@@ -37,6 +37,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
     @Override
     public void attachView(LocationMapActivityContract.View view) {
         mLocationMapActivityView = view;
+        mCityCode = "";
     }
 
     @Override
@@ -50,10 +51,6 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
         mLocationMapActivityView = null;
     }
 
-    @Override
-    public void initLocation(Inner_3dMap_location location) {
-        mLocation = location;
-    }
 
     @Override
     public void searchCurrentLocation(double latitude, double longitude) {
@@ -63,7 +60,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
         }
         mCurrentLocationPageNum = 1;
         mHasMoreCurrentLocation = true;
-        PoiSearch.Query query = new PoiSearch.Query("", POI_TYPE, mLocation.getCityCode());
+        PoiSearch.Query query = new PoiSearch.Query("", POI_TYPE, "");
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mCurrentLocationPageNum);
         mPoiCurrentLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);
@@ -75,6 +72,11 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     List<PoiItem> poiItemList = poiResult.getPois();
                     if(poiItemList==null){
                         poiItemList = new ArrayList<>(0);
+                    }
+                    if(poiItemList.size()==0){
+                        mCityCode = "";
+                    }else {
+                        mCityCode = poiItemList.get(0).getCityCode();
                     }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
                         mHasMoreCurrentLocation = false;
@@ -105,7 +107,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             mPoiCurrentLocation.setOnPoiSearchListener(null);
         }
         mCurrentLocationPageNum++;
-        PoiSearch.Query query = new PoiSearch.Query("", POI_TYPE, mLocation.getCityCode());
+        PoiSearch.Query query = new PoiSearch.Query("", POI_TYPE, "");
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mCurrentLocationPageNum);
         mPoiCurrentLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);
@@ -145,7 +147,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
         }
         mSearchLocationPageNum = 1;
         mHasMoreSearchLocation = true;
-        PoiSearch.Query query = new PoiSearch.Query(keyword, POI_TYPE, mLocation.getCityCode());
+        PoiSearch.Query query = new PoiSearch.Query(keyword, POI_TYPE, mCityCode);
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mSearchLocationPageNum);
         mPoiSearchLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);
@@ -186,7 +188,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             mPoiSearchLocation.setOnPoiSearchListener(null);
         }
         mSearchLocationPageNum++;
-        PoiSearch.Query query = new PoiSearch.Query(keyword, POI_TYPE, mLocation.getCityCode());
+        PoiSearch.Query query = new PoiSearch.Query(keyword, POI_TYPE, mCityCode);
         query.setPageSize(Constants.SEARCH_LOCATION_PAGE_SIZE);
         query.setPageNum(mSearchLocationPageNum);
         mPoiSearchLocation = new PoiSearch(mLocationMapActivityView.getContext(), query);

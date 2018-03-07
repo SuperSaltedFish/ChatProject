@@ -30,9 +30,8 @@ public class LocationMapActivityContract {
 
 
     public interface Presenter extends BasePresenter<View> {
-        void initLocation(Inner_3dMap_location location);
 
-        void searchCurrentLocation(double latitude,double longitude);
+        void searchCurrentLocation(double latitude, double longitude);
 
         void searchCurrentMoreLocation(double latitude, double longitude);
 
