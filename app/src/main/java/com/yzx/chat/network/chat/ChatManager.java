@@ -20,6 +20,7 @@ import io.rong.imlib.model.Message;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ChatManager {
 
     private static final Conversation.ConversationType[] SUPPORT_CONVERSATION_TYPE = {Conversation.ConversationType.PRIVATE};

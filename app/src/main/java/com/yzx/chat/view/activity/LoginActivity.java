@@ -30,6 +30,7 @@ import com.yzx.chat.util.RegexUtil;
 
 import java.util.Locale;
 
+
 public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> implements LoginContract.View {
 
     private final static int MIN_PASSWORD_LENGTH = 8;

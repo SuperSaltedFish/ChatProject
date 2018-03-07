@@ -37,6 +37,7 @@ import java.util.List;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presenter> implements ContactInfoContract.View {
 
     private static final String ARGUMENT_CONTACT_ID = "ContactID";

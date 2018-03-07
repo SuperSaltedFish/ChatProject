@@ -15,6 +15,7 @@ import com.yzx.chat.util.AndroidUtil;
  * Created by YZX on 2017年06月29日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
+
 public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoration {
 
     private float mTextSize;

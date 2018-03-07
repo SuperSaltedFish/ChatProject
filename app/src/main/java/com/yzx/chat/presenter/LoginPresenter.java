@@ -38,6 +38,7 @@ import java.util.Map;
  * 每一个不曾起舞的日子，都是对生命的辜负。
  */
 
+
 public class LoginPresenter implements LoginContract.Presenter {
 
     public final static int VERIFY_TYPE_NONE = 0;

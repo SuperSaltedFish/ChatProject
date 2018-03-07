@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class NoAnimations extends RecyclerView.ItemAnimator {
 
     @Override

@@ -19,6 +19,7 @@ import com.yzx.chat.util.LogUtil;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
 
     private Drawable mClearDrawable;

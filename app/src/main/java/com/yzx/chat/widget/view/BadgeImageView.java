@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public class BadgeImageView extends android.support.v7.widget.AppCompatImageView {
 
     public static final int MODE_HIDE = 0;

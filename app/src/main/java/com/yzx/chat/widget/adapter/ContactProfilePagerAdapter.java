@@ -14,6 +14,7 @@ import com.yzx.chat.view.fragment.ContactMomentsFragment;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ContactProfilePagerAdapter extends FragmentPagerAdapter {
 
     private String[] mTitle;

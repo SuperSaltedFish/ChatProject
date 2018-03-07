@@ -13,6 +13,7 @@ import android.widget.ImageView;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
     public CircleImageView(Context context) {
         this(context, null);

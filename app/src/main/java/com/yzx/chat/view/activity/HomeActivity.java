@@ -20,6 +20,7 @@ import me.majiajie.pagerbottomtabstrip.NavigationController;
 import me.majiajie.pagerbottomtabstrip.PageNavigationView;
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
 
+
 public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View {
 
     private final static int REQUEST_PERMISSIONS_CAMERA = 0x1;

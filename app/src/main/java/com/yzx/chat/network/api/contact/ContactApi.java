@@ -11,6 +11,7 @@ import com.yzx.chat.network.framework.HttpParam;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public interface ContactApi {
     @HttpApi(RequestMethod = "POST", Path = "contact/getUserContacts")
     Call<JsonResponse<GetUserContactsBean>> getUserContacts();

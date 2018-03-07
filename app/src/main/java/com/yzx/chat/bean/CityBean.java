@@ -5,6 +5,7 @@ package com.yzx.chat.bean;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class CityBean {
     private String country;
     private String code;

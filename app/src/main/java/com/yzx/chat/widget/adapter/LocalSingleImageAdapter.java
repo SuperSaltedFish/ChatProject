@@ -17,6 +17,7 @@ import java.util.List;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class LocalSingleImageAdapter extends BaseRecyclerViewAdapter<LocalSingleImageAdapter.ItemView> {
 
     private List<String> mImagePathList;

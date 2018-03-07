@@ -5,6 +5,7 @@ package com.yzx.chat.network.chat;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public interface ResultCallback<T> {
     void onSuccess(T result);
 

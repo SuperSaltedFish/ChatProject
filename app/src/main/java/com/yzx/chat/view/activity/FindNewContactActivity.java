@@ -26,6 +26,7 @@ import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 
 import java.util.Locale;
 
+
 public class FindNewContactActivity extends BaseCompatActivity<FindNewContactContract.Presenter> implements FindNewContactContract.View {
 
     private ConstraintLayout mClScan;

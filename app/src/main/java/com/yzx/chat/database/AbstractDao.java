@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
+
 public abstract class AbstractDao<T> {
 
     protected static final String COLUMN_NAME_RowID = "ROWID";

@@ -5,6 +5,7 @@ import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
 
+
 public interface AuthApi {
 
     String SMS_CODE_TYPE_LOGIN = "Login";

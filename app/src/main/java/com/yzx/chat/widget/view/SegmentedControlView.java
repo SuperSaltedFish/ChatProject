@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 
+
 public class SegmentedControlView extends RadioGroup {
 
     private Context mContext;

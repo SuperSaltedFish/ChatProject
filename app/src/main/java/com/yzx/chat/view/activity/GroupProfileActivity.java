@@ -23,6 +23,7 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class GroupProfileActivity extends BaseCompatActivity {
 
     private static final int GROUP_MEMBERS_LINE_MAX_COUNT = 5;

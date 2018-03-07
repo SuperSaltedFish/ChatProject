@@ -6,6 +6,7 @@ package com.yzx.chat.configure;
  */
 public class Constants {
 
+
 //    public static final String RONG_CLOUD_APP_KEY = "n19jmcy59f1q9";
 public static final String RONG_CLOUD_APP_KEY = "82hegw5u8dlsx";
 

@@ -34,6 +34,7 @@ import java.util.List;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presenter> implements ProfileModifyContract.View {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();

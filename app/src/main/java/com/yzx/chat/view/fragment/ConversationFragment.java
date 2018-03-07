@@ -39,6 +39,7 @@ import io.rong.imlib.model.Conversation;
  * Created by YZX on 2017年06月03日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
+
 public class ConversationFragment extends BaseFragment<ConversationContract.Presenter> implements ConversationContract.View {
 
     public static final String TAG = ConversationFragment.class.getSimpleName();

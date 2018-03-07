@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.lang.reflect.Type;
 
+
 public interface Call<T> {
 
     void cancel();

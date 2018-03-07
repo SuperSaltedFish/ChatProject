@@ -66,6 +66,7 @@ import io.rong.message.ImageMessage;
  * Created by YZX on 2017年06月03日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
+
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
 
     public static final int MAX_VOICE_RECORDER_DURATION = 60 * 999;

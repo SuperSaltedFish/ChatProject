@@ -9,6 +9,7 @@ import android.text.TextUtils;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
+
 public class UserBean implements Parcelable, Cloneable {
     private String userID;
     private String telephone;

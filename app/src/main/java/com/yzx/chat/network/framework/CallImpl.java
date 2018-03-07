@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import java.lang.reflect.Type;
 
+
 public class CallImpl<T> implements Call<T> {
 
     private HttpCallback<T> mCallback;

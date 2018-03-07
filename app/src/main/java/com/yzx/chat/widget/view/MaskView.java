@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
+
 public class MaskView extends View {
 
     private Rect mSpaceRect;

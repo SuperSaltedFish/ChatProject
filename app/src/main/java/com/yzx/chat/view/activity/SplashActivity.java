@@ -11,6 +11,7 @@ import com.yzx.chat.contract.SplashContract;
 import com.yzx.chat.presenter.SplashPresenter;
 
 
+
 public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter> implements SplashContract.View {
 
     private static int PERMISSIONS_REQUEST_CODE = 1;

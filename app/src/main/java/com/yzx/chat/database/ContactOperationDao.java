@@ -14,6 +14,7 @@ import java.util.List;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
     private static final String TABLE_NAME = "ContactOperation";

@@ -40,6 +40,7 @@ import io.rong.message.ContactNotificationMessage;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ContactManager {
 
     public static final String CONTACT_OPERATION_REQUEST = "Request";//对方请求

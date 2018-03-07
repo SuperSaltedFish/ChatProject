@@ -29,6 +29,7 @@ import com.yzx.chat.widget.view.MaskView;
 
 import java.util.Hashtable;
 
+
 public class QrCodeScanActivity extends BaseCompatActivity {
 
     private Camera2TextureView mCamera2TextureView;

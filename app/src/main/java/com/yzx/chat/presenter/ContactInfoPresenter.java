@@ -16,6 +16,7 @@ import io.rong.imlib.model.Conversation;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ContactInfoPresenter implements ContactInfoContract.Presenter {
 
     private ContactInfoContract.View mContactInfoContractView;

@@ -19,6 +19,7 @@ import com.yzx.chat.base.BaseCompatActivity;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class SignatureEditActivity extends BaseCompatActivity {
 
     public static final String INTENT_EXTRA_SIGNATURE_CONTENT = "SignatureContent";

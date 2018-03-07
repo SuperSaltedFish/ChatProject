@@ -15,6 +15,7 @@ import android.widget.ImageView;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public class RoundImageView extends android.support.v7.widget.AppCompatImageView {
     private float mRoundRadius;
     private Context mContext;

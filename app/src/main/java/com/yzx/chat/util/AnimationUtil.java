@@ -17,6 +17,7 @@ import android.widget.ImageView;
  * Created by yzx on 2017年05月14日
  * 当你将信心放在自己身上时，你将永远充满力量
  */
+
 public class AnimationUtil {
 
     public static void rotateAnim(View view, float degree, int msec) {

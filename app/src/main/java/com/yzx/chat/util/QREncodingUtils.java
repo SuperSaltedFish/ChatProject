@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * 二维码生成工具类
  */
+
 public class QREncodingUtils {
 
 

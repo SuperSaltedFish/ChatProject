@@ -23,6 +23,7 @@ import com.yzx.chat.util.AsyncUtil;
  * Created by YZX on 2017年11月04日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
+
 public class SplashPresenter implements SplashContract.Presenter {
     //
     private SplashContract.View mSplashView;

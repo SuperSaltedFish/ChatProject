@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 @Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -22,6 +22,7 @@ import com.yzx.chat.widget.view.ProgressDialog;
 
 import io.rong.imlib.model.Conversation;
 
+
 public class ContactProfileActivity extends BaseCompatActivity<ContactProfileContract.Presenter> implements ContactProfileContract.View {
 
     public static final String INTENT_EXTRA_CONTACT_ID = "ContactID";

@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
 
     protected void onPreExecute() {

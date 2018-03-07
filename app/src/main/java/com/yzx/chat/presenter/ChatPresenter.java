@@ -27,6 +27,7 @@ import io.rong.message.VoiceMessage;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
+
 public class ChatPresenter implements ChatContract.Presenter {
 
     public static String sConversationID;

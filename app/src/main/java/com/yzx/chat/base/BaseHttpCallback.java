@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T>> {
 
     protected abstract void onSuccess(T response);

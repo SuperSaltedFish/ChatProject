@@ -40,6 +40,7 @@ import io.rong.message.VoiceMessage;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageHolder> {
 
     public static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;

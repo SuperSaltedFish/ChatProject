@@ -25,6 +25,7 @@ import java.lang.ref.WeakReference;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class Alerter {
 
     private static int sStatusBarHeight;

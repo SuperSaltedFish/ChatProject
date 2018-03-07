@@ -10,6 +10,7 @@ import com.yzx.chat.configure.AppApplication;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
+
 public class SharePreferenceManager {
 
     private static IdentityPreferences mIdentityPreferences;

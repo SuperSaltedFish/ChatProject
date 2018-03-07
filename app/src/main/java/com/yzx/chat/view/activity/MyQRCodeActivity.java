@@ -21,6 +21,7 @@ import com.yzx.chat.util.QREncodingUtils;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContract.Presenter> implements MyQRCodeActivityContract.View {
 
     private ImageView mIvQRCode;

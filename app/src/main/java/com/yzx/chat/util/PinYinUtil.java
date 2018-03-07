@@ -5,6 +5,7 @@ package com.yzx.chat.util;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+
 public class PinYinUtil {
 
     private static final int[] pyValue = new int[]{-20319, -20317, -20304, -20295, -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036, -20032,

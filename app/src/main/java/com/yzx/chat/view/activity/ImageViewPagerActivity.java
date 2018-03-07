@@ -27,6 +27,7 @@ import java.util.Locale;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ImageViewPagerActivity extends BaseCompatActivity {
 
     public static final int RESULT_CODE = 1;

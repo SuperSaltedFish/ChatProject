@@ -14,6 +14,7 @@ import com.yzx.chat.util.AsyncUtil;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Presenter {
 
     private MyQRCodeActivityContract.View mMyQRCodeActivityView;

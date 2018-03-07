@@ -21,6 +21,7 @@ import java.util.List;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
+
 public class ContactOperationPresenter implements ContactOperationContract.Presenter {
 
     private ContactOperationContract.View mContactOperationContractView;

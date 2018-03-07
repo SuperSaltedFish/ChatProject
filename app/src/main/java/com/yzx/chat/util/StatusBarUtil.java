@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
  * Created by SCWANG on 2016/10/26.
  */
 
+
 @SuppressWarnings("unused")
 public class StatusBarUtil {
 

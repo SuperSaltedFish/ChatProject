@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
+
 public class BadgeTextView extends android.support.v7.widget.AppCompatTextView {
 
     public static final int MODE_HIDE = 0;

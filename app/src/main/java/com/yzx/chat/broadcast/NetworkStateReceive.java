@@ -20,6 +20,7 @@ import java.util.WeakHashMap;
  * 每一个不曾起舞的日子,都是对生命的辜负.
  */
 
+
 public class NetworkStateReceive extends BroadcastReceiver {
 
     private static final String RECEIVE_INTENT_TYPE = ConnectivityManager.CONNECTIVITY_ACTION;

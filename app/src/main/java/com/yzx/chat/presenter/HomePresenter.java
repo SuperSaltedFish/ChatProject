@@ -11,6 +11,7 @@ import com.yzx.chat.network.chat.IMClient;
  * Created by YZX on 2017年11月15日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
+
 public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View mHomeView;
