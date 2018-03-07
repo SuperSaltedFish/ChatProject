@@ -13,6 +13,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
@@ -70,6 +71,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private MapView mMapView;
     private SearchView mSearchView;
     private SearchView.SearchAutoComplete mSearchAutoComplete;
+    private MenuItem mSendMenuItem;
     private View mSearchLocationFooterView;
     private View mCurrentLocationFooterView;
     private TextView mTvSearchLocationLoadMoreHint;
@@ -275,6 +277,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_location_map, menu);
         MenuItem searchItem = menu.findItem(R.id.LocationMapMenu_Search);
+        mSendMenuItem = menu.findItem(R.id.LocationMapMenu_Send);
+        mSendMenuItem.setEnabled(false);
         mSearchView = (SearchView) searchItem.getActionView();
         mSearchAutoComplete = mSearchView.findViewById(R.id.search_src_text);
         setupSearchView();
@@ -307,6 +311,10 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private void closeSearch() {
         mSearchAutoComplete.setText("");
         mSearchView.setIconified(true);
+    }
+
+    private Uri getMapImageUrl() {
+        return null;
     }
 
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
@@ -442,6 +450,9 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mCurrentLocationList.clear();
         if (poiItemList != null && poiItemList.size() > 0) {
             mCurrentLocationList.addAll(poiItemList);
+            mSendMenuItem.setEnabled(true);
+        }else {
+            mSendMenuItem.setEnabled(false);
         }
     }
 
@@ -494,5 +505,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     public void showError(String error) {
         showLongToast(error);
     }
+
+//    ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), 128);
+//                    this.mAppKey = applicationInfo.metaData.getString("RONG_CLOUD_APP_KEY");
 
 }
