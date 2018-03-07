@@ -20,6 +20,7 @@
 
     <string name="DateFormat_yyyyMMdd">yyyy年MM月dd日</string>
 
+    <string name="PermissionMiss">缺少相关权限，无法使用该功能</string>
     <string name="PermissionDialog_Help">无法使用该功能</string>
     <string name="PermissionDialog_MissPermissionHint">当前应用缺少必要权限。\n请点击“设置”-“权限”-开启所需权限。\n最后点击两次后退按钮，即可返回。</string>
     <string name="PermissionDialog_Cancel">取消</string>

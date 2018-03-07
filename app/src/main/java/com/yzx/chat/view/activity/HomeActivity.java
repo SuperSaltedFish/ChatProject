@@ -74,11 +74,15 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     @Override
-    public void onRequestPermissionsSuccess(int requestCode) {
-        switch (requestCode) {
-            case REQUEST_PERMISSIONS_CAMERA:
-                startActivity(new Intent(this, QrCodeScanActivity.class));
-                break;
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+        if (isSuccess) {
+            switch (requestCode) {
+                case REQUEST_PERMISSIONS_CAMERA:
+                    startActivity(new Intent(this, QrCodeScanActivity.class));
+                    break;
+            }
+        } else {
+            showToast(getString(R.string.PermissionMiss));
         }
     }
 

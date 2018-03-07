@@ -33,19 +33,23 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     }
 
     @Override
-    public void onRequestPermissionsSuccess(int requestCode) {
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            boolean isAlreadyLogged = getIntent().getBooleanExtra(INTENT_EXTRA_LOGGED, false);
-            if (isAlreadyLogged) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startHomeActivity();
-                    }
-                }, 1000);
-            } else {
-                mPresenter.login();
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+        if (isSuccess) {
+            if (requestCode == PERMISSIONS_REQUEST_CODE) {
+                boolean isAlreadyLogged = getIntent().getBooleanExtra(INTENT_EXTRA_LOGGED, false);
+                if (isAlreadyLogged) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            startHomeActivity();
+                        }
+                    }, 1000);
+                } else {
+                    mPresenter.login();
+                }
             }
+        }else {
+            finish();
         }
     }
 

@@ -150,20 +150,24 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void onRequestPermissionsSuccess(int requestCode) {
-        switch (requestCode) {
-            case REQUEST_PERMISSION_VOICE_RECORDER:
-                if (!isHasVoiceRecorderPermission) {
-                    isHasVoiceRecorderPermission = true;
-                    toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
-                }
-                break;
-            case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
-                startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
-                break;
-            case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
-                startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
-                break;
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+        if (isSuccess) {
+            switch (requestCode) {
+                case REQUEST_PERMISSION_VOICE_RECORDER:
+                    if (!isHasVoiceRecorderPermission) {
+                        isHasVoiceRecorderPermission = true;
+                        toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
+                    }
+                    break;
+                case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
+                    startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
+                    break;
+                case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
+                    startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
+                    break;
+            }
+        } else {
+            showToast(getString(R.string.PermissionMiss));
         }
     }
 
@@ -437,7 +441,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
             }
         });
     }

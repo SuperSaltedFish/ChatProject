@@ -120,13 +120,15 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             }
         }
         if (result) {
-            onRequestPermissionsSuccess(requestCode);
+            onRequestPermissionsResult(requestCode, true);
         } else if (isNeedShowMissingPermissionDialog) {
-            showMissingPermissionDialog();
+            showMissingPermissionDialog(requestCode);
+        } else {
+            onRequestPermissionsResult(requestCode, false);
         }
     }
 
-    public void onRequestPermissionsSuccess(int requestCode) {
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
 
     }
 
@@ -142,19 +144,25 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (size != 0) {
             ActivityCompat.requestPermissions(this, permissionList.toArray(new String[size]), requestCode);
         } else {
-            onRequestPermissionsSuccess(requestCode);
+            onRequestPermissionsResult(requestCode, true);
         }
     }
 
-    private void showMissingPermissionDialog() {
+    private void showMissingPermissionDialog(final int requestCode) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.PermissionDialog_Help);
         builder.setMessage(R.string.PermissionDialog_MissPermissionHint);
-        builder.setNegativeButton(R.string.PermissionDialog_Cancel, null);
+        builder.setNegativeButton(R.string.PermissionDialog_Cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onRequestPermissionsResult(requestCode, false);
+            }
+        });
         builder.setPositiveButton(R.string.PermissionDialog_Setting, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startAppSettings();
+                onRequestPermissionsResult(requestCode, false);
             }
         });
         builder.setCancelable(true);
