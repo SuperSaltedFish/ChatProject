@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
@@ -178,15 +179,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (data == null) {
             return;
         }
-        if (resultCode == ImageMultiSelectorActivity.RESULT_CODE) {
-            boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
-            ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
-            if (imageList != null && imageList.size() > 0) {
-                for (String path : imageList) {
-                    mPresenter.sendImageMessage(path, isOriginal);
+        switch (resultCode) {
+            case ImageMultiSelectorActivity.RESULT_CODE:
+                boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
+                ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
+                if (imageList != null && imageList.size() > 0) {
+                    for (String path : imageList) {
+                        mPresenter.sendImageMessage(path, isOriginal);
+                    }
                 }
-
-            }
+                break;
+            case LocationMapActivity.RESULT_CODE:
+                PoiItem poi = data.getParcelableExtra(LocationMapActivity.INTENT_EXTRA_POI);
+                if(poi!=null){
+                    mPresenter.sendLocationMessage(poi);
+                }
+                break;
         }
     }
 

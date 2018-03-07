@@ -31,6 +31,7 @@ import java.util.NoSuchElementException;
 
 import io.rong.imlib.model.Message;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -49,6 +50,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     public static final int HOLDER_TYPE_RECEIVE_MESSAGE_VOICE = 4;
     public static final int HOLDER_TYPE_SEND_MESSAGE_IMAGE = 5;
     public static final int HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE = 6;
+    public static final int HOLDER_TYPE_SEND_MESSAGE_LOCATION = 7;
+    public static final int HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION = 8;
 
     private List<Message> mMessageList;
 
@@ -73,11 +76,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new ImageSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_image, parent, false));
             case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
                 return new ImageReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_image, parent, false));
-
+            case HOLDER_TYPE_SEND_MESSAGE_LOCATION:
+                return new LocationSendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_location, parent, false));
+            case HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION:
+                return new LocationReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_location, parent, false));
             default:
                 return null;
         }
-
     }
 
     @Override
@@ -94,6 +99,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     @Override
     public int getViewHolderType(int position) {
         Message message = mMessageList.get(position);
+
         switch (message.getObjectName()) {
             case "RC:TxtMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_TEXT : HOLDER_TYPE_RECEIVE_MESSAGE_TEXT;
@@ -101,6 +107,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VOICE : HOLDER_TYPE_RECEIVE_MESSAGE_VOICE;
             case "RC:ImgMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_IMAGE : HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE;
+            case "RC:LBSMsg":
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_LOCATION : HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION;
             default:
                 throw new NoSuchElementException("unknown type");
         }
@@ -338,8 +346,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     }
 
-   public static class ImageSendMessageHolder extends SendMessageHolder {
-       public ImageView mIvContent;
+    public static class ImageSendMessageHolder extends SendMessageHolder {
+        public ImageView mIvContent;
 
         ImageSendMessageHolder(View itemView) {
             super(itemView, HOLDER_TYPE_SEND_MESSAGE_IMAGE);
@@ -403,6 +411,65 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             GlideUtil.loadFromUrl(mIvContent.getContext(), mIvContent, imageMessage.getThumUri());
         }
     }
+
+    public static class LocationSendMessageHolder extends SendMessageHolder {
+        ImageView mIvMapImage;
+        TextView mTvTitle;
+        TextView mTvAddress;
+
+
+        LocationSendMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_SEND_MESSAGE_IMAGE);
+            mIvMapImage = itemView.findViewById(R.id.ChatMessageAdapter_mIvMapImage);
+            mTvTitle = itemView.findViewById(R.id.ChatMessageAdapter_mTvTitle);
+            mTvAddress = itemView.findViewById(R.id.ChatMessageAdapter_mTvAddress);
+        }
+
+        @Override
+        protected void setDate(Message message) {
+            super.setDate(message);
+            LocationMessage locationMessage = (LocationMessage) message.getContent();
+            String poi = locationMessage.getPoi();
+            String[] content = poi.split("/");
+            if (content.length >= 1) {
+                mTvTitle.setText(content[0]);
+            }
+            if (content.length > 1) {
+                mTvAddress.setText(content[1]);
+            }
+            GlideUtil.loadFromUrl(itemView.getContext(), mIvMapImage, locationMessage.getImgUri());
+        }
+    }
+
+    static class LocationReceiveMessageHolder extends ReceiveMessageHolder {
+        ImageView mIvMapImage;
+        TextView mTvTitle;
+        TextView mTvAddress;
+
+
+        LocationReceiveMessageHolder(View itemView) {
+            super(itemView, HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE);
+            mIvMapImage = itemView.findViewById(R.id.ChatMessageAdapter_mIvMapImage);
+            mTvTitle = itemView.findViewById(R.id.ChatMessageAdapter_mTvTitle);
+            mTvAddress = itemView.findViewById(R.id.ChatMessageAdapter_mTvAddress);
+        }
+
+        @Override
+        protected void setDate(Message message) {
+            super.setDate(message);
+            LocationMessage locationMessage = (LocationMessage) message.getContent();
+            String poi = locationMessage.getPoi();
+            String[] content = poi.split("/");
+            if (content.length >= 1) {
+                mTvTitle.setText(content[0]);
+            }
+            if (content.length > 1) {
+                mTvAddress.setText(content[1]);
+            }
+            GlideUtil.loadFromUrl(itemView.getContext(), mIvMapImage, locationMessage.getImgUri());
+        }
+    }
+
 
     static abstract class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         Message mMessage;

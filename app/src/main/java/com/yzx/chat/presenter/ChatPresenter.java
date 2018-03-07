@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.network.chat.ChatManager;
@@ -13,12 +15,14 @@ import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -105,6 +109,17 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void sendImageMessage(String imagePath, boolean isOriginal) {
         Uri uri = Uri.parse("file://" + imagePath);
         sendMessage(ImageMessage.obtain(uri, uri, isOriginal));
+    }
+
+    @Override
+    public void sendLocationMessage(PoiItem poi) {
+        LatLonPoint latLonPoint = poi.getLatLonPoint();
+        double latitude = latLonPoint.getLatitude();
+        double longitude = latLonPoint.getLongitude();
+        String url = String.format(Locale.getDefault(), Constants.URL_MAP_IMAGE_FORMAT, longitude, latitude);
+        String title = poi.getTitle();
+        String address = poi.getSnippet();
+        sendMessage(LocationMessage.obtain(latitude, longitude, title + "/" + address, Uri.parse(url)));
     }
 
     @Override

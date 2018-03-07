@@ -39,7 +39,8 @@ import java.util.Map;
 public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
     public static final int RESULT_CODE = 1;
-    public static final String RESULT = "ImageSelectedList";
+
+    public static final String INTENT_EXTRA_IMAGE_PATH_LIST = "ImagePath";
 
     private static final int HORIZONTAL_ITEM_COUNT = 4;
 

@@ -1,5 +1,6 @@
 package com.yzx.chat.contract;
 
+import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
@@ -41,6 +42,8 @@ public class ChatContract {
         void sendVoiceMessage(String filePath, int timeLengthSec);
 
         void sendImageMessage(String imagePath, boolean isOriginal);
+
+        void sendLocationMessage(PoiItem poi);
 
         void loadMoreMessage(int lastMessageID);
 

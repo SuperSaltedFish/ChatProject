@@ -54,6 +54,10 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
         mSelectedPosition = selectedPosition;
     }
 
+    public int getSelectedPosition() {
+        return mSelectedPosition;
+    }
+
     final static class LocationSearchHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         TextView mTvName;

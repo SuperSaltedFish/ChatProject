@@ -53,10 +53,10 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         int unreadMsgCount = conversation.getUnreadMessageCount();
         if (unreadMsgCount > 0) {
             if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY) {
-                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW_ONLY_SMALL_BACKGROUND);
-            } else {
-                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
                 holder.mBadgeImageView.setBadgeText(unreadMsgCount);
+                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
+            } else {
+                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW_ONLY_SMALL_BACKGROUND);
             }
         } else {
             holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);

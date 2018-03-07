@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
-    public static final int RESULT_CODE = 1;
+    public static final int RESULT_CODE = 1000;
     public static final String INTENT_EXTRA_IMAGE_PATH_LIST = "ImagePathList";
     public static final String INTENT_EXTRA_IS_ORIGINAL = "IsOriginal";
 

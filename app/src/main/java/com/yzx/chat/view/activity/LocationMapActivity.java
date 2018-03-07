@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,7 +14,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
@@ -45,14 +45,12 @@ import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
-import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.LocationMapActivityContract;
 import com.yzx.chat.presenter.LocationMapActivityPresenter;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
@@ -67,6 +65,9 @@ import java.util.List;
 
 
 public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityContract.Presenter> implements LocationMapActivityContract.View {
+
+    public static final int RESULT_CODE = 2000;
+        public static final String INTENT_EXTRA_POI = "POI";
 
     private MapView mMapView;
     private SearchView mSearchView;
@@ -292,6 +293,10 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                 onBackPressed();
                 break;
             case R.id.LocationMapMenu_Send:
+                Intent intent = new Intent();
+                intent.putExtra(INTENT_EXTRA_POI,  mCurrentLocationList.get(mCurrentLocationAdapter.getSelectedPosition()));
+                setResult(RESULT_CODE, intent);
+                finish();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -311,10 +316,6 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private void closeSearch() {
         mSearchAutoComplete.setText("");
         mSearchView.setIconified(true);
-    }
-
-    private Uri getMapImageUrl() {
-        return null;
     }
 
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
@@ -451,7 +452,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         if (poiItemList != null && poiItemList.size() > 0) {
             mCurrentLocationList.addAll(poiItemList);
             mSendMenuItem.setEnabled(true);
-        }else {
+        } else {
             mSendMenuItem.setEnabled(false);
         }
     }

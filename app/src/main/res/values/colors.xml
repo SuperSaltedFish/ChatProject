@@ -32,7 +32,7 @@
 
     <color name="grey_background_color">#ebeef1</color>
 
-    <color name="mask_color_black">#8a000000</color>
+    <color name="mask_color_black">#9c000000</color>
 
     <color name="chat_receive_background">#637589</color>
 
