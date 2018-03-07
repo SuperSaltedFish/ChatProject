@@ -39,6 +39,10 @@
             android:value="810aa1b6f44962b87f87059d20335acf" />
 
         <meta-data
+            android:name="RONG_CLOUD_APP_KEY"
+            android:value="82hegw5u8dlsx" />
+
+        <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />
 

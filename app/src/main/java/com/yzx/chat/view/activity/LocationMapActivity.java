@@ -490,4 +490,9 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mSearchLocationList.addAll(poiItemList);
     }
 
+    @Override
+    public void showError(String error) {
+        showLongToast(error);
+    }
+
 }

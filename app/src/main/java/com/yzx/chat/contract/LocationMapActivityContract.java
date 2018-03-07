@@ -27,6 +27,8 @@ public class LocationMapActivityContract {
         void showNewSearchLocation(List<PoiItem> poiItemList);
 
         void showMoreSearchLocation(List<PoiItem> poiItemList, boolean hasMore);
+
+        void showError(String error);
     }
 
 

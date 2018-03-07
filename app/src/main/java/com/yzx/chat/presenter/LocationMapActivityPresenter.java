@@ -5,8 +5,10 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
+import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.LocationMapActivityContract;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
@@ -71,12 +73,12 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
-                    if(poiItemList==null){
+                    if (poiItemList == null) {
                         poiItemList = new ArrayList<>(0);
                     }
-                    if(poiItemList.size()==0){
+                    if (poiItemList.size() == 0) {
                         mCityCode = "";
-                    }else {
+                    } else {
                         mCityCode = poiItemList.get(0).getCityCode();
                     }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
@@ -85,7 +87,12 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     isSearchingMoreCurrentLocation = false;
                     mLocationMapActivityView.showNewCurrentLocation(poiItemList);
                 } else {
-                    LogUtil.e("search new fail,code:" + errorCode);
+                    if (errorCode == 1804 || errorCode == 1806) {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                    } else {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                    }
+                    LogUtil.e("search location fail,code:" + errorCode);
                 }
 
             }
@@ -118,7 +125,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
-                    if(poiItemList==null){
+                    if (poiItemList == null) {
                         poiItemList = new ArrayList<>(0);
                     }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
@@ -127,7 +134,12 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     isSearchingMoreCurrentLocation = false;
                     mLocationMapActivityView.showMoreCurrentLocation(poiItemList, mHasMoreCurrentLocation);
                 } else {
-                    LogUtil.e("search more fail,code:" + errorCode);
+                    if (errorCode == 1804 || errorCode == 1806) {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                    } else {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                    }
+                    LogUtil.e("search location fail,code:" + errorCode);
                 }
 
             }
@@ -157,7 +169,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
-                    if(poiItemList==null){
+                    if (poiItemList == null) {
                         poiItemList = new ArrayList<>(0);
                     }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
@@ -166,7 +178,12 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     isSearchingMoreSearchLocation = false;
                     mLocationMapActivityView.showNewSearchLocation(poiItemList);
                 } else {
-                    LogUtil.e("search new fail,code:" + errorCode);
+                    if (errorCode == 1804 || errorCode == 1806) {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                    } else {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                    }
+                    LogUtil.e("search location fail,code:" + errorCode);
                 }
 
             }
@@ -198,7 +215,7 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
             public void onPoiSearched(PoiResult poiResult, int errorCode) {
                 if (errorCode == 1000 && poiResult != null) {
                     List<PoiItem> poiItemList = poiResult.getPois();
-                    if(poiItemList==null){
+                    if (poiItemList == null) {
                         poiItemList = new ArrayList<>(0);
                     }
                     if (poiItemList.size() < Constants.SEARCH_LOCATION_PAGE_SIZE) {
@@ -207,7 +224,12 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     isSearchingMoreSearchLocation = false;
                     mLocationMapActivityView.showMoreSearchLocation(poiItemList, mHasMoreSearchLocation);
                 } else {
-                    LogUtil.e("search more fail,code:" + errorCode);
+                    if (errorCode == 1804 || errorCode == 1806) {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                    } else {
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                    }
+                    LogUtil.e("search location fail,code:" + errorCode);
                 }
 
             }

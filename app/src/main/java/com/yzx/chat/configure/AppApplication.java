@@ -40,7 +40,7 @@ public class AppApplication extends Application {
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 
-            IMClient.init(this,Constants.RONG_CLOUD_APP_KEY);
+            IMClient.init(this);
         }
     }
 

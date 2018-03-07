@@ -54,9 +54,9 @@ public class IMClient {
     private static IMClient sIMClient;
     private static Context sAppContext;
 
-    public static void init(Context context, String imAppKey) {
+    public static void init(Context context) {
         sAppContext = context.getApplicationContext();
-        RongIMClient.init(sAppContext, imAppKey);
+        RongIMClient.init(sAppContext);
         sIMClient = new IMClient();
     }
 

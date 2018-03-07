@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yzx.chat.R;
@@ -37,6 +39,8 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
 
     protected P mPresenter;
     protected InputMethodManager mInputManager;
+    private Toast mToast;
+    private TextView mTvToast;
 
     @LayoutRes
     protected abstract int getLayoutID();
@@ -84,8 +88,25 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     }
 
     protected void showToast(String content) {
-        Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+        showToast(content, Toast.LENGTH_SHORT);
     }
+
+    protected void showLongToast(String content) {
+        showToast(content, Toast.LENGTH_LONG);
+    }
+
+    protected void showToast(String content, int duration) {
+        if (mToast == null) {
+            mToast = new Toast(this);
+            View toastView = getLayoutInflater().inflate(R.layout.view_toast_default, null);
+            mTvToast = toastView.findViewById(R.id.BaseCompatActivity_mTvToast);
+            mToast.setView(toastView);
+        }
+        mToast.setDuration(duration);
+        mTvToast.setText(content);
+        mToast.show();
+    }
+
 
     protected void showSoftKeyboard(View focusView) {
         if (mInputManager == null) {
