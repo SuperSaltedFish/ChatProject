@@ -2,6 +2,7 @@ package com.yzx.chat.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.bean.UserBean;
 
@@ -105,5 +106,20 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setBirthday(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Birthday)));
         bean.setSex(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_Sex)));
         return bean;
+    }
+
+    static boolean replaceUser(SQLiteDatabase Write, UserBean entity, ContentValues values) {
+        if(entity==null){
+            return false;
+        }
+        values.put(COLUMN_NAME_Telephone, entity.getTelephone());
+        values.put(COLUMN_NAME_UserID, entity.getUserID());
+        values.put(COLUMN_NAME_Nickname, entity.getNickname());
+        values.put(COLUMN_NAME_Avatar, entity.getAvatar());
+        values.put(COLUMN_NAME_Signature, entity.getSex());
+        values.put(COLUMN_NAME_Location, entity.getLocation());
+        values.put(COLUMN_NAME_Birthday, entity.getBirthday());
+        values.put(COLUMN_NAME_Sex, entity.getSex());
+        return Write.insert(TABLE_NAME, null, values) > 0;
     }
 }

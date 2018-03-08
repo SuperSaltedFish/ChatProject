@@ -9,6 +9,7 @@ import com.yzx.chat.util.LogUtil;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +18,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Http {
+
+    private static final String BOUNDARY = "abcdefghijklmnopqrstuvwxyz123456789";
 
     private final static int CONNECT_TIMEOUT = 20000;
     private final static int READ_TIMEOUT = 20000;
@@ -41,8 +46,6 @@ public class Http {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setUseCaches(true);
                 conn.setRequestMethod("GET");
-//                conn.setRequestProperty("Content-Type", "text/plain");
-                //  conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setRequestProperty("Charset", "UTF-8");
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 conn.setReadTimeout(READ_TIMEOUT);
@@ -85,7 +88,6 @@ public class Http {
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "text/plain");
                 conn.setRequestProperty("Charset", "UTF-8");
-//               conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 conn.setReadTimeout(READ_TIMEOUT);
             } catch (IOException e) {
@@ -134,10 +136,8 @@ public class Http {
         return result;
     }
 
-    private static final String BOUNDARY = "-------OCqxMF6-JxtxoMDHmoG5W5eY";
-
     @NonNull
-    public static Result doUpload(String remoteUrl, String params, List<String> filePathList) {
+    public static Result doUpload(String remoteUrl, String params, HashMap<String, List<String>> uploadPath) {
         LogUtil.e("开始访问：" + remoteUrl);
         Result result = new Result();
         do {
@@ -151,7 +151,6 @@ public class Http {
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
                 conn.setRequestProperty("Charset", "UTF-8");
-//               conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
                 conn.setReadTimeout(READ_TIMEOUT);
             } catch (IOException e) {
@@ -173,26 +172,32 @@ public class Http {
             }
 
             if (!TextUtils.isEmpty(params)) {
-                params = String.format("%s\r\nContent-Disposition: form-data; name=\"params\"\r\nContent-Type: text/plain;charset=UTF-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n%s\r\n", BOUNDARY, params);
+                params = String.format("--%s\r\nContent-Disposition: form-data; name=\"params\"\r\nContent-Type: text/plain;charset=UTF-8\nContent-Transfer-Encoding: 8bit\r\n\r\n%s\r\n", BOUNDARY, params);
                 try {
                     outStream.writeBytes(params);
                 } catch (IOException e) {
-                    conn.disconnect();
                     result.throwable = e;
                     try {
                         outStream.close();
                     } catch (IOException e2) {
                         e2.printStackTrace();
                     }
+                    conn.disconnect();
                     break;
                 }
             }
 
-            if (filePathList != null && filePathList.size() > 0) {
-                FileInputStream is = null;
+            FileInputStream is = null;
+            for (Map.Entry<String, List<String>> entry : uploadPath.entrySet()) {
+                String key = entry.getKey();
+                List<String> value = entry.getValue();
                 try {
-                    for (String path : filePathList) {
-                        String head = String.format("%s\r\nContent-Disposition: form-data; name=\"image\";filename=\"%s\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", BOUNDARY, path);
+                    for (String path : value) {
+                        File file = new File(path);
+                        if(!file.exists()){
+                            continue;
+                        }
+                        String head = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\";filename=\"%s\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", BOUNDARY,key, path);
                         is = new FileInputStream(path);
                         outStream.writeBytes(head);
                         byte[] bytes = new byte[1024];
@@ -204,6 +209,11 @@ public class Http {
                         is.close();
                     }
                 } catch (IOException e) {
+                    try {
+                        outStream.close();
+                    } catch (IOException e2) {
+                        e2.printStackTrace();
+                    }
                     conn.disconnect();
                     result.throwable = e;
                     break;
@@ -218,7 +228,9 @@ public class Http {
                     }
                 }
             }
+
             try {
+                outStream.writeBytes(String.format("--%s--\r\n",BOUNDARY));
                 outStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();

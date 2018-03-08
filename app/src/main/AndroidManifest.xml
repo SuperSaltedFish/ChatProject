@@ -126,14 +126,6 @@
             android:theme="@style/BaseDarkTheme">
 
         </activity>
-
-        <activity android:name=".view.activity.TestActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
         <activity
             android:name=".view.activity.ImageOriginalActivity"
             android:theme="@style/FullScreenDarkTheme">
@@ -155,6 +147,14 @@
 
         <activity android:name=".view.activity.LocationMapActivity">
 
+        </activity>
+
+        <activity android:name=".view.activity.TestActivity">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
     </application>
 

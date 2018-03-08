@@ -2,15 +2,16 @@ package com.yzx.chat.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-import com.yzx.chat.bean.GroupMember;
+import com.yzx.chat.bean.GroupMemberBean;
 
 /**
  * Created by YZX on 2018年03月08日.
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class GroupMemberDao extends AbstractDao<GroupMember> {
+public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
 
     static final String TABLE_NAME = "GroupMember";
 
@@ -39,26 +40,54 @@ public class GroupMemberDao extends AbstractDao<GroupMember> {
 
     @Override
     protected String getTableName() {
-        return null;
+        return TABLE_NAME;
     }
 
     @Override
     protected String getWhereClauseOfKey() {
+        return COLUMN_NAME_UserID + "=? AND " + COLUMN_NAME_GroupID + "=?";
+    }
+
+    @Override
+    protected String[] toWhereArgsOfKey(GroupMemberBean entity) {
+        return new String[]{entity.getUserProfile().getUserID(), entity.getGroupID()};
+    }
+
+    @Override
+    protected void parseToContentValues(GroupMemberBean entity, ContentValues values) {
+        values.put(COLUMN_NAME_UserID, entity.getUserProfile().getUserID());
+        values.put(COLUMN_NAME_GroupID, entity.getGroupID());
+        values.put(COLUMN_NAME_Alias, entity.getAlias());
+    }
+
+    @Override
+    protected GroupMemberBean toEntity(Cursor cursor) {
         return null;
     }
 
-    @Override
-    protected String[] toWhereArgsOfKey(GroupMember entity) {
-        return new String[0];
+    static GroupMemberBean toEntityFromCursor(Cursor cursor) {
+        GroupMemberBean groupMember = new GroupMemberBean();
+        groupMember.setUserProfile(UserDao.toEntityFromCursor(cursor));
+        groupMember.setAlias(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Alias)));
+        return groupMember;
     }
 
-    @Override
-    protected void parseToContentValues(GroupMember entity, ContentValues values) {
-
-    }
-
-    @Override
-    protected GroupMember toEntity(Cursor cursor) {
-        return null;
+    static boolean insertAllGroupMember(SQLiteDatabase Write, Iterable<GroupMemberBean> groupMemberList, ContentValues values) {
+        boolean result = true;
+        for (GroupMemberBean groupMember : groupMemberList) {
+            values.clear();
+            values.put(COLUMN_NAME_UserID, groupMember.getUserProfile().getUserID());
+            values.put(COLUMN_NAME_GroupID, groupMember.getGroupID());
+            values.put(COLUMN_NAME_Alias, groupMember.getAlias());
+            if (Write.insert(TABLE_NAME, null, values) <= 0) {
+                result = false;
+                break;
+            }
+            if (!UserDao.replaceUser(Write, groupMember.getUserProfile(), values)) {
+                result = false;
+                break;
+            }
+        }
+        return result;
     }
 }

@@ -90,8 +90,8 @@ public class NetworkExecutor {
                     result = Http.doGet(request.url(), resultParams);
                     break;
                 case "POST":
-                    if (request.uploadList() != null && request.uploadList().size() > 0) {
-                        result = Http.doUpload(request.url(), resultParams, request.uploadList());
+                    if (request.uploadMap() != null) {
+                        result = Http.doUpload(request.url(), resultParams, request.uploadMap());
                     } else {
                         result = Http.doPost(request.url(), resultParams);
                     }

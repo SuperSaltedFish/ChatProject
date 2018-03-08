@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.yzx.chat.bean.GroupMember;
-
 /**
  * Created by YZX on 2017年11月17日.
  * 每一个不曾起舞的日子,都是对生命的辜负.

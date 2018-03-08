@@ -1,6 +1,8 @@
 package com.yzx.chat.bean;
 
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -16,5 +18,76 @@ public class GroupBean {
     private String owner;
     private String avatar;
     private String notice;
-    private ArrayList<GroupMember> members;
+    private ArrayList<GroupMemberBean> members;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null||!(obj instanceof GroupBean)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if(TextUtils.isEmpty(groupID)){
+            return false;
+        }
+        GroupBean group = (GroupBean) obj;
+        return groupID.equals(group.getGroupID());
+    }
+
+    public String getGroupID() {
+        return groupID;
+    }
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getNotice() {
+        return notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
+    }
+
+    public ArrayList<GroupMemberBean> getMembers() {
+        return members;
+    }
+
+    public void setMembers(ArrayList<GroupMemberBean> members) {
+        this.members = members;
+    }
 }

@@ -5,9 +5,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMember;
+import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.bean.UserBean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ import java.util.List;
  */
 
 public class GroupDao extends AbstractDao<GroupBean> {
-     static final String TABLE_NAME = "Group";
+    static final String TABLE_NAME = "Group";
 
     private static final String COLUMN_NAME_GroupID = "GroupID";
     private static final String COLUMN_NAME_Name = "Name";
@@ -26,7 +28,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
     private static final String COLUMN_NAME_Notice = "Notice";
 
     private static final int COLUMN_INDEX_GroupID = 0;
-    private static final int COLUMN_INDEX_INDEX = 1;
+    private static final int COLUMN_INDEX_Name = 1;
     private static final int COLUMN_INDEX_CreateTime = 2;
     private static final int COLUMN_INDEX_Owner = 3;
     private static final int COLUMN_INDEX_Avatar = 4;
@@ -44,46 +46,109 @@ public class GroupDao extends AbstractDao<GroupBean> {
                     + "PRIMARY KEY (" + COLUMN_NAME_GroupID + ")"
                     + ")";
 
-    public List<GroupBean> loadAllGroup(){
+    public List<GroupBean> loadAllGroup() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + GroupMemberDao.TABLE_NAME + " INNER JOIN " + TABLE_NAME + " ON USING(" + COLUMN_NAME_GroupID + ") INNER JOIN " + UserDao.TABLE_NAME + " ON USING(" + UserDao.COLUMN_NAME_UserID + ")", null);
-        List<GroupBean> groupList = new ArrayList<>(cursor.getCount());
+        HashMap<String, GroupBean> groupMap = new HashMap<>();
+        GroupBean group;
+        String groupID;
+        List<GroupMemberBean> groupMemberList;
         while (cursor.moveToNext()) {
-            contactList.add(toEntity(cursor));
+            groupID = cursor.getString(COLUMN_INDEX_GroupID);
+            group = groupMap.get(groupID);
+            if (group == null) {
+                group = toEntity(cursor);
+                groupMap.put(groupID, group);
+            }
+            groupMemberList = group.getMembers();
+            if (groupMemberList == null) {
+                groupMemberList = new ArrayList<>(32);
+            }
+            groupMemberList.add(GroupMemberDao.toEntityFromCursor(cursor));
         }
         cursor.close();
         mReadWriteHelper.closeReadableDatabase();
-        return contactList;
+        return new ArrayList<>(groupMap.values());
+    }
+
+    @Override
+    public boolean insertAll(Iterable<GroupBean> entityIterable) {
+        if (entityIterable == null) {
+            return false;
+        }
+        boolean result = true;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            ContentValues values = new ContentValues();
+            List<GroupMemberBean> groupMemberList;
+            for (GroupBean group : entityIterable) {
+                groupMemberList = group.getMembers();
+                if (groupMemberList == null || groupMemberList.size() == 0) {
+                    result = false;
+                    break;
+                }
+                values.clear();
+                parseToContentValues(group, values);
+                if (database.insert(TABLE_NAME, null, values) <= 0) {
+                    result = false;
+                    break;
+                }
+                if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
+                    result = false;
+                    break;
+                }
+
+            }
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
 
     }
 
-    
     public GroupDao(ReadWriteHelper readWriteHelper) {
         super(readWriteHelper);
     }
 
     @Override
     protected String getTableName() {
-        return null;
+        return TABLE_NAME;
     }
 
     @Override
     protected String getWhereClauseOfKey() {
-        return null;
+        return COLUMN_NAME_GroupID + "=?";
     }
 
     @Override
     protected String[] toWhereArgsOfKey(GroupBean entity) {
-        return new String[0];
+        return new String[]{entity.getGroupID()};
     }
 
     @Override
     protected void parseToContentValues(GroupBean entity, ContentValues values) {
-
+        values.put(COLUMN_NAME_GroupID, entity.getGroupID());
+        values.put(COLUMN_NAME_Name, entity.getName());
+        values.put(COLUMN_NAME_CreateTime, entity.getCreateTime());
+        values.put(COLUMN_NAME_Owner, entity.getOwner());
+        values.put(COLUMN_NAME_Avatar, entity.getAvatar());
+        values.put(COLUMN_NAME_Notice, entity.getNotice());
     }
 
     @Override
     protected GroupBean toEntity(Cursor cursor) {
-        return null;
+        GroupBean group = new GroupBean();
+        group.setGroupID(cursor.getString(COLUMN_INDEX_GroupID));
+        group.setName(cursor.getString(COLUMN_INDEX_Name));
+        group.setCreateTime(cursor.getString(COLUMN_INDEX_CreateTime));
+        group.setOwner(cursor.getString(COLUMN_INDEX_Owner));
+        group.setAvatar(cursor.getString(COLUMN_INDEX_Avatar));
+        group.setNotice(cursor.getString(COLUMN_INDEX_Notice));
+        return group;
     }
 }

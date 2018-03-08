@@ -10,7 +10,7 @@ public class HttpRequestImpl implements HttpRequest {
     private String mUrl;
     private Map<String, Object> mParams;
     private String mRequestMethod;
-    private List<String> mUploadList;
+    private HashMap<String, List<String>>  mUploadMap;
 
     @Override
     public String url() {
@@ -28,12 +28,12 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
-    public List<String> uploadList() {
-        return mUploadList;
+    public HashMap<String, List<String>> uploadMap() {
+        return mUploadMap;
     }
 
-    public void setUploadList(List<String> uploadList) {
-        mUploadList = uploadList;
+    public void setUploadMap(HashMap<String, List<String>> uploadList) {
+        mUploadMap = uploadList;
     }
 
     public void setRequestMethod(String requestMethod) {
