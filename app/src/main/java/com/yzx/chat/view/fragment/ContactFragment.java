@@ -103,7 +103,7 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected void setup() {
-        mToolbar.setTitle("微信");
+        mToolbar.setTitle(R.string.app_name);
         mToolbar.setTitleTextColor(Color.WHITE);
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();

@@ -23,9 +23,9 @@ import java.util.List;
 
 public class ContactDao extends AbstractDao<ContactBean> {
 
-    private static final String TABLE_NAME = "Contact";
+     static final String TABLE_NAME = "Contact";
 
-    private static final String COLUMN_NAME_ContactID = "ContactID";
+    private static final String COLUMN_NAME_ContactID = "UserID";
     private static final String COLUMN_NAME_RemarkName = "RemarkName";
     private static final String COLUMN_NAME_Description = "Description";
     private static final String COLUMN_NAME_Telephone = "TelephoneList";

@@ -30,6 +30,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private ImageView mIvStartChat;
+    private TextView mTvExplain;
     private TextView mTvNickname;
     private ContactProfilePagerAdapter mPagerAdapter;
     private ProgressDialog mProgressDialog;
@@ -54,6 +55,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mViewPager = findViewById(R.id.FriendProfileActivity_mViewPager);
         mIvStartChat = findViewById(R.id.FriendProfileActivity_mIvStartChat);
         mTvNickname = findViewById(R.id.FriendProfileActivity_mTvNickname);
+        mTvExplain = findViewById(R.id.FriendProfileActivity_mTvExplain);
         mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle), mContactID);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ContactProfileActivity_DeleteProgressHint));
     }
@@ -125,6 +127,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     public void updateContactInfo(ContactBean contact) {
         setTitle(contact.getName());
         mTvNickname.setText(contact.getName());
+        mTvExplain.setText(contact.getUserProfile().getSignature());
     }
 
     @Override
