@@ -123,7 +123,7 @@ public class CryptoManager {
         return idPref.putAESKey(tmpAESKey);
     }
 
-    public static CryptoManager getInstanceFromLocal() {
+     static CryptoManager getInstanceFromLocal() {
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
         String strAESKey = idPref.getAESKey();

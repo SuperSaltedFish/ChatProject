@@ -8,12 +8,8 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.yzx.chat.util.LogUtil;
-
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * Created by YZX on 2017年10月23日.
@@ -38,12 +34,18 @@ public class NetworkStateReceive extends BroadcastReceiver {
     }
 
     public static synchronized void registerNetworkChangeListener(NetworkChangeListener listener) {
+        if(listener==null){
+            throw  new RuntimeException("NetworkChangeListener can't be null");
+        }
         if (!sListenerList.contains(listener)) {
             sListenerList.add(listener);
         }
     }
 
     public static synchronized void unregisterNetworkChangeListener(NetworkChangeListener listener) {
+        if(listener==null){
+            throw  new RuntimeException("NetworkChangeListener can't be null");
+        }
         sListenerList.remove(listener);
     }
 

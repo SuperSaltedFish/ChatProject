@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -109,6 +108,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     public View getParentView() {
         return mParentView;
     }
+
 
     @SuppressWarnings("unchecked")
     private void initPresenter() {

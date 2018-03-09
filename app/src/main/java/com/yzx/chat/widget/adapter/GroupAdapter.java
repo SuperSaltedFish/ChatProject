@@ -3,6 +3,7 @@ package com.yzx.chat.widget.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
@@ -32,7 +33,8 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
 
     @Override
     public void bindDataToViewHolder(GroupHolder holder, int position) {
-
+        GroupBean group = mGroupList.get(position);
+        holder.mTvGroupName.setText(group.getName());
     }
 
     @Override
@@ -42,9 +44,11 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
 
 
     static class GroupHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
+        TextView mTvGroupName;
 
         GroupHolder(View itemView) {
             super(itemView);
+            mTvGroupName = itemView.findViewById(R.id.GroupAdapter_mTvGroupName);
         }
     }
 

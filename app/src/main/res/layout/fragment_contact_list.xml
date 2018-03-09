@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
         app:title="@string/app_name"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light"/>
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/ContactFragmentList_mSmartRefreshLayout"

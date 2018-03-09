@@ -1,11 +1,9 @@
 package com.yzx.chat.widget.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,7 +12,6 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.util.GlideUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +25,7 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
     private List<ContactBean> mContactList;
     private List<ContactBean> mSearchContactList;
 
-    public ContactSearchAdapter(List<ContactBean> contactList,List<ContactBean> searchContactList) {
+    public ContactSearchAdapter(List<ContactBean> contactList, List<ContactBean> searchContactList) {
         mContactList = contactList;
         mSearchContactList = searchContactList;
     }
@@ -51,8 +48,26 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
         return mSearchContactList == null ? 0 : mSearchContactList.size();
     }
 
+    public int setFilterText(String text) {
+        if (mContactList != null && mSearchContactList != null) {
+            mSearchContactList.clear();
+            if (!TextUtils.isEmpty(text)) {
+                text = text.toLowerCase();
+                for (ContactBean contact : mContactList) {
+                    if (contact.getName().contains(text) || contact.getAbbreviation().contains(text)) {
+                        mSearchContactList.add(contact);
+                    }
+                }
+            }
+            notifyDataSetChanged();
+            return mSearchContactList.size();
+        }
+        return 0;
 
-    static  class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
+    }
+
+
+    static class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvName;
         ImageView mIvHeadImage;
 

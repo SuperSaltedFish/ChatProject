@@ -484,7 +484,7 @@ public class ContactManager {
     }
 
 
-    public static boolean update(ArrayList<ContactBean> contacts, AbstractDao.ReadWriteHelper readWriteHelper){
+     static boolean update(ArrayList<ContactBean> contacts, AbstractDao.ReadWriteHelper readWriteHelper){
         ContactDao contactDao = new ContactDao(readWriteHelper);
         contactDao.cleanTable();
         if (contactDao.insertAllContacts(contacts)) {

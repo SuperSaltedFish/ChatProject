@@ -11,14 +11,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -27,13 +26,16 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.contract.ContactContract;
-import com.yzx.chat.presenter.ContactPresenter;
+import com.yzx.chat.broadcast.BackPressedReceive;
+import com.yzx.chat.contract.ContactListContract;
+import com.yzx.chat.presenter.ContactListPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.view.activity.ContactOperationActivity;
 import com.yzx.chat.view.activity.ContactProfileActivity;
 import com.yzx.chat.view.activity.FindNewContactActivity;
+import com.yzx.chat.view.activity.GroupListActivity;
+import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.view.activity.RemarkInfoActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
@@ -54,7 +56,7 @@ import java.util.List;
  */
 
 
-public class ContactListFragment extends BaseFragment<ContactContract.Presenter> implements ContactContract.View {
+public class ContactListFragment extends BaseFragment<ContactListContract.Presenter> implements ContactListContract.View {
 
     public static final String TAG = ContactListFragment.class.getSimpleName();
 
@@ -67,6 +69,7 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
     private TextView mTvIndexBarHint;
     private Toolbar mToolbar;
     private PopupWindow mSearchPopupWindow;
+    private SearchView mSearchView;
     private SmartRefreshLayout mSmartRefreshLayout;
     private View mLlContactOperation;
     private View mLlGroup;
@@ -104,7 +107,7 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         mContactList = new ArrayList<>(256);
         mContactSearchList = new ArrayList<>(32);
         mContactAdapter = new ContactAdapter(mContactList);
-        mSearchAdapter = new ContactSearchAdapter(mContactList,mContactSearchList);
+        mSearchAdapter = new ContactSearchAdapter(mContactList, mContactSearchList);
         mSearchHandler = new Handler();
     }
 
@@ -127,6 +130,8 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
         mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        mRvSearchContact.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
         mRvSearchContact.setAdapter(mSearchAdapter);
 
         mLlContactOperation.setOnClickListener(mOnContactOperationClick);
@@ -139,11 +144,13 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
 
         mContactAdapter.setHeaderView(mHeaderView);
         setOverflowMenu();
+
+        BackPressedReceive.registerBackPressedListener(mBackPressedListener);
     }
 
 
     private void setSearchBar() {
-        final int searchPopupWindowWidth = (int) (AndroidUtil.getScreenWidth()-AndroidUtil.dip2px(32));
+        final int searchPopupWindowWidth = (int) (AndroidUtil.getScreenWidth() - AndroidUtil.dip2px(32));
         mSearchPopupWindow = new PopupWindow(mContext);
         mSearchPopupWindow.setAnimationStyle(-1);
         mSearchPopupWindow.setWidth(searchPopupWindowWidth);
@@ -154,6 +161,8 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         mSearchPopupWindow.setOutsideTouchable(true);
         mSearchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
         mSearchPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+
 //        mSearchPopupWindow.setAdapter(mSearchAdapter);
 //
 //        mSearchPopupWindow.setWidth(500);
@@ -167,10 +176,11 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
 //            }
 //        });
 
+
         mToolbar.inflateMenu(R.menu.menu_contact_list);
         MenuItem searchItem = mToolbar.getMenu().findItem(R.id.ContactList_Search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView = (SearchView) searchItem.getActionView();
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -182,17 +192,23 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
                 mSearchHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-
+                        if (!TextUtils.isEmpty(newText)) {
+                            if (mSearchAdapter.setFilterText(newText) > 0) {
+                                if (!mSearchPopupWindow.isShowing()) {
+                                    mSearchPopupWindow.showAsDropDown(mToolbar, (mToolbar.getWidth() - searchPopupWindowWidth) / 2, 0, Gravity.START);
+                                }
+                            } else {
+                                mSearchPopupWindow.dismiss();
+                            }
+                        } else {
+                            mSearchAdapter.setFilterText(null);
+                            mSearchPopupWindow.dismiss();
+                        }
                     }
-                },400);
-                mSearchPopupWindow.showAsDropDown(mToolbar,(mToolbar.getWidth()-searchPopupWindowWidth)/2,0, Gravity.LEFT);
-
-               // mSearchPopupWindow.getListView().setTextFilterEnabled(true);
-               // mSearchPopupWindow.getListView().setFilterText(newText);
+                }, 250);
                 return false;
             }
         });
-
     }
 
     private void setOverflowMenu() {
@@ -225,10 +241,31 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mSearchView.clearFocus();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        BackPressedReceive.unregisterBackPressedListener(mBackPressedListener);
         mSearchHandler.removeCallbacksAndMessages(null);
     }
+
+    private final BackPressedReceive.BackPressedListener mBackPressedListener = new BackPressedReceive.BackPressedListener() {
+
+        @Override
+        public boolean onBackPressed(String initiator) {
+            if (HomeActivity.class.getSimpleName().equals(initiator)) {
+                if (mSearchPopupWindow.isShowing()) {
+                    mSearchPopupWindow.dismiss();
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
 
     private final View.OnClickListener mOnContactOperationClick = new View.OnClickListener() {
         @Override
@@ -330,8 +367,8 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
     };
 
     @Override
-    public ContactContract.Presenter getPresenter() {
-        return new ContactPresenter();
+    public ContactListContract.Presenter getPresenter() {
+        return new ContactListPresenter();
     }
 
     @Override

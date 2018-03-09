@@ -6,7 +6,6 @@ import com.yzx.chat.database.GroupDao;
 import com.yzx.chat.database.GroupMemberDao;
 import com.yzx.chat.util.LogUtil;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +37,21 @@ public class GroupManager {
         }
     }
 
+    public List<GroupBean> getAllGroup() {
+        if (mGroupsMap == null) {
+            return null;
+        }
+        List<GroupBean> group = new ArrayList<>(mGroupsMap.size() + 8);
+        group.addAll(mGroupsMap.values());
+        return group;
+    }
+
     void destroy() {
         mGroupsMap.clear();
         mGroupsMap = null;
     }
 
-    public static boolean update(ArrayList<GroupBean> groups, AbstractDao.ReadWriteHelper readWriteHelper) {
+    static boolean update(ArrayList<GroupBean> groups, AbstractDao.ReadWriteHelper readWriteHelper) {
         GroupDao groupDao = new GroupDao(readWriteHelper);
         GroupMemberDao groupMemberDao = new GroupMemberDao(readWriteHelper);
         groupMemberDao.cleanTable();

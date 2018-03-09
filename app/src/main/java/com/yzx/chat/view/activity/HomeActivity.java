@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.contract.HomeContract;
 import com.yzx.chat.presenter.HomePresenter;
 import com.yzx.chat.view.fragment.ConversationFragment;
@@ -90,7 +91,9 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+        if (!BackPressedReceive.sendBackPressedEvent(HomeActivity.class.getSimpleName())) {
+            moveTaskToBack(true);
+        }
     }
 
     @Override

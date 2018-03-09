@@ -71,7 +71,6 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     private MapView mMapView;
     private SearchView mSearchView;
-    private SearchView.SearchAutoComplete mSearchAutoComplete;
     private MenuItem mSendMenuItem;
     private View mSearchLocationFooterView;
     private View mCurrentLocationFooterView;
@@ -282,7 +281,6 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mSendMenuItem = menu.findItem(R.id.LocationMapMenu_Send);
         mSendMenuItem.setEnabled(false);
         mSearchView = (SearchView) searchItem.getActionView();
-        mSearchAutoComplete = mSearchView.findViewById(R.id.search_src_text);
         setupSearchView();
         return super.onCreateOptionsMenu(menu);
     }
@@ -315,7 +313,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     }
 
     private void closeSearch() {
-        mSearchAutoComplete.setText("");
+        mSearchView.setQuery(null,false);
         mSearchView.setIconified(true);
     }
 
@@ -383,7 +381,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnSearchLocationScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
         @Override
         public void OnScrollToBottom() {
-            mPresenter.searchMorePOIByKeyword(mSearchAutoComplete.getText().toString());
+            mPresenter.searchMorePOIByKeyword(mSearchView.getQuery().toString());
         }
     };
 
