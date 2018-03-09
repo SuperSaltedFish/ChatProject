@@ -14,16 +14,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
-
-        <com.yzx.chat.widget.view.SegmentedControlView
-            android:id="@+id/ContactFragmentList_mSegmentedControlView"
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:layout_gravity="center" />
-
-
-    </android.support.v7.widget.Toolbar>
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light"/>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/ContactFragmentList_mSmartRefreshLayout"
@@ -36,7 +28,7 @@
         app:srlEnablePureScrollMode="true">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/ContactFragmentList_mContactRecyclerView"
+            android:id="@+id/ContactFragmentList_mRvContact"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

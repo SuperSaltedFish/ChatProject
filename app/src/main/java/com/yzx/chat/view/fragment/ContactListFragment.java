@@ -9,13 +9,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -40,7 +44,6 @@ import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
-import com.yzx.chat.widget.view.SegmentedControlView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,16 +58,16 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
 
     public static final String TAG = ContactListFragment.class.getSimpleName();
 
-    private RecyclerView mContactRecyclerView;
+    private RecyclerView mRvContact;
+    private RecyclerView mRvSearchContact;
     private ContactAdapter mContactAdapter;
     private ContactSearchAdapter mSearchAdapter;
     private IndexBarView mIndexBarView;
     private View mHeaderView;
-    private AutoCompleteTextView mSearchView;
     private TextView mTvIndexBarHint;
     private Toolbar mToolbar;
+    private PopupWindow mSearchPopupWindow;
     private SmartRefreshLayout mSmartRefreshLayout;
-    private SegmentedControlView mSegmentedControlView;
     private View mLlContactOperation;
     private View mLlGroup;
     private BadgeView mBadgeView;
@@ -73,7 +76,9 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
     private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
     private OverflowPopupMenu mContactMenu;
+    private Handler mSearchHandler;
     private List<ContactBean> mContactList;
+    private List<ContactBean> mContactSearchList;
 
 
     @Override
@@ -84,29 +89,28 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
     @Override
     protected void init(View parentView) {
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
-        mContactRecyclerView = parentView.findViewById(R.id.ContactFragmentList_mContactRecyclerView);
+        mRvContact = parentView.findViewById(R.id.ContactFragmentList_mRvContact);
         mIndexBarView = parentView.findViewById(R.id.ContactFragmentList_mIndexBarView);
         mTvIndexBarHint = parentView.findViewById(R.id.ContactFragmentList_mTvIndexBarHint);
         mFBtnAdd = parentView.findViewById(R.id.ContactFragmentList_mFBtnAdd);
-        mSegmentedControlView = parentView.findViewById(R.id.ContactFragmentList_mSegmentedControlView);
         mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragmentList_mSmartRefreshLayout);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
-        mSearchView = mHeaderView.findViewById(R.id.ContactFragmentList_mSearchView);
         mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
         mLlGroup = mHeaderView.findViewById(R.id.ContactFragmentList_mLlGroup);
         mBadgeView = mHeaderView.findViewById(R.id.ContactFragmentList_mBadgeView);
-
+        mRvSearchContact = new RecyclerView(mContext);
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
         mContactList = new ArrayList<>(256);
+        mContactSearchList = new ArrayList<>(32);
         mContactAdapter = new ContactAdapter(mContactList);
-        mSearchAdapter = new ContactSearchAdapter(mContactList);
+        mSearchAdapter = new ContactSearchAdapter(mContactList,mContactSearchList);
+        mSearchHandler = new Handler();
     }
 
     @Override
     protected void setup() {
-        mToolbar.setTitle(R.string.app_name);
-        mToolbar.setTitleTextColor(Color.WHITE);
+        setSearchBar();
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.divider_color_black));
@@ -115,12 +119,15 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-        mContactRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mContactRecyclerView.setAdapter(mContactAdapter);
-        mContactRecyclerView.setHasFixedSize(true);
-        mContactRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
-        mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
-        mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
+        mRvContact.setLayoutManager(mLinearLayoutManager);
+        mRvContact.setAdapter(mContactAdapter);
+        mRvContact.setHasFixedSize(true);
+        mRvContact.addItemDecoration(mLetterSegmentationItemDecoration);
+        mRvContact.addOnScrollListener(mAutoEnableOverScrollListener);
+        mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
+
+        mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        mRvSearchContact.setAdapter(mSearchAdapter);
 
         mLlContactOperation.setOnClickListener(mOnContactOperationClick);
         mLlGroup.setOnClickListener(mOnGroupClick);
@@ -130,29 +137,62 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
 
         mFBtnAdd.setOnClickListener(mOnAddNewContactClick);
 
-        mSegmentedControlView
-                .setColors(Color.WHITE, ContextCompat.getColor(mContext, R.color.colorPrimary))
-                .setItems(new String[]{"好友", "群组"})
-                .setDefaultSelectedPosition(0)
-                .setStretch(true)
-                .update();
-
-        setHarderView();
+        mContactAdapter.setHeaderView(mHeaderView);
         setOverflowMenu();
     }
 
-    private void setHarderView() {
-        mSearchView.setAdapter(mSearchAdapter);
-        mSearchView.setDropDownVerticalOffset((int) AndroidUtil.dip2px(8));
-        mSearchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+    private void setSearchBar() {
+        final int searchPopupWindowWidth = (int) (AndroidUtil.getScreenWidth()-AndroidUtil.dip2px(32));
+        mSearchPopupWindow = new PopupWindow(mContext);
+        mSearchPopupWindow.setAnimationStyle(-1);
+        mSearchPopupWindow.setWidth(searchPopupWindowWidth);
+        mSearchPopupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        mSearchPopupWindow.setContentView(mRvSearchContact);
+        mSearchPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        mSearchPopupWindow.setElevation(AndroidUtil.dip2px(8));
+        mSearchPopupWindow.setOutsideTouchable(true);
+        mSearchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mSearchPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        mSearchPopupWindow.setAdapter(mSearchAdapter);
+//
+//        mSearchPopupWindow.setWidth(500);
+//        mSearchPopupWindow.setHeight(500);
+//        mSearchPopupWindow.setModal(false);
+//        mSearchPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                mOnRecyclerViewItemClickListener.onItemClick(position + 1, null);
+//                // mSearchView.setText(null);
+//            }
+//        });
+
+        mToolbar.inflateMenu(R.menu.menu_contact_list);
+        MenuItem searchItem = mToolbar.getMenu().findItem(R.id.ContactList_Search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mOnRecyclerViewItemClickListener.onItemClick(position + 1, null);
-                mSearchView.setText(null);
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                mSearchHandler.removeCallbacksAndMessages(null);
+                mSearchHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                },400);
+                mSearchPopupWindow.showAsDropDown(mToolbar,(mToolbar.getWidth()-searchPopupWindowWidth)/2,0, Gravity.LEFT);
+
+               // mSearchPopupWindow.getListView().setTextFilterEnabled(true);
+               // mSearchPopupWindow.getListView().setFilterText(newText);
+                return false;
             }
         });
 
-        mContactAdapter.setHeaderView(mHeaderView);
     }
 
     private void setOverflowMenu() {
@@ -163,7 +203,7 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(int position, int menuID) {
-                int index = (int) mContactRecyclerView.getTag();
+                int index = (int) mRvContact.getTag();
                 if (index < mContactList.size()) {
                     switch (menuID) {
                         case R.id.ContactMenu_UpdateRemarkInfo:
@@ -177,10 +217,17 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         });
     }
 
+
     @Override
     protected void onFirstVisible() {
         mPresenter.loadUnreadCount();
         mPresenter.loadAllContact();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mSearchHandler.removeCallbacksAndMessages(null);
     }
 
     private final View.OnClickListener mOnContactOperationClick = new View.OnClickListener() {
@@ -227,8 +274,8 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
             if (position == 0 && mContactAdapter.isHasHeaderView()) {
                 return;
             }
-            mContactRecyclerView.setTag(position - 1);
-            OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mContactRecyclerView.getHeight(), (int) touchX, (int) touchY);
+            mRvContact.setTag(position - 1);
+            OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mRvContact.getHeight(), (int) touchX, (int) touchY);
         }
     };
 
@@ -238,15 +285,15 @@ public class ContactListFragment extends BaseFragment<ContactContract.Presenter>
         public void onSelected(int position, String text) {
             final int scrollPosition = mContactAdapter.findPositionByLetter(text);
             if (scrollPosition >= 0) {
-                mContactRecyclerView.scrollToPosition(scrollPosition);
-                mContactRecyclerView.post(new Runnable() {
+                mRvContact.scrollToPosition(scrollPosition);
+                mRvContact.post(new Runnable() {
                     @Override
                     public void run() {
                         int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
                         if (scrollPosition > firstPosition) {
-                            View childView = mContactRecyclerView.getChildAt(scrollPosition - firstPosition);
+                            View childView = mRvContact.getChildAt(scrollPosition - firstPosition);
                             int scrollY = childView.getTop() - mLetterSegmentationItemDecoration.getSpace();
-                            mContactRecyclerView.scrollBy(0, scrollY);
+                            mRvContact.scrollBy(0, scrollY);
                         }
                     }
                 });

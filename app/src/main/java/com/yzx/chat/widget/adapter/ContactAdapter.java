@@ -22,7 +22,7 @@ import java.util.List;
  */
 
 
-public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemView> {
+public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ContactHolder> {
 
     private List<ContactBean> mContactList;
     private SparseArray<String> mIdentitySparseArray;
@@ -34,14 +34,13 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
     }
 
     @Override
-    public ItemView getViewHolder(ViewGroup parent, int viewType) {
-        return new ItemContactView(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
+    public ContactHolder getViewHolder(ViewGroup parent, int viewType) {
+        return new ContactHolder(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
 
     }
 
     @Override
-    public void bindDataToViewHolder(ItemView holder, int position) {
-        ItemContactView friendHolder = (ItemContactView) holder;
+    public void bindDataToViewHolder(ContactHolder holder, int position) {
         String identity = mIdentitySparseArray.get(position);
         if (identity != null) {
             holder.itemView.setTag(identity);
@@ -49,8 +48,8 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
             holder.itemView.setTag(null);
         }
         ContactBean contactBean = mContactList.get(position);
-        friendHolder.mTvName.setText(contactBean.getName());
-        GlideUtil.loadFromUrl(mContext, friendHolder.mIvHeadImage, R.drawable.temp_head_image);
+        holder.mTvName.setText(contactBean.getName());
+        GlideUtil.loadFromUrl(mContext, holder.mIvHeadImage, R.drawable.temp_head_image);
     }
 
     @Override
@@ -113,28 +112,22 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ItemV
 
     };
 
-    static abstract class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
-
-        ItemView(View itemView) {
-            super(itemView);
-        }
-    }
-
-    private static class ItemContactView extends ItemView {
-
+    static  class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvName;
         ImageView mIvHeadImage;
 
-        ItemContactView(View itemView) {
+        ContactHolder(View itemView) {
             super(itemView);
             initView();
 
         }
 
         private void initView() {
-            mTvName = (TextView) itemView.findViewById(R.id.ContactAdapter_mTvName);
-            mIvHeadImage = (ImageView) itemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
+            mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
+            mIvHeadImage = itemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
         }
     }
+
+
 
 }

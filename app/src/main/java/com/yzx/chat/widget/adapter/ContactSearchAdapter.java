@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.util.GlideUtil;
 
@@ -22,106 +23,48 @@ import java.util.List;
  */
 
 
-public class ContactSearchAdapter extends BaseAdapter implements Filterable {
+public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchAdapter.ContactHolder> {
 
-    private List<ContactBean> mFriendList;
-    private Filter mFriendFilter;
+    private List<ContactBean> mContactList;
+    private List<ContactBean> mSearchContactList;
 
-    public ContactSearchAdapter(List<ContactBean> contactBeanList) {
-        mFriendList = new ArrayList<>(contactBeanList.size() + 3);
-        mFriendFilter = new FriendFilter(contactBeanList);
-    }
-
-    public ContactBean getFriendBeanByPosition(int position){
-        if(position<mFriendList.size()){
-            return mFriendList.get(position);
-        }
-        return null;
+    public ContactSearchAdapter(List<ContactBean> contactList,List<ContactBean> searchContactList) {
+        mContactList = contactList;
+        mSearchContactList = searchContactList;
     }
 
     @Override
-    public Object getItem(int position) {
-        return mFriendList.get(position);
+    public ContactHolder getViewHolder(ViewGroup parent, int viewType) {
+        return new ContactHolder(LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false));
+
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public void bindDataToViewHolder(ContactHolder holder, int position) {
+        ContactBean contactBean = mSearchContactList.get(position);
+        holder.mTvName.setText(contactBean.getName());
+        GlideUtil.loadFromUrl(mContext, holder.mIvHeadImage, R.drawable.temp_head_image);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact, parent, false);
-            convertView.setTag(new ItemViewHolder(convertView));
-        }
-        ItemViewHolder viewHolder = (ItemViewHolder) convertView.getTag();
-        ContactBean contactBean = mFriendList.get(position);
-        viewHolder.mTvName.setText(contactBean.getName());
-        GlideUtil.loadCircleFromUrl(parent.getContext(), viewHolder.mIvHeadImage, R.drawable.temp_head_image);
-        return convertView;
+    public int getViewHolderCount() {
+        return mSearchContactList == null ? 0 : mSearchContactList.size();
     }
 
-    @Override
-    public int getCount() {
-        return mFriendList == null ? 0 : mFriendList.size();
-    }
 
-    @Override
-    public Filter getFilter() {
-        return mFriendFilter;
-    }
-
-    private static class ItemViewHolder {
-        private View mItemView;
-
+    static  class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvName;
         ImageView mIvHeadImage;
 
-        public ItemViewHolder(View itemView) {
-            mItemView = itemView;
+        ContactHolder(View itemView) {
+            super(itemView);
             initView();
+
         }
 
         private void initView() {
-            mTvName = (TextView) mItemView.findViewById(R.id.ContactAdapter_mTvName);
-            mIvHeadImage = (ImageView) mItemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
-            mItemView.setClickable(false);
-        }
-    }
-
-    private class FriendFilter extends Filter {
-        private List<ContactBean> mAllFriendList;
-        private List<ContactBean> mFilterFriendList;
-        private FilterResults mResults;
-
-        FriendFilter(List<ContactBean> allFriendList) {
-            mAllFriendList = allFriendList;
-            mFilterFriendList = new ArrayList<>(allFriendList.size() + 3);
-            mResults = new FilterResults();
-        }
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            mFilterFriendList.clear();
-            if (constraint != null) {
-                constraint = constraint.toString().toLowerCase();
-                for (ContactBean friend : mAllFriendList) {
-                    if (friend.getName().contains(constraint) || friend.getAbbreviation().contains(constraint)) {
-                        mFilterFriendList.add(friend);
-                    }
-                }
-            }
-            mResults.values = mFilterFriendList;
-            mResults.count = mFilterFriendList.size();
-            return mResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFriendList.clear();
-            mFriendList.addAll(mFilterFriendList);
-            notifyDataSetChanged();
+            mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
+            mIvHeadImage = itemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
         }
     }
 

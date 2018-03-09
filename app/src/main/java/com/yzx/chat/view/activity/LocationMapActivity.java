@@ -265,6 +265,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mSearchHandler.removeCallbacksAndMessages(null);
         mMapView.onDestroy();
     }
 
