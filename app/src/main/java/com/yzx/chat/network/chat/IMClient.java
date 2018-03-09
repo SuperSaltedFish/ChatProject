@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.database.AbstractDao;
@@ -73,6 +74,7 @@ public class IMClient {
     private CryptoManager mCryptoManager;
     private ChatManager mChatManager;
     private ContactManager mContactManager;
+    private GroupManager mGroupManager;
     private ConversationManager mConversationManager;
     private ThreadPoolExecutor mWorkExecutor;
     private DBHelper mDBHelper;
@@ -165,6 +167,7 @@ public class IMClient {
                         String secretKey = userInfo.getSecretKey();
                         UserBean userBean = userInfo.getUserProfile();
                         ArrayList<ContactBean> contacts = userInfo.getContacts();
+                        ArrayList<GroupBean> groups = userInfo.getGroups();
                         if (userBean == null || userBean.isEmpty() || TextUtils.isEmpty(secretKey) || TextUtils.isEmpty(token)) {
                             failure("server error : user result is empty");
                             return;
@@ -180,6 +183,9 @@ public class IMClient {
                         } else if (!ContactManager.update(contacts, mDBHelper.getReadWriteHelper())) {
                             isUpdateSuccess = false;
                             LogUtil.e("update contacts fail");
+                        } else if (!GroupManager.update(groups, mDBHelper.getReadWriteHelper())) {
+                            isUpdateSuccess = false;
+                            LogUtil.e("update groups fail");
                         }
                         if (!isUpdateSuccess) {
                             failure("client error : update user info fail");
@@ -286,6 +292,7 @@ public class IMClient {
             return false;
         }
         mContactManager = new ContactManager(mSubManagerCallback, mDBHelper.getReadWriteHelper());
+        mGroupManager = new GroupManager(mSubManagerCallback, mDBHelper.getReadWriteHelper());
         mChatManager = new ChatManager(mSubManagerCallback);
         mConversationManager = new ConversationManager(mSubManagerCallback);
         return true;
@@ -301,6 +308,10 @@ public class IMClient {
         if (mContactManager != null) {
             mContactManager.destroy();
             mContactManager = null;
+        }
+        if (mGroupManager != null) {
+            mGroupManager.destroy();
+            mGroupManager = null;
         }
         if (mConversationManager != null) {
             mConversationManager.destroy();
@@ -333,6 +344,10 @@ public class IMClient {
 
     public ContactManager contactManager() {
         return mContactManager;
+    }
+
+    public GroupManager groupManager() {
+        return mGroupManager;
     }
 
     public ConversationManager conversationManager() {

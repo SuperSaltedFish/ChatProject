@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class GroupDao extends AbstractDao<GroupBean> {
-    static final String TABLE_NAME = "Group";
+    static final String TABLE_NAME = "ContactGroup";
 
     private static final String COLUMN_NAME_GroupID = "GroupID";
     private static final String COLUMN_NAME_Name = "Name";
@@ -48,21 +48,22 @@ public class GroupDao extends AbstractDao<GroupBean> {
 
     public List<GroupBean> loadAllGroup() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT * FROM " + GroupMemberDao.TABLE_NAME + " INNER JOIN " + TABLE_NAME + " ON USING(" + COLUMN_NAME_GroupID + ") INNER JOIN " + UserDao.TABLE_NAME + " ON USING(" + UserDao.COLUMN_NAME_UserID + ")", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM " + GroupMemberDao.TABLE_NAME + " INNER JOIN " + TABLE_NAME + " USING (" + COLUMN_NAME_GroupID + ") INNER JOIN " + UserDao.TABLE_NAME + " USING(" + UserDao.COLUMN_NAME_UserID + ")", null);
         HashMap<String, GroupBean> groupMap = new HashMap<>();
         GroupBean group;
         String groupID;
-        List<GroupMemberBean> groupMemberList;
+        ArrayList<GroupMemberBean> groupMemberList;
         while (cursor.moveToNext()) {
-            groupID = cursor.getString(COLUMN_INDEX_GroupID);
+            groupID = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GroupID));
             group = groupMap.get(groupID);
             if (group == null) {
-                group = toEntity(cursor);
+                group = toEntityFromCursor(cursor);
                 groupMap.put(groupID, group);
             }
             groupMemberList = group.getMembers();
             if (groupMemberList == null) {
                 groupMemberList = new ArrayList<>(32);
+                group.setMembers(groupMemberList);
             }
             groupMemberList.add(GroupMemberDao.toEntityFromCursor(cursor));
         }
@@ -93,6 +94,9 @@ public class GroupDao extends AbstractDao<GroupBean> {
                 if (database.insert(TABLE_NAME, null, values) <= 0) {
                     result = false;
                     break;
+                }
+                for(GroupMemberBean groupMember:groupMemberList){
+                    groupMember.setGroupID(group.getGroupID());
                 }
                 if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
                     result = false;
@@ -149,6 +153,17 @@ public class GroupDao extends AbstractDao<GroupBean> {
         group.setOwner(cursor.getString(COLUMN_INDEX_Owner));
         group.setAvatar(cursor.getString(COLUMN_INDEX_Avatar));
         group.setNotice(cursor.getString(COLUMN_INDEX_Notice));
+        return group;
+    }
+
+    public static GroupBean toEntityFromCursor(Cursor cursor) {
+        GroupBean group = new GroupBean();
+        group.setGroupID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GroupID)));
+        group.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Name)));
+        group.setCreateTime(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_CreateTime)));
+        group.setAvatar(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Owner)));
+        group.setAvatar(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Avatar)));
+        group.setNotice(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Notice)));
         return group;
     }
 }

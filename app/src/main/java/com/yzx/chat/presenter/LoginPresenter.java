@@ -21,6 +21,7 @@ import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
@@ -174,7 +175,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     if (response.isSkipVerify()) {
                         mCurrVerifyType = VERIFY_TYPE_NONE;
                     } else {
-                     //   AndroidUtil.showToast(response.getVerifyCode());
+                        AndroidUtil.showToast(response.getVerifyCode());
                     }
                     mLoginView.inputLoginVerifyCode(response.isSkipVerify());
                 } else {

@@ -1,6 +1,7 @@
 package com.yzx.chat.network.api.auth;
 
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class UserInfoBean {
     private String secretKey;
     private UserBean userProfile;
     private ArrayList<ContactBean> contacts;
+    private ArrayList<GroupBean> groups;
 
     public String getToken() {
         return token;
@@ -48,5 +50,13 @@ public class UserInfoBean {
 
     public void setContacts(ArrayList<ContactBean> contacts) {
         this.contacts = contacts;
+    }
+
+    public ArrayList<GroupBean> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(ArrayList<GroupBean> groups) {
+        this.groups = groups;
     }
 }

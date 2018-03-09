@@ -28,7 +28,7 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                     + COLUMN_NAME_UserID + " TEXT NOT NULL , "
-                    + COLUMN_NAME_GroupID + "TEXT NOT NULL,"
+                    + COLUMN_NAME_GroupID + " TEXT NOT NULL,"
                     + COLUMN_NAME_Alias + " TEXT,"
                     + "PRIMARY KEY (" + COLUMN_NAME_UserID + "," + COLUMN_NAME_GroupID + ")"
                     + ")";

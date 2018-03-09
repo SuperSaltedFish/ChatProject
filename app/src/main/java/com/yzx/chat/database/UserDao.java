@@ -95,7 +95,7 @@ public class UserDao extends AbstractDao<UserBean> {
         return bean;
     }
 
-    public static UserBean toEntityFromCursor(Cursor cursor) {
+    static UserBean toEntityFromCursor(Cursor cursor) {
         UserBean bean = new UserBean();
         bean.setTelephone(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Telephone)));
         bean.setUserID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_UserID)));
@@ -112,6 +112,7 @@ public class UserDao extends AbstractDao<UserBean> {
         if(entity==null){
             return false;
         }
+        values.clear();
         values.put(COLUMN_NAME_Telephone, entity.getTelephone());
         values.put(COLUMN_NAME_UserID, entity.getUserID());
         values.put(COLUMN_NAME_Nickname, entity.getNickname());
@@ -120,6 +121,6 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Location, entity.getLocation());
         values.put(COLUMN_NAME_Birthday, entity.getBirthday());
         values.put(COLUMN_NAME_Sex, entity.getSex());
-        return Write.insert(TABLE_NAME, null, values) > 0;
+        return Write.replace(TABLE_NAME, null, values) > 0;
     }
 }
