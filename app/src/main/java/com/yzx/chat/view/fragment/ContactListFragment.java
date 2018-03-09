@@ -51,9 +51,9 @@ import java.util.List;
  */
 
 
-public class ContactFragment extends BaseFragment<ContactContract.Presenter> implements ContactContract.View {
+public class ContactListFragment extends BaseFragment<ContactContract.Presenter> implements ContactContract.View {
 
-    public static final String TAG = ContactFragment.class.getSimpleName();
+    public static final String TAG = ContactListFragment.class.getSimpleName();
 
     private RecyclerView mContactRecyclerView;
     private ContactAdapter mContactAdapter;
@@ -65,7 +65,8 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
     private Toolbar mToolbar;
     private SmartRefreshLayout mSmartRefreshLayout;
     private SegmentedControlView mSegmentedControlView;
-    private LinearLayout mLlContactOperation;
+    private View mLlContactOperation;
+    private View mLlGroup;
     private BadgeView mBadgeView;
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
@@ -77,22 +78,23 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
     @Override
     protected int getLayoutID() {
-        return R.layout.fragment_contact;
+        return R.layout.fragment_contact_list;
     }
 
     @Override
     protected void init(View parentView) {
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
-        mContactRecyclerView = parentView.findViewById(R.id.ContactFragment_mContactRecyclerView);
-        mIndexBarView = parentView.findViewById(R.id.ContactFragment_mIndexBarView);
-        mTvIndexBarHint = parentView.findViewById(R.id.ContactFragment_mTvIndexBarHint);
-        mFBtnAdd = parentView.findViewById(R.id.ContactFragment_mFBtnAdd);
-        mSegmentedControlView = parentView.findViewById(R.id.ContactFragment_mSegmentedControlView);
-        mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragment_mSmartRefreshLayout);
+        mContactRecyclerView = parentView.findViewById(R.id.ContactFragmentList_mContactRecyclerView);
+        mIndexBarView = parentView.findViewById(R.id.ContactFragmentList_mIndexBarView);
+        mTvIndexBarHint = parentView.findViewById(R.id.ContactFragmentList_mTvIndexBarHint);
+        mFBtnAdd = parentView.findViewById(R.id.ContactFragmentList_mFBtnAdd);
+        mSegmentedControlView = parentView.findViewById(R.id.ContactFragmentList_mSegmentedControlView);
+        mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragmentList_mSmartRefreshLayout);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
-        mSearchView = mHeaderView.findViewById(R.id.ContactFragment_mSearchView);
-        mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragment_mLlContactOperation);
-        mBadgeView = mHeaderView.findViewById(R.id.ContactFragment_mBadgeView);
+        mSearchView = mHeaderView.findViewById(R.id.ContactFragmentList_mSearchView);
+        mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
+        mLlGroup = mHeaderView.findViewById(R.id.ContactFragmentList_mLlGroup);
+        mBadgeView = mHeaderView.findViewById(R.id.ContactFragmentList_mBadgeView);
 
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
@@ -116,14 +118,12 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         mContactRecyclerView.setLayoutManager(mLinearLayoutManager);
         mContactRecyclerView.setAdapter(mContactAdapter);
         mContactRecyclerView.setHasFixedSize(true);
-       // mContactRecyclerView.setItemAnimator(new NoAnimations());
         mContactRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mContactRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         mContactRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
-
         mLlContactOperation.setOnClickListener(mOnContactOperationClick);
-
+        mLlGroup.setOnClickListener(mOnGroupClick);
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
@@ -139,7 +139,6 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
 
         setHarderView();
         setOverflowMenu();
-
     }
 
     private void setHarderView() {
@@ -188,6 +187,13 @@ public class ContactFragment extends BaseFragment<ContactContract.Presenter> imp
         @Override
         public void onClick(View v) {
             startActivity(new Intent(mContext, ContactOperationActivity.class));
+        }
+    };
+
+    private final View.OnClickListener mOnGroupClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(mContext, GroupListActivity.class));
         }
     };
 

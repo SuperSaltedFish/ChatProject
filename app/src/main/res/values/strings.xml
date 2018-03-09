@@ -183,5 +183,6 @@
     <string name="ContactOperationActivity_FindFriend">添加好友</string>
     <string name="LocationMapActivity_SearchHint">请输入搜索内容...</string>
     <string name="NetworkUnavailable">当前网络不可用，请检查网络连接</string>
+    <string name="GroupListActivity_Title">群聊</string>
 
 </resources>

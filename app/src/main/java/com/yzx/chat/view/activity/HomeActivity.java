@@ -11,7 +11,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.contract.HomeContract;
 import com.yzx.chat.presenter.HomePresenter;
 import com.yzx.chat.view.fragment.ConversationFragment;
-import com.yzx.chat.view.fragment.ContactFragment;
+import com.yzx.chat.view.fragment.ContactListFragment;
 import com.yzx.chat.view.fragment.MomentsFragment;
 import com.yzx.chat.view.fragment.ProfileFragment;
 
@@ -39,7 +39,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     protected void init(Bundle savedInstanceState) {
         mFragments = new Fragment[4];
         mFragments[0] = new ConversationFragment();
-        mFragments[1] = new ContactFragment();
+        mFragments[1] = new ContactListFragment();
         mFragments[2] = new MomentsFragment();
         mFragments[3] = new ProfileFragment();
         mFragmentManager = getSupportFragmentManager();
