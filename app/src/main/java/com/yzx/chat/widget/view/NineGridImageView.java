@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.util.GlideUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,29 +43,30 @@ public class NineGridImageView extends ViewGroup {
         mContext = context;
         mSpacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 4, mContext.getResources().getDisplayMetrics());
+        mImageUrlList = new ArrayList<>(9);
     }
 
     public void setImageData(List<String> urlList) {
-        if (urlList == null && mImageUrlList == null) {
-            return;
+        mRow = 0;
+        mColumn = 0;
+        mImageUrlList.clear();
+        if (urlList != null) {
+            mImageUrlList.addAll(urlList);
         }
-        if (urlList != null && mImageUrlList != null && mImageUrlList.size() == urlList.size() && mImageUrlList.containsAll(urlList)) {
-            return;
-        }
-        mImageUrlList = urlList;
-        if (mImageUrlList == null || mImageUrlList.size() == 0) {
-            removeAllViews();
-            mRow = 0;
-            mColumn = 0;
-        } else {
-            createChildVew();
-        }
+        updateView();
     }
 
-    //别忘记了，这个地方删除一个imageview后要删除glideAPP clear,现在还没做
-    private void createChildVew() {
-        final int urlCount = mImageUrlList.size();
+
+    private void updateView() {
         final int childCount = getChildCount();
+        final int urlCount = mImageUrlList.size();
+        if (urlCount == 0) {
+            for (int i = 0; i < childCount; i++) {
+                GlideUtil.clear(mContext, (ImageView) getChildAt(i));
+            }
+            removeAllViews();
+            return;
+        }
         mRow = (int) Math.ceil(urlCount / 3d);
         if (mRow > 9) {
             mRow = 9;
@@ -87,20 +89,20 @@ public class NineGridImageView extends ViewGroup {
                         }
                     }
                 });
-                addViewInLayout(imageView, -1, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                addView(imageView, -1, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             }
         } else if (urlCount < childCount) {
             for (int i = childCount; i > urlCount; i--) {
                 ImageView view = (ImageView) getChildAt(i - 1);
+                GlideUtil.clear(mContext, view);
                 view.setOnClickListener(null);
                 view.setImageBitmap(null);
-                removeViewInLayout(view);
+                removeViewAt(i - 1);
             }
         }
         for (int i = 0; i < urlCount; i++) {
             GlideUtil.loadFromUrl(mContext, (ImageView) getChildAt(i), R.drawable.temp_share_image);
         }
-        requestLayout();
     }
 
     @Override
@@ -113,20 +115,32 @@ public class NineGridImageView extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        final int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
+        final int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
+        int width = maxWidth;
+        int height = maxHeight;
+
         if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
             if (mRow == 1 && mColumn == 1) {
-                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec( (MeasureSpec.getSize(widthMeasureSpec) * 9/16), MeasureSpec.EXACTLY));
+                height = width * 9 / 16;
             } else {
-                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(mRow * MeasureSpec.getSize(widthMeasureSpec) / 3, MeasureSpec.EXACTLY));
+                height = width * mRow / 3;
             }
         } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-            super.onMeasure(heightMeasureSpec, heightMeasureSpec);
+            width = height;
         } else {
-            int width = MeasureSpec.getSize(widthMeasureSpec);
-            int height = MeasureSpec.getSize(heightMeasureSpec);
             int minSize = Math.min(width, height);
-            super.onMeasure(MeasureSpec.makeMeasureSpec(minSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(minSize, MeasureSpec.EXACTLY));
+            width = minSize;
+            height = minSize;
         }
+
+        if (mRow == 1 && mColumn == 1) {
+            measureChildren(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        } else {
+            int childMeasureSpec = MeasureSpec.makeMeasureSpec(width / 3, MeasureSpec.EXACTLY);
+            measureChildren(childMeasureSpec, childMeasureSpec);
+        }
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -135,7 +149,7 @@ public class NineGridImageView extends ViewGroup {
             return;
         }
         int count = getChildCount();
-        int   childSize = (mViewWidth - 2 * mSpacing) / 3;
+        int childSize = (mViewWidth - 2 * mSpacing) / 3;
         int row = 0;
         int column = 0;
         for (int i = 0; i < count; i++) {
@@ -154,9 +168,9 @@ public class NineGridImageView extends ViewGroup {
             if (row != 0) {
                 childTop += (mSpacing * row);
             }
-            if(count==1){
+            if (count == 1) {
                 getChildAt(i).layout(0, 0, mViewWidth, mViewHeight);
-            }else {
+            } else {
                 getChildAt(i).layout(childLeft, childTop, childLeft + childSize, childTop + childSize);
             }
             column++;

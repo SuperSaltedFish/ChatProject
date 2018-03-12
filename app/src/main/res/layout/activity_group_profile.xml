@@ -37,7 +37,6 @@
                 android:layout_height="48dp"
                 app:layout_collapseMode="pin"
                 app:theme="@style/ToolbarTheme"
-                app:title="咸鱼部落"
                 app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
 
@@ -120,7 +119,6 @@
                     android:id="@+id/ChatSetup_mTvContentGroupName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="咸鱼部落"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -172,7 +170,6 @@
                     android:id="@+id/ChatSetup_mTvContentMyGroupNickname"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="叶智星"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -270,7 +267,6 @@
                     android:layout_marginBottom="12dp"
                     android:ellipsize="end"
                     android:maxLines="4"
-                    android:text="但老天似乎跟他开了个玩笑。贾宗洋最后一跳得到128.05分，与冠军乌克兰选手阿布拉门科只差了0.46分。从2006年都灵冬奥会韩晓鹏的“惊天一跳”后，中国队一次次向冰雪之巅发起进攻，却总与金牌“咫尺天涯”。"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

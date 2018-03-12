@@ -1,6 +1,7 @@
 package com.yzx.chat.network.chat;
 
 import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.GroupDao;
 import com.yzx.chat.database.GroupMemberDao;
@@ -37,6 +38,10 @@ public class GroupManager {
         }
     }
 
+    public GroupBean getGroup(String groupID){
+        return mGroupsMap.get(groupID);
+    }
+
     public List<GroupBean> getAllGroup() {
         if (mGroupsMap == null) {
             return null;
@@ -44,6 +49,20 @@ public class GroupManager {
         List<GroupBean> group = new ArrayList<>(mGroupsMap.size() + 8);
         group.addAll(mGroupsMap.values());
         return group;
+    }
+
+    public GroupMemberBean getGroupMenber(String groupID,String memberID){
+        GroupBean group = getGroup(groupID);
+        if(group==null){
+            return null;
+        }
+
+        for (GroupMemberBean groupMember:group.getMembers()){
+            if(groupMember.getUserProfile().getUserID().equals(memberID)){
+                return groupMember;
+            }
+        }
+        return null;
     }
 
     void destroy() {

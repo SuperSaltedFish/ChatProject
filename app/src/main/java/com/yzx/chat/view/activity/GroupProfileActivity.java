@@ -8,12 +8,18 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.contract.GroupProfileContract;
+import com.yzx.chat.presenter.GroupProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.GroupMembersAdapter;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
@@ -24,12 +30,16 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
  */
 
 
-public class GroupProfileActivity extends BaseCompatActivity {
+public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContract.Presenter> implements GroupProfileContract.View {
 
+    public static final String INTENT_EXTRA_GROUP_ID = "GroupID";
     private static final int GROUP_MEMBERS_LINE_MAX_COUNT = 5;
 
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private RecyclerView mRvGroupMembers;
+    private TextView mTvContentGroupName;
+    private TextView mTvContentMyGroupNickname;
+    private TextView mTvContentGroupNotice;
     private View mFooterView;
     private ConstraintLayout mClGroupName;
     private ConstraintLayout mClMyGroupNickname;
@@ -45,6 +55,9 @@ public class GroupProfileActivity extends BaseCompatActivity {
     protected void init(Bundle savedInstanceState) {
         mCollapsingToolbarLayout = findViewById(R.id.GroupProfileActivity_mCollapsingToolbarLayout);
         mRvGroupMembers = findViewById(R.id.GroupProfileActivity_mRvGroupMembers);
+        mTvContentGroupName = findViewById(R.id.ChatSetup_mTvContentGroupName);
+        mTvContentMyGroupNickname = findViewById(R.id.ChatSetup_mTvContentMyGroupNickname);
+        mTvContentGroupNotice = findViewById(R.id.ChatSetup_mTvContentGroupNotice);
         mFooterView = getLayoutInflater().inflate(R.layout.item_group_member_footer, (ViewGroup) getWindow().getDecorView(), false);
         mClGroupName = findViewById(R.id.ChatSetup_mClGroupName);
         mClMyGroupNickname = findViewById(R.id.ChatSetup_mClMyGroupNickname);
@@ -69,6 +82,13 @@ public class GroupProfileActivity extends BaseCompatActivity {
         mClGroupName.setOnClickListener(mOnGroupNameClickListener);
         mClMyGroupNickname.setOnClickListener(mOnMyGroupNicknameClickListener);
         mClQRCode.setOnClickListener(mOnQRCodeClickListener);
+
+        String groupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
+        if (TextUtils.isEmpty(groupID)) {
+            finish();
+        } else {
+            mPresenter.init(groupID);
+        }
     }
 
 
@@ -132,4 +152,35 @@ public class GroupProfileActivity extends BaseCompatActivity {
 
         }
     };
+
+    @Override
+    public GroupProfileContract.Presenter getPresenter() {
+        return new GroupProfilePresenter();
+    }
+
+    @Override
+    public void updateGroupInfo(GroupBean group) {
+        mCollapsingToolbarLayout.setTitle(group.getName());
+        mTvContentGroupName.setText(group.getName());
+        if (TextUtils.isEmpty(group.getNotice())) {
+            mTvContentGroupNotice.setText(R.string.None);
+        } else {
+            mTvContentGroupNotice.setText(group.getNotice());
+        }
+    }
+
+    @Override
+    public void updateMySelfInfo(GroupMemberBean groupMember) {
+        mTvContentMyGroupNickname.setText(groupMember.getNicknameInGroup());
+    }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void goBack() {
+        finish();
+    }
 }

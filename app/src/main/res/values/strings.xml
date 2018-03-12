@@ -138,6 +138,7 @@
     <string name="ProfileModifyActivity_LocationLabel">所在地区</string>
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
+    <string name="None">无</string>
     <string name="SignatureEditActivity_Title">修改签名</string>
     <string name="SignatureEditActivity_SignatureContentHint">一句话介绍自己</string>
     <string name="ProfileModifyActivity_SignatureLabel">个人签名</string>

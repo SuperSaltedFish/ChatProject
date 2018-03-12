@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
@@ -65,7 +66,9 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-
+                    Intent intent = new Intent(GroupListActivity.this,GroupProfileActivity.class);
+                    intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID,mGroupList.get(position).getGroupID());
+                    startActivity(intent);
                 }
             });
         }
