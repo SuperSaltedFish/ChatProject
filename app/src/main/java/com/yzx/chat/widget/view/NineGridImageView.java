@@ -145,9 +145,6 @@ public class NineGridImageView extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        if (!changed) {
-            return;
-        }
         int count = getChildCount();
         int childSize = (mViewWidth - 2 * mSpacing) / 3;
         int row = 0;

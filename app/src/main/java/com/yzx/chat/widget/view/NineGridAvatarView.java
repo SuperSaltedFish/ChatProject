@@ -9,10 +9,8 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.util.GlideUtil;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by YZX on 2018年03月12日.
@@ -54,9 +52,9 @@ public class NineGridAvatarView extends ViewGroup {
             height = 0;
         } else {
             if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
-                width = Math.min(maxWidth, maxHeight);
+                height = width;
             } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-                height = Math.min(maxWidth, maxHeight);
+                width = height;
             }
         }
         int childSize = Math.min(width, height);
@@ -64,9 +62,13 @@ public class NineGridAvatarView extends ViewGroup {
             case 1:
                 break;
             case 2:
+                childSize = (int) (childSize / 1.5);
+                break;
             case 3:
+                childSize = (int) (childSize / 1.7);
+                break;
             case 4:
-                childSize = childSize / 2;
+                childSize = (int) (childSize / 1.8);
                 break;
             default:
                 childSize = childSize / 3;
@@ -84,13 +86,12 @@ public class NineGridAvatarView extends ViewGroup {
         }
 
         View child = getChildAt(0);
-        int left;
-        int top;
-        int right;
-        int bottom;
+        int left = 0;
+        int top = 0;
+        int right = 0;
+        int bottom = 0;
         int childWidth = child.getMeasuredWidth();
         int childHeight = child.getMeasuredHeight();
-
         switch (childCount) {
             case 1:
                 child = getChildAt(0);
@@ -111,56 +112,77 @@ public class NineGridAvatarView extends ViewGroup {
                 child = getChildAt(1);
                 right = mViewWidth;
                 bottom = mViewHeight;
-                left =right-childWidth;
-                top =bottom-childHeight;
+                left = right - childWidth;
+                top = bottom - childHeight;
                 child.layout(left, top, right, bottom);
                 break;
             case 3:
                 child = getChildAt(0);
                 left = (mViewWidth - childWidth) / 2;
-                top = (mViewHeight-2*childHeight)/2;
+                top = 0;
                 right = left + childWidth;
                 bottom = top + childHeight;
                 child.layout(left, top, right, bottom);
 
                 child = getChildAt(1);
-                left = (mViewWidth - childWidth*2) / 2;
-                top =(mViewHeight-2*childHeight)/2+childHeight;
-                right = left+childWidth;
-                bottom = top+childHeight;
+                left = 0;
+                bottom = mViewHeight;
+                top = bottom - childHeight;
+                right = left + childWidth;
                 child.layout(left, top, right, bottom);
 
                 child = getChildAt(2);
-                left =left+childWidth;
-                right = left+childWidth;
+                right = mViewWidth;
+                left = right - childWidth;
                 child.layout(left, top, right, bottom);
                 break;
             case 4:
                 child = getChildAt(0);
-                left = (mViewWidth - 2*childWidth) / 2;
-                top = (mViewHeight-2*childHeight)/2;
+                left = 0;
+                top = 0;
                 right = left + childWidth;
                 bottom = top + childHeight;
                 child.layout(left, top, right, bottom);
 
                 child = getChildAt(1);
-                left =left+childWidth;
-                right = left+childWidth;
+                right = mViewWidth;
+                left = right - childWidth;
                 child.layout(left, top, right, bottom);
 
                 child = getChildAt(2);
-                left = (mViewWidth - childWidth*2) / 2;
-                top =(mViewHeight-2*childHeight)/2+childHeight;
-                right = left+childWidth;
-                bottom = top+childHeight;
+                left = 0;
+                bottom = mViewHeight;
+                top = bottom - childHeight;
+                right = left + childWidth;
                 child.layout(left, top, right, bottom);
 
                 child = getChildAt(3);
-                left =left+childWidth;
-                right = left+childWidth;
+                right = mViewWidth;
+                left = right - childWidth;
                 child.layout(left, top, right, bottom);
                 break;
             default:
+                for (int row = 1, rowCount = (int) Math.ceil(childCount / 3d), childIndex = 0; row <= rowCount; row++) {
+                    if (row == 1) {
+                        top = (mViewHeight - rowCount * childHeight) / 2;
+                    } else {
+                        top = top + childHeight;
+                    }
+                    bottom = top + childHeight;
+                    int restChild = childCount - (row - 1) * 3;
+                    int columnCount = restChild >= 3 ? 3 : restChild;
+                    for (int column = 1; column <= columnCount; column++) {
+                        child = getChildAt(childIndex++);
+                        if (column == 1) {
+                            left = (mViewWidth - columnCount * childWidth) / 2;
+                        } else {
+                            left = left + childWidth;
+                        }
+                        right = left + childWidth;
+                        child.layout(left, top, right, bottom);
+                    }
+                }
+                break;
         }
     }
 
@@ -190,9 +212,9 @@ public class NineGridAvatarView extends ViewGroup {
         }
         if (urlCount > childCount) {
             for (int i = childCount; i < urlCount; i++) {
-                RoundImageView imageView = new RoundImageView(mContext);
+                CircleImageView imageView = new CircleImageView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                addView(imageView, -1, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                addView(imageView, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             }
         } else if (urlCount < childCount) {
             for (int i = childCount; i > urlCount; i--) {

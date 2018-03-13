@@ -1,13 +1,13 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.widget.view.NineGridImageView;
+import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,11 @@ public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMoment
         }else {
             holder.mNineGridImageView.setVisibility(View.VISIBLE);
         }
+        if(position==7){
+            LogUtil.e("");
+        }
         holder.mNineGridImageView.setImageData(s);
+
     }
 
     @Override
@@ -54,7 +58,7 @@ public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMoment
 
     final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
-        NineGridImageView mNineGridImageView;
+        NineGridAvatarView mNineGridImageView;
 
         ItemView(View itemView) {
             super(itemView);
@@ -62,7 +66,7 @@ public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMoment
         }
 
         private void initView() {
-            mNineGridImageView = (NineGridImageView) itemView.findViewById(R.id.HistoryMomentsAdapter_mNineGridImageView);
+            mNineGridImageView = (NineGridAvatarView) itemView.findViewById(R.id.HistoryMomentsAdapter_mNineGridImageView);
         }
 
     }

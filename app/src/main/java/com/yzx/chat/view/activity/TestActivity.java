@@ -3,21 +3,16 @@ package com.yzx.chat.view.activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.base.BaseHttpCallback;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.RSAUtil;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -29,7 +24,8 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-
+        ImageView imageView = findViewById(R.id.ssss);
+        GlideUtil.loadFromUrl(this,imageView,R.drawable.temp_share_image);
     }
 
     @Override
@@ -41,22 +37,22 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UserApi userApi= (UserApi) ApiHelper.getProxyInstance(UserApi.class);
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("/storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg");
-        Call<JsonResponse<Void>> call = userApi.uploadAvatar(strings);
-        call.setCallback(new BaseHttpCallback<Void>() {
-            @Override
-            protected void onSuccess(Void response) {
-
-            }
-
-            @Override
-            protected void onFailure(String message) {
-
-            }
-        });
-        NetworkExecutor.getInstance().submit(call);
+//        UserApi userApi= (UserApi) ApiHelper.getProxyInstance(UserApi.class);
+//        ArrayList<String> strings = new ArrayList<>();
+//        strings.add("/storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg");
+//        Call<JsonResponse<Void>> call = userApi.uploadAvatar(strings);
+//        call.setCallback(new BaseHttpCallback<Void>() {
+//            @Override
+//            protected void onSuccess(Void response) {
+//
+//            }
+//
+//            @Override
+//            protected void onFailure(String message) {
+//
+//            }
+//        });
+//        NetworkExecutor.getInstance().submit(call);
     }
 
     public void onClick(View v) {
