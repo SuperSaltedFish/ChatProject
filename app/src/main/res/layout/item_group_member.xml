@@ -9,15 +9,15 @@
         android:id="@+id/GroupMembersAdapter_mIvAvatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/temp_head_image" />
+        android:scaleType="centerCrop" />
 
     <TextView
+        android:id="@+id/GroupMembersAdapter_mTvMemberName"
         android:layout_width="56dp"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
-        android:text="叶智星"
         android:textColor="@color/text_primary_color_black"
         android:textSize="12sp" />
 

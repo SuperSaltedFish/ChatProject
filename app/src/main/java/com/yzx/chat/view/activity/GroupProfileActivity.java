@@ -11,6 +11,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -22,7 +23,11 @@ import com.yzx.chat.contract.GroupProfileContract;
 import com.yzx.chat.presenter.GroupProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.GroupMembersAdapter;
+import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by YZX on 2018年02月18日.
@@ -34,17 +39,22 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
 
     public static final String INTENT_EXTRA_GROUP_ID = "GroupID";
     private static final int GROUP_MEMBERS_LINE_MAX_COUNT = 5;
+    private static final int GROUP_MEMBERS_MAX_VISIBILITY_COUNT = 9;
 
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private RecyclerView mRvGroupMembers;
     private TextView mTvContentGroupName;
-    private TextView mTvContentMyGroupNickname;
+    private TextView mTvContentNicknameInGroup;
     private TextView mTvContentGroupNotice;
+    private ImageView mIvEditNotice;
     private View mFooterView;
     private ConstraintLayout mClGroupName;
     private ConstraintLayout mClMyGroupNickname;
     private ConstraintLayout mClQRCode;
+    private ProgressDialog mProgressDialog;
     private GroupMembersAdapter mAdapter;
+
+    private List<GroupMemberBean> mGroupMemberList;
 
     @Override
     protected int getLayoutID() {
@@ -55,14 +65,17 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     protected void init(Bundle savedInstanceState) {
         mCollapsingToolbarLayout = findViewById(R.id.GroupProfileActivity_mCollapsingToolbarLayout);
         mRvGroupMembers = findViewById(R.id.GroupProfileActivity_mRvGroupMembers);
-        mTvContentGroupName = findViewById(R.id.ChatSetup_mTvContentGroupName);
-        mTvContentMyGroupNickname = findViewById(R.id.ChatSetup_mTvContentMyGroupNickname);
-        mTvContentGroupNotice = findViewById(R.id.ChatSetup_mTvContentGroupNotice);
+        mTvContentGroupName = findViewById(R.id.GroupProfileActivity_mTvContentGroupName);
+        mTvContentNicknameInGroup = findViewById(R.id.GroupProfileActivity_mTvContentNicknameInGroup);
+        mTvContentGroupNotice = findViewById(R.id.GroupProfileActivity_mTvContentGroupNotice);
         mFooterView = getLayoutInflater().inflate(R.layout.item_group_member_footer, (ViewGroup) getWindow().getDecorView(), false);
-        mClGroupName = findViewById(R.id.ChatSetup_mClGroupName);
-        mClMyGroupNickname = findViewById(R.id.ChatSetup_mClMyGroupNickname);
-        mClQRCode = findViewById(R.id.ChatSetup_mClQRCode);
-        mAdapter = new GroupMembersAdapter(GROUP_MEMBERS_LINE_MAX_COUNT);
+        mClGroupName = findViewById(R.id.GroupProfileActivity_mClGroupName);
+        mClMyGroupNickname = findViewById(R.id.GroupProfileActivity_mClMyGroupNickname);
+        mClQRCode = findViewById(R.id.GroupProfileActivity_mClQRCode);
+        mIvEditNotice = findViewById(R.id.GroupProfileActivity_mIvEditNotice);
+        mGroupMemberList = new ArrayList<>(64);
+        mAdapter = new GroupMembersAdapter(mGroupMemberList, GROUP_MEMBERS_MAX_VISIBILITY_COUNT);
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Modify));
     }
 
     @Override
@@ -82,6 +95,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mClGroupName.setOnClickListener(mOnGroupNameClickListener);
         mClMyGroupNickname.setOnClickListener(mOnMyGroupNicknameClickListener);
         mClQRCode.setOnClickListener(mOnQRCodeClickListener);
+        mIvEditNotice.setOnClickListener(mOnGroupNoticeClickListener);
 
         String groupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
         if (TextUtils.isEmpty(groupID)) {
@@ -97,7 +111,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         public void onClick(View v) {
             new MaterialDialog.Builder(GroupProfileActivity.this)
                     .title(R.string.GroupProfileActivity_GroupNameDialogTitle)
-                    .content(R.string.GroupProfileActivity_GroupNameDialogContent)
+                    .content(R.string.GroupProfileActivity_GroupNameDialogHint)
                     .inputType(
                             InputType.TYPE_CLASS_TEXT
                                     | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
@@ -107,12 +121,15 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                     .negativeText(R.string.Cancel)
                     .input(
                             null,
-                            null,
+                            mTvContentGroupName.getText(),
                             false,
                             new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-
+                                    if (!input.toString().equals(mTvContentGroupName.getText())) {
+                                        mProgressDialog.show();
+                                        mPresenter.updateGroupName(input.toString());
+                                    }
                                 }
                             })
                     .show();
@@ -124,7 +141,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         public void onClick(View v) {
             new MaterialDialog.Builder(GroupProfileActivity.this)
                     .title(R.string.GroupProfileActivity_MyGroupNicknameDialogTitle)
-                    .content(R.string.GroupProfileActivity_MyGroupNicknameDialogContent)
+                    .content(R.string.GroupProfileActivity_MyGroupNicknameDialogHint)
                     .inputType(
                             InputType.TYPE_CLASS_TEXT
                                     | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
@@ -134,12 +151,53 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                     .negativeText(R.string.Cancel)
                     .input(
                             null,
-                            null,
+                            mTvContentNicknameInGroup.getText(),
                             false,
                             new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                    if (!input.toString().equals(mTvContentNicknameInGroup.getText())) {
+                                        mProgressDialog.show();
+                                        mPresenter.updateMyGroupAlias(input.toString());
+                                    }
+                                }
+                            })
+                    .show();
+        }
+    };
 
+    private final View.OnClickListener mOnGroupNoticeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            CharSequence currentNotice = mTvContentGroupNotice.getText();
+            if (getString(R.string.None).equals(currentNotice)) {
+                currentNotice = null;
+            }
+            final CharSequence finalCurrentNotice = currentNotice;
+            new MaterialDialog.Builder(GroupProfileActivity.this)
+                    .title(R.string.GroupProfileActivity_NoticeDialogTitle)
+                    .content(R.string.GroupProfileActivity_NoticeDialogHint)
+                    .inputType(
+                            InputType.TYPE_CLASS_TEXT
+                                    | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+                                    | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                    .inputRange(0, 16)
+                    .positiveText(R.string.Confirm)
+                    .negativeText(R.string.Cancel)
+                    .input(
+                            null,
+                            finalCurrentNotice,
+                            true,
+                            new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                    if (input == null) {
+                                        input = "";
+                                    }
+                                    if (!input.toString().equals(finalCurrentNotice)) {
+                                        mProgressDialog.show();
+                                        mPresenter.updateGroupNotice(input.toString());
+                                    }
                                 }
                             })
                     .show();
@@ -159,7 +217,11 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     }
 
     @Override
-    public void updateGroupInfo(GroupBean group) {
+    public void showGroupInfo(GroupBean group, GroupMemberBean mySelf) {
+        if (TextUtils.isEmpty(group.getOwner())) {
+            finish();
+            return;
+        }
         mCollapsingToolbarLayout.setTitle(group.getName());
         mTvContentGroupName.setText(group.getName());
         if (TextUtils.isEmpty(group.getNotice())) {
@@ -167,16 +229,47 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         } else {
             mTvContentGroupNotice.setText(group.getNotice());
         }
+        mGroupMemberList.clear();
+        List<GroupMemberBean> members = group.getMembers();
+        if (members != null) {
+            mGroupMemberList.addAll(members);
+
+        }
+        mAdapter.notifyDataSetChanged();
+
+        mTvContentNicknameInGroup.setText(mySelf.getNicknameInGroup());
+        if (mySelf.getUserProfile().getUserID().equals(group.getOwner())) {
+            mIvEditNotice.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public void updateMySelfInfo(GroupMemberBean groupMember) {
-        mTvContentMyGroupNickname.setText(groupMember.getNicknameInGroup());
+    public void showNewGroupName(String newGroupName) {
+        mTvContentGroupName.setText(newGroupName);
+        mProgressDialog.dismiss();
     }
+
+    @Override
+    public void showNewGroupNotice(String newGroupNotice) {
+        if (TextUtils.isEmpty(newGroupNotice)) {
+            mTvContentGroupNotice.setText(R.string.None);
+        } else {
+            mTvContentGroupNotice.setText(newGroupNotice);
+        }
+        mProgressDialog.dismiss();
+    }
+
+    @Override
+    public void showNewMyAlias(String newAlias) {
+        mTvContentNicknameInGroup.setText(newAlias);
+        mProgressDialog.dismiss();
+    }
+
 
     @Override
     public void showError(String error) {
-
+        mProgressDialog.dismiss();
+        showToast(error);
     }
 
     @Override

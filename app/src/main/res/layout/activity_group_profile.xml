@@ -77,9 +77,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
                 android:gravity="center"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
                 android:text="查看全部成员"
                 android:textSize="14sp" />
 
@@ -95,35 +95,35 @@
                 android:textSize="12sp" />
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/ChatSetup_mClGroupName"
+                android:id="@+id/GroupProfileActivity_mClGroupName"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp">
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvLabelGroupName"
+                    android:id="@+id/GroupProfileActivity_mTvLabelGroupName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="群聊名称"
+                    android:text="@string/GroupProfileActivity_GroupNameDialogTitle"
                     android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentGroupName"
+                    app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentGroupName"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvContentGroupName"
+                    android:id="@+id/GroupProfileActivity_mTvContentGroupName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelGroupName" />
+                    app:layout_constraintTop_toBottomOf="@+id/GroupProfileActivity_mTvLabelGroupName" />
 
                 <View
                     android:layout_width="0dp"
@@ -134,7 +134,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
-                    android:id="@+id/ChatSetup_mSwitchGroupName"
+                    android:id="@+id/GroupProfileActivity_mSwitchGroupName"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:padding="18dp"
@@ -146,35 +146,35 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/ChatSetup_mClMyGroupNickname"
+                android:id="@+id/GroupProfileActivity_mClMyGroupNickname"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp">
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvLabelMyGroupNickname"
+                    android:id="@+id/GroupProfileActivity_mTvLabelMyGroupNickname"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="我在本群的昵称"
+                    android:text="@string/GroupProfileActivity_MyGroupNicknameDialogTitle"
                     android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentMyGroupNickname"
+                    app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentNicknameInGroup"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvContentMyGroupNickname"
+                    android:id="@+id/GroupProfileActivity_mTvContentNicknameInGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelMyGroupNickname" />
+                    app:layout_constraintTop_toBottomOf="@id/GroupProfileActivity_mTvLabelMyGroupNickname" />
 
                 <View
                     android:layout_width="0dp"
@@ -185,7 +185,6 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
-                    android:id="@+id/ChatSetup_mSwitchGroupNickname"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:padding="18dp"
@@ -197,28 +196,28 @@
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/ChatSetup_mClQRCode"
+                android:id="@+id/GroupProfileActivity_mClQRCode"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp">
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvLabelQRCode"
+                    android:id="@+id/GroupProfileActivity_mTvLabelQRCode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="群二维码"
                     android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentQRCode"
+                    app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentQRCode"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvContentQRCode"
+                    android:id="@+id/GroupProfileActivity_mTvContentQRCode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="通过扫描二维码可加入该群聊"
@@ -226,7 +225,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelQRCode" />
+                    app:layout_constraintTop_toBottomOf="@id/GroupProfileActivity_mTvLabelQRCode" />
 
                 <View
                     android:layout_width="0dp"
@@ -246,22 +245,22 @@
                 android:paddingStart="16dp">
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvLabelGroupNotice"
+                    android:id="@+id/GroupProfileActivity_mTvLabelGroupNotice"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:maxLines="1"
-                    android:text="群公告"
+                    android:text="@string/GroupProfileActivity_NoticeDialogTitle"
                     android:textColor="@color/text_primary_color_black"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentGroupNotice"
+                    app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentGroupNotice"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
-                    android:id="@+id/ChatSetup_mTvContentGroupNotice"
+                    android:id="@+id/GroupProfileActivity_mTvContentGroupNotice"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
@@ -269,9 +268,21 @@
                     android:maxLines="4"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/GroupProfileActivity_mIvEditNotice"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ChatSetup_mTvLabelGroupNotice" />
+                    app:layout_constraintTop_toBottomOf="@id/GroupProfileActivity_mTvLabelGroupNotice" />
+
+
+                <ImageView
+                    android:id="@+id/GroupProfileActivity_mIvEditNotice"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:padding="18dp"
+                    android:src="@drawable/ic_edit2"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <View
                     android:layout_width="0dp"
@@ -299,7 +310,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:background="@color/green"
-        app:layout_anchor="@+id/GroupProfileActivity_mAppBarLayout"
+        app:layout_anchor="@id/GroupProfileActivity_mAppBarLayout"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_chat"
         app:useCompatPadding="true" />

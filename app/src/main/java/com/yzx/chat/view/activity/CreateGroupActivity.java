@@ -66,7 +66,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         if (mContactList == null) {
             return;
         }
-        mProgressDialog = new ProgressDialog(this, getString(R.string.CreateGroupActivity_Creating));
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Create));
         mSelectedContactList = new ArrayList<>(32);
         mCreateGroupAdapter = new CreateGroupAdapter(mContactList);
     }

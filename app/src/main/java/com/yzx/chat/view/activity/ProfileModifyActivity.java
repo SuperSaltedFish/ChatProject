@@ -24,7 +24,6 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.ProfileModifyContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ProfileModifyPresenter;
-import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GsonUtil;
 import com.yzx.chat.widget.view.ProgressDialog;
@@ -72,7 +71,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         mLlSignature = findViewById(R.id.ProfileModifyActivity_mLlSignature);
         mTvSignature = findViewById(R.id.ProfileModifyActivity_mTvSignature);
         mEtNickname = findViewById(R.id.ProfileModifyActivity_mEtNickname);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProfileModifyActivity_ProgressHint));
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Save));
     }
 
     @Override

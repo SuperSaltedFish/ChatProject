@@ -21,4 +21,14 @@ public interface GroupApi {
 
     @HttpApi(RequestMethod = "POST", Path = "group/getGroupList")
     Call<JsonResponse<Void>> getGroupList();
+
+    @HttpApi(RequestMethod = "POST", Path = "group/rename")
+    Call<JsonResponse<Void>> rename(@HttpParam("groupID") String groupID, @HttpParam("name") String newName);
+
+    @HttpApi(RequestMethod = "POST", Path = "group/updateNotice")
+    Call<JsonResponse<Void>> updateNotice(@HttpParam("groupID") String groupID, @HttpParam("notice") String newNotice);
+
+    @HttpApi(RequestMethod = "POST", Path = "group/updateAlias")
+    Call<JsonResponse<Void>> updateAlias(@HttpParam("groupID") String groupID, @HttpParam("alias") String newAlias);
+
 }

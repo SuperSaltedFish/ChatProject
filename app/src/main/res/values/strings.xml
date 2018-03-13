@@ -73,6 +73,14 @@
     <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍后再试！</string>
     <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短</string>
 
+    <string name="ProgressHint_Search">正在搜索...</string>
+    <string name="ProgressHint_Send">正在发送...</string>
+    <string name="ProgressHint_Add">正在添加...</string>
+    <string name="ProgressHint_Delete">正在删除...</string>
+    <string name="ProgressHint_Save">正在保存...</string>
+    <string name="ProgressHint_Create">正在创建...</string>
+    <string name="ProgressHint_Modify">正在修改...</string>
+
     <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
     <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
     <string name="EMMessageUtil_VoiceInfo">[语音信息]</string>
@@ -123,7 +131,6 @@
     <string name="FindNewContactActivity_SearchHint">手机号/群号/昵称</string>
     <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
     <string name="FindNewContactActivity_SearchFail">搜索失败，请稍后再试</string>
-    <string name="FindNewContactActivity_SearchProcess">正在搜索...</string>
     <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过</string>
     <string name="StrangerProfile_SetPermissionTitle">设置朋友圈权限</string>
     <string name="StrangerProfile_SetPermissionContent">不让他(她)看我的朋友圈</string>
@@ -148,15 +155,11 @@
     <string name="ProfileModifyActivity_Woman">女</string>
     <string name="ProfileModifyActivity_AvatarLabel">头像</string>
     <string name="ProfileModifyActivity_NoneNickname">昵称不能为空</string>
-    <string name="StrangerProfileActivity_ProgressHint">正在发送...</string>
-    <string name="ContactOperationActivity_ProgressHint">正在添加...</string>
-    <string name="ContactProfileActivity_DeleteProgressHint">正在删除...</string>
     <string name="ChatActivity_ImageAlreadyDeleted">图片已经删除，无法查看</string>
     <string name="Profile_LabelNickname">昵称</string>
     <string name="Profile_LabelLocation">所在地区</string>
     <string name="Profile_LabelBirthday">出生日期</string>
     <string name="ProfileModifyActivity_ReadCityInfoError">读取城市信息失败</string>
-    <string name="ProfileModifyActivity_ProgressHint">正在保存...</string>
     <string name="ChatSetup_LabelSetTop">置顶</string>
     <string name="ChatSetup_HintSetTop">消息将始终显示在会话列表顶部</string>
     <string name="ChatSetup_LabelRemind">消息免打扰</string>
@@ -168,15 +171,14 @@
     <string name="ProfileModifyActivity_LocationDialogTitle">请选择省市</string>
     <string name="Cancel">取消</string>
     <string name="GroupProfileActivity_MyGroupNicknameDialogTitle">我在本群的昵称</string>
-    <string name="GroupProfileActivity_MyGroupNicknameDialogContent">设置你在群里的昵称，这个昵称只会在这个群内显示。</string>
+    <string name="GroupProfileActivity_MyGroupNicknameDialogHint">设置你在群里的昵称，这个昵称只会在这个群内显示。</string>
     <string name="GroupProfileActivity_GroupNameDialogTitle">群聊名称</string>
-    <string name="GroupProfileActivity_GroupNameDialogContent">设置该群聊的名称</string>
+    <string name="GroupProfileActivity_GroupNameDialogHint">设置该群聊的名称</string>
     <string name="CreateGroupActivity_Title">创建群聊</string>
     <string name="MyQRCodeActivity_Title">我的二维码</string>
     <string name="Scan">扫一扫</string>
     <string name="MyQRCodeActivity_ResetQRCode">刷新二维码</string>
     <string name="MyQRCodeActivity_SaveQRCode">保存到手机</string>
-    <string name="CreateGroupActivity_Creating">正在创建...</string>
     <string name="LocationMapActivity_Title">发送位置</string>
     <string name="StrangerProfileActivity_RequestAdd">请求添加</string>
     <string name="Send">发送</string>
@@ -185,5 +187,8 @@
     <string name="LocationMapActivity_SearchHint">请输入搜索内容...</string>
     <string name="NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="GroupListActivity_Title">群聊</string>
+    <string name="GroupProfileActivity_NoticeDialogTitle">群公告</string>
+    <string name="GroupProfileActivity_NoticeDialogHint">编辑群公告，该公告只有群主才能编辑。</string>
+
 
 </resources>

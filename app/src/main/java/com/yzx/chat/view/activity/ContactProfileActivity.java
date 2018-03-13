@@ -57,7 +57,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mTvNickname = findViewById(R.id.FriendProfileActivity_mTvNickname);
         mTvExplain = findViewById(R.id.FriendProfileActivity_mTvExplain);
         mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle), mContactID);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ContactProfileActivity_DeleteProgressHint));
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Delete));
     }
 
     @Override

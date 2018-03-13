@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
-import com.yzx.chat.bean.UserBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,7 +94,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
                     result = false;
                     break;
                 }
-                for(GroupMemberBean groupMember:groupMemberList){
+                for (GroupMemberBean groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
                 if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
@@ -113,6 +112,24 @@ public class GroupDao extends AbstractDao<GroupBean> {
         mReadWriteHelper.closeWritableDatabase();
         return result;
 
+    }
+
+    public boolean updateGroupName(String groupID, String newName) {
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_Name, newName);
+        boolean result = database.update(getTableName(), values, getWhereClauseOfKey(), new String[]{groupID}) > 0;
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    public boolean updateGroupNotice(String groupID, String newNotice) {
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_Notice, newNotice);
+        boolean result = database.update(getTableName(), values, getWhereClauseOfKey(), new String[]{groupID}) > 0;
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
     }
 
     public GroupDao(ReadWriteHelper readWriteHelper) {
@@ -161,9 +178,10 @@ public class GroupDao extends AbstractDao<GroupBean> {
         group.setGroupID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GroupID)));
         group.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Name)));
         group.setCreateTime(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_CreateTime)));
-        group.setAvatar(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Owner)));
+        group.setOwner(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Owner)));
         group.setAvatar(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Avatar)));
         group.setNotice(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Notice)));
         return group;
     }
+
 }

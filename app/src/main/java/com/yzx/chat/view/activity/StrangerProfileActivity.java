@@ -43,7 +43,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         mTvContentNickname = findViewById(R.id.Profile_mTvContentNickname);
         mTvContentLocation = findViewById(R.id.Profile_mTvContentLocation);
         mTvContentBirthday = findViewById(R.id.Profile_mTvContentBirthday);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.StrangerProfileActivity_ProgressHint));
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Send));
     }
 
     @Override

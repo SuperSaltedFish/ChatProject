@@ -1,6 +1,5 @@
 package com.yzx.chat.network.chat;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -19,8 +18,8 @@ import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,7 +112,7 @@ public class ContactManager {
     }
 
 
-    public void requestContact(final UserBean user, final String reason, @Nullable final ResultCallback<Boolean> resultCallback) {
+    public void requestContact(final UserBean user, final String reason, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRequestContact);
         mRequestContact = mContactApi.requestContact(user.getUserID(), reason);
         mRequestContact.setCallback(new BaseHttpCallback<Void>() {
@@ -148,7 +147,7 @@ public class ContactManager {
         mNetworkExecutor.submit(mRequestContact);
     }
 
-    public void rejectContact(final ContactOperationBean contactOperation, final String reason, @Nullable final ResultCallback<Boolean> resultCallback) {
+    public void rejectContact(final ContactOperationBean contactOperation, final String reason, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRejectContact);
         mRejectContact = mContactApi.rejectContact(contactOperation.getUser().getUserID(), reason);
         mRejectContact.setCallback(new BaseHttpCallback<Void>() {
@@ -180,7 +179,7 @@ public class ContactManager {
         mNetworkExecutor.submit(mRejectContact);
     }
 
-    public void acceptContact(final ContactOperationBean contactOperation, @Nullable final ResultCallback<Boolean> resultCallback) {
+    public void acceptContact(final ContactOperationBean contactOperation, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mAcceptContact);
         mAcceptContact = mContactApi.acceptContact(contactOperation.getUser().getUserID());
         mAcceptContact.setCallback(new BaseHttpCallback<Void>() {
@@ -228,7 +227,7 @@ public class ContactManager {
         mNetworkExecutor.submit(mAcceptContact);
     }
 
-    public void deleteContact(final ContactBean contact, @Nullable final ResultCallback<Boolean> resultCallback) {
+    public void deleteContact(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mDeleteContact);
         mDeleteContact = mContactApi.deleteContact(contact.getUserProfile().getUserID());
         mDeleteContact.setCallback(new BaseHttpCallback<Void>() {
@@ -261,7 +260,7 @@ public class ContactManager {
         mNetworkExecutor.submit(mDeleteContact);
     }
 
-    public void updateContact(final ContactBean contact, @Nullable final ResultCallback<Boolean> resultCallback) {
+    public void updateContact(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mUpdateContact);
         mUpdateContact = mContactApi.updateRemark(contact.getUserProfile().getUserID(), contact.getRemark());
         mUpdateContact.setCallback(new BaseHttpCallback<Void>() {

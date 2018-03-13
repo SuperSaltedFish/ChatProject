@@ -13,9 +13,13 @@ import com.yzx.chat.bean.GroupMemberBean;
 public class GroupProfileContract {
 
     public interface View extends BaseView<Presenter> {
-        void updateGroupInfo(GroupBean group);
+        void showGroupInfo(GroupBean group, GroupMemberBean mySelf);
 
-        void updateMySelfInfo(GroupMemberBean groupMenber);
+        void showNewGroupName(String newGroupName);
+
+        void showNewGroupNotice(String newGroupNotice);
+
+        void showNewMyAlias(String newAlias);
 
         void showError(String error);
 
@@ -25,5 +29,11 @@ public class GroupProfileContract {
 
     public interface Presenter extends BasePresenter<View> {
         void init(String groupID);
+
+        void updateGroupName(String newName);
+
+        void updateGroupNotice(String newNotice);
+
+        void updateMyGroupAlias(String newAlias);
     }
 }

@@ -21,7 +21,6 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.FindNewContactContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.FindNewContactPresenter;
-import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 
 import java.util.Locale;
@@ -103,7 +102,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
                 if (!TextUtils.isEmpty(searchText)) {
                     mPresenter.searchUser(searchText);
                     enableSearchHint(true);
-                    mTvSearchHint.setText(R.string.FindNewContactActivity_SearchProcess);
+                    mTvSearchHint.setText(R.string.ProgressHint_Search);
                     mPbSearch.setVisibility(View.VISIBLE);
                 }
             }

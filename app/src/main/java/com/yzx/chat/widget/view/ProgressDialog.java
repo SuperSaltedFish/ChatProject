@@ -22,10 +22,15 @@ public class ProgressDialog extends Dialog {
 
 
     public ProgressDialog(@NonNull Context context, CharSequence hintText) {
+        this(context, hintText, false);
+
+    }
+
+    public ProgressDialog(@NonNull Context context, CharSequence hintText, boolean isCancelable) {
         super(context);
         mContext = context;
         setContentView(R.layout.dialog_progress);
-        setCanceledOnTouchOutside(false);
+        setCancelable(isCancelable);
         mTvHint = findViewById(R.id.ProgressDialog_mTvHint);
         mTvHint.setText(hintText);
     }
@@ -42,4 +47,10 @@ public class ProgressDialog extends Dialog {
         mTvHint.setText(hintText);
     }
 
+    @Override
+    public void show() {
+        if(!isShowing()){
+            super.show();
+        }
+    }
 }

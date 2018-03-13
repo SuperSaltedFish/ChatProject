@@ -58,7 +58,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         mRecyclerView = findViewById(R.id.ContactOperationActivity_mRecyclerView);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ContactOperationActivity_ProgressHint));
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Add));
         mContactOperationMenu = new OverflowPopupMenu(this);
         mContactOperationList = new ArrayList<>(32);
         mAdapter = new ContactOperationAdapter(mContactOperationList);

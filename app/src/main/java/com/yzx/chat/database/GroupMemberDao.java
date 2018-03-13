@@ -38,6 +38,15 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
         super(readWriteHelper);
     }
 
+    public boolean updateMemberAlias(String groupID, String memberID, String newAlias) {
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME_Alias, newAlias);
+        boolean result = database.update(getTableName(), values, getWhereClauseOfKey(), new String[]{memberID, groupID}) > 0;
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
     @Override
     protected String getTableName() {
         return TABLE_NAME;
