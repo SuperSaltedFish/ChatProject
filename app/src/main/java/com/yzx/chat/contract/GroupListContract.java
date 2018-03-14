@@ -1,5 +1,7 @@
 package com.yzx.chat.contract;
 
+import android.support.v7.util.DiffUtil;
+
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 import com.yzx.chat.bean.GroupBean;
@@ -15,7 +17,11 @@ public class GroupListContract {
 
     public interface View extends BaseView<GroupListContract.Presenter> {
 
-        void updateContactListView(List<GroupBean> newFriendList);
+        void showGroupList(DiffUtil.DiffResult diffResult, List<GroupBean> groupList);
+
+        void refreshGroupItem(GroupBean group);
+
+        void removeGroupItem(GroupBean group);
     }
 
 

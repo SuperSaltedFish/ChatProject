@@ -189,6 +189,7 @@
     <string name="GroupListActivity_Title">群聊</string>
     <string name="GroupProfileActivity_NoticeDialogTitle">群公告</string>
     <string name="GroupProfileActivity_NoticeDialogHint">编辑群公告，该公告只有群主才能编辑。</string>
+    <string name="GroupMenu_ExitGroup">退出该群组</string>
 
 
 </resources>

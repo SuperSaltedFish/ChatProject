@@ -1,6 +1,8 @@
 package com.yzx.chat.bean;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class GroupBean {
+public class GroupBean implements Parcelable {
 
     private String groupID;
     private String name;
@@ -90,4 +92,46 @@ public class GroupBean {
     public void setMembers(ArrayList<GroupMemberBean> members) {
         this.members = members;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.groupID);
+        dest.writeString(this.name);
+        dest.writeString(this.createTime);
+        dest.writeString(this.owner);
+        dest.writeString(this.avatar);
+        dest.writeString(this.notice);
+        dest.writeTypedList(this.members);
+    }
+
+    public GroupBean() {
+    }
+
+    protected GroupBean(Parcel in) {
+        this.groupID = in.readString();
+        this.name = in.readString();
+        this.createTime = in.readString();
+        this.owner = in.readString();
+        this.avatar = in.readString();
+        this.notice = in.readString();
+        this.members = in.createTypedArrayList(GroupMemberBean.CREATOR);
+    }
+
+    public static final Parcelable.Creator<GroupBean> CREATOR = new Parcelable.Creator<GroupBean>() {
+        @Override
+        public GroupBean createFromParcel(Parcel source) {
+            return new GroupBean(source);
+        }
+
+        @Override
+        public GroupBean[] newArray(int size) {
+            return new GroupBean[size];
+        }
+    };
 }

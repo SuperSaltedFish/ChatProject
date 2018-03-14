@@ -1,5 +1,6 @@
 package com.yzx.chat.network.chat;
 
+import android.os.Parcel;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -102,8 +103,15 @@ public class ContactManager {
         if (mContactsMap == null) {
             return null;
         }
-        List<ContactBean> contacts = new ArrayList<>(mContactsMap.size() + 16);
-        contacts.addAll(mContactsMap.values());
+        List<ContactBean> contacts = new ArrayList<>(mContactsMap.size() + 4);
+        Parcel parcel;
+        for(ContactBean contact:mContactsMap.values()){
+            parcel = Parcel.obtain();
+            contact.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            contacts.add(ContactBean.CREATOR.createFromParcel(parcel));
+            parcel.recycle();
+        }
         return contacts;
     }
 
@@ -196,9 +204,6 @@ public class ContactManager {
                 for (OnContactOperationListener listener : mContactOperationListeners) {
                     listener.onContactOperationUpdate(contactOperation);
                 }
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
 
                 if (success) {
                     ContactBean newContact = mContactDao.getContact(contactOperation.getUserID());
@@ -214,6 +219,10 @@ public class ContactManager {
                     }
                 } else {
                     LogUtil.e("acceptContact:Failure of operating database");
+                }
+
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(success);
                 }
             }
 
@@ -238,15 +247,16 @@ public class ContactManager {
                     LogUtil.e("deleteContact:Failure of operating database");
                 }
 
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
                 if (success) {
                     mContactsMap.remove(contact.getUserProfile().getUserID());
                     for (OnContactChangeListener listener : mContactChangeListeners) {
                         listener.onContactDeleted(contact);
                     }
 
+                }
+
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(success);
                 }
             }
 
@@ -268,9 +278,6 @@ public class ContactManager {
             protected void onSuccess(Void response) {
                 contact.getRemark().setUploadFlag(0);
                 boolean success = mContactDao.update(contact) & mUserDao.update(contact.getUserProfile());
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
 
                 if (success) {
                     mContactsMap.put(contact.getUserProfile().getUserID(), contact);
@@ -279,6 +286,10 @@ public class ContactManager {
                     }
                 } else {
                     LogUtil.e("updateContact:Failure of operating database");
+                }
+
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(success);
                 }
             }
 

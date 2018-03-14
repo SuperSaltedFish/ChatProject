@@ -31,4 +31,7 @@ public interface GroupApi {
     @HttpApi(RequestMethod = "POST", Path = "group/updateAlias")
     Call<JsonResponse<Void>> updateAlias(@HttpParam("groupID") String groupID, @HttpParam("alias") String newAlias);
 
+    @HttpApi(RequestMethod = "POST", Path = "group/quit")
+    Call<JsonResponse<Void>> quit(@HttpParam("groupID") String groupID);
+
 }

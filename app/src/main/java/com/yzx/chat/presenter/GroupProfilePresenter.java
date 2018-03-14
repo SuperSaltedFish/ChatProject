@@ -132,4 +132,9 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         });
     }
 
+    @Override
+    public void quitGroup() {
+
+    }
+
 }

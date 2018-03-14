@@ -35,5 +35,7 @@ public class GroupProfileContract {
         void updateGroupNotice(String newNotice);
 
         void updateMyGroupAlias(String newAlias);
+
+        void quitGroup();
     }
 }

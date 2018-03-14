@@ -1,5 +1,7 @@
 package com.yzx.chat.network.chat;
 
+import android.os.Parcel;
+
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
@@ -13,12 +15,16 @@ import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.PinYinUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by YZX on 2018年03月09日.
@@ -31,23 +37,26 @@ public class GroupManager {
     private Map<String, GroupBean> mGroupsMap;
     private GroupDao mGroupDao;
     private GroupMemberDao mGroupMemberDao;
+    private List<OnGroupChangeListener> mOnGroupChangeListeners;
 
     private GroupApi mGroupApi;
     private NetworkExecutor mNetworkExecutor;
     private Call<JsonResponse<Void>> mRenameGroup;
     private Call<JsonResponse<Void>> mUpdateGroupNotice;
     private Call<JsonResponse<Void>> mUpdateAlias;
+    private Call<JsonResponse<Void>> mQuitGroup;
 
     GroupManager(IMClient.SubManagerCallback subManagerCallback, AbstractDao.ReadWriteHelper readWriteHelper) {
         if (subManagerCallback == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
         mSubManagerCallback = subManagerCallback;
-        mGroupsMap = new HashMap<>(24);
         mGroupDao = new GroupDao(readWriteHelper);
         mGroupMemberDao = new GroupMemberDao(readWriteHelper);
+        mOnGroupChangeListeners = Collections.synchronizedList(new LinkedList<OnGroupChangeListener>());
         mNetworkExecutor = NetworkExecutor.getInstance();
         mGroupApi = (GroupApi) ApiHelper.getProxyInstance(GroupApi.class);
+        mGroupsMap = new HashMap<>(24);
         List<GroupBean> groups = mGroupDao.loadAllGroup();
         if (groups != null) {
             for (GroupBean group : groups) {
@@ -71,9 +80,16 @@ public class GroupManager {
         if (mGroupsMap == null) {
             return null;
         }
-        List<GroupBean> group = new ArrayList<>(mGroupsMap.size() + 8);
-        group.addAll(mGroupsMap.values());
-        return group;
+        List<GroupBean> groupList = new ArrayList<>(mGroupsMap.size()+4);
+        Parcel parcel;
+        for (GroupBean group : mGroupsMap.values()) {
+            parcel = Parcel.obtain();
+            group.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            groupList.add(GroupBean.CREATOR.createFromParcel(parcel));
+            parcel.recycle();
+        }
+        return groupList;
     }
 
     public GroupMemberBean getGroupMember(String groupID, String memberID) {
@@ -90,6 +106,35 @@ public class GroupManager {
         return null;
     }
 
+    public void quitGroup(final String groupID, final ResultCallback<Boolean> resultCallback) {
+        AsyncUtil.cancelCall(mQuitGroup);
+        mQuitGroup = mGroupApi.quit(groupID);
+        mQuitGroup.setCallback(new BaseHttpCallback<Void>() {
+            @Override
+            protected void onSuccess(Void response) {
+                boolean success = mGroupDao.deleteGroupAndMember(groupID);
+                if (!success) {
+                    LogUtil.e("updateGroupName:Failure of operating database");
+                }
+
+                GroupBean group = mGroupsMap.remove(groupID);
+                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                    listener.onGroupQuit(group);
+                }
+
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(success);
+                }
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                resultCallback.onFailure(message);
+            }
+        }, false);
+        mNetworkExecutor.submit(mQuitGroup);
+    }
+
     public void renameGroup(final String groupID, final String newName, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRenameGroup);
         mRenameGroup = mGroupApi.rename(groupID, newName);
@@ -101,13 +146,17 @@ public class GroupManager {
                     LogUtil.e("updateGroupName:Failure of operating database");
                 }
 
+                GroupBean group = mGroupsMap.get(groupID);
                 if (success) {
-                    GroupBean group = mGroupsMap.get(groupID);
                     if (group != null) {
                         group.setName(newName);
                     } else {
                         LogUtil.e("updateGroupName Failure in cache Failure");
                     }
+                }
+
+                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                    listener.onGroupUpdated(group);
                 }
 
                 if (resultCallback != null) {
@@ -134,13 +183,17 @@ public class GroupManager {
                     LogUtil.e("updateGroupNotice:Failure of operating database");
                 }
 
+                GroupBean group = mGroupsMap.get(groupID);
                 if (success) {
-                    GroupBean group = mGroupsMap.get(groupID);
                     if (group != null) {
                         group.setNotice(newNotice);
                     } else {
                         LogUtil.e("updateGroupNotice Failure in cache Failure");
                     }
+                }
+
+                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                    listener.onGroupUpdated(group);
                 }
 
                 if (resultCallback != null) {
@@ -167,9 +220,8 @@ public class GroupManager {
                     LogUtil.e("updateAlias:Failure of operating database");
                 }
 
-
                 if (success) {
-                    GroupMemberBean groupMember  = getGroupMember(groupID,memberID);
+                    GroupMemberBean groupMember = getGroupMember(groupID, memberID);
                     if (groupMember != null) {
                         groupMember.setAlias(newAlias);
                     } else {
@@ -193,21 +245,43 @@ public class GroupManager {
     void destroy() {
         AsyncUtil.cancelCall(mRenameGroup);
         AsyncUtil.cancelCall(mUpdateGroupNotice);
+        AsyncUtil.cancelCall(mUpdateAlias);
+        AsyncUtil.cancelCall(mQuitGroup);
         mGroupsMap.clear();
         mGroupsMap = null;
     }
+
+    public void addGroupChangeListener(OnGroupChangeListener listener) {
+        if (!mOnGroupChangeListeners.contains(listener)) {
+            mOnGroupChangeListeners.add(listener);
+        }
+    }
+
+    public void removeGroupChangeListener(OnGroupChangeListener listener) {
+        mOnGroupChangeListeners.remove(listener);
+    }
+
 
     static boolean update(ArrayList<GroupBean> groups, AbstractDao.ReadWriteHelper readWriteHelper) {
         GroupDao groupDao = new GroupDao(readWriteHelper);
         GroupMemberDao groupMemberDao = new GroupMemberDao(readWriteHelper);
         groupMemberDao.cleanTable();
         groupDao.cleanTable();
-        if (groupDao.insertAll(groups)) {
+        if (groupDao.insertAllGroupAndMember(groups)) {
             return true;
         } else {
             LogUtil.e("updateAllGroups fail");
             return false;
         }
+    }
+
+
+    public interface OnGroupChangeListener {
+        void onGroupCreated(GroupBean group);
+
+        void onGroupQuit(GroupBean group);
+
+        void onGroupUpdated(GroupBean group);
     }
 
 }

@@ -90,7 +90,7 @@ public class ContactRemarkBean implements Parcelable {
         this.uploadFlag = in.readInt();
     }
 
-    public static final Parcelable.Creator<ContactRemarkBean> CREATOR = new Parcelable.Creator<ContactRemarkBean>() {
+    public static final Creator<ContactRemarkBean> CREATOR = new Creator<ContactRemarkBean>() {
         @Override
         public ContactRemarkBean createFromParcel(Parcel source) {
             return new ContactRemarkBean(source);

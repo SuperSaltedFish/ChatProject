@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.contract.GroupListContract;
 import com.yzx.chat.presenter.GroupListPresenter;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.GroupAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
@@ -66,8 +69,8 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    Intent intent = new Intent(GroupListActivity.this,GroupProfileActivity.class);
-                    intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID,mGroupList.get(position).getGroupID());
+                    Intent intent = new Intent(GroupListActivity.this, GroupProfileActivity.class);
+                    intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mGroupList.get(position).getGroupID());
                     startActivity(intent);
                 }
             });
@@ -85,12 +88,33 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         return new GroupListPresenter();
     }
 
+
     @Override
-    public void updateContactListView(List<GroupBean> newFriendList) {
+    public void showGroupList(DiffUtil.DiffResult diffResult, List<GroupBean> groupList) {
+        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mGroupAdapter));
         mGroupList.clear();
-        if(newFriendList!=null&&newFriendList.size()>0){
-            mGroupList.addAll(newFriendList);
-            mGroupAdapter.notifyDataSetChanged();
+        mGroupList.addAll(groupList);
+    }
+
+    @Override
+    public void refreshGroupItem(GroupBean group) {
+        int index = mGroupList.indexOf(group);
+        if (index >= 0) {
+            mGroupAdapter.notifyItemChangedEx(index);
+            mGroupList.set(index, group);
+        } else {
+            LogUtil.e("refreshGroupItem fail from ui");
+        }
+    }
+
+    @Override
+    public void removeGroupItem(GroupBean group) {
+        int index = mGroupList.indexOf(group);
+        if (index >= 0) {
+            mGroupAdapter.notifyItemRemovedEx(index);
+            mGroupList.remove(index);
+        } else {
+            LogUtil.e("removeGroupItem fail from ui");
         }
     }
 }

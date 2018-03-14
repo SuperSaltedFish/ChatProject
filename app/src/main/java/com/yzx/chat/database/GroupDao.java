@@ -3,6 +3,7 @@ package com.yzx.chat.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
@@ -20,7 +21,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
     static final String TABLE_NAME = "ContactGroup";
 
     private static final String COLUMN_NAME_GroupID = "GroupID";
-    private static final String COLUMN_NAME_Name = "Name";
+    private static final String COLUMN_NAME_Name = "GroupName";
     private static final String COLUMN_NAME_CreateTime = "CreateTime";
     private static final String COLUMN_NAME_Owner = "Owner";
     private static final String COLUMN_NAME_Avatar = "Avatar";
@@ -37,9 +38,9 @@ public class GroupDao extends AbstractDao<GroupBean> {
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                     + COLUMN_NAME_GroupID + " TEXT NOT NULL , "
-                    + COLUMN_NAME_Name + " TEXT,"
+                    + COLUMN_NAME_Name + " TEXT NOT NULL,"
                     + COLUMN_NAME_CreateTime + " TEXT,"
-                    + COLUMN_NAME_Owner + " TEXT,"
+                    + COLUMN_NAME_Owner + " TEXT NOT NULL,"
                     + COLUMN_NAME_Avatar + " TEXT,"
                     + COLUMN_NAME_Notice + " TEXT,"
                     + "PRIMARY KEY (" + COLUMN_NAME_GroupID + ")"
@@ -71,8 +72,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
         return new ArrayList<>(groupMap.values());
     }
 
-    @Override
-    public boolean insertAll(Iterable<GroupBean> entityIterable) {
+    public boolean insertAllGroupAndMember(Iterable<GroupBean> entityIterable) {
         if (entityIterable == null) {
             return false;
         }
@@ -112,6 +112,29 @@ public class GroupDao extends AbstractDao<GroupBean> {
         mReadWriteHelper.closeWritableDatabase();
         return result;
 
+    }
+
+    public boolean deleteGroupAndMember(String groupID) {
+        if (TextUtils.isEmpty(groupID)) {
+            return false;
+        }
+        boolean result;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            result = database.delete(TABLE_NAME, getWhereClauseOfKey(), new String[]{groupID}) > 0;
+            if (result) {
+                result = GroupMemberDao.deleteGroupMemberByGroupID(database, groupID);
+            }
+
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
     }
 
     public boolean updateGroupName(String groupID, String newName) {

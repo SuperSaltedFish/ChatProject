@@ -136,7 +136,7 @@ public class PinYinUtil {
                 } else {
                     value = value.substring(0, 1);
                 }
-            } else if (RegexUtil.isCharacter(key)) {
+            } else if (RegexUtil.isCharacter(key)||RegexUtil.isNumber(key)) {
                 value = key;
             } else {
                 value = "#";

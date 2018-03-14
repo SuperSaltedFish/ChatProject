@@ -99,4 +99,8 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
         }
         return result;
     }
+
+    static boolean deleteGroupMemberByGroupID(SQLiteDatabase Write, String groupID) {
+        return Write.delete(TABLE_NAME,COLUMN_NAME_GroupID + "=?",new String[]{groupID})>0;
+    }
 }

@@ -77,6 +77,7 @@ public class ContactBean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.userProfile, flags);
         dest.writeParcelable(this.remark, flags);
+        dest.writeString(this.abbreviation);
     }
 
     public ContactBean() {
@@ -85,6 +86,7 @@ public class ContactBean implements Parcelable {
     protected ContactBean(Parcel in) {
         this.userProfile = in.readParcelable(UserBean.class.getClassLoader());
         this.remark = in.readParcelable(ContactRemarkBean.class.getClassLoader());
+        this.abbreviation = in.readString();
     }
 
     public static final Creator<ContactBean> CREATOR = new Creator<ContactBean>() {

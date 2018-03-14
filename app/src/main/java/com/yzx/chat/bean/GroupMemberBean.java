@@ -1,5 +1,7 @@
 package com.yzx.chat.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 /**
@@ -7,7 +9,7 @@ import android.text.TextUtils;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class GroupMemberBean {
+public class GroupMemberBean implements Parcelable {
     private String alias;
     private int role;
     private String groupID;
@@ -52,4 +54,40 @@ public class GroupMemberBean {
     public void setUserProfile(UserBean userProfile) {
         this.userProfile = userProfile;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.alias);
+        dest.writeInt(this.role);
+        dest.writeString(this.groupID);
+        dest.writeParcelable(this.userProfile, flags);
+    }
+
+    public GroupMemberBean() {
+    }
+
+    protected GroupMemberBean(Parcel in) {
+        this.alias = in.readString();
+        this.role = in.readInt();
+        this.groupID = in.readString();
+        this.userProfile = in.readParcelable(UserBean.class.getClassLoader());
+    }
+
+    public static final Creator<GroupMemberBean> CREATOR = new Creator<GroupMemberBean>() {
+        @Override
+        public GroupMemberBean createFromParcel(Parcel source) {
+            return new GroupMemberBean(source);
+        }
+
+        @Override
+        public GroupMemberBean[] newArray(int size) {
+            return new GroupMemberBean[size];
+        }
+    };
 }

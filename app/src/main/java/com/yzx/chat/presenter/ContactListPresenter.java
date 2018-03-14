@@ -122,9 +122,10 @@ public class ContactListPresenter implements ContactListContract.Presenter {
                         ContactBean old = mContactList.get(index);
                         if (!old.getName().equals(contact.getName())) {
                             loadAllContact();
+                        } else {
+                            mContactList.set(index, contact);
+                            mContactView.updateContactItem(contact);
                         }
-                        mContactList.set(index, contact);
-                        mContactView.updateContactItem(contact);
                     } else {
                         loadAllContact();
                     }

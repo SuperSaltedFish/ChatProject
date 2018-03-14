@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.icu.text.Collator;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,11 +9,15 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -24,8 +29,9 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        ImageView imageView = findViewById(R.id.ssss);
-        GlideUtil.loadFromUrl(this,imageView,R.drawable.temp_share_image);
+//        ImageView imageView = findViewById(R.id.ssss);
+//        GlideUtil.loadFromUrl(this,imageView,R.drawable.temp_share_image);
+
     }
 
     @Override
@@ -37,6 +43,8 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 //        UserApi userApi= (UserApi) ApiHelper.getProxyInstance(UserApi.class);
 //        ArrayList<String> strings = new ArrayList<>();
 //        strings.add("/storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg");
