@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.contract.CreateGroupContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.CreateGroupPresenter;
@@ -35,6 +37,8 @@ import java.util.List;
 
 public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.Presenter> implements CreateGroupContract.View {
 
+    public static final String INTENT_EXTRA_GROUP_ID = "GroupID";
+    public static final String INTENT_EXTRA_ALREADY_JOIN_MEMBER = "AlreadyJoinMember";
 
     private RecyclerView mRecyclerView;
     private View mHeaderView;
@@ -48,6 +52,8 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private ProgressDialog mProgressDialog;
     private List<ContactBean> mContactList;
     private List<ContactBean> mSelectedContactList;
+    private List<ContactBean> mAlreadyJoinContactList;
+    private String mGroupID;
 
     @Override
     protected int getLayoutID() {
@@ -67,8 +73,8 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
             return;
         }
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Create));
-        mSelectedContactList = new ArrayList<>(32);
-        mCreateGroupAdapter = new CreateGroupAdapter(mContactList);
+        mSelectedContactList = new ArrayList<>(mContactList.size() / 2 + 1);
+        mCreateGroupAdapter = new CreateGroupAdapter(mContactList, mSelectedContactList);
     }
 
     @Override
@@ -108,12 +114,36 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mProgressDialog.setCanceledOnTouchOutside(false);
 
         mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
+
+        mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
+        if (!TextUtils.isEmpty(mGroupID)) {
+            mProgressDialog.setHintText(getString(R.string.ProgressHint_Add));
+            List<GroupMemberBean> groupMemberList = getIntent().getParcelableArrayListExtra(INTENT_EXTRA_ALREADY_JOIN_MEMBER);
+            mAlreadyJoinContactList = new ArrayList<>(groupMemberList.size());
+            ContactBean contact;
+            for (GroupMemberBean member : groupMemberList) {
+                contact = new ContactBean();
+                contact.setUserProfile(member.getUserProfile());
+                mAlreadyJoinContactList.add(contact);
+            }
+            mAlreadyJoinContactList.retainAll(mContactList);
+            if (mAlreadyJoinContactList.size() > 0) {
+                mCreateGroupAdapter.setDisableSelectedList(mAlreadyJoinContactList);
+            }
+        }
+
     }
 
     private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mPresenter.createGroup(mSelectedContactList);
+            if(TextUtils.isEmpty(mGroupID)) {
+                mProgressDialog.show( getString(R.string.ProgressHint_Create));
+                mPresenter.createGroup(mSelectedContactList);
+            }else {
+                mProgressDialog.show( getString(R.string.ProgressHint_Add));
+                mPresenter.addMembers(mGroupID,mSelectedContactList);
+            }
         }
     };
 
@@ -186,11 +216,13 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
     @Override
     public void showError(String error) {
-
+        showToast(error);
+        mProgressDialog.dismiss();
     }
 
     @Override
     public void goBack() {
-
+        mProgressDialog.dismiss();
+        finish();
     }
 }

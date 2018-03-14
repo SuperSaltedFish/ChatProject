@@ -1,14 +1,13 @@
 package com.yzx.chat.presenter;
 
-import com.yzx.chat.base.BaseHttpCallback;
+import android.os.Handler;
+
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.contract.CreateGroupContract;
-import com.yzx.chat.network.api.Group.CreateGroupBean;
-import com.yzx.chat.network.api.Group.GroupApi;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.network.chat.GroupManager;
+import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +21,23 @@ import java.util.List;
 public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
     private CreateGroupContract.View mCreateGroupView;
-    private Call<JsonResponse<CreateGroupBean>> mCreateGroupCall;
-    private GroupApi mGroupApi;
+    private GroupManager mGroupManager;
+    private Handler mHandler;
 
     private boolean isCreating;
 
     @Override
     public void attachView(CreateGroupContract.View view) {
         mCreateGroupView = view;
-        mGroupApi = (GroupApi) ApiHelper.getProxyInstance(GroupApi.class);
+        mGroupManager = IMClient.getInstance().groupManager();
+        mHandler = new Handler();
     }
 
     @Override
     public void detachView() {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
+        mGroupManager = null;
         mCreateGroupView = null;
 
     }
@@ -46,6 +49,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
         StringBuilder stringBuilder = new StringBuilder(64);
         List<CreateGroupMemberBean> memberList = new ArrayList<>(members.size());
+        CreateGroupMemberBean groupMember;
         for (int i = 0, count = members.size(); i < count; i++) {
             stringBuilder.append(members.get(i).getUserProfile().getNickname());
             if (i != count - 1) {
@@ -53,27 +57,73 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             } else {
                 stringBuilder.append("的群聊");
             }
-            CreateGroupMemberBean groupMemberBean = new CreateGroupMemberBean();
-            groupMemberBean.setUserID(members.get(i).getUserProfile().getUserID());
-            memberList.add(groupMemberBean);
+            groupMember = new CreateGroupMemberBean();
+            groupMember.setUserID(members.get(i).getUserProfile().getUserID());
+            memberList.add(groupMember);
         }
 
-        mCreateGroupCall = mGroupApi.createGroup(stringBuilder.toString(), memberList);
-        mCreateGroupCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
+        mGroupManager.createGroup(stringBuilder.toString(), memberList, new ResultCallback<Boolean>() {
             @Override
-            protected void onSuccess(CreateGroupBean response) {
-
+            public void onSuccess(Boolean result) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCreateGroupView.goBack();
+                        isCreating = false;
+                    }
+                });
             }
 
             @Override
-            protected void onFailure(String message) {
-                isCreating = false;
-                mCreateGroupView.showError(message);
+            public void onFailure(final String error) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCreateGroupView.showError(error);
+                        isCreating = false;
+                    }
+                });
             }
         });
         isCreating = true;
-        sHttpExecutor.submit(mCreateGroupCall);
-
-
     }
+
+    @Override
+    public void addMembers(String groupID, List<ContactBean> members) {
+        if (isCreating) {
+            return;
+        }
+        List<CreateGroupMemberBean> memberList = new ArrayList<>(members.size());
+        CreateGroupMemberBean groupMember;
+        for (int i = 0, count = members.size(); i < count; i++) {
+            groupMember = new CreateGroupMemberBean();
+            groupMember.setUserID(members.get(i).getUserProfile().getUserID());
+            memberList.add(groupMember);
+        }
+        mGroupManager.addMember(groupID, memberList, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCreateGroupView.goBack();
+                        isCreating = false;
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(final String error) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCreateGroupView.showError(error);
+                        isCreating = false;
+                    }
+                });
+            }
+        });
+        isCreating = true;
+    }
+
 }

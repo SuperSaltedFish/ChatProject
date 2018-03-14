@@ -16,9 +16,6 @@ import java.util.List;
 
 public interface GroupApi {
 
-    @HttpApi(RequestMethod = "POST", Path = "group/create")
-    Call<JsonResponse<CreateGroupBean>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
-
     @HttpApi(RequestMethod = "POST", Path = "group/getGroupList")
     Call<JsonResponse<Void>> getGroupList();
 
@@ -30,6 +27,12 @@ public interface GroupApi {
 
     @HttpApi(RequestMethod = "POST", Path = "group/updateAlias")
     Call<JsonResponse<Void>> updateAlias(@HttpParam("groupID") String groupID, @HttpParam("alias") String newAlias);
+
+    @HttpApi(RequestMethod = "POST", Path = "group/create")
+    Call<JsonResponse<CreateGroupBean>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
+
+    @HttpApi(RequestMethod = "POST", Path = "group/add")
+    Call<JsonResponse<CreateGroupBean>> add(@HttpParam("groupID") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
 
     @HttpApi(RequestMethod = "POST", Path = "group/quit")
     Call<JsonResponse<Void>> quit(@HttpParam("groupID") String groupID);

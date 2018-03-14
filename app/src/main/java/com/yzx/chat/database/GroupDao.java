@@ -72,6 +72,47 @@ public class GroupDao extends AbstractDao<GroupBean> {
         return new ArrayList<>(groupMap.values());
     }
 
+    public boolean insertGroupAndMember(GroupBean group) {
+        if (group == null) {
+            return false;
+        }
+        boolean result = true;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            do {
+                ContentValues values = new ContentValues();
+                List<GroupMemberBean> groupMemberList;
+                groupMemberList = group.getMembers();
+                if (groupMemberList == null || groupMemberList.size() == 0) {
+                    result = false;
+                    break;
+                }
+                values.clear();
+                parseToContentValues(group, values);
+                if (database.insert(TABLE_NAME, null, values) <= 0) {
+                    result = false;
+                    break;
+                }
+                for (GroupMemberBean groupMember : groupMemberList) {
+                    groupMember.setGroupID(group.getGroupID());
+                }
+                if (!GroupMemberDao.replaceAllGroupMember(database, groupMemberList, values)) {
+                    result = false;
+                    break;
+                }
+            } while (false);
+
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
     public boolean insertAllGroupAndMember(Iterable<GroupBean> entityIterable) {
         if (entityIterable == null) {
             return false;
@@ -97,7 +138,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
                 for (GroupMemberBean groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
-                if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
+                if (!GroupMemberDao.replaceAllGroupMember(database, groupMemberList, values)) {
                     result = false;
                     break;
                 }
@@ -112,6 +153,47 @@ public class GroupDao extends AbstractDao<GroupBean> {
         mReadWriteHelper.closeWritableDatabase();
         return result;
 
+    }
+
+    public boolean replaceGroupAndMember(GroupBean group) {
+        if (group == null) {
+            return false;
+        }
+        boolean result = true;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            do {
+                ContentValues values = new ContentValues();
+                List<GroupMemberBean> groupMemberList;
+                groupMemberList = group.getMembers();
+                if (groupMemberList == null || groupMemberList.size() == 0) {
+                    result = false;
+                    break;
+                }
+                values.clear();
+                parseToContentValues(group, values);
+                if (database.replace(TABLE_NAME, null, values) <= 0) {
+                    result = false;
+                    break;
+                }
+                for (GroupMemberBean groupMember : groupMemberList) {
+                    groupMember.setGroupID(group.getGroupID());
+                }
+                if (!GroupMemberDao.replaceAllGroupMember(database, groupMemberList, values)) {
+                    result = false;
+                    break;
+                }
+            } while (false);
+
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
     }
 
     public boolean deleteGroupAndMember(String groupID) {

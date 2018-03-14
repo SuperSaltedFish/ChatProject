@@ -3,11 +3,13 @@ package com.yzx.chat.network.chat;
 import android.os.Parcel;
 
 import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.GroupDao;
 import com.yzx.chat.database.GroupMemberDao;
+import com.yzx.chat.network.api.Group.CreateGroupBean;
 import com.yzx.chat.network.api.Group.GroupApi;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
@@ -15,16 +17,13 @@ import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.PinYinUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created by YZX on 2018年03月09日.
@@ -41,10 +40,12 @@ public class GroupManager {
 
     private GroupApi mGroupApi;
     private NetworkExecutor mNetworkExecutor;
-    private Call<JsonResponse<Void>> mRenameGroup;
-    private Call<JsonResponse<Void>> mUpdateGroupNotice;
-    private Call<JsonResponse<Void>> mUpdateAlias;
-    private Call<JsonResponse<Void>> mQuitGroup;
+    private Call<JsonResponse<Void>> mRenameGroupCall;
+    private Call<JsonResponse<Void>> mUpdateGroupNoticeCall;
+    private Call<JsonResponse<Void>> mUpdateAliasCall;
+    private Call<JsonResponse<Void>> mQuitGroupCall;
+    private Call<JsonResponse<CreateGroupBean>> mCreateGroupCall;
+    private Call<JsonResponse<CreateGroupBean>> mAddMemberCall;
 
     GroupManager(IMClient.SubManagerCallback subManagerCallback, AbstractDao.ReadWriteHelper readWriteHelper) {
         if (subManagerCallback == null) {
@@ -80,7 +81,7 @@ public class GroupManager {
         if (mGroupsMap == null) {
             return null;
         }
-        List<GroupBean> groupList = new ArrayList<>(mGroupsMap.size()+4);
+        List<GroupBean> groupList = new ArrayList<>(mGroupsMap.size() + 4);
         Parcel parcel;
         for (GroupBean group : mGroupsMap.values()) {
             parcel = Parcel.obtain();
@@ -106,10 +107,70 @@ public class GroupManager {
         return null;
     }
 
+    public void createGroup(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<Boolean> resultCallback) {
+        AsyncUtil.cancelCall(mCreateGroupCall);
+        mCreateGroupCall = mGroupApi.createGroup(groupID, memberList);
+        mCreateGroupCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
+            @Override
+            protected void onSuccess(CreateGroupBean response) {
+                GroupBean group = response.getGroup();
+                boolean success = mGroupDao.insertGroupAndMember(group);
+                if (!success) {
+                    LogUtil.e("createGroup:Failure of operating database");
+                }
+
+                mGroupsMap.put(group.getGroupID(), group);
+                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                    listener.onGroupCreated(group);
+                }
+
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(success);
+                }
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                resultCallback.onFailure(message);
+            }
+        }, false);
+        mNetworkExecutor.submit(mCreateGroupCall);
+    }
+
+    public void addMember(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<Boolean> resultCallback) {
+        AsyncUtil.cancelCall(mAddMemberCall);
+        mAddMemberCall = mGroupApi.add(groupID, memberList);
+        mAddMemberCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
+            @Override
+            protected void onSuccess(CreateGroupBean response) {
+                GroupBean group = response.getGroup();
+                boolean success = mGroupDao.replaceGroupAndMember(group);
+                if (!success) {
+                    LogUtil.e("createGroup:Failure of operating database");
+                }
+
+                mGroupsMap.put(group.getGroupID(), group);
+                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                    listener.onGroupUpdated(group);
+                }
+
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(success);
+                }
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                resultCallback.onFailure(message);
+            }
+        }, false);
+        mNetworkExecutor.submit(mAddMemberCall);
+    }
+
     public void quitGroup(final String groupID, final ResultCallback<Boolean> resultCallback) {
-        AsyncUtil.cancelCall(mQuitGroup);
-        mQuitGroup = mGroupApi.quit(groupID);
-        mQuitGroup.setCallback(new BaseHttpCallback<Void>() {
+        AsyncUtil.cancelCall(mQuitGroupCall);
+        mQuitGroupCall = mGroupApi.quit(groupID);
+        mQuitGroupCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupDao.deleteGroupAndMember(groupID);
@@ -132,13 +193,13 @@ public class GroupManager {
                 resultCallback.onFailure(message);
             }
         }, false);
-        mNetworkExecutor.submit(mQuitGroup);
+        mNetworkExecutor.submit(mQuitGroupCall);
     }
 
     public void renameGroup(final String groupID, final String newName, final ResultCallback<Boolean> resultCallback) {
-        AsyncUtil.cancelCall(mRenameGroup);
-        mRenameGroup = mGroupApi.rename(groupID, newName);
-        mRenameGroup.setCallback(new BaseHttpCallback<Void>() {
+        AsyncUtil.cancelCall(mRenameGroupCall);
+        mRenameGroupCall = mGroupApi.rename(groupID, newName);
+        mRenameGroupCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupDao.updateGroupName(groupID, newName);
@@ -169,13 +230,13 @@ public class GroupManager {
                 resultCallback.onFailure(message);
             }
         }, false);
-        mNetworkExecutor.submit(mRenameGroup);
+        mNetworkExecutor.submit(mRenameGroupCall);
     }
 
     public void updateGroupNotice(final String groupID, final String newNotice, final ResultCallback<Boolean> resultCallback) {
-        AsyncUtil.cancelCall(mUpdateGroupNotice);
-        mUpdateGroupNotice = mGroupApi.updateNotice(groupID, newNotice);
-        mUpdateGroupNotice.setCallback(new BaseHttpCallback<Void>() {
+        AsyncUtil.cancelCall(mUpdateGroupNoticeCall);
+        mUpdateGroupNoticeCall = mGroupApi.updateNotice(groupID, newNotice);
+        mUpdateGroupNoticeCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupDao.updateGroupNotice(groupID, newNotice);
@@ -206,13 +267,13 @@ public class GroupManager {
                 resultCallback.onFailure(message);
             }
         }, false);
-        mNetworkExecutor.submit(mUpdateGroupNotice);
+        mNetworkExecutor.submit(mUpdateGroupNoticeCall);
     }
 
     public void updateMemberAlias(final String groupID, final String memberID, final String newAlias, final ResultCallback<Boolean> resultCallback) {
-        AsyncUtil.cancelCall(mUpdateAlias);
-        mUpdateAlias = mGroupApi.updateAlias(groupID, newAlias);
-        mUpdateAlias.setCallback(new BaseHttpCallback<Void>() {
+        AsyncUtil.cancelCall(mUpdateAliasCall);
+        mUpdateAliasCall = mGroupApi.updateAlias(groupID, newAlias);
+        mUpdateAliasCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupMemberDao.updateMemberAlias(groupID, memberID, newAlias);
@@ -239,14 +300,15 @@ public class GroupManager {
                 resultCallback.onFailure(message);
             }
         }, false);
-        mNetworkExecutor.submit(mUpdateAlias);
+        mNetworkExecutor.submit(mUpdateAliasCall);
     }
 
     void destroy() {
-        AsyncUtil.cancelCall(mRenameGroup);
-        AsyncUtil.cancelCall(mUpdateGroupNotice);
-        AsyncUtil.cancelCall(mUpdateAlias);
-        AsyncUtil.cancelCall(mQuitGroup);
+        AsyncUtil.cancelCall(mRenameGroupCall);
+        AsyncUtil.cancelCall(mAddMemberCall);
+        AsyncUtil.cancelCall(mUpdateGroupNoticeCall);
+        AsyncUtil.cancelCall(mUpdateAliasCall);
+        AsyncUtil.cancelCall(mQuitGroupCall);
         mGroupsMap.clear();
         mGroupsMap = null;
     }

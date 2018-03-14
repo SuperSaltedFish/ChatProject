@@ -30,6 +30,8 @@ public class GroupProfileContract {
     public interface Presenter extends BasePresenter<View> {
         void init(String groupID);
 
+        String getGroupID();
+
         void updateGroupName(String newName);
 
         void updateGroupNotice(String newNotice);

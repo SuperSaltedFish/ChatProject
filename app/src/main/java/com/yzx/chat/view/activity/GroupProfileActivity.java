@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -56,7 +58,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private ProgressDialog mProgressDialog;
     private GroupMembersAdapter mAdapter;
 
-    private List<GroupMemberBean> mGroupMemberList;
+    private ArrayList<GroupMemberBean> mGroupMemberList;
 
     @Override
     protected int getLayoutID() {
@@ -98,6 +100,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mClMyGroupNickname.setOnClickListener(mOnMyGroupNicknameClickListener);
         mClQRCode.setOnClickListener(mOnQRCodeClickListener);
         mIvEditNotice.setOnClickListener(mOnGroupNoticeClickListener);
+        mFooterView.setOnClickListener(mOnAddNewMemberClickListener);
 
         String groupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
         if (TextUtils.isEmpty(groupID)) {
@@ -117,7 +120,18 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.GroupMenu_QuitGroup:
-
+                new MaterialDialog.Builder(GroupProfileActivity.this)
+                        .content(R.string.GroupProfileActivity_QuitDialogHint)
+                        .positiveText(R.string.Confirm)
+                        .negativeText(R.string.Cancel)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                mProgressDialog.show(getString(R.string.ProgressHint_Quit));
+                                mPresenter.quitGroup();
+                            }
+                        })
+                        .show();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -147,7 +161,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     if (!input.toString().equals(mTvContentGroupName.getText())) {
-                                        mProgressDialog.show();
+                                        mProgressDialog.show(getString(R.string.ProgressHint_Modify));
                                         mPresenter.updateGroupName(input.toString());
                                     }
                                 }
@@ -177,7 +191,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     if (!input.toString().equals(mTvContentNicknameInGroup.getText())) {
-                                        mProgressDialog.show();
+                                        mProgressDialog.show(getString(R.string.ProgressHint_Modify));
                                         mPresenter.updateMyGroupAlias(input.toString());
                                     }
                                 }
@@ -215,7 +229,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                                         input = "";
                                     }
                                     if (!input.toString().equals(finalCurrentNotice)) {
-                                        mProgressDialog.show();
+                                        mProgressDialog.show(getString(R.string.ProgressHint_Modify));
                                         mPresenter.updateGroupNotice(input.toString());
                                     }
                                 }
@@ -228,6 +242,16 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         @Override
         public void onClick(View v) {
 
+        }
+    };
+
+    private final View.OnClickListener mOnAddNewMemberClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(GroupProfileActivity.this, CreateGroupActivity.class);
+            intent.putExtra(CreateGroupActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getGroupID());
+            intent.putParcelableArrayListExtra(CreateGroupActivity.INTENT_EXTRA_ALREADY_JOIN_MEMBER, mGroupMemberList);
+            startActivity(intent);
         }
     };
 
@@ -294,6 +318,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
 
     @Override
     public void goBack() {
+        mProgressDialog.dismiss();
         finish();
     }
 }

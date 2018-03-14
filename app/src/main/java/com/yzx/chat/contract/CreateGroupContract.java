@@ -14,16 +14,14 @@ import java.util.List;
 
 public class CreateGroupContract {
     public interface View extends BaseView<Presenter> {
-
         void showError(String error);
 
         void goBack();
     }
 
-
     public interface Presenter extends BasePresenter<View> {
-
         void createGroup(List<ContactBean> members);
 
+        void addMembers(String groupID,List<ContactBean> members);
     }
 }

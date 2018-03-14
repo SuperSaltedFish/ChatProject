@@ -53,4 +53,10 @@ public class ProgressDialog extends Dialog {
             super.show();
         }
     }
+
+
+    public void show(String hintText) {
+        mTvHint.setText(hintText);
+        show();
+    }
 }

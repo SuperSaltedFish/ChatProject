@@ -24,10 +24,14 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
 
     private OnItemSelectedChangeListener mOnItemSelectedChangeListener;
     private List<ContactBean> mContactList;
+    private List<ContactBean> mSelectedList;
+    private List<ContactBean> mAlreadySelectedContactList;
     private SparseArray<String> mIdentitySparseArray;
 
-    public CreateGroupAdapter(List<ContactBean> contactList) {
+
+    public CreateGroupAdapter(List<ContactBean> contactList, List<ContactBean> selectedList) {
         mContactList = contactList;
+        mSelectedList = selectedList;
         mIdentitySparseArray = new SparseArray<>(32);
         resetLetter();
     }
@@ -45,7 +49,18 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
         } else {
             holder.itemView.setTag(null);
         }
-        holder.mTvName.setText(mContactList.get(position).getName());
+        ContactBean contact = mContactList.get(position);
+        holder.mTvName.setText(contact.getName());
+
+        if (mAlreadySelectedContactList != null && mAlreadySelectedContactList.contains(mContactList.get(position))) {
+            holder.itemView.setEnabled(false);
+            holder.mCbIsSelected.setChecked(true);
+            holder.mCbIsSelected.setEnabled(false);
+        } else {
+            holder.itemView.setEnabled(true);
+            holder.mCbIsSelected.setEnabled(true);
+            holder.mCbIsSelected.setChecked(mSelectedList.contains(contact));
+        }
     }
 
     @Override
@@ -92,6 +107,10 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
             }
         }
     };
+
+    public void setDisableSelectedList(List<ContactBean> alreadySelectedContactList) {
+        mAlreadySelectedContactList = alreadySelectedContactList;
+    }
 
     final static class CreateGroupHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 

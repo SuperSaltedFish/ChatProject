@@ -56,6 +56,11 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     }
 
     @Override
+    public String getGroupID() {
+        return mGroupID;
+    }
+
+    @Override
     public void updateGroupName(final String newName) {
         mGroupManager.renameGroup(mGroupID, newName, new ResultCallback<Boolean>() {
             @Override
@@ -134,7 +139,18 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void quitGroup() {
+        mGroupManager.quitGroup(mGroupID, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                mGroupProfileView.goBack();
+            }
 
+            @Override
+            public void onFailure(String error) {
+                mGroupProfileView.showError(error);
+            }
+        });
     }
+
 
 }

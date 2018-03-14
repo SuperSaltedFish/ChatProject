@@ -80,6 +80,7 @@
     <string name="ProgressHint_Save">正在保存...</string>
     <string name="ProgressHint_Create">正在创建...</string>
     <string name="ProgressHint_Modify">正在修改...</string>
+    <string name="ProgressHint_Quit">正在退出...</string>
 
     <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
     <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
@@ -190,6 +191,7 @@
     <string name="GroupProfileActivity_NoticeDialogTitle">群公告</string>
     <string name="GroupProfileActivity_NoticeDialogHint">编辑群公告，该公告只有群主才能编辑。</string>
     <string name="GroupMenu_ExitGroup">退出该群组</string>
+    <string name="GroupProfileActivity_QuitDialogHint">退出当前群组后，将不再收到此群的聊天信息</string>
 
 
 </resources>
