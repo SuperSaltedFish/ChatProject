@@ -15,9 +15,12 @@ import android.support.annotation.StyleableRes;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yzx.chat.configure.AppApplication;
+import com.yzx.chat.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +43,8 @@ public class AndroidUtil {
     private static int sActivityStartedCount;
     private static int sActivityLiveCount;
 
-    private static  Stack<Class<? extends Activity>> sActivityStack ;
-    private static  Map<Class<? extends Activity>,Activity> sActivityInstanceMap ;
+    private static Stack<Class<? extends Activity>> sActivityStack;
+    private static Map<Class<? extends Activity>, Activity> sActivityInstanceMap;
 
     public synchronized static void init(Application application) {
         sAppContext = application.getApplicationContext();
@@ -58,7 +61,7 @@ public class AndroidUtil {
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 sActivityLiveCount++;
                 sActivityStack.push(activity.getClass());
-                sActivityInstanceMap.put(activity.getClass(),activity);
+                sActivityInstanceMap.put(activity.getClass(), activity);
             }
 
             @Override
@@ -111,7 +114,7 @@ public class AndroidUtil {
     }
 
     public static boolean isExistInActivityStack(Class<? extends Activity> activityClass) {
-        return sActivityStack.search(activityClass)>=0;
+        return sActivityStack.search(activityClass) >= 0;
     }
 
     @Nullable
@@ -181,11 +184,14 @@ public class AndroidUtil {
     }
 
     public static void showToast(String content) {
-        Toast.makeText(sAppContext, content, Toast.LENGTH_LONG).show();
+        Toast toast = new Toast(sAppContext);
+        View toastView = LayoutInflater.from(sAppContext).inflate(R.layout.view_toast_default, null);
+        TextView tvToast = toastView.findViewById(R.id.BaseCompatActivity_mTvToast);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(toastView);
+        tvToast.setText(content);
+        toast.show();
     }
 
-    public static void showToast(@StringRes int resID) {
-        Toast.makeText(sAppContext, sAppContext.getString(resID), Toast.LENGTH_LONG).show();
-    }
 
 }

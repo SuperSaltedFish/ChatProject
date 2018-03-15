@@ -52,15 +52,12 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         CreateGroupMemberBean groupMember;
         for (int i = 0, count = members.size(); i < count; i++) {
             stringBuilder.append(members.get(i).getUserProfile().getNickname());
-            if (i != count - 1) {
-                stringBuilder.append("、");
-            } else {
-                stringBuilder.append("的群聊");
-            }
+            stringBuilder.append("、");
             groupMember = new CreateGroupMemberBean();
             groupMember.setUserID(members.get(i).getUserProfile().getUserID());
             memberList.add(groupMember);
         }
+        stringBuilder.append(IMClient.getInstance().userManager().getUser().getNickname()).append("的群聊");
 
         mGroupManager.createGroup(stringBuilder.toString(), memberList, new ResultCallback<Boolean>() {
             @Override

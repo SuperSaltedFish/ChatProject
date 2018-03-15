@@ -132,7 +132,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         String url = String.format(Locale.getDefault(), Constants.URL_MAP_IMAGE_FORMAT, longitude, latitude);
         String title = poi.getTitle();
         String address = poi.getSnippet();
-        sendMessage(LocationMessage.obtain(latitude, longitude, title + "/" + address, Uri.parse(url)));
+        LocationMessage locationMessage = LocationMessage.obtain(latitude, longitude, title + "/" + address, Uri.parse(url));
+        locationMessage.setExtra(poi.getPoiId());
+        sendMessage(locationMessage);
     }
 
     @Override

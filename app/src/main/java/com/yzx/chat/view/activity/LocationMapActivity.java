@@ -38,7 +38,6 @@ import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
-import com.amap.api.maps2d.model.CircleOptions;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
@@ -67,7 +66,12 @@ import java.util.List;
 public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityContract.Presenter> implements LocationMapActivityContract.View {
 
     public static final int RESULT_CODE = 2000;
-        public static final String INTENT_EXTRA_POI = "POI";
+    public static final String INTENT_EXTRA_POI = "POI";
+
+    private static final int MODE_SEND = 0;
+    private static final int MODE_SHARE = 0;
+
+    private static final int DEFAULT_ZOOM = 5;
 
     private MapView mMapView;
     private SearchView mSearchView;
@@ -92,6 +96,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private List<PoiItem> mSearchLocationList;
     private LatLng mCurrentLatLng;
 
+    private int mCurrentMode;
     private boolean isPositionComplete;
 
     @Override
@@ -148,34 +153,46 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mAMap = mMapView.getMap();
 
         mAMap.setMyLocationStyle(new MyLocationStyle()
-                .myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW)
+                .myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER)
                 .interval(Constants.LOCATION_INTERVAL)
                 .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_point)))
                 .radiusFillColor(Color.TRANSPARENT)
                 .strokeColor(Color.TRANSPARENT));
-        mAMap.addCircle(new CircleOptions().radius(20));
         mAMap.setMyLocationEnabled(true);
         mAMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
-        mAMap.setOnCameraChangeListener(mOnCameraChangeListener);
-        mAMap.moveCamera(CameraUpdateFactory.zoomTo(5));
 
         UiSettings uiSettings = mAMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(false);
         uiSettings.setScaleControlsEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.draggable(false);//可拖放性
-
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
-        mMapMarker = mAMap.addMarker(markerOptions);
-        mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mMapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                mMapMarker.setPositionByPixels(mMapView.getWidth() >> 1, mMapView.getHeight() >> 1);
-            }
-        });
+        PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);
+        if (poiItem == null) {
+            mCurrentMode = MODE_SEND;
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.draggable(false);//可拖放性
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
+            mMapMarker = mAMap.addMarker(markerOptions);
+            mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mMapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mMapMarker.setPositionByPixels(mMapView.getWidth() >> 1, mMapView.getHeight() >> 1);
+                }
+            });
+            mAMap.setOnCameraChangeListener(mOnCameraChangeListener);
+            mAMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
+        } else {
+            mCurrentMode = MODE_SHARE;
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.draggable(false);//可拖放性
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
+            mMapMarker = mAMap.addMarker(markerOptions);
+            LatLonPoint point = poiItem.getLatLonPoint();
+            LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
+            mMapMarker.setPosition(latLng);
+            mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+        }
 
 
         mMapView.onCreate(savedInstanceState);
@@ -203,7 +220,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             @Override
             public void onClick(View v) {
                 mMapView.setVisibility(View.INVISIBLE);
-                mRvCurrentLocationLayout.setVisibility(View.INVISIBLE);
+                mRvCurrentLocationLayout.setVisibility(View.GONE);
                 mRvSearchLocationLayout.setVisibility(View.VISIBLE);
             }
         });
@@ -213,7 +230,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             public boolean onClose() {
                 mMapView.setVisibility(View.VISIBLE);
                 mRvCurrentLocationLayout.setVisibility(View.VISIBLE);
-                mRvSearchLocationLayout.setVisibility(View.INVISIBLE);
+                mRvSearchLocationLayout.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -276,12 +293,14 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_location_map, menu);
-        MenuItem searchItem = menu.findItem(R.id.LocationMapMenu_Search);
-        mSendMenuItem = menu.findItem(R.id.LocationMapMenu_Send);
-        mSendMenuItem.setEnabled(false);
-        mSearchView = (SearchView) searchItem.getActionView();
-        setupSearchView();
+        if(mCurrentMode==MODE_SEND){
+            getMenuInflater().inflate(R.menu.menu_location_map, menu);
+            MenuItem searchItem = menu.findItem(R.id.LocationMapMenu_Search);
+            mSendMenuItem = menu.findItem(R.id.LocationMapMenu_Send);
+            mSendMenuItem.setEnabled(false);
+            mSearchView = (SearchView) searchItem.getActionView();
+            setupSearchView();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -293,7 +312,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                 break;
             case R.id.LocationMapMenu_Send:
                 Intent intent = new Intent();
-                intent.putExtra(INTENT_EXTRA_POI,  mCurrentLocationList.get(mCurrentLocationAdapter.getSelectedPosition()));
+                intent.putExtra(INTENT_EXTRA_POI, mCurrentLocationList.get(mCurrentLocationAdapter.getSelectedPosition()));
                 setResult(RESULT_CODE, intent);
                 finish();
                 break;
@@ -305,7 +324,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public void onBackPressed() {
-        if (!mSearchView.isIconified()) {
+        if (mCurrentMode==MODE_SEND&&!mSearchView.isIconified()) {
             closeSearch();
         } else {
             super.onBackPressed();
@@ -313,13 +332,16 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     }
 
     private void closeSearch() {
-        mSearchView.setQuery(null,false);
+        mSearchView.setQuery(null, false);
         mSearchView.setIconified(true);
     }
 
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
+            if(!isPositionComplete&&mCurrentMode==MODE_SEND){
+                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), DEFAULT_ZOOM));
+            }
             isPositionComplete = true;
         }
     };
