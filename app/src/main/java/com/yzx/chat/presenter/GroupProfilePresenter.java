@@ -56,9 +56,10 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     }
 
     @Override
-    public String getGroupID() {
-        return mGroupID;
+    public GroupBean getGroup() {
+        return  mGroupManager.getGroup(mGroupID);
     }
+
 
     @Override
     public void updateGroupName(final String newName) {
@@ -150,6 +151,11 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mGroupProfileView.showError(error);
             }
         });
+    }
+
+    @Override
+    public boolean isMySelf(String userID) {
+        return userID.equals(IMClient.getInstance().userManager().getUserID());
     }
 
 

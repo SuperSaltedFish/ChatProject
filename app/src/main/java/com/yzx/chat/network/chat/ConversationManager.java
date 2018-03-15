@@ -42,7 +42,7 @@ public class ConversationManager {
     }
 
     public List<Conversation> getAllConversations() {
-        return mRongIMClient.getConversationList();
+        return getAllConversations(IMClient.SUPPORT_CONVERSATION_TYPE);
     }
 
     public List<Conversation> getAllConversations(Conversation.ConversationType... type) {

@@ -30,7 +30,7 @@ public class GroupProfileContract {
     public interface Presenter extends BasePresenter<View> {
         void init(String groupID);
 
-        String getGroupID();
+        GroupBean getGroup();
 
         void updateGroupName(String newName);
 
@@ -39,5 +39,7 @@ public class GroupProfileContract {
         void updateMyGroupAlias(String newAlias);
 
         void quitGroup();
+
+        boolean isMySelf(String userID);
     }
 }

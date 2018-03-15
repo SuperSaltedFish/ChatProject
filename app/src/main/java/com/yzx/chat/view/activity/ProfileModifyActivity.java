@@ -88,7 +88,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     }
 
     private void setData() {
-        mUserBean = IMClient.getInstance().userManager().getUser();
+        mUserBean = mPresenter.getUserInfo();
         if (mUserBean == null || mUserBean.isEmpty()) {
             finish();
             return;

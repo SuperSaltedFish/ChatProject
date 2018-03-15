@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.yzx.chat.base.DiffCalculate;
 
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.contract.ConversationContract;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.util.NetworkAsyncTask;
@@ -175,21 +176,30 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             synchronized (ConversationPresenter.class) {
                 IMClient chatManager = IMClient.getInstance();
                 List<Conversation> oldConversationList = oldConversation[0];
-                List<Conversation> newConversationList = chatManager.conversationManager().getAllConversations(Conversation.ConversationType.PRIVATE);
+                List<Conversation> newConversationList = chatManager.conversationManager().getAllConversations();
                 if (newConversationList == null) {
                     return null;
                 }
                 String conversationID;
-                ContactBean contactBean;
                 for (Conversation conversation : newConversationList) {
                     conversationID = conversation.getTargetId();
                     if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
                         chatManager.conversationManager().clearConversationUnreadStatus(conversation);
                         conversation.setUnreadMessageCount(0);
                     }
-                    contactBean = chatManager.contactManager().getContact(conversationID);
-                    if (contactBean != null) {
-                        conversation.setConversationTitle(contactBean.getName());
+                    switch (conversation.getConversationType()){
+                        case PRIVATE:
+                            ContactBean contactBean = chatManager.contactManager().getContact(conversationID);
+                            if (contactBean != null) {
+                                conversation.setConversationTitle(contactBean.getName());
+                            }
+                            break;
+                        case GROUP:
+                            GroupBean group = chatManager.groupManager().getGroup(conversationID);
+                            if (group != null) {
+                                conversation.setConversationTitle(group.getName());
+                            }
+                            break;
                     }
                 }
 

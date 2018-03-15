@@ -35,6 +35,8 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ConversationBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ChatPresenter;
@@ -191,11 +193,17 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 break;
             case LocationMapActivity.RESULT_CODE:
                 PoiItem poi = data.getParcelableExtra(LocationMapActivity.INTENT_EXTRA_POI);
-                if(poi!=null){
+                if (poi != null) {
                     mPresenter.sendLocationMessage(poi);
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setData(intent);
     }
 
     @Override
@@ -234,6 +242,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mIvProfile.setOnClickListener(mOnProfileClickListener);
+
         setChatRecyclerViewAndAdapter();
 
         setEditAndSendStateChangeListener();
@@ -250,15 +260,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         setData(getIntent());
 
-        mIvProfile.setOnClickListener(mOnProfileClickListener);
     }
 
     private void setData(Intent intent) {
-        mConversation = intent.getParcelableExtra(INTENT_EXTRA_CONVERSATION);
-        if (mConversation == null) {
+        Conversation conversation = intent.getParcelableExtra(INTENT_EXTRA_CONVERSATION);
+        if (conversation == null) {
             finish();
             return;
         }
+        if(mConversation!=null&&mConversation.getTargetId().equals(conversation.getTargetId())){
+            return;
+        }
+        mConversation =conversation;
         setTitle(mConversation.getConversationTitle());
         mPresenter.init(mConversation);
         String draft = mConversation.getDraft();
@@ -278,37 +291,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setHasFixedSize(true);
         // mRvChatView.setItemAnimator(new NoAnimations());
         mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
-
-        mRvChatView.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
-            @Override
-            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
-                switch (mAdapter.getViewHolderType(position)) {
-                    case ChatMessageAdapter.HOLDER_TYPE_SEND_MESSAGE_TEXT:
-                    case ChatMessageAdapter.HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
-                        break;
-                    case ChatMessageAdapter.HOLDER_TYPE_SEND_MESSAGE_VOICE:
-                    case ChatMessageAdapter.HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                        break;
-                    case ChatMessageAdapter.HOLDER_TYPE_SEND_MESSAGE_IMAGE:
-                    case ChatMessageAdapter.HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                        ImageMessage imageMessage = (ImageMessage) mMessageList.get(position).getContent();
-                        String imagePath = imageMessage.getLocalUri().getPath();
-                        if (TextUtils.isEmpty(imagePath) || !new File(imagePath).exists()) {
-                            showToast(getString(R.string.ChatActivity_ImageAlreadyDeleted));
-                        } else {
-                            Intent intent = new Intent(ChatActivity.this, ImageOriginalActivity.class);
-                            intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
-                            ChatMessageAdapter.ImageSendMessageHolder h = (ChatMessageAdapter.ImageSendMessageHolder) viewHolder;
-                            ViewCompat.setTransitionName(h.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
-                            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(ChatActivity.this, h.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
-                            ActivityCompat.startActivity(ChatActivity.this, intent, options.toBundle());
-
-                            //startActivity(intent);
-                        }
-                        break;
-                }
-            }
-        });
 
         mAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
             @Override
@@ -664,14 +646,29 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private final View.OnClickListener mOnProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ContactBean contactBean = IMClient.getInstance().contactManager().getContact(mConversation.getTargetId());
-            if (contactBean != null) {
-                Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
-                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contactBean.getUserProfile().getUserID());
-                startActivity(intent);
-            } else {
-                LogUtil.e("contactBean == null,open ContactProfileActivity fail");
+            switch (mConversation.getConversationType()) {
+                case PRIVATE:
+                    ContactBean contact = mPresenter.getContact();
+                    if (contact != null) {
+                        Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
+                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserProfile().getUserID());
+                        startActivity(intent);
+                    } else {
+                        LogUtil.e("contactBean == null,open ContactProfileActivity fail");
+                    }
+                    break;
+                case GROUP:
+                    GroupBean group = mPresenter.getGroup();
+                    if (group != null) {
+                        Intent intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
+                        intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, group.getGroupID());
+                        startActivity(intent);
+                    } else {
+                        LogUtil.e("GroupBean == null,open GroupProfileActivity fail");
+                    }
+                    break;
             }
+
         }
     };
 

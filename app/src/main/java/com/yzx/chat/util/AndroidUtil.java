@@ -1,13 +1,15 @@
 package com.yzx.chat.util;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
+import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleableRes;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +19,10 @@ import android.widget.Toast;
 
 import com.yzx.chat.configure.AppApplication;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
 /**
  * Created by YZX on 2017年10月31日.
  * 每一个不曾起舞的日子 都是对生命的辜负
@@ -25,17 +31,92 @@ import com.yzx.chat.configure.AppApplication;
 
 public class AndroidUtil {
 
+    private static Context sAppContext;
+
     private static int sScreenWidth;
     private static int sScreenHeight;
     private static int sScreenDensity;
-    private static Context sAppContext;
 
-    static {
-        sAppContext = AppApplication.getAppContext();
+    private static int sActivityStartedCount;
+    private static int sActivityLiveCount;
+
+    private static  Stack<Class<? extends Activity>> sActivityStack ;
+    private static  Map<Class<? extends Activity>,Activity> sActivityInstanceMap ;
+
+    public synchronized static void init(Application application) {
+        sAppContext = application.getApplicationContext();
+        sActivityStack = new Stack<>();
+        sActivityInstanceMap = new HashMap<>();
+
         DisplayMetrics dm = sAppContext.getResources().getDisplayMetrics();
         sScreenWidth = dm.widthPixels;
         sScreenHeight = dm.heightPixels;
         sScreenDensity = dm.densityDpi;
+
+        application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                sActivityLiveCount++;
+                sActivityStack.push(activity.getClass());
+                sActivityInstanceMap.put(activity.getClass(),activity);
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+                sActivityStartedCount++;
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+                sActivityStartedCount--;
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+                sActivityLiveCount--;
+                if (sActivityLiveCount == 0) {
+                    NetworkAsyncTask.cleanAllTask();
+                }
+                sActivityStack.remove(activity.getClass());
+                sActivityInstanceMap.remove(activity.getClass());
+            }
+        });
+    }
+
+    public static boolean isAppForeground() {
+        return sActivityStartedCount > 0;
+    }
+
+    public static Class<? extends Activity> getStackTopActivityClass() {
+        return sActivityStack.peek();
+    }
+
+    public static Activity getStackTopActivityInstance() {
+        return sActivityInstanceMap.get(sActivityStack.peek());
+    }
+
+    public static boolean isExistInActivityStack(Class<? extends Activity> activityClass) {
+        return sActivityStack.search(activityClass)>=0;
+    }
+
+    @Nullable
+    public static <T extends Activity> T getLaunchActivity(Class<T> activityClass) {
+        return (T) sActivityInstanceMap.get(activityClass);
     }
 
     public static int getStatusBarHeight() {

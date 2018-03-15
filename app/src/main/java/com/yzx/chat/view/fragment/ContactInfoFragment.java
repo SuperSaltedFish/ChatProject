@@ -42,12 +42,12 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
 
     private static final String ARGUMENT_CONTACT_ID = "ContactID";
 
-    public static ContactInfoFragment newInstance(String contactBean) {
+    public static ContactInfoFragment newInstance(String contactID) {
 
         Bundle args = new Bundle();
 
         ContactInfoFragment fragment = new ContactInfoFragment();
-        args.putString(ARGUMENT_CONTACT_ID, contactBean);
+        args.putString(ARGUMENT_CONTACT_ID, contactID);
         fragment.setArguments(args);
         return fragment;
     }

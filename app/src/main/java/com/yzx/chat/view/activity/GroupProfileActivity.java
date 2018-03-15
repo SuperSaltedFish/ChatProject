@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -27,11 +28,14 @@ import com.yzx.chat.contract.GroupProfileContract;
 import com.yzx.chat.presenter.GroupProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.GroupMembersAdapter;
+import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2018年02月18日.
@@ -51,6 +55,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private TextView mTvContentNicknameInGroup;
     private TextView mTvContentGroupNotice;
     private ImageView mIvEditNotice;
+    private FloatingActionButton mBtnStartChat;
     private View mFooterView;
     private ConstraintLayout mClGroupName;
     private ConstraintLayout mClMyGroupNickname;
@@ -77,6 +82,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mClMyGroupNickname = findViewById(R.id.GroupProfileActivity_mClMyGroupNickname);
         mClQRCode = findViewById(R.id.GroupProfileActivity_mClQRCode);
         mIvEditNotice = findViewById(R.id.GroupProfileActivity_mIvEditNotice);
+        mBtnStartChat = findViewById(R.id.GroupProfileActivity_mBtnStartChat);
         mGroupMemberList = new ArrayList<>(64);
         mAdapter = new GroupMembersAdapter(mGroupMemberList, GROUP_MEMBERS_MAX_VISIBILITY_COUNT);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Modify));
@@ -93,9 +99,11 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mRvGroupMembers.setHasFixedSize(true);
         mRvGroupMembers.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
         mRvGroupMembers.setLayoutManager(new GridLayoutManager(this, GROUP_MEMBERS_LINE_MAX_COUNT));
+        mRvGroupMembers.addOnItemTouchListener(mOnGroupMemberItemClickListener);
         mRvGroupMembers.setAdapter(mAdapter);
         mAdapter.setFooterView(mFooterView);
 
+        mBtnStartChat.setOnClickListener(mOnStartChatClickListener);
         mClGroupName.setOnClickListener(mOnGroupNameClickListener);
         mClMyGroupNickname.setOnClickListener(mOnMyGroupNicknameClickListener);
         mClQRCode.setOnClickListener(mOnQRCodeClickListener);
@@ -138,6 +146,21 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
         return true;
     }
+
+    private final View.OnClickListener mOnStartChatClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(GroupProfileActivity.this, ChatActivity.class);
+            Conversation conversation = new Conversation();
+            conversation.setConversationType(Conversation.ConversationType.GROUP);
+            GroupBean group = mPresenter.getGroup();
+            conversation.setTargetId(group.getGroupID());
+            conversation.setConversationTitle(group.getName());
+            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+            startActivity(intent);
+            finish();
+        }
+    };
 
 
     private final View.OnClickListener mOnGroupNameClickListener = new View.OnClickListener() {
@@ -249,8 +272,23 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(GroupProfileActivity.this, CreateGroupActivity.class);
-            intent.putExtra(CreateGroupActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getGroupID());
+            intent.putExtra(CreateGroupActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getGroup().getGroupID());
             intent.putParcelableArrayListExtra(CreateGroupActivity.INTENT_EXTRA_ALREADY_JOIN_MEMBER, mGroupMemberList);
+            startActivity(intent);
+        }
+    };
+
+    private final OnRecyclerViewItemClickListener mOnGroupMemberItemClickListener = new OnRecyclerViewItemClickListener() {
+        @Override
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            Intent intent;
+            String userID =  mGroupMemberList.get(position).getUserProfile().getUserID();
+            if(mPresenter.isMySelf(userID)){
+                intent = new Intent(GroupProfileActivity.this, ProfileModifyActivity.class);
+            }else {
+                 intent = new Intent(GroupProfileActivity.this, ContactProfileActivity.class);
+                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID,userID);
+            }
             startActivity(intent);
         }
     };

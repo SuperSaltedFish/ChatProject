@@ -1,11 +1,16 @@
 package com.yzx.chat.widget.adapter;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.CallSuper;
 import android.support.text.emoji.widget.EmojiTextView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.text.TextUtils;
 import android.util.Size;
@@ -24,7 +29,9 @@ import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.view.activity.ChatActivity;
+import com.yzx.chat.view.activity.ImageOriginalActivity;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -452,6 +459,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mIvMapImage = itemView.findViewById(R.id.ChatMessageAdapter_mIvMapImage);
             mTvTitle = itemView.findViewById(R.id.ChatMessageAdapter_mTvTitle);
             mTvAddress = itemView.findViewById(R.id.ChatMessageAdapter_mTvAddress);
+      
         }
 
         @Override
@@ -470,26 +478,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-
-    static abstract class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
-        Message mMessage;
-        MessageCallback mMessageCallback;
-        int mHolderType;
-
-        MessageHolder(View itemView, int type) {
-            super(itemView);
-            mHolderType = type;
-        }
-
-        @CallSuper
-        protected void setDate(Message message) {
-            mMessage = message;
-        }
-
-        protected void setMessageCallback(MessageCallback messageCallback) {
-            mMessageCallback = messageCallback;
-        }
-    }
 
     static abstract class ReceiveMessageHolder extends MessageHolder {
         ImageView mIvAvatar;
@@ -554,6 +542,75 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 }
             }
         }
+    }
+
+    static abstract class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
+        Message mMessage;
+        MessageCallback mMessageCallback;
+        int mHolderType;
+
+        MessageHolder(View itemView, int type) {
+            super(itemView);
+            mHolderType = type;
+        }
+
+        @CallSuper
+        protected void setDate(Message message) {
+            mMessage = message;
+        }
+
+        protected void setMessageCallback(MessageCallback messageCallback) {
+            mMessageCallback = messageCallback;
+        }
+
+        protected void performClick() {
+            switch (mHolderType) {
+                case HOLDER_TYPE_SEND_MESSAGE_TEXT:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
+                    performClickTextContent();
+                    break;
+                case HOLDER_TYPE_SEND_MESSAGE_VOICE:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
+
+                    break;
+                case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
+                    performClickImageContent();
+                    break;
+                case HOLDER_TYPE_SEND_MESSAGE_LOCATION:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION:
+                    performClickLocationContent();
+                    break;
+            }
+        }
+
+        private void performClickTextContent() {
+
+        }
+
+        private void performClickImageContent() {
+            ImageMessage imageMessage = (ImageMessage) mMessage.getContent();
+            String imagePath = imageMessage.getLocalUri().getPath();
+            if (TextUtils.isEmpty(imagePath) || !new File(imagePath).exists()) {
+                AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_ImageAlreadyDeleted));
+            } else {
+                Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
+                if (stackTopActivity instanceof ChatActivity) {
+                    Intent intent = new Intent(stackTopActivity, ImageOriginalActivity.class);
+                    intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
+                    ChatMessageAdapter.ImageSendMessageHolder holder = (ChatMessageAdapter.ImageSendMessageHolder) this;
+                    ViewCompat.setTransitionName(holder.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(, holder.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                    ActivityCompat.startActivity(stackTopActivity, intent, options.toBundle());
+                }
+            }
+        }
+
+
+        private void performClickLocationContent() {
+            LocationMessage locationMessage = (LocationMessage) mMessage.getContent();
+        }
+
     }
 
 

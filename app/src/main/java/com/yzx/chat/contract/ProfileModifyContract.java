@@ -11,6 +11,7 @@ package com.yzx.chat.contract;
 
 
 public class ProfileModifyContract {
+
     public interface View extends BaseView<Presenter> {
         void showError(String error);
         void goBack();
@@ -18,6 +19,7 @@ public class ProfileModifyContract {
 
 
     public interface Presenter extends BasePresenter<View> {
+        UserBean getUserInfo();
         void updateProfile(UserBean user);
     }
 }

@@ -50,18 +50,17 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         holder.mTvName.setText(conversation.getConversationTitle());
         holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
-        int unreadMsgCount = conversation.getUnreadMessageCount();
-        if (unreadMsgCount > 0) {
-            if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY) {
-                holder.mBadgeImageView.setBadgeText(unreadMsgCount);
-                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
-            } else {
-                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW_ONLY_SMALL_BACKGROUND);
-            }
-        } else {
-            holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);
-        }
-
+//        int unreadMsgCount = conversation.getUnreadMessageCount();
+//        if (unreadMsgCount > 0) {
+//            if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY) {
+//                holder.mBadgeImageView.setBadgeText(unreadMsgCount);
+//                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
+//            } else {
+//                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW_ONLY_SMALL_BACKGROUND);
+//            }
+//        } else {
+//            holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);
+//        }
     }
 
     @Override
@@ -82,12 +81,13 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         TextView mTvName;
         TextView mTvLastRecord;
         TextView mTvTime;
-        BadgeImageView mBadgeImageView;
 
         ConversationHolder(View itemView, int conversationType) {
             super(itemView);
             mConversationType = conversationType;
-
+            mTvName = itemView.findViewById(R.id.ConversationAdapter_mTvName);
+            mTvLastRecord = itemView.findViewById(R.id.ConversationAdapter_mTvLastMessage);
+            mTvTime = itemView.findViewById(R.id.ConversationAdapter_mTvTime);
         }
 
         public int getConversationType() {
@@ -98,13 +98,11 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     private final static class SingleHolder extends ConversationHolder {
 
+        BadgeImageView mBadgeImageView;
 
         SingleHolder(View itemView) {
             super(itemView, SINGLE);
-            mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
-            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleLastMessage);
-            mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvSingleTime);
-            mBadgeImageView = (BadgeImageView) itemView.findViewById(R.id.ConversationAdapter_mIvSingleAvatar);
+            mBadgeImageView = itemView.findViewById(R.id.ConversationAdapter_mIvSingleAvatar);
         }
     }
 
@@ -114,10 +112,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
         GroupHolder(View itemView) {
             super(itemView, GROUP);
-            mTvName = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvName);
-            mTvLastRecord = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastMessage);
-            mTvTime = (TextView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupTime);
-            mBadgeImageView = (BadgeImageView) itemView.findViewById(R.id.ConversationAdapter_mTvGroupLastHeadImage);
+            mBadgeImageView = itemView.findViewById(R.id.ConversationAdapter_mIvGroupAvatar);
         }
     }
 }

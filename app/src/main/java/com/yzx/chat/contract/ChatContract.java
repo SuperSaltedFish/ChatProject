@@ -3,6 +3,8 @@ package com.yzx.chat.contract;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 
 import java.util.List;
 
@@ -54,6 +56,10 @@ public class ChatContract {
         void setVoiceMessageAsListened(Message message);
 
         void saveMessageDraft(String draft);
+
+        ContactBean getContact();
+
+        GroupBean getGroup();
 
     }
 }

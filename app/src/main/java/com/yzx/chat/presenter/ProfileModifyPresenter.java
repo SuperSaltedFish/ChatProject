@@ -26,6 +26,11 @@ public class ProfileModifyPresenter implements ProfileModifyContract.Presenter {
     }
 
     @Override
+    public UserBean getUserInfo() {
+        return IMClient.getInstance().userManager().getUser();
+    }
+
+    @Override
     public void updateProfile(final UserBean user) {
         IMClient.getInstance().userManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new ResultCallback<Void>() {
             @Override

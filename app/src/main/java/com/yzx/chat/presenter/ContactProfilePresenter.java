@@ -42,6 +42,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void init(String contactID) {
+
         mContactBean = mIMClient.contactManager().getContact(contactID);
         if (mContactBean == null) {
             mContactProfileView.goBack();
@@ -96,7 +97,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     };
 
     private static class DeleteContactResult extends AsyncResult<ContactProfilePresenter, Boolean> {
-
 
         DeleteContactResult(ContactProfilePresenter dependent) {
             super(dependent);

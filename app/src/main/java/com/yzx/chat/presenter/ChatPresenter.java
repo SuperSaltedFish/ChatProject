@@ -6,6 +6,8 @@ import android.text.TextUtils;
 
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
+import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.contract.ChatContract;
 import com.yzx.chat.network.chat.ChatManager;
@@ -34,7 +36,7 @@ import io.rong.message.VoiceMessage;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
-    public static String sConversationID;
+    public static volatile String sConversationID;
 
     private ChatContract.View mChatView;
     private Handler mHandler;
@@ -51,6 +53,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView = view;
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
+        mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
     }
 
     @Override
@@ -62,17 +65,27 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView = null;
         mHandler = null;
         sConversationID = null;
+        mConversation = null;
     }
 
     @Override
     public void init(Conversation conversation) {
+        mHandler.removeCallbacksAndMessages(null);
         mConversation = conversation;
         sConversationID = mConversation.getTargetId();
         mHasMoreMessage = true;
+        mIsConversationStateChange = false;
         mIsLoadingMore = false;
+
+        mChatView.clearMessage();
+        mChatView.enableLoadMoreHint(false);
+
+        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
         mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
-        mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+
+
         if (mConversation.getUnreadMessageCount() != 0) {
             mIMClient.conversationManager().clearConversationUnreadStatus(mConversation);
         }
@@ -170,8 +183,24 @@ public class ChatPresenter implements ChatContract.Presenter {
         mIMClient.conversationManager().saveConversationDraft(mConversation, draft);
     }
 
+    @Override
+    public ContactBean getContact() {
+        if (mConversation.getConversationType() == Conversation.ConversationType.PRIVATE) {
+            return mIMClient.contactManager().getContact(mConversation.getTargetId());
+        }
+        return null;
+    }
+
+    @Override
+    public GroupBean getGroup() {
+        if (mConversation.getConversationType() == Conversation.ConversationType.GROUP) {
+            return mIMClient.groupManager().getGroup(mConversation.getTargetId());
+        }
+        return null;
+    }
+
     private void sendMessage(MessageContent messageContent) {
-        sendMessage(Message.obtain(mConversation.getTargetId(), Conversation.ConversationType.PRIVATE, messageContent));
+        sendMessage(Message.obtain(mConversation.getTargetId(), mConversation.getConversationType(), messageContent));
     }
 
     private void sendMessage(Message message) {
@@ -228,14 +257,16 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
         @Override
-        public void onConversationStateChange(Conversation conversation, int typeCode) {
-            if (typeCode == ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE) {
+        public void onConversationStateChange(final Conversation conversation, int typeCode) {
+            if (typeCode == ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE&&conversation.getTargetId().equals(sConversationID)) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mChatView.clearMessage();
-                        mChatView.enableLoadMoreHint(false);
-                        mHasMoreMessage = false;
+                        if(conversation.getTargetId().equals(sConversationID)) {
+                            mChatView.clearMessage();
+                            mChatView.enableLoadMoreHint(false);
+                            mHasMoreMessage = false;
+                        }
                     }
                 });
             }

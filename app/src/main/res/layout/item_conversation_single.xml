@@ -30,26 +30,26 @@
         android:paddingStart="8dp"
         android:textColor="@color/text_primary_color_black"
         android:textSize="17sp"
-        app:layout_constraintBottom_toTopOf="@+id/ConversationAdapter_mTvSingleLastMessage"
-        app:layout_constraintEnd_toStartOf="@+id/ConversationAdapter_mTvSingleTime"
-        app:layout_constraintStart_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
-        app:layout_constraintTop_toTopOf="@+id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintBottom_toTopOf="@id/ConversationAdapter_mTvLastMessage"
+        app:layout_constraintEnd_toStartOf="@id/ConversationAdapter_mTvTime"
+        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mIvSingleAvatar"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/ConversationAdapter_mTvSingleTime"
+        android:id="@+id/ConversationAdapter_mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:gravity="center_vertical"
         android:layout_marginEnd="12dp"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ConversationAdapter_mTvName"
+        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mTvName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ConversationAdapter_mTvName" />
+        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mTvName" />
 
 
     <TextView
-        android:id="@+id/ConversationAdapter_mTvSingleLastMessage"
+        android:id="@+id/ConversationAdapter_mTvLastMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -58,10 +58,10 @@
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mIvSingleAvatar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ConversationAdapter_mIvSingleAvatar"
-        app:layout_constraintTop_toBottomOf="@+id/ConversationAdapter_mTvName" />
+        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintTop_toBottomOf="@id/ConversationAdapter_mTvName" />
 
 
 </android.support.constraint.ConstraintLayout>

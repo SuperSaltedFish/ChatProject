@@ -68,19 +68,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-        mIvStartChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
-                Conversation conversation = new Conversation();
-                conversation.setConversationType(Conversation.ConversationType.PRIVATE);
-                conversation.setTargetId(mContactID);
-                conversation.setConversationTitle(mPresenter.getContact().getName());
-                intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
-                startActivity(intent);
-                finish();
-            }
-        });
+        mIvStartChat.setOnClickListener(mOnStartChatClickListener);
 
         mPresenter.init(mContactID);
     }
@@ -117,6 +105,20 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mProgressDialog.dismiss();
         super.onDestroy();
     }
+
+    private final View.OnClickListener mOnStartChatClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
+            Conversation conversation = new Conversation();
+            conversation.setConversationType(Conversation.ConversationType.PRIVATE);
+            conversation.setTargetId(mContactID);
+            conversation.setConversationTitle(mPresenter.getContact().getName());
+            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+            startActivity(intent);
+            finish();
+        }
+    };
 
     @Override
     public ContactProfileContract.Presenter getPresenter() {

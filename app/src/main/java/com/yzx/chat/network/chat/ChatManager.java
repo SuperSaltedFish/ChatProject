@@ -23,8 +23,6 @@ import io.rong.imlib.model.Message;
 
 public class ChatManager {
 
-    private static final Conversation.ConversationType[] SUPPORT_CONVERSATION_TYPE = {Conversation.ConversationType.PRIVATE};
-
     private RongIMClient mRongIMClient;
     private IMClient.SubManagerCallback mSubManagerCallback;
     private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
@@ -88,7 +86,7 @@ public class ChatManager {
             public void onError(RongIMClient.ErrorCode errorCode) {
                 LogUtil.e(errorCode.getMessage());
             }
-        }, SUPPORT_CONVERSATION_TYPE);
+        }, IMClient.SUPPORT_CONVERSATION_TYPE);
     }
 
     public void addOnMessageReceiveListener(OnChatMessageReceiveListener listener, String conversationID) {
@@ -171,6 +169,7 @@ public class ChatManager {
 
         @Override
         public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+            LogUtil.e("send message fail:"+errorCode);
             String conversationID = message.getTargetId();
             for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
