@@ -23,6 +23,10 @@ public class GroupProfileContract {
 
         void showError(String error);
 
+        void switchTopState(boolean isOpen);
+
+        void switchRemindState(boolean isOpen);
+
         void goBack();
     }
 
@@ -41,5 +45,11 @@ public class GroupProfileContract {
         void quitGroup();
 
         boolean isMySelf(String userID);
+
+        void enableConversationNotification(boolean isEnable);
+
+        void setConversationToTop( boolean isTop);
+
+        void clearChatMessages();
     }
 }

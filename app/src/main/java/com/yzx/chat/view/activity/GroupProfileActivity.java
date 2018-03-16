@@ -15,7 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -60,6 +62,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private ConstraintLayout mClGroupName;
     private ConstraintLayout mClMyGroupNickname;
     private ConstraintLayout mClQRCode;
+    private ConstraintLayout mClClearMessage;
+    private Switch mSwitchTop;
+    private Switch mSwitchRemind;
     private ProgressDialog mProgressDialog;
     private GroupMembersAdapter mAdapter;
 
@@ -81,8 +86,11 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mClGroupName = findViewById(R.id.GroupProfileActivity_mClGroupName);
         mClMyGroupNickname = findViewById(R.id.GroupProfileActivity_mClMyGroupNickname);
         mClQRCode = findViewById(R.id.GroupProfileActivity_mClQRCode);
+        mClClearMessage = findViewById(R.id.ChatSetup_mClClearMessage);
         mIvEditNotice = findViewById(R.id.GroupProfileActivity_mIvEditNotice);
         mBtnStartChat = findViewById(R.id.GroupProfileActivity_mBtnStartChat);
+        mSwitchTop = findViewById(R.id.ChatSetup_mSwitchTop);
+        mSwitchRemind = findViewById(R.id.ChatSetup_mSwitchRemind);
         mGroupMemberList = new ArrayList<>(64);
         mAdapter = new GroupMembersAdapter(mGroupMemberList, GROUP_MEMBERS_MAX_VISIBILITY_COUNT);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Modify));
@@ -109,6 +117,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mClQRCode.setOnClickListener(mOnQRCodeClickListener);
         mIvEditNotice.setOnClickListener(mOnGroupNoticeClickListener);
         mFooterView.setOnClickListener(mOnAddNewMemberClickListener);
+        mSwitchTop.setOnCheckedChangeListener(mOnTopSwitchChangeListener);
+        mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
+        mClClearMessage.setOnClickListener(mOnClearMessageClickListener);
 
         String groupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
         if (TextUtils.isEmpty(groupID)) {
@@ -293,6 +304,39 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
     };
 
+    private final CompoundButton.OnCheckedChangeListener mOnTopSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            mPresenter.setConversationToTop(isChecked);
+        }
+    };
+
+    private final CompoundButton.OnCheckedChangeListener mOnRemindSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            mPresenter.enableConversationNotification(!isChecked);
+        }
+    };
+
+    private final View.OnClickListener mOnClearMessageClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new MaterialDialog.Builder(GroupProfileActivity.this)
+                    .content("是否删除所有聊天记录？")
+                    .positiveText("确定")
+                    .negativeText("取消")
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            if (which == DialogAction.POSITIVE) {
+                                mPresenter.clearChatMessages();
+                            }
+                        }
+                    })
+                    .show();
+        }
+    };
+
     @Override
     public GroupProfileContract.Presenter getPresenter() {
         return new GroupProfilePresenter();
@@ -352,6 +396,20 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     public void showError(String error) {
         mProgressDialog.dismiss();
         showToast(error);
+    }
+
+    @Override
+    public void switchTopState(boolean isOpen) {
+        mSwitchTop.setOnCheckedChangeListener(null);
+        mSwitchTop.setChecked(isOpen);
+        mSwitchTop.setOnCheckedChangeListener(mOnTopSwitchChangeListener);
+    }
+
+    @Override
+    public void switchRemindState(boolean isOpen) {
+        mSwitchRemind.setOnCheckedChangeListener(null);
+        mSwitchRemind.setChecked(isOpen);
+        mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
     }
 
     @Override

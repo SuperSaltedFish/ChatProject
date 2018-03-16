@@ -7,8 +7,8 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactInfoContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.ResultCallback;
 
-import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 
 /**
@@ -55,14 +55,15 @@ public class ContactInfoPresenter implements ContactInfoContract.Presenter {
         }
 
         mContactInfoContractView.switchTopState(mConversation.isTop());
-        mIMClient.conversationManager().isEnableConversationNotification(mConversation, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+        mIMClient.conversationManager().isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
-            public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                mContactInfoContractView.switchRemindState(conversationNotificationStatus == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
+            public void onSuccess(Conversation.ConversationNotificationStatus result) {
+                mContactInfoContractView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
+
             }
 
             @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
+            public void onFailure(String error) {
 
             }
         });

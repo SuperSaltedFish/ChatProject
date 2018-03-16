@@ -5,8 +5,6 @@ import com.yzx.chat.util.LogUtil;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
@@ -164,8 +162,22 @@ public class ConversationManager {
         });
     }
 
-    public void isEnableConversationNotification(Conversation conversation, RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus> callback) {
-        mRongIMClient.getConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), callback);
+    public void isEnableConversationNotification(Conversation conversation, final ResultCallback<Conversation.ConversationNotificationStatus> callback) {
+        mRongIMClient.getConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+            @Override
+            public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
+                if(callback!=null){
+                    callback.onSuccess(conversationNotificationStatus);
+                }
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                if(callback!=null){
+                    callback.onFailure(errorCode.getMessage());
+                }
+            }
+        });
     }
 
     public void addConversationStateChangeListener(OnConversationStateChangeListener listener) {
