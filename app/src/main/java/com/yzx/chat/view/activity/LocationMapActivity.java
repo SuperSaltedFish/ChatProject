@@ -17,6 +17,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.DrawableRes;
+import android.support.constraint.ConstraintLayout;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -69,7 +70,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     public static final String INTENT_EXTRA_POI = "POI";
 
     private static final int MODE_SEND = 0;
-    private static final int MODE_SHARE = 0;
+    private static final int MODE_SHARE = 1;
 
     private static final int DEFAULT_ZOOM = 5;
 
@@ -80,12 +81,15 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private View mCurrentLocationFooterView;
     private TextView mTvSearchLocationLoadMoreHint;
     private TextView mTvCurrentLocationLoadMoreHint;
+    private TextView mTvShareLocationTitle;
+    private TextView mTvShareLocationContent;
     private RecyclerView mRvSearchLocation;
     private RecyclerView mRvCurrentLocation;
-    private FrameLayout mRvSearchLocationLayout;
-    private FrameLayout mRvCurrentLocationLayout;
+    private FrameLayout mFlSearchLocationLayout;
+    private FrameLayout mFlCurrentLocationLayout;
     private ProgressBar mPbSearchLocation;
     private ProgressBar mPbCurrentLocation;
+    private ConstraintLayout mClShareLayout;
     private LocationAdapter mCurrentLocationAdapter;
     private LocationAdapter mSearchLocationAdapter;
     private Handler mSearchHandler;
@@ -109,10 +113,13 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mMapView = findViewById(R.id.LocationMapActivity_mMapView);
         mRvSearchLocation = findViewById(R.id.LocationMapActivity_mRvSearchLocation);
         mRvCurrentLocation = findViewById(R.id.LocationMapActivity_mRvCurrentLocation);
-        mRvSearchLocationLayout = findViewById(R.id.LocationMapActivity_mRvSearchLocationLayout);
-        mRvCurrentLocationLayout = findViewById(R.id.LocationMapActivity_mRvCurrentLocationLayout);
+        mFlSearchLocationLayout = findViewById(R.id.LocationMapActivity_mRvSearchLocationLayout);
+        mFlCurrentLocationLayout = findViewById(R.id.LocationMapActivity_mRvCurrentLocationLayout);
         mPbSearchLocation = findViewById(R.id.LocationMapActivity_mPbSearchLocation);
         mPbCurrentLocation = findViewById(R.id.LocationMapActivity_mPbCurrentLocation);
+        mClShareLayout = findViewById(R.id.LocationMapActivity_mClShareLayout);
+        mTvShareLocationTitle = findViewById(R.id.LocationMapActivity_mTvShareLocationTitle);
+        mTvShareLocationContent = findViewById(R.id.LocationMapActivity_mTvShareLocationContent);
         mSearchLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mCurrentLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvSearchLocationLoadMoreHint = mSearchLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
@@ -169,6 +176,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);
         if (poiItem == null) {
             mCurrentMode = MODE_SEND;
+            getSupportActionBar().setTitle(R.string.LocationMapActivity_Title);
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.draggable(false);//可拖放性
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
@@ -182,8 +190,12 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             });
             mAMap.setOnCameraChangeListener(mOnCameraChangeListener);
             mAMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
+            mFlCurrentLocationLayout.setVisibility(View.VISIBLE);
+            mClShareLayout.setVisibility(View.GONE);
+
         } else {
             mCurrentMode = MODE_SHARE;
+            getSupportActionBar().setTitle(R.string.Location);
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.draggable(false);//可拖放性
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
@@ -192,6 +204,10 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
             mMapMarker.setPosition(latLng);
             mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+            mFlCurrentLocationLayout.setVisibility(View.GONE);
+            mClShareLayout.setVisibility(View.VISIBLE);
+            mTvShareLocationTitle.setText(poiItem.getTitle());
+            mTvShareLocationContent.setText(poiItem.getSnippet());
         }
 
 
@@ -220,8 +236,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             @Override
             public void onClick(View v) {
                 mMapView.setVisibility(View.INVISIBLE);
-                mRvCurrentLocationLayout.setVisibility(View.GONE);
-                mRvSearchLocationLayout.setVisibility(View.VISIBLE);
+                mFlCurrentLocationLayout.setVisibility(View.GONE);
+                mFlSearchLocationLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -229,8 +245,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             @Override
             public boolean onClose() {
                 mMapView.setVisibility(View.VISIBLE);
-                mRvCurrentLocationLayout.setVisibility(View.VISIBLE);
-                mRvSearchLocationLayout.setVisibility(View.GONE);
+                mFlCurrentLocationLayout.setVisibility(View.VISIBLE);
+                mFlSearchLocationLayout.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -293,7 +309,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(mCurrentMode==MODE_SEND){
+        if (mCurrentMode == MODE_SEND) {
             getMenuInflater().inflate(R.menu.menu_location_map, menu);
             MenuItem searchItem = menu.findItem(R.id.LocationMapMenu_Search);
             mSendMenuItem = menu.findItem(R.id.LocationMapMenu_Send);
@@ -324,7 +340,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     public void onBackPressed() {
-        if (mCurrentMode==MODE_SEND&&!mSearchView.isIconified()) {
+        if (mCurrentMode == MODE_SEND && !mSearchView.isIconified()) {
             closeSearch();
         } else {
             super.onBackPressed();
@@ -339,8 +355,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
-            if(!isPositionComplete&&mCurrentMode==MODE_SEND){
-                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), DEFAULT_ZOOM));
+            if (!isPositionComplete && mCurrentMode == MODE_SEND) {
+                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
             }
             isPositionComplete = true;
         }
@@ -528,7 +544,5 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         showLongToast(error);
     }
 
-//    ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), 128);
-//                    this.mAppKey = applicationInfo.metaData.getString("RONG_CLOUD_APP_KEY");
 
 }

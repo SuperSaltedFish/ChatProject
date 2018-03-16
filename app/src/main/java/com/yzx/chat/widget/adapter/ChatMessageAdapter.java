@@ -339,8 +339,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     }
 
-    public static class ImageSendMessageHolder extends SendMessageHolder {
-        public ImageView mIvContent;
+    static class ImageSendMessageHolder extends SendMessageHolder {
+        ImageView mIvContent;
 
         ImageSendMessageHolder(View itemView) {
             super(itemView, HOLDER_TYPE_SEND_MESSAGE_IMAGE);
@@ -417,7 +417,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    public static class LocationSendMessageHolder extends SendMessageHolder {
+    static class LocationSendMessageHolder extends SendMessageHolder {
         ImageView mIvMapImage;
         TextView mTvTitle;
         TextView mTvAddress;
@@ -614,9 +614,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         protected void performClickLocationContent() {
             LocationMessage locationMessage = (LocationMessage) mMessage.getContent();
-            PoiItem poiItem = new PoiItem(locationMessage.getExtra(),new LatLonPoint(locationMessage.getLat(),locationMessage.getLng()),null,null);
+            String poi = locationMessage.getPoi();
+            String[] content = poi.split("/");
+            PoiItem poiItem = new PoiItem(locationMessage.getExtra(), new LatLonPoint(locationMessage.getLat(), locationMessage.getLng()), content[0], content[1]);
             Intent intent = new Intent(itemView.getContext(), LocationMapActivity.class);
-            intent.putExtra(LocationMapActivity.INTENT_EXTRA_POI,poiItem);
+            intent.putExtra(LocationMapActivity.INTENT_EXTRA_POI, poiItem);
             itemView.getContext().startActivity(intent);
         }
 

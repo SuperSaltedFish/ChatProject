@@ -192,6 +192,9 @@
     <string name="GroupProfileActivity_NoticeDialogHint">编辑群公告，该公告只有群主才能编辑。</string>
     <string name="GroupMenu_ExitGroup">退出该群组</string>
     <string name="GroupProfileActivity_QuitDialogHint">退出当前群组后，将不再收到此群的聊天信息</string>
+    <string name="ChatActivity_VoiceRecorderButtonHint">按住说话</string>
+    <string name="Location">位置</string>
+    <string name="Album">相册</string>
 
 
 </resources>

@@ -43,20 +43,12 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="4dp"
-        android:background="@drawable/bg_shadow_top"
-        app:layout_constraintBottom_toBottomOf="@+id/ChatActivity_mRvChatView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
-
     <com.yzx.chat.widget.view.KeyboardPanelSwitcher
         android:id="@+id/ChatActivity_mLlInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
+        android:elevation="10dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -104,7 +96,7 @@
                 android:paddingTop="2dp"
                 android:textColor="#9e000000"
                 android:textColorHint="@color/text_secondary_color_black_light"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
 
             <ImageSwitcher
@@ -153,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:gravity="center"
-                android:text="按住说话"
+                android:text="@string/ChatActivity_VoiceRecorderButtonHint"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -232,7 +224,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:includeFontPadding="false"
-                android:text="相册"
+                android:text="@string/Album"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendImage"
@@ -258,7 +250,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:includeFontPadding="false"
-                android:text="位置"
+                android:text="@string/Location"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendLocation"

@@ -18,10 +18,10 @@
         app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp">
+        android:layout_marginTop="48dp"
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/LocationMapActivity_mRvSearchLocationLayout"
@@ -49,15 +49,15 @@
             android:id="@+id/LocationMapActivity_mMapView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_above="@id/LocationMapActivity_mRvCurrentLocationLayout"
-            android:layout_alignParentTop="true" />
+            android:layout_weight="1" />
+
 
         <FrameLayout
+            android:background="@android:color/white"
+            android:elevation="10dp"
             android:id="@+id/LocationMapActivity_mRvCurrentLocationLayout"
             android:layout_width="match_parent"
-            android:layout_height="280dp"
-            android:layout_alignParentBottom="true">
+            android:layout_height="280dp">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/LocationMapActivity_mRvCurrentLocation"
@@ -71,6 +71,56 @@
                 android:layout_gravity="center" />
 
         </FrameLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/LocationMapActivity_mClShareLayout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="@android:color/white"
+            android:elevation="10dp"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/LocationMapActivity_mTvShareLocationTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@color/text_primary_color_black"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@id/LocationMapActivity_mTvShareLocationContent"
+                app:layout_constraintEnd_toStartOf="@id/LocationMapActivity_mIBtnShareNavigation"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/LocationMapActivity_mTvShareLocationContent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/LocationMapActivity_mIBtnShareNavigation"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/LocationMapActivity_mTvShareLocationTitle" />
+
+            <com.yzx.chat.widget.view.CircleImageView
+                android:id="@+id/LocationMapActivity_mIBtnShareNavigation"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="center"
+                android:elevation="2dp"
+                android:background="@color/colorAccent"
+                android:src="@drawable/ic_route"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 

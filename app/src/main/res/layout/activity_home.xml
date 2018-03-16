@@ -14,19 +14,13 @@
         android:focusable="true"
         android:focusableInTouchMode="true" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="56dp"
-        android:background="@drawable/bg_shadow_top" />
-
 
     <me.majiajie.pagerbottomtabstrip.PageNavigationView
         android:id="@+id/HomeActivity_mBottomNavigationBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
-        android:background="@android:color/white" />
+        android:background="@android:color/white"
+        android:elevation="10dp" />
 
 </merge>
