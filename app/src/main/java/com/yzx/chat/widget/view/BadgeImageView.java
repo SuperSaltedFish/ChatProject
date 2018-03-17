@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 
-public class BadgeImageView extends android.support.v7.widget.AppCompatImageView {
+public class BadgeImageView extends NineGridAvatarView {
 
     public static final int MODE_HIDE = 0;
     public static final int MODE_SHOW = 1;
@@ -77,6 +77,7 @@ public class BadgeImageView extends android.support.v7.widget.AppCompatImageView
         mBadgeTextPaint.setTextAlign(Paint.Align.CENTER);
 
         setDefault();
+        setWillNotDraw(false);
 
     }
 
@@ -135,6 +136,22 @@ public class BadgeImageView extends android.support.v7.widget.AppCompatImageView
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+//        if (mBadgeMode == MODE_HIDE) {
+//            return;
+//        }
+//        if (isReset) {
+//            initDigitalHint();
+//            isReset = false;
+//        }
+//        canvas.drawRoundRect(mBadgeRectF, mBadgeRectF.width() / 2f, mBadgeRectF.height() / 2f, mBadgeBackgroundPaint);
+//        if (mBadgeMode == MODE_SHOW) {
+//            canvas.drawText(mBadgeText, mBadgeRectF.centerX(), (mBadgeRectF.top + mBadgeTextHeight + mBadgeRectF.bottom) / 2f, mBadgeTextPaint);
+//        }
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
         if (mBadgeMode == MODE_HIDE) {
             return;
         }

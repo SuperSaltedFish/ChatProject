@@ -41,7 +41,7 @@ public class GroupMembersAdapter extends BaseRecyclerViewAdapter<GroupMembersAda
     public void bindDataToViewHolder(GroupMembersHolder holder, int position) {
         GroupMemberBean groupMember = mGroupMembers.get(position);
         holder.mTvMemberName.setText(groupMember.getNicknameInGroup());
-        GlideUtil.loadFromUrl(mContext, holder.mIvAvatar, R.drawable.temp_head_image);
+        GlideUtil.loadFromUrl(mContext, holder.mIvAvatar, groupMember.getUserProfile().getAvatar());
     }
 
     @Override

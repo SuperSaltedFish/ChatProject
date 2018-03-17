@@ -3,18 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <com.yzx.chat.widget.view.BadgeImageView
-        android:id="@+id/ConversationAdapter_mIvSingleAvatar"
+        android:id="@+id/ConversationAdapter_mIvAvatar"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/temp_head_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,16 +31,16 @@
         android:textSize="17sp"
         app:layout_constraintBottom_toTopOf="@id/ConversationAdapter_mTvLastMessage"
         app:layout_constraintEnd_toStartOf="@id/ConversationAdapter_mTvTime"
-        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvSingleAvatar"
-        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mIvAvatar"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/ConversationAdapter_mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:gravity="center_vertical"
         android:layout_marginEnd="12dp"
+        android:gravity="center_vertical"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mTvName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,9 +57,9 @@
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mIvAvatar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvSingleAvatar"
+        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvAvatar"
         app:layout_constraintTop_toBottomOf="@id/ConversationAdapter_mTvName" />
 
 

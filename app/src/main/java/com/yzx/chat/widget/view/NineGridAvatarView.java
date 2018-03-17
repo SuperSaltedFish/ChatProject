@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.yzx.chat.R;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
 public class NineGridAvatarView extends ViewGroup {
 
     private Context mContext;
-    private List<String> mAvatarUrlList;
+    private List<Object> mAvatarUrlList;
 
     private int mViewWidth;
     private int mViewHeight;
@@ -45,18 +45,16 @@ public class NineGridAvatarView extends ViewGroup {
         final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         final int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
         final int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
+
         int width = maxWidth;
         int height = maxHeight;
-        if (mAvatarUrlList.size() == 0) {
-            width = 0;
-            height = 0;
-        } else {
-            if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
-                height = width;
-            } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-                width = height;
-            }
+
+        if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
+            height = width;
+        } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
+            width = height;
         }
+
         int childSize = Math.min(width, height);
         switch (mAvatarUrlList.size()) {
             case 1:
@@ -192,12 +190,16 @@ public class NineGridAvatarView extends ViewGroup {
         mViewHeight = h;
     }
 
-    public void setImageData(List<String> urlList) {
+    public void setImageUrlList(List<Object> urlList) {
         mAvatarUrlList.clear();
         if (urlList != null) {
             mAvatarUrlList.addAll(urlList);
         }
         updateView();
+    }
+
+    public void setImageUrlList(Object[] urlList) {
+        setImageUrlList(Arrays.asList(urlList));
     }
 
     private void updateView() {
@@ -225,7 +227,7 @@ public class NineGridAvatarView extends ViewGroup {
             }
         }
         for (int i = 0; i < urlCount; i++) {
-            GlideUtil.loadFromUrl(mContext, (ImageView) getChildAt(i), R.drawable.temp_share_image);
+            GlideUtil.loadAvatarFromUrl(mContext, (ImageView) getChildAt(i),mAvatarUrlList.get(i));
         }
     }
 

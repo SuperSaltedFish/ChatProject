@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import java.util.List;
 
@@ -35,6 +37,14 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
     public void bindDataToViewHolder(GroupHolder holder, int position) {
         GroupBean group = mGroupList.get(position);
         holder.mTvGroupName.setText(group.getName());
+        String avatarUrl = group.getAvatarUrlFromMember();
+        Object[] avatarList;
+        if (TextUtils.isEmpty(avatarUrl)) {
+            avatarList = new Object[]{R.drawable.ic_avatar_default};
+        } else {
+            avatarList = avatarUrl.split(",");
+        }
+        holder.mIvAvatar.setImageUrlList(avatarList);
     }
 
     @Override
@@ -45,10 +55,12 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
 
     static class GroupHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvGroupName;
+        NineGridAvatarView mIvAvatar;
 
         GroupHolder(View itemView) {
             super(itemView);
             mTvGroupName = itemView.findViewById(R.id.GroupAdapter_mTvGroupName);
+            mIvAvatar = itemView.findViewById(R.id.GroupAdapter_mIvAvatar);
         }
     }
 

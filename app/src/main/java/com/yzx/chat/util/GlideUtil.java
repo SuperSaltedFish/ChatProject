@@ -1,11 +1,13 @@
 package com.yzx.chat.util;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.widget.view.GlideRoundTransform;
 
@@ -60,6 +62,33 @@ public class GlideUtil {
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .format(DecodeFormat.PREFER_RGB_565)
                 .transform(new GlideRoundTransform())
+                .into(view);
+    }
+
+    public static void loadAvatarFromUrl(Context context, ImageView view, Object url) {
+        if (view == null) {
+            return;
+        }
+        if (view.getTag() != null) {
+            GlideApp.with(context).clear(view);
+        }
+
+        if (url == null) {
+            url = R.drawable.ic_avatar_default;
+        } else if (url instanceof String) {
+            String strUrl = (String) url;
+            if (TextUtils.isEmpty(strUrl)) {
+                url = R.drawable.ic_avatar_default;
+            }
+        }
+
+        GlideApp.with(context)
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .dontAnimate()
+                .format(DecodeFormat.PREFER_RGB_565)
+                .placeholder(R.drawable.ic_avatar_default)
+                .error(R.drawable.ic_avatar_default)
                 .into(view);
     }
 

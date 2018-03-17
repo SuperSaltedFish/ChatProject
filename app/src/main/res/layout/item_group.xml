@@ -9,10 +9,10 @@
     android:paddingEnd="12dp"
     android:paddingStart="12dp">
 
-    <ImageView
+    <com.yzx.chat.widget.view.NineGridAvatarView
+        android:id="@+id/GroupAdapter_mIvAvatar"
         android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/temp_head_image" />
+        android:layout_height="56dp" />
 
     <TextView
         android:id="@+id/GroupAdapter_mTvGroupName"

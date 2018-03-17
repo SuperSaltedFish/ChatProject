@@ -16,6 +16,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.contract.ContactProfileContract;
 import com.yzx.chat.presenter.ContactProfilePresenter;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactProfilePagerAdapter;
 import com.yzx.chat.widget.view.ProgressDialog;
@@ -30,6 +31,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private ImageView mIvStartChat;
+    private ImageView mIvAvatar;
     private TextView mTvExplain;
     private TextView mTvNickname;
     private ContactProfilePagerAdapter mPagerAdapter;
@@ -51,11 +53,12 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
             finish();
             return;
         }
-        mTabLayout = findViewById(R.id.FriendProfileActivity_mTabLayout);
-        mViewPager = findViewById(R.id.FriendProfileActivity_mViewPager);
-        mIvStartChat = findViewById(R.id.FriendProfileActivity_mIvStartChat);
-        mTvNickname = findViewById(R.id.FriendProfileActivity_mTvNickname);
-        mTvExplain = findViewById(R.id.FriendProfileActivity_mTvExplain);
+        mTabLayout = findViewById(R.id.ContactProfileActivity_mTabLayout);
+        mViewPager = findViewById(R.id.ContactProfileActivity_mViewPager);
+        mIvStartChat = findViewById(R.id.ContactProfileActivity_mIvStartChat);
+        mTvNickname = findViewById(R.id.ContactProfileActivity_mTvNickname);
+        mTvExplain = findViewById(R.id.ContactProfileActivity_mTvExplain);
+        mIvAvatar = findViewById(R.id.ContactProfileActivity_mIvAvatar);
         mPagerAdapter = new ContactProfilePagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.ContactProfilePagerTitle), mContactID);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Delete));
     }
@@ -130,6 +133,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         setTitle(contact.getName());
         mTvNickname.setText(contact.getName());
         mTvExplain.setText(contact.getUserProfile().getSignature());
+        GlideUtil.loadAvatarFromUrl(this, mIvAvatar, contact.getUserProfile().getAvatar());
     }
 
     @Override

@@ -6,20 +6,17 @@ import android.support.v7.util.DiffUtil;
 import android.text.TextUtils;
 
 import com.yzx.chat.base.DiffCalculate;
-
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.contract.ConversationContract;
-import com.yzx.chat.network.chat.ConversationManager;
-import com.yzx.chat.util.NetworkAsyncTask;
 import com.yzx.chat.network.chat.ChatManager;
+import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.NetworkAsyncTask;
 
 import java.util.ArrayList;
-
-
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
@@ -187,17 +184,19 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         chatManager.conversationManager().clearConversationUnreadStatus(conversation);
                         conversation.setUnreadMessageCount(0);
                     }
-                    switch (conversation.getConversationType()){
+                    switch (conversation.getConversationType()) {
                         case PRIVATE:
                             ContactBean contactBean = chatManager.contactManager().getContact(conversationID);
                             if (contactBean != null) {
                                 conversation.setConversationTitle(contactBean.getName());
+                                conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
                             }
                             break;
                         case GROUP:
                             GroupBean group = chatManager.groupManager().getGroup(conversationID);
                             if (group != null) {
                                 conversation.setConversationTitle(group.getName());
+                                conversation.setPortraitUrl(group.getAvatarUrlFromMember());
                             }
                             break;
                     }

@@ -6,11 +6,7 @@ import android.view.ViewGroup;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.NineGridAvatarView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by YZX on 2017年08月12日.
@@ -34,19 +30,19 @@ public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMoment
 
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
-        List<String> s = new ArrayList<>();
-        for (int i = 0; i < position; i++) {
-            s.add(new String("" + i));
-        }
-        if(s.size()==0){
-            holder.mNineGridImageView.setVisibility(View.GONE);
-        }else {
-            holder.mNineGridImageView.setVisibility(View.VISIBLE);
-        }
-        if(position==7){
-            LogUtil.e("");
-        }
-        holder.mNineGridImageView.setImageData(s);
+//        List<String> s = new ArrayList<>();
+//        for (int i = 0; i < position; i++) {
+//            s.add(new String("" + i));
+//        }
+//        if(s.size()==0){
+//            holder.mNineGridImageView.setVisibility(View.GONE);
+//        }else {
+//            holder.mNineGridImageView.setVisibility(View.VISIBLE);
+//        }
+//        if(position==7){
+//            LogUtil.e("");
+//        }
+//        holder.mNineGridImageView.setImageUrlList(s);
 
     }
 

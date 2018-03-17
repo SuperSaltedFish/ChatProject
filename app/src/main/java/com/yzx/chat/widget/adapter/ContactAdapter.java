@@ -49,7 +49,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         }
         ContactBean contactBean = mContactList.get(position);
         holder.mTvName.setText(contactBean.getName());
-        GlideUtil.loadFromUrl(mContext, holder.mIvHeadImage, R.drawable.temp_head_image);
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar,  contactBean.getUserProfile().getAvatar());
     }
 
     @Override
@@ -112,9 +112,9 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
 
     };
 
-    static  class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
+    static class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvName;
-        ImageView mIvHeadImage;
+        ImageView mIvAvatar;
 
         ContactHolder(View itemView) {
             super(itemView);
@@ -124,10 +124,9 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
 
         private void initView() {
             mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
-            mIvHeadImage = itemView.findViewById(R.id.ContactAdapter_mIvHeadImage);
+            mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
         }
     }
-
 
 
 }

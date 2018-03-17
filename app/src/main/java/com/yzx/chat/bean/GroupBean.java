@@ -18,9 +18,34 @@ public class GroupBean implements Parcelable {
     private String name;
     private String createTime;
     private String owner;
-    private String avatar;
     private String notice;
+    private String avatar;
     private ArrayList<GroupMemberBean> members;
+
+    private String avatarUrlFromMember;
+
+    public String getAvatarUrlFromMember() {
+        if(TextUtils.isEmpty(avatarUrlFromMember)){
+            int size = members.size();
+            if(size>9){
+                size=9;
+            }
+            StringBuilder builder=null;
+            for(int i =0;i<size;i++){
+                if(builder==null){
+                    builder = new StringBuilder(50*size);
+                }
+                builder.append(members.get(i).getUserProfile().getAvatar());
+                if (i != size - 1) {
+                    builder.append(",");
+                }
+            }
+            if(builder!=null){
+                avatarUrlFromMember = builder.toString();
+            }
+        }
+        return avatarUrlFromMember;
+    }
 
     @Override
     public boolean equals(Object obj) {

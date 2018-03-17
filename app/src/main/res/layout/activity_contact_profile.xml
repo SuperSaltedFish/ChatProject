@@ -32,13 +32,12 @@
                 app:layout_scrollFlags="scroll">
 
                 <com.yzx.chat.widget.view.CircleImageView
-                    android:id="@+id/FriendProfileActivity_mIvAvatar"
+                    android:id="@+id/ContactProfileActivity_mIvAvatar"
                     android:layout_width="88dp"
                     android:layout_height="88dp"
                     android:background="@android:color/white"
                     android:elevation="3dp"
                     android:padding="1dp"
-                    android:src="@drawable/temp_head_image"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -51,13 +50,13 @@
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:src="@drawable/ic_voice_call"
-                    app:layout_constraintBottom_toBottomOf="@+id/FriendProfileActivity_mIvAvatar"
-                    app:layout_constraintEnd_toStartOf="@+id/FriendProfileActivity_mIvAvatar"
+                    app:layout_constraintBottom_toBottomOf="@+id/ContactProfileActivity_mIvAvatar"
+                    app:layout_constraintEnd_toStartOf="@+id/ContactProfileActivity_mIvAvatar"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/FriendProfileActivity_mIvAvatar" />
+                    app:layout_constraintTop_toTopOf="@+id/ContactProfileActivity_mIvAvatar" />
 
                 <com.yzx.chat.widget.view.CircleImageView
-                    android:id="@+id/FriendProfileActivity_mIvStartChat"
+                    android:id="@+id/ContactProfileActivity_mIvStartChat"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@color/green"
@@ -65,13 +64,13 @@
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:src="@drawable/ic_chat"
-                    app:layout_constraintBottom_toBottomOf="@+id/FriendProfileActivity_mIvAvatar"
+                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvAvatar"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvAvatar"
-                    app:layout_constraintTop_toTopOf="@+id/FriendProfileActivity_mIvAvatar" />
+                    app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvAvatar"
+                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mIvAvatar" />
 
                 <TextView
-                    android:id="@+id/FriendProfileActivity_mTvNickname"
+                    android:id="@+id/ContactProfileActivity_mTvNickname"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -79,10 +78,10 @@
                     android:textSize="22sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mIvAvatar" />
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mIvAvatar" />
 
                 <TextView
-                    android:id="@+id/FriendProfileActivity_mTvExplain"
+                    android:id="@+id/ContactProfileActivity_mTvExplain"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -92,12 +91,12 @@
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/FriendProfileActivity_mTvNickname" />
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.design.widget.TabLayout
-                android:id="@+id/FriendProfileActivity_mTabLayout"
+                android:id="@+id/ContactProfileActivity_mTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 app:tabIndicatorColor="@android:color/white"
@@ -109,7 +108,7 @@
 
 
         <android.support.v4.view.ViewPager
-            android:id="@+id/FriendProfileActivity_mViewPager"
+            android:id="@+id/ContactProfileActivity_mViewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />

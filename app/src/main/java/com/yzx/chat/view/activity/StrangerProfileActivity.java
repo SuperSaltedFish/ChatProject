@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -13,6 +14,7 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.StrangerProfileContract;
 import com.yzx.chat.presenter.StrangerProfilePresenter;
 import com.yzx.chat.util.DateUtil;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.ProgressDialog;
 
 /**
@@ -28,6 +30,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private EditText mEtVerifyContent;
     private UserBean mUserBean;
     private ProgressDialog mProgressDialog;
+    private ImageView mIvAvatar;
     private TextView mTvContentNickname;
     private TextView mTvContentLocation;
     private TextView mTvContentBirthday;
@@ -43,6 +46,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         mTvContentNickname = findViewById(R.id.Profile_mTvContentNickname);
         mTvContentLocation = findViewById(R.id.Profile_mTvContentLocation);
         mTvContentBirthday = findViewById(R.id.Profile_mTvContentBirthday);
+        mIvAvatar = findViewById(R.id.StrangerProfileActivity_mIvAvatar);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Send));
     }
 
@@ -81,6 +85,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         } else {
             mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
         }
+        GlideUtil.loadAvatarFromUrl(this,mIvAvatar,mUserBean.getAvatar());
     }
 
     @Override
