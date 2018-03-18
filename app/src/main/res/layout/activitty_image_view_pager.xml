@@ -30,7 +30,7 @@
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
             android:text="@string/ImageSelectorActivity_Send"
-            android:textColor="@color/selector_btn_text_enable_change_light" />
+            android:textColor="@color/selector_text_enable_change_light" />
 
     </android.support.v7.widget.Toolbar>
 

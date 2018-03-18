@@ -13,7 +13,6 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.MyQRCodeActivityContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.MyQRCodeActivityPresenter;
-import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.util.QREncodingUtils;
 
 /**

@@ -25,7 +25,6 @@ import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.SharePreferenceManager;
-import com.yzx.chat.tool.UserManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.MD5Util;

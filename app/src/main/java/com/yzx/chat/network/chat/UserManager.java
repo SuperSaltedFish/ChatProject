@@ -1,29 +1,22 @@
-package com.yzx.chat.tool;
+package com.yzx.chat.network.chat;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.UserDao;
 
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.chat.CryptoManager;
-import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
+import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.RSAUtil;
-import com.yzx.chat.view.activity.LoginActivity;
 
 import java.security.KeyPair;
 

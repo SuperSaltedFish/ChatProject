@@ -75,7 +75,7 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_UserID, entity.getUserID());
         values.put(COLUMN_NAME_Nickname, entity.getNickname());
         values.put(COLUMN_NAME_Avatar, entity.getAvatar());
-        values.put(COLUMN_NAME_Signature, entity.getSex());
+        values.put(COLUMN_NAME_Signature, entity.getSignature());
         values.put(COLUMN_NAME_Location, entity.getLocation());
         values.put(COLUMN_NAME_Birthday, entity.getBirthday());
         values.put(COLUMN_NAME_Sex, entity.getSex());
@@ -117,7 +117,7 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_UserID, entity.getUserID());
         values.put(COLUMN_NAME_Nickname, entity.getNickname());
         values.put(COLUMN_NAME_Avatar, entity.getAvatar());
-        values.put(COLUMN_NAME_Signature, entity.getSex());
+        values.put(COLUMN_NAME_Signature, entity.getSignature());
         values.put(COLUMN_NAME_Location, entity.getLocation());
         values.put(COLUMN_NAME_Birthday, entity.getBirthday());
         values.put(COLUMN_NAME_Sex, entity.getSex());

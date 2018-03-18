@@ -13,7 +13,7 @@ import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
-import com.yzx.chat.tool.UserManager;
+import com.yzx.chat.network.chat.UserManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
