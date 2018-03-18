@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import com.yzx.chat.R;
@@ -50,11 +51,13 @@ public class LocalSingleImageAdapter extends BaseRecyclerViewAdapter<LocalSingle
     final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         ImageView mIvImage;
+        CheckBox mCheckBox;
 
         ItemView(View itemView) {
             super(itemView);
             mIvImage = itemView.findViewById(R.id.ImageSelectorActivity_mIvImage);
-
+            mCheckBox = itemView.findViewById(R.id.ImageSelectorActivity_mCbSelected);
+            mCheckBox.setVisibility(View.GONE);
         }
     }
 

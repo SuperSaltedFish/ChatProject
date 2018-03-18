@@ -11,6 +11,8 @@
 
     <color name="colorPrimaryDark">#5C95FE</color>
 
+    <color name="colorAccent_disable">#805c95fe</color>
+
 
     <color name="text_primary_color_black">#af000000</color>
 

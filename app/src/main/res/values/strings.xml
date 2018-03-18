@@ -195,6 +195,7 @@
     <string name="ChatActivity_VoiceRecorderButtonHint">按住说话</string>
     <string name="Location">位置</string>
     <string name="Album">相册</string>
+    <string name="CropActivity_Title">裁剪图片</string>
 
 
 </resources>

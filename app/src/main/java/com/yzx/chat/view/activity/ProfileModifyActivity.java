@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import com.yzx.chat.bean.CityBean;
 import com.yzx.chat.bean.ProvinceBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.ProfileModifyContract;
-import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ProfileModifyPresenter;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GsonUtil;
@@ -52,6 +52,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     private LinearLayout mLlSignature;
     private TextView mTvSignature;
     private EditText mEtNickname;
+    private FrameLayout mFlAvatar;
     private UserBean mUserBean;
     private UserBean mOldUserBean;
 
@@ -71,6 +72,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         mLlSignature = findViewById(R.id.ProfileModifyActivity_mLlSignature);
         mTvSignature = findViewById(R.id.ProfileModifyActivity_mTvSignature);
         mEtNickname = findViewById(R.id.ProfileModifyActivity_mEtNickname);
+        mFlAvatar = findViewById(R.id.ProfileModifyActivity_mFlAvatar);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Save));
     }
 
@@ -80,6 +82,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mFlAvatar.setOnClickListener(mOnAvatarClickListener);
         mLlSexSelected.setOnClickListener(mOnSexSelectedClickListener);
         mLlBirthday.setOnClickListener(mOnBirthdayClickListener);
         mLlLocation.setOnClickListener(mOnLocationClickListener);
@@ -183,7 +186,10 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == SignatureEditActivity.RESULT_CODE && data != null) {
+        if (data == null) {
+            return;
+        }
+        if (resultCode == SignatureEditActivity.RESULT_CODE) {
             String newSignature = data.getStringExtra(SignatureEditActivity.INTENT_EXTRA_SIGNATURE_CONTENT);
             if (TextUtils.isEmpty(newSignature)) {
                 mTvSignature.setText(R.string.ProfileModifyActivity_NoSet);
@@ -191,8 +197,23 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                 mTvSignature.setText(newSignature);
             }
             mUserBean.setSignature(newSignature);
+        } else if (resultCode == ImageSingleSelectorActivity.RESULT_CODE) {
+            String imagePath = data.getStringExtra(ImageSingleSelectorActivity.INTENT_EXTRA_IMAGE_PATH);
+            if (!TextUtils.isEmpty(imagePath)) {
+                Intent intent = new Intent(this, CropActivity.class);
+                intent.putExtra(CropActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
+                startActivityForResult(intent, 0);
+            }
         }
+
     }
+
+    private final View.OnClickListener mOnAvatarClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivityForResult(new Intent(ProfileModifyActivity.this, ImageSingleSelectorActivity.class), 0);
+        }
+    };
 
     private final View.OnClickListener mOnSexSelectedClickListener = new View.OnClickListener() {
         @Override

@@ -16,11 +16,10 @@
             android:id="@+id/Default_mToolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/colorPrimary"
             android:elevation="4dp"
             app:theme="@style/ToolbarTheme"
             app:title="@string/ImageSingleSelectorActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTheme.Light"/>
+            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ImageSingleSelectorActivity_mRvImageList"

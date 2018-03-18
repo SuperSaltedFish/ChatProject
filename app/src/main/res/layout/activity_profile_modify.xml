@@ -31,6 +31,7 @@
             android:orientation="vertical">
 
             <FrameLayout
+                android:id="@+id/ProfileModifyActivity_mFlAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:foreground="?android:attr/selectableItemBackground"

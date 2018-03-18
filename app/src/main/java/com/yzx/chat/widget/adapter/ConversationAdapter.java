@@ -52,6 +52,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         } else {
             avatarList = avatarUri.split(",");
         }
+
         holder.mBadgeImageView.setImageUrlList(avatarList);
 
         int unreadMsgCount = conversation.getUnreadMessageCount();

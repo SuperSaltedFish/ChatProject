@@ -60,7 +60,7 @@
         android:textColor="@color/text_primary_color_black"
         android:textSize="13sp" />
 
-    <com.yzx.chat.widget.view.NineGridAvatarView
+    <com.yzx.chat.widget.view.NineGridImageView
         android:id="@+id/HistoryMomentsAdapter_mNineGridImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -23,7 +23,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 public class SignatureEditActivity extends BaseCompatActivity {
 
     public static final String INTENT_EXTRA_SIGNATURE_CONTENT = "SignatureContent";
-    public static final int RESULT_CODE = 1;
+    public static final int RESULT_CODE = SignatureEditActivity.class.hashCode();
 
     private static final int MAX_SIGNATURE_LENGTH = 200;
 

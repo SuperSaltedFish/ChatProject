@@ -121,8 +121,10 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
             mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), selectedCount, mImageList.size()));
+            mBtnConfirm.setEnabled(true);
         } else {
             mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
+            mBtnConfirm.setEnabled(false);
         }
     }
 
