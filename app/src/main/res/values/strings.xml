@@ -196,6 +196,8 @@
     <string name="Location">位置</string>
     <string name="Album">相册</string>
     <string name="CropActivity_Title">裁剪图片</string>
+    <string name="ContactOperationAdapter_DefaultReason">请求添加好友</string>
+    <string name="ImageMultiSelectorActivity_SelectedCountLimitHint">最多只能选择%d张图片</string>
 
 
 </resources>

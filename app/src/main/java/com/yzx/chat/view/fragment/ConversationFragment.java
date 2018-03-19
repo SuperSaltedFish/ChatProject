@@ -133,16 +133,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         }
     }
 
-    private final Toolbar.OnMenuItemClickListener mOnOptionsItemSelectedListener = new Toolbar.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()) {
-
-            }
-            return true;
-        }
-    };
-
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
         public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {

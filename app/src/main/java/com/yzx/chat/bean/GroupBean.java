@@ -1,9 +1,12 @@
 package com.yzx.chat.bean;
 
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import com.yzx.chat.R;
 
 import java.util.ArrayList;
 
@@ -25,22 +28,29 @@ public class GroupBean implements Parcelable {
     private String avatarUrlFromMember;
 
     public String getAvatarUrlFromMember() {
-        if(TextUtils.isEmpty(avatarUrlFromMember)){
+        if (TextUtils.isEmpty(avatarUrlFromMember)) {
             int size = members.size();
-            if(size>9){
-                size=9;
+            if (size > 9) {
+                size = 9;
             }
-            StringBuilder builder=null;
-            for(int i =0;i<size;i++){
-                if(builder==null){
-                    builder = new StringBuilder(50*size);
+            StringBuilder builder = null;
+            String avatar;
+            for (int i = 0; i < size; i++) {
+                if (builder == null) {
+                    builder = new StringBuilder(50 * size);
                 }
-                builder.append(members.get(i).getUserProfile().getAvatar());
+                avatar = members.get(i).getUserProfile().getAvatar();
+                if (TextUtils.isEmpty(avatar)) {
+                    builder.append("-");
+                } else {
+                    builder.append(avatar);
+                }
+
                 if (i != size - 1) {
                     builder.append(",");
                 }
             }
-            if(builder!=null){
+            if (builder != null) {
                 avatarUrlFromMember = builder.toString();
             }
         }
@@ -49,13 +59,13 @@ public class GroupBean implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null||!(obj instanceof GroupBean)) {
+        if (obj == null || !(obj instanceof GroupBean)) {
             return false;
         }
         if (obj == this) {
             return true;
         }
-        if(TextUtils.isEmpty(groupID)){
+        if (TextUtils.isEmpty(groupID)) {
             return false;
         }
         GroupBean group = (GroupBean) obj;

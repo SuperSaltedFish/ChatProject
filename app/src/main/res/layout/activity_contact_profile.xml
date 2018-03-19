@@ -37,7 +37,7 @@
                     android:layout_height="88dp"
                     android:background="@android:color/white"
                     android:elevation="3dp"
-                    android:padding="1dp"
+                    android:padding="2dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -105,7 +105,6 @@
                 app:tabTextColor="@color/text_main_color_white_alpha" />
 
         </android.support.design.widget.AppBarLayout>
-
 
         <android.support.v4.view.ViewPager
             android:id="@+id/ContactProfileActivity_mViewPager"

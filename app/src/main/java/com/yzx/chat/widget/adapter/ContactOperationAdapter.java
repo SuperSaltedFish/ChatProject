@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,12 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
         ContactOperationBean contactMessage = mContactOperationList.get(position);
         holder.mTvName.setText(contactMessage.getUser().getNickname());
-        holder.mTvReason.setText(contactMessage.getReason());
+        String reason = contactMessage.getReason();
+        if(TextUtils.isEmpty(reason)){
+            holder.mTvReason.setText(R.string.ContactOperationAdapter_DefaultReason);
+        }else {
+            holder.mTvReason.setText(contactMessage.getReason());
+        }
         String type = contactMessage.getType();
         if (ContactManager.CONTACT_OPERATION_REQUEST.equals(type)) {
             holder.mBtnState.setEnabled(true);
@@ -66,7 +72,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 holder.mBtnState.setText(R.string.ContactMessageAdapter_Verifying);
                 break;
         }
-        GlideUtil.loadFromUrl(mContext, holder.mIvAvatar, contactMessage.getUser().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUser().getAvatar());
 
     }
 

@@ -4,8 +4,10 @@ import android.text.TextUtils;
 
 import com.yzx.chat.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,24 +71,58 @@ public class ChatManager {
     }
 
     public void updateChatUnreadCount() {
-        mRongIMClient.getUnreadCount(new RongIMClient.ResultCallback<Integer>() {
+        mRongIMClient.getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
             @Override
-            public void onSuccess(Integer integer) {
+            public void onSuccess(List<Conversation> conversations) {
+                if (conversations == null || conversations.size() == 0) {
+                    updateUnreadCount(0);
+                    return;
+                }
+                Iterator<Conversation> it = conversations.iterator();
+                while (it.hasNext()) {
+                    Conversation conversation = it.next();
+                    if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB) {
+                        it.remove();
+                    }
+                }
+                if (conversations.size() == 0) {
+                    updateUnreadCount(0);
+                    return;
+                }
+
+                Conversation[] conversationArray = new Conversation[conversations.size()];
+                conversations.toArray(conversationArray);
+                mRongIMClient.getTotalUnreadCount(new RongIMClient.ResultCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        updateUnreadCount(integer);
+                    }
+
+                    @Override
+                    public void onError(RongIMClient.ErrorCode errorCode) {
+                        LogUtil.e(errorCode.getMessage());
+                    }
+                }, conversationArray);
+
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+
+            }
+
+            public void updateUnreadCount(int newCount) {
                 synchronized (mUpdateChatUnreadCountLock) {
-                    if (mUnreadChatMessageCount != integer) {
-                        mUnreadChatMessageCount = integer;
+                    if (mUnreadChatMessageCount != newCount) {
+                        mUnreadChatMessageCount = newCount;
                         for (OnChatMessageUnreadCountChangeListener listener : mChatMessageUnreadCountChangeListeners) {
                             listener.onChatMessageUnreadCountChange(mUnreadChatMessageCount);
                         }
                     }
                 }
             }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
-            }
         }, IMClient.SUPPORT_CONVERSATION_TYPE);
+
     }
 
     public void addOnMessageReceiveListener(OnChatMessageReceiveListener listener, String conversationID) {
@@ -169,7 +205,7 @@ public class ChatManager {
 
         @Override
         public void onError(Message message, RongIMClient.ErrorCode errorCode) {
-            LogUtil.e("send message fail:"+errorCode);
+            LogUtil.e("send message fail:" + errorCode);
             String conversationID = message.getTargetId();
             for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {

@@ -174,13 +174,14 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         uiSettings.setMyLocationButtonEnabled(true);
 
         PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.draggable(false);//可拖放性
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
+        mMapMarker = mAMap.addMarker(markerOptions);
+
         if (poiItem == null) {
             mCurrentMode = MODE_SEND;
             getSupportActionBar().setTitle(R.string.LocationMapActivity_Title);
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.draggable(false);//可拖放性
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
-            mMapMarker = mAMap.addMarker(markerOptions);
             mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
@@ -196,10 +197,6 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         } else {
             mCurrentMode = MODE_SHARE;
             getSupportActionBar().setTitle(R.string.Location);
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.draggable(false);//可拖放性
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
-            mMapMarker = mAMap.addMarker(markerOptions);
             LatLonPoint point = poiItem.getLatLonPoint();
             LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
             mMapMarker.setPosition(latLng);

@@ -27,7 +27,6 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     private ContactListContract.View mContactView;
     private RefreshAllContactsTask mRefreshContactsTask;
-    private LoadUnreadCountTask mLoadUnreadCountTask;
     private List<ContactBean> mContactList;
     private Handler mHandler;
     private IMClient mIMClient;
@@ -48,7 +47,6 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     public void detachView() {
         mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
-        AsyncUtil.cancelTask(mLoadUnreadCountTask);
         AsyncUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mHandler.removeCallbacksAndMessages(null);
@@ -59,9 +57,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
-        AsyncUtil.cancelTask(mLoadUnreadCountTask);
-        mLoadUnreadCountTask = new LoadUnreadCountTask();
-        mLoadUnreadCountTask.execute();
+        mContactView.updateUnreadBadge(mIMClient.contactManager().getContactUnreadCount());
     }
 
     @SuppressWarnings("unchecked")
@@ -190,17 +186,5 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         }
     }
 
-    private static class LoadUnreadCountTask extends NetworkAsyncTask<Void, Void, Void> {
-
-        LoadUnreadCountTask() {
-            super(null);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            return null;
-        }
-
-    }
 
 }

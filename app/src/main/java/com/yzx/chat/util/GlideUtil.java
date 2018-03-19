@@ -77,7 +77,7 @@ public class GlideUtil {
             url = R.drawable.ic_avatar_default;
         } else if (url instanceof String) {
             String strUrl = (String) url;
-            if (TextUtils.isEmpty(strUrl)) {
+            if (TextUtils.isEmpty(strUrl)||"-".equals(strUrl)) {
                 url = R.drawable.ic_avatar_default;
             }
         }

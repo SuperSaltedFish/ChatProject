@@ -61,10 +61,8 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
 
     private final OnImageItemChangeListener mProxyImageItemChangeListener = new OnImageItemChangeListener() {
         @Override
-        public void onItemSelect(int position, boolean isSelect) {
-            if (mOnImageItemChangeListener != null) {
-                mOnImageItemChangeListener.onItemSelect(position, isSelect);
-            }
+        public boolean onItemSelect(int position, boolean isSelect) {
+            return mOnImageItemChangeListener == null || mOnImageItemChangeListener.onItemSelect(position, isSelect);
         }
 
         @Override
@@ -116,6 +114,12 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
         private final CheckBox.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!mOnImageItemChangeListener.onItemSelect(ItemView.this.getAdapterPosition(), isChecked)) {
+                    isChecked = !isChecked;
+                    mCbSelected.setOnCheckedChangeListener(null);
+                    mCbSelected.setChecked(isChecked);
+                    mCbSelected.setOnCheckedChangeListener(mOnCheckedChangeListener);
+                }
                 mOnImageItemChangeListener.onItemSelect(ItemView.this.getAdapterPosition(), isChecked);
                 if (isChecked) {
                     mIvImage.setImageTintList(mSelectColorTint);
@@ -129,7 +133,7 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
     }
 
     public interface OnImageItemChangeListener {
-        void onItemSelect(int position, boolean isSelect);
+        boolean onItemSelect(int position, boolean isSelect);
 
         void onItemClick(int position);
     }

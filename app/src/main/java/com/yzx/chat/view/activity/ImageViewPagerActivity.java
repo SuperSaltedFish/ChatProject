@@ -35,6 +35,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     public static final String INTENT_EXTRA_IMAGE_SELECTED_LIST = "ImageSelectedList";
     public static final String INTENT_EXTRA_CURRENT_POSITION = "CurrentPosition";
     public static final String INTENT_EXTRA_IS_ORIGINAL = "IsOriginal";
+    public static final String INTENT_EXTRA_MAX_SELECTED_COUNT = "MaxSelectedCount";
 
     private ViewPager mViewPager;
     private CheckBox mCbSelected;
@@ -47,6 +48,8 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     private ArrayList<String> mSelectedList;
     private int mCurrentPosition;
     private boolean isOriginal;
+
+    private int mMaxSelectedCount;
 
 
     @Override
@@ -65,7 +68,8 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         mSelectedList = getIntent().getStringArrayListExtra(INTENT_EXTRA_IMAGE_SELECTED_LIST);
         mCurrentPosition = getIntent().getIntExtra(INTENT_EXTRA_CURRENT_POSITION, 0);
         isOriginal = getIntent().getBooleanExtra(INTENT_EXTRA_IS_ORIGINAL, false);
-        if (mImageList == null || mImageList.size() == 0) {
+        mMaxSelectedCount = getIntent().getIntExtra(INTENT_EXTRA_MAX_SELECTED_COUNT, 0);
+        if (mImageList == null || mImageList.size() == 0||mMaxSelectedCount==0) {
             finish();
         }
         if (mSelectedList == null) {
@@ -98,6 +102,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         mCbSelected.setOnCheckedChangeListener(mOnSelectedChangeListener);
         tryShowSelectedView();
         updateBtnConfirmText();
+
     }
 
     @Override
@@ -120,7 +125,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     private void updateBtnConfirmText() {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
-            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), selectedCount, mImageList.size()));
+            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), selectedCount, mMaxSelectedCount));
             mBtnConfirm.setEnabled(true);
         } else {
             mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
@@ -134,10 +139,17 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
             String url = mImageList.get(mCurrentPosition);
             if (isChecked) {
                 if (!mSelectedList.contains(url)) {
-                    mSelectedAdapter.notifyItemInsertedEx(mSelectedList.size());
-                    mSelectedAdapter.setSelected(mSelectedList.size());
-                    mSelectedList.add(url);
-                    tryShowSelectedView();
+                    if(mSelectedList.size()>=mMaxSelectedCount) {
+                        mCbSelected.setOnCheckedChangeListener(null);
+                        mCbSelected.setChecked(false);
+                        mCbSelected.setOnCheckedChangeListener(mOnSelectedChangeListener);
+                        showToast(String.format(getString(R.string.ImageMultiSelectorActivity_SelectedCountLimitHint),mMaxSelectedCount));
+                    }else {
+                        mSelectedAdapter.notifyItemInsertedEx(mSelectedList.size());
+                        mSelectedAdapter.setSelected(mSelectedList.size());
+                        mSelectedList.add(url);
+                        tryShowSelectedView();
+                    }
                 }
             } else {
                 int removePosition = mSelectedList.indexOf(url);

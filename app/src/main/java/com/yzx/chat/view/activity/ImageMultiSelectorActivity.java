@@ -42,6 +42,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     public static final String INTENT_EXTRA_IS_ORIGINAL = "IsOriginal";
 
     private static final int HORIZONTAL_ITEM_COUNT = 4;
+    private static final int MAX_SELECTED_COUNT = 9;
 
     private RecyclerView mRvImage;
     private RecyclerView mRvImageDir;
@@ -163,7 +164,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     private void updateCountText() {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
-            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), mCurrentImagePathList.size()));
+            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), MAX_SELECTED_COUNT));
             mBtnPreview.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.ImageSelectorActivity_Preview), mSelectedList.size()));
             mBtnConfirm.setEnabled(true);
             mBtnPreview.setEnabled(true);
@@ -174,7 +175,6 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             mBtnPreview.setEnabled(false);
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -238,6 +238,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, 0);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+            intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_MAX_SELECTED_COUNT, MAX_SELECTED_COUNT);
             startActivityForResult(intent, 0);
         }
     };
@@ -278,15 +279,21 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     private final LocalMultiImageAdapter.OnImageItemChangeListener mOnImageItemChangeListener = new LocalMultiImageAdapter.OnImageItemChangeListener() {
         @Override
-        public void onItemSelect(int position, boolean isSelect) {
+        public boolean onItemSelect(int position, boolean isSelect) {
             if (isSelect) {
                 if (!mSelectedList.contains(mCurrentImagePathList.get(position))) {
-                    mSelectedList.add(mCurrentImagePathList.get(position));
+                    if(mSelectedList.size()>=MAX_SELECTED_COUNT){
+                        showToast(String.format(getString(R.string.ImageMultiSelectorActivity_SelectedCountLimitHint),MAX_SELECTED_COUNT));
+                        return false;
+                    }else {
+                        mSelectedList.add(mCurrentImagePathList.get(position));
+                    }
                 }
             } else {
                 mSelectedList.remove(mCurrentImagePathList.get(position));
             }
             updateCountText();
+            return true;
         }
 
         @Override
@@ -296,6 +303,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_CURRENT_POSITION, position);
             intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+            intent.putExtra(ImageViewPagerActivity.INTENT_EXTRA_MAX_SELECTED_COUNT, MAX_SELECTED_COUNT);
             startActivityForResult(intent, 0);
         }
     };

@@ -51,13 +51,12 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-
         <FrameLayout
-            android:background="@android:color/white"
-            android:elevation="10dp"
             android:id="@+id/LocationMapActivity_mRvCurrentLocationLayout"
             android:layout_width="match_parent"
-            android:layout_height="280dp">
+            android:layout_height="280dp"
+            android:background="@android:color/white"
+            android:elevation="10dp">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/LocationMapActivity_mRvCurrentLocation"
@@ -75,7 +74,7 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/LocationMapActivity_mClShareLayout"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
+            android:layout_height="80dp"
             android:background="@android:color/white"
             android:elevation="10dp"
             android:paddingEnd="20dp"
@@ -112,9 +111,9 @@
                 android:id="@+id/LocationMapActivity_mIBtnShareNavigation"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:scaleType="center"
-                android:elevation="2dp"
                 android:background="@color/colorAccent"
+                android:elevation="2dp"
+                android:scaleType="center"
                 android:src="@drawable/ic_route"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

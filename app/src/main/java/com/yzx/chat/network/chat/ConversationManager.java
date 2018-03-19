@@ -74,7 +74,7 @@ public class ConversationManager {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
                     callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_UNREAD_STATUS);
                 } else {
                     LogUtil.e("clearMessagesUnreadStatus error");
@@ -96,7 +96,7 @@ public class ConversationManager {
                 if (aBoolean) {
                     callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
                     if (isUpdateUnreadState) {
-                        mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                        mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
                     }
                 } else {
                     LogUtil.e("removeConversation fail");
@@ -136,7 +136,7 @@ public class ConversationManager {
                 LogUtil.e("clearAllConversationMessages " + aBoolean.toString());
                 callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
                 if (isUpdateUnreadState) {
-                    mSubManagerCallback.contactManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
                 }
             }
 

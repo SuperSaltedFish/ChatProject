@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:orientation="vertical"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/ContactFragmentList_mLlContactOperation"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:foreground="?android:attr/selectableItemBackground"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
         <com.yzx.chat.widget.view.CircleImageView
             android:layout_width="36dp"
@@ -44,7 +44,9 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:foreground="?android:attr/selectableItemBackground"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
         <com.yzx.chat.widget.view.CircleImageView
             android:layout_width="36dp"
@@ -65,7 +67,9 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:foreground="?android:attr/selectableItemBackground"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
         <com.yzx.chat.widget.view.CircleImageView
             android:layout_width="36dp"
