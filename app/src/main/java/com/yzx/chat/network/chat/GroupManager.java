@@ -2,6 +2,7 @@ package com.yzx.chat.network.chat;
 
 import android.os.Parcel;
 
+import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.bean.GroupBean;
@@ -15,6 +16,7 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 
@@ -31,6 +33,8 @@ import java.util.Map;
  */
 
 public class GroupManager {
+
+    static final int CALLBACK_CODE_DELETE_CONVERSATION = 0;
 
     private IMClient.SubManagerCallback mSubManagerCallback;
     private Map<String, GroupBean> mGroupsMap;
@@ -107,25 +111,25 @@ public class GroupManager {
         return null;
     }
 
-    public void createGroup(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<Boolean> resultCallback) {
+    public void createGroup(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<GroupBean> resultCallback) {
         AsyncUtil.cancelCall(mCreateGroupCall);
         mCreateGroupCall = mGroupApi.createGroup(groupID, memberList);
         mCreateGroupCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
                 GroupBean group = response.getGroup();
-                boolean success = mGroupDao.insertGroupAndMember(group);
-                if (!success) {
+                if (mGroupDao.insertGroupAndMember(group)) {
+                    mGroupsMap.put(group.getGroupID(), group);
+                    for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                        listener.onGroupCreated(group);
+                    }
+
+                    if (resultCallback != null) {
+                        resultCallback.onSuccess(group);
+                    }
+                } else {
                     LogUtil.e("createGroup:Failure of operating database");
-                }
-
-                mGroupsMap.put(group.getGroupID(), group);
-                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
-                    listener.onGroupCreated(group);
-                }
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
@@ -137,26 +141,28 @@ public class GroupManager {
         mNetworkExecutor.submit(mCreateGroupCall);
     }
 
-    public void addMember(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<Boolean> resultCallback) {
+    public void addMember(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<GroupBean> resultCallback) {
         AsyncUtil.cancelCall(mAddMemberCall);
         mAddMemberCall = mGroupApi.add(groupID, memberList);
         mAddMemberCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
                 GroupBean group = response.getGroup();
-                boolean success = mGroupDao.replaceGroupAndMember(group);
-                if (!success) {
+                if (mGroupDao.replaceGroupAndMember(group)) {
+                    mGroupsMap.put(group.getGroupID(), group);
+                    for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
+                        listener.onGroupUpdated(group);
+                    }
+
+                    if (resultCallback != null) {
+                        resultCallback.onSuccess(group);
+                    }
+                } else {
                     LogUtil.e("createGroup:Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
 
-                mGroupsMap.put(group.getGroupID(), group);
-                for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
-                    listener.onGroupUpdated(group);
-                }
 
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
             }
 
             @Override
@@ -182,6 +188,8 @@ public class GroupManager {
                 for (OnGroupChangeListener listener : mOnGroupChangeListeners) {
                     listener.onGroupQuit(group);
                 }
+
+                mSubManagerCallback.groupManagerCallback(CALLBACK_CODE_DELETE_CONVERSATION,groupID);
 
                 if (resultCallback != null) {
                     resultCallback.onSuccess(success);

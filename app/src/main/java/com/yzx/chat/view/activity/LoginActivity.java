@@ -4,12 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -25,6 +27,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.contract.LoginContract;
 import com.yzx.chat.presenter.LoginPresenter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.RegexUtil;
 
@@ -119,6 +122,9 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mEtRegisterNickname.addTextChangedListener(mTextWatcher);
         mEtVerifyCode.addTextChangedListener(mTextWatcher);
         mIvBackground.startAnimation(mTranslateAnimation);
+
+
+        autoScrollView(mVfPageSwitch, mBtnLogin);
     }
 
 
@@ -544,5 +550,42 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
     public void verifyFailure(String reason) {
         startProgressAnim(mBtnVerify, mPbVerifyProgress, false, null);
         showError(mTvVerifyHint, reason);
+    }
+
+
+    private void autoScrollView(final View root, final View scrollToView) {
+        root.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        int scrollHeight = 0;
+                        Rect rect = new Rect();
+                        //获取root在窗体的可视区域
+                        root.getWindowVisibleDisplayFrame(rect);
+                        //获取root在窗体的不可视区域高度(被遮挡的高度)
+                        int rootInvisibleHeight = root.getRootView().getHeight() - rect.bottom;
+                        //若不可视区域高度大于150，则键盘显示
+                        if (rootInvisibleHeight > 150) {
+                            //获取scrollToView在窗体的坐标,location[0]为x坐标，location[1]为y坐标
+                            int[] location = new int[2];
+                            scrollToView.getLocationInWindow(location);
+                            //计算root滚动高度，使scrollToView在可见区域的底部
+                            scrollHeight = (location[1] + scrollToView.getHeight()+ (int)AndroidUtil.dip2px(8)) - rect.bottom;
+                        } else {
+                            scrollHeight = -root.getScrollY();
+                        }
+
+                        View focusView = getCurrentFocus();
+                        if (focusView instanceof EditText) {
+                            EditText editText = (EditText) focusView;
+                            View label = root.findViewById(editText.getLabelFor());
+                            if (label != null && label.getY() - rootInvisibleHeight <= 0) {
+                                scrollHeight =-root.getScrollY();
+
+                            }
+                        }
+                        root.scrollBy(0, scrollHeight);
+                    }
+                });
     }
 }

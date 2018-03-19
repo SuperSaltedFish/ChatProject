@@ -72,7 +72,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private static final int MODE_SEND = 0;
     private static final int MODE_SHARE = 1;
 
-    private static final int DEFAULT_ZOOM = 5;
+    private static final int DEFAULT_ZOOM = 15;
 
     private MapView mMapView;
     private SearchView mSearchView;
@@ -99,6 +99,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private List<PoiItem> mCurrentLocationList;
     private List<PoiItem> mSearchLocationList;
     private LatLng mCurrentLatLng;
+    private LatLng mShareLatLng;
 
     private int mCurrentMode;
     private boolean isPositionComplete;
@@ -198,9 +199,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             mCurrentMode = MODE_SHARE;
             getSupportActionBar().setTitle(R.string.Location);
             LatLonPoint point = poiItem.getLatLonPoint();
-            LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
-            mMapMarker.setPosition(latLng);
-            mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+            mShareLatLng = new LatLng(point.getLatitude(), point.getLongitude());
+            mMapMarker.setPosition(mShareLatLng);
             mFlCurrentLocationLayout.setVisibility(View.GONE);
             mClShareLayout.setVisibility(View.VISIBLE);
             mTvShareLocationTitle.setText(poiItem.getTitle());
@@ -352,8 +352,12 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
-            if (!isPositionComplete && mCurrentMode == MODE_SEND) {
-                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+            if (!isPositionComplete ) {
+                if(mCurrentMode == MODE_SEND){
+                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+                }else {
+                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mShareLatLng, DEFAULT_ZOOM));
+                }
             }
             isPositionComplete = true;
         }

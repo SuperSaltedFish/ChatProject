@@ -17,7 +17,8 @@ import io.rong.imlib.model.Conversation;
 
 public class ConversationManager {
 
-    public static final int CALLBACK_CODE_UPDATE_UNREAD = 0;
+    static final int CALLBACK_CODE_UPDATE_UNREAD = 0;
+
     public static final int UPDATE_TYPE_SET_TOP = 1;
     public static final int UPDATE_TYPE_CLEAR_UNREAD_STATUS = 2;
     public static final int UPDATE_TYPE_REMOVE = 3;

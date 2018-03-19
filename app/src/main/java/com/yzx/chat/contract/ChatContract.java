@@ -30,6 +30,8 @@ public class ChatContract {
         void clearMessage();
 
         void enableLoadMoreHint(boolean isEnable);
+
+        void goBack();
     }
 
 

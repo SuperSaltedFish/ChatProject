@@ -394,6 +394,18 @@ public class IMClient {
         }
 
         @Override
+        public void groupManagerCallback(int callbackCode, Object arg) {
+            switch (callbackCode) {
+                case GroupManager.CALLBACK_CODE_DELETE_CONVERSATION:
+                    Conversation conversation = mConversationManager.getConversation(Conversation.ConversationType.GROUP, (String) arg);
+                    if (conversation != null) {
+                        mConversationManager.removeConversation(conversation);
+                    }
+                    break;
+            }
+        }
+
+        @Override
         public AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper() {
             return mDBHelper.getReadWriteHelper();
         }
@@ -470,6 +482,8 @@ public class IMClient {
         void conversationManagerCallback(int callbackCode, Object arg);
 
         void contactManagerCallback(int callbackCode, Object arg);
+
+        void groupManagerCallback(int callbackCode, Object arg);
 
         AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper();
 

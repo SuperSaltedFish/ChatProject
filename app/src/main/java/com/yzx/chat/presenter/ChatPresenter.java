@@ -260,17 +260,27 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
         @Override
         public void onConversationStateChange(final Conversation conversation, int typeCode) {
-            if (typeCode == ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE&&conversation.getTargetId().equals(sConversationID)) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(conversation.getTargetId().equals(sConversationID)) {
-                            mChatView.clearMessage();
-                            mChatView.enableLoadMoreHint(false);
-                            mHasMoreMessage = false;
-                        }
-                    }
-                });
+            if (conversation.getTargetId().equals(sConversationID)) {
+                switch (typeCode) {
+                    case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mChatView.clearMessage();
+                                mChatView.enableLoadMoreHint(false);
+                                mHasMoreMessage = false;
+                            }
+                        });
+                        break;
+                    case ConversationManager.UPDATE_TYPE_REMOVE:
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mChatView.goBack();
+                            }
+                        });
+                        break;
+                }
             }
         }
     };

@@ -7,6 +7,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -60,6 +62,23 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         mRvGroup.addOnItemTouchListener(mOnRvGroupItemClickListener);
 
         mPresenter.loadAllGroup();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_group_list, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.GroupListMenu_Create) {
+            startActivity(new Intent(this, CreateGroupActivity.class));
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
 

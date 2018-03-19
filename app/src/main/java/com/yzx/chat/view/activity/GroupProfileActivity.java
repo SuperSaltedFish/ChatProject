@@ -292,15 +292,17 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private final OnRecyclerViewItemClickListener mOnGroupMemberItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
         public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
-            Intent intent;
-            String userID =  mGroupMemberList.get(position).getUserProfile().getUserID();
-            if(mPresenter.isMySelf(userID)){
-                intent = new Intent(GroupProfileActivity.this, ProfileModifyActivity.class);
-            }else {
-                 intent = new Intent(GroupProfileActivity.this, ContactProfileActivity.class);
-                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID,userID);
+            if (position < mGroupMemberList.size()) {
+                Intent intent;
+                String userID = mGroupMemberList.get(position).getUserProfile().getUserID();
+                if (mPresenter.isMySelf(userID)) {
+                    intent = new Intent(GroupProfileActivity.this, ProfileModifyActivity.class);
+                } else {
+                    intent = new Intent(GroupProfileActivity.this, ContactProfileActivity.class);
+                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, userID);
+                }
+                startActivity(intent);
             }
-            startActivity(intent);
         }
     };
 

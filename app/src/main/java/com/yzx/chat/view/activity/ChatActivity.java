@@ -9,10 +9,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.text.emoji.widget.EmojiEditText;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -35,10 +32,8 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.contract.ChatContract;
-import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.tool.SharePreferenceManager;
@@ -63,7 +58,6 @@ import java.util.List;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
-import io.rong.message.ImageMessage;
 
 /**
  * Created by YZX on 2017年06月03日.
@@ -268,10 +262,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             finish();
             return;
         }
-        if(mConversation!=null&&mConversation.getTargetId().equals(conversation.getTargetId())){
+        if (mConversation != null && mConversation.getTargetId().equals(conversation.getTargetId())) {
             return;
         }
-        mConversation =conversation;
+        mConversation = conversation;
         setTitle(mConversation.getConversationTitle());
         mPresenter.init(mConversation);
         String draft = mConversation.getDraft();
@@ -739,6 +733,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         } else {
             mAdapter.setFooterView(null);
         }
+    }
+
+    @Override
+    public void goBack() {
+        finish();
     }
 
 

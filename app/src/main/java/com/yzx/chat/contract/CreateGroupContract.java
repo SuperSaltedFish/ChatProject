@@ -3,6 +3,7 @@ package com.yzx.chat.contract;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class CreateGroupContract {
     public interface View extends BaseView<Presenter> {
         void showError(String error);
 
-        void goBack();
+        void launchChatActivity(GroupBean group);
     }
 
     public interface Presenter extends BasePresenter<View> {

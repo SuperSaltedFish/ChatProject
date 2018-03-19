@@ -125,7 +125,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.ContactOperationMenu_JumpToFindFriendPage) {
-            startActivity(new Intent(ContactOperationActivity.this, FindNewContactActivity.class));
+            startActivity(new Intent(this, FindNewContactActivity.class));
         } else {
             return super.onOptionsItemSelected(item);
         }

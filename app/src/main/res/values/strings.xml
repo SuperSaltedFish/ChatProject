@@ -55,6 +55,7 @@
     <string name="LoginActivity_Error_Resending">正在发送</string>
 
     <string name="Server_Error">服务器繁忙，请稍候再试！</string>
+    <string name="Server_Error2">服务器繁忙，请尝试重新登录！</string>
 
     <string name="LoadMoreHint_Default">我是有底线的</string>
     <string name="LoadMoreHint_None">没有找到任何的信息</string>

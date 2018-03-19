@@ -122,6 +122,20 @@ public class AndroidUtil {
         return (T) sActivityInstanceMap.get(activityClass);
     }
 
+    public static void finishActivityInstackAbove(Class<? extends Activity> activityClass) {
+        int index = sActivityStack.indexOf(activityClass);
+        if (index < 0) {
+            return;
+        }
+        for (int i = sActivityStack.size() - 1; i > index; i--) {
+            activityClass = sActivityStack.get(i);
+            Activity instance = sActivityInstanceMap.get(activityClass);
+            if (instance != null) {
+                instance.finish();
+            }
+        }
+    }
+
     public static int getStatusBarHeight() {
         int result = 0;
         int resourceId = sAppContext.getResources().getIdentifier("status_bar_height", "dimen", "android");

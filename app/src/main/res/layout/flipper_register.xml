@@ -31,12 +31,14 @@
     </FrameLayout>
 
     <TextView
+        android:id="@+id/FlipperRegister_mTvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/LoginActivity_Layout_Username"
         android:textSize="14sp" />
 
     <EditText
+        android:labelFor="@id/FlipperRegister_mTvUsername"
         android:id="@+id/FlipperRegister_mEtUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

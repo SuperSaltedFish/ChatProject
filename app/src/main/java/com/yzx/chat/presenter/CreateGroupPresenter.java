@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.CreateGroupMemberBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.contract.CreateGroupContract;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;
@@ -59,13 +60,13 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
         stringBuilder.append(IMClient.getInstance().userManager().getUser().getNickname()).append("的群聊");
 
-        mGroupManager.createGroup(stringBuilder.toString(), memberList, new ResultCallback<Boolean>() {
+        mGroupManager.createGroup(stringBuilder.toString(), memberList, new ResultCallback<GroupBean>() {
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(final GroupBean result) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mCreateGroupView.goBack();
+                        mCreateGroupView.launchChatActivity(result);
                         isCreating = false;
                     }
                 });
@@ -97,13 +98,13 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             groupMember.setUserID(members.get(i).getUserProfile().getUserID());
             memberList.add(groupMember);
         }
-        mGroupManager.addMember(groupID, memberList, new ResultCallback<Boolean>() {
+        mGroupManager.addMember(groupID, memberList, new ResultCallback<GroupBean>() {
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(final GroupBean result) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mCreateGroupView.goBack();
+                        mCreateGroupView.launchChatActivity(result);
                         isCreating = false;
                     }
                 });

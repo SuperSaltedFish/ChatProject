@@ -1,5 +1,6 @@
 package com.yzx.chat.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.contract.CreateGroupContract;
 import com.yzx.chat.network.chat.IMClient;
@@ -28,6 +30,8 @@ import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2018年02月22日.
@@ -137,12 +141,12 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(TextUtils.isEmpty(mGroupID)) {
-                mProgressDialog.show( getString(R.string.ProgressHint_Create));
+            if (TextUtils.isEmpty(mGroupID)) {
+                mProgressDialog.show(getString(R.string.ProgressHint_Create));
                 mPresenter.createGroup(mSelectedContactList);
-            }else {
-                mProgressDialog.show( getString(R.string.ProgressHint_Add));
-                mPresenter.addMembers(mGroupID,mSelectedContactList);
+            } else {
+                mProgressDialog.show(getString(R.string.ProgressHint_Add));
+                mPresenter.addMembers(mGroupID, mSelectedContactList);
             }
         }
     };
@@ -221,8 +225,18 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     }
 
     @Override
-    public void goBack() {
+    public void launchChatActivity(GroupBean group) {
         mProgressDialog.dismiss();
-        finish();
+        Intent intent = new Intent(this, ChatActivity.class);
+        Conversation conversation = new Conversation();
+        conversation.setConversationType(Conversation.ConversationType.GROUP);
+        conversation.setTargetId(group.getGroupID());
+        conversation.setConversationTitle(group.getName());
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+        startActivity(intent);
+        AndroidUtil.finishActivityInstackAbove(HomeActivity.class);
+
     }
+
+
 }
