@@ -7,8 +7,6 @@ import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
 import com.yzx.chat.network.framework.UploadPath;
 
-import java.util.List;
-
 /**
  * Created by YZX on 2017年11月17日.
  * 每一个不曾起舞的日子,都是对生命的辜负.
@@ -38,5 +36,5 @@ public interface UserApi {
                                                @HttpParam("signature") String signature);
 
     @HttpApi(RequestMethod = "POST", Path = "user/uploadAvatar")
-    Call<JsonResponse<Void>> uploadAvatar(@UploadPath("uploadAvatar") List<String> path);
+    Call<JsonResponse<UploadAvatarBean>> uploadAvatar(@UploadPath("uploadAvatar") String avatarPath);
 }

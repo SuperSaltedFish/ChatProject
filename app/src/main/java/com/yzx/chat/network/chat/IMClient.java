@@ -320,6 +320,10 @@ public class IMClient {
             mConversationManager.destroy();
             mConversationManager = null;
         }
+        if (mUserManager != null) {
+            mUserManager.destroy();
+            mUserManager = null;
+        }
         if (mDBHelper != null) {
             mDBHelper.destroy();
             mDBHelper = null;

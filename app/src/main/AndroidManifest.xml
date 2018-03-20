@@ -160,7 +160,10 @@
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".view.activity.GroupListActivity" />
-        <activity android:name=".view.activity.CropImageActivity" />
+        <activity android:name=".view.activity.CropImageActivity"
+            android:theme="@style/BaseDarkTheme">
+
+        </activity>
     </application>
 
 </manifest>

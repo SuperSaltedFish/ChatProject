@@ -8,7 +8,7 @@
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/colorPrimary"
+        android:background="?colorPrimary"
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/CropActivity_Title"

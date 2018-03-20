@@ -82,6 +82,7 @@
     <string name="ProgressHint_Create">正在创建...</string>
     <string name="ProgressHint_Modify">正在修改...</string>
     <string name="ProgressHint_Quit">正在退出...</string>
+    <string name="ProgressHint_Upload">正在上传...</string>
 
     <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
     <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
@@ -199,6 +200,7 @@
     <string name="CropActivity_Title">裁剪图片</string>
     <string name="ContactOperationAdapter_DefaultReason">请求添加好友</string>
     <string name="ImageMultiSelectorActivity_SelectedCountLimitHint">最多只能选择%d张图片</string>
+    <string name="CropImageActivity_SaveAvatarFail">保存头像失败，请稍候再试！</string>
 
 
 </resources>

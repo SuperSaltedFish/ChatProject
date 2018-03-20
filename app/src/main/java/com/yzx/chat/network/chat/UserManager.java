@@ -7,8 +7,8 @@ import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.UserDao;
-
 import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.api.user.UploadAvatarBean;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
@@ -33,7 +33,7 @@ public class UserManager {
     private UserApi mUserApi;
     private NetworkExecutor mNetworkExecutor;
     private Call<JsonResponse<Void>> mUpdateUserProfileCall;
-
+    private Call<JsonResponse<UploadAvatarBean>> mUploadAvatarCall;
 
     private UserManager(String token, UserBean userBean) {
         if (TextUtils.isEmpty(token) || userBean == null || userBean.isEmpty()) {
@@ -43,6 +43,11 @@ public class UserManager {
         mUserBean = userBean;
         mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
         mNetworkExecutor = NetworkExecutor.getInstance();
+    }
+
+    void destroy(){
+        AsyncUtil.cancelCall(mUpdateUserProfileCall);
+        AsyncUtil.cancelCall(mUploadAvatarCall);
     }
 
     public void updateProfile(String nickname, int sex, String birthday, String location, String signature, final ResultCallback<Void> callback) {
@@ -58,9 +63,27 @@ public class UserManager {
             protected void onFailure(String message) {
                 callback.onFailure(message);
             }
-        });
+        },false);
         mNetworkExecutor.submit(mUpdateUserProfileCall);
     }
+
+    public void uploadAvatar(String imagePath,final ResultCallback<UploadAvatarBean> callback){
+        AsyncUtil.cancelCall(mUploadAvatarCall);
+        mUploadAvatarCall = mUserApi.uploadAvatar(imagePath);
+        mUploadAvatarCall.setCallback(new BaseHttpCallback<UploadAvatarBean>() {
+            @Override
+            protected void onSuccess(UploadAvatarBean response) {
+                callback.onSuccess(response);
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                callback.onFailure(message);
+            }
+        },false);
+        mNetworkExecutor.submit(mUploadAvatarCall);
+    }
+
 
     public String getToken() {
         return mToken;
