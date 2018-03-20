@@ -89,13 +89,19 @@ public class ConversationManager {
         });
     }
 
-    public void removeConversation(final Conversation conversation) {
+    public void removeConversation( Conversation conversation) {
+        removeConversation(conversation,true);
+    }
+
+    public void removeConversation(final Conversation conversation,final boolean isCallbackListener) {
         final boolean isUpdateUnreadState = conversation.getUnreadMessageCount() > 0;
         mRongIMClient.removeConversation(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
+                    if(isCallbackListener) {
+                        callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
+                    }
                     if (isUpdateUnreadState) {
                         mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
                     }

@@ -1,6 +1,7 @@
 package com.yzx.chat.view.activity;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -88,6 +89,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);
+        mRvImage.addOnItemTouchListener(mOnImageItemClickListener);
         mRvImage.setAdapter(mLocalSingleImageAdapter);
 
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
@@ -163,6 +165,16 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
                 setAlbumFolder(mImageDirPath.get(position - 1));
             }
             mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+    };
+
+    private final OnRecyclerViewItemClickListener mOnImageItemClickListener = new OnRecyclerViewItemClickListener() {
+        @Override
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_EXTRA_IMAGE_PATH,mCurrentImagePathList.get(position));
+            setResult(RESULT_CODE,intent);
+            finish();
         }
     };
 

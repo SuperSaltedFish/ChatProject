@@ -17,6 +17,7 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkAsyncTask;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
@@ -177,8 +178,12 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 if (newConversationList == null) {
                     return null;
                 }
+
+
                 String conversationID;
-                for (Conversation conversation : newConversationList) {
+                Iterator<Conversation> it = newConversationList.iterator();
+                while (it.hasNext()) {
+                    Conversation conversation = it.next();
                     conversationID = conversation.getTargetId();
                     if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
                         chatManager.conversationManager().clearConversationUnreadStatus(conversation);
@@ -190,6 +195,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                             if (contactBean != null) {
                                 conversation.setConversationTitle(contactBean.getName());
                                 conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
+                            }else{
+                                IMClient.getInstance().conversationManager().removeConversation(conversation,false);
+                                it.remove();
                             }
                             break;
                         case GROUP:
@@ -197,6 +205,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                             if (group != null) {
                                 conversation.setConversationTitle(group.getName());
                                 conversation.setPortraitUrl(group.getAvatarUrlFromMember());
+                            }else{
+                                IMClient.getInstance().conversationManager().removeConversation(conversation,false);
+                                it.remove();
                             }
                             break;
                     }

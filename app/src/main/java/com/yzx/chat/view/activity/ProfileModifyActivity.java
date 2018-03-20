@@ -200,8 +200,8 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
         } else if (resultCode == ImageSingleSelectorActivity.RESULT_CODE) {
             String imagePath = data.getStringExtra(ImageSingleSelectorActivity.INTENT_EXTRA_IMAGE_PATH);
             if (!TextUtils.isEmpty(imagePath)) {
-                Intent intent = new Intent(this, CropActivity.class);
-                intent.putExtra(CropActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
+                Intent intent = new Intent(this, CropImageActivity.class);
+                intent.putExtra(CropImageActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
                 startActivityForResult(intent, 0);
             }
         }
