@@ -26,7 +26,7 @@ public class DirectoryManager {
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(PRIVATE_DATA_BASE_PATH + PATH_TEMP);
+        file = new File(PUBLIC_DATA_BASE_PATH + PATH_TEMP);
         if (!file.exists()) {
             file.mkdirs();
         }

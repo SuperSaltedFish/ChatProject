@@ -7,4 +7,12 @@ package com.yzx.chat.network.api.user;
 
 public class UploadAvatarBean {
     private String avatarUrl;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 }

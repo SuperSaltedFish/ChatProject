@@ -45,17 +45,22 @@ public class UserManager {
         mNetworkExecutor = NetworkExecutor.getInstance();
     }
 
-    void destroy(){
+    void destroy() {
         AsyncUtil.cancelCall(mUpdateUserProfileCall);
         AsyncUtil.cancelCall(mUploadAvatarCall);
     }
 
-    public void updateProfile(String nickname, int sex, String birthday, String location, String signature, final ResultCallback<Void> callback) {
+    public void updateProfile(final String nickname, final int sex, final String birthday, final String location, final String signature, final ResultCallback<Void> callback) {
         AsyncUtil.cancelCall(mUpdateUserProfileCall);
         mUpdateUserProfileCall = mUserApi.updateUserProfile(nickname, sex, birthday, location, signature);
         mUpdateUserProfileCall.setCallback(new BaseHttpCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
+                mUserBean.setNickname(nickname);
+                mUserBean.setSex(sex);
+                mUserBean.setBirthday(birthday);
+                mUserBean.setLocation(location);
+                mUserBean.setSignature(signature);
                 callback.onSuccess(response);
             }
 
@@ -63,16 +68,17 @@ public class UserManager {
             protected void onFailure(String message) {
                 callback.onFailure(message);
             }
-        },false);
+        }, false);
         mNetworkExecutor.submit(mUpdateUserProfileCall);
     }
 
-    public void uploadAvatar(String imagePath,final ResultCallback<UploadAvatarBean> callback){
+    public void uploadAvatar(String imagePath, final ResultCallback<UploadAvatarBean> callback) {
         AsyncUtil.cancelCall(mUploadAvatarCall);
         mUploadAvatarCall = mUserApi.uploadAvatar(imagePath);
         mUploadAvatarCall.setCallback(new BaseHttpCallback<UploadAvatarBean>() {
             @Override
             protected void onSuccess(UploadAvatarBean response) {
+                mUserBean.setAvatar(response.getAvatarUrl());
                 callback.onSuccess(response);
             }
 
@@ -80,7 +86,7 @@ public class UserManager {
             protected void onFailure(String message) {
                 callback.onFailure(message);
             }
-        },false);
+        }, false);
         mNetworkExecutor.submit(mUploadAvatarCall);
     }
 
@@ -135,7 +141,7 @@ public class UserManager {
         return true;
     }
 
-    public synchronized static UserManager getInstanceFromLocal(AbstractDao.ReadWriteHelper readWriteHelper) {
+    synchronized static UserManager getInstanceFromLocal(AbstractDao.ReadWriteHelper readWriteHelper) {
         String token = getLocalToken();
         String userID = getLocalUserID();
         if (TextUtils.isEmpty(token) || TextUtils.isEmpty(userID)) {
@@ -148,7 +154,7 @@ public class UserManager {
         return new UserManager(token, user);
     }
 
-    public static String getLocalUserID() {
+    static String getLocalUserID() {
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
         String strUserID = idPref.getUserID();

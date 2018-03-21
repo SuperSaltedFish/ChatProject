@@ -108,7 +108,6 @@ public class GroupListPresenter implements GroupListContract.Presenter {
 
     private static class LoadAllGroupTask extends NetworkAsyncTask<GroupListPresenter, List<GroupBean>, DiffUtil.DiffResult> {
 
-
         LoadAllGroupTask(GroupListPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
