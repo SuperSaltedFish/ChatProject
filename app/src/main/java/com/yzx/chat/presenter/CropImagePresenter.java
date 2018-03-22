@@ -70,6 +70,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
                         mCropImageView.showError(error);
                     }
                 });
+
             }
         });
     }
