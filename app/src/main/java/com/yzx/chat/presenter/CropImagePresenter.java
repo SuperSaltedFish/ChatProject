@@ -47,7 +47,6 @@ public class CropImagePresenter implements CropImageContract.Presenter {
         AsyncUtil.cancelTask(mSaveAvatarToLocalTask);
         mSaveAvatarToLocalTask = new SaveAvatarToLocalTask(this);
         mSaveAvatarToLocalTask.execute(bitmap);
-
     }
 
     private void saveComplete(String imagePath) {
