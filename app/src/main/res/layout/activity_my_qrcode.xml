@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".view.activity.MyQRCodeActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"
@@ -30,40 +32,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Default_mToolbar">
 
-        <com.yzx.chat.widget.view.CircleImageView
+        <com.yzx.chat.widget.view.NineGridAvatarView
             android:id="@+id/MyQRCodeActivity_mIvAvatar"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginStart="16dp"
-            android:src="@drawable/temp_head_image"
             app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mIvQRCode"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/MyQRCodeActivity_mTvNickname"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="12dp"
             android:ellipsize="end"
+            android:gravity="start"
             android:singleLine="true"
-            android:text="叶智星"
             android:textColor="@color/text_primary_color_black"
             android:textSize="17sp"
             app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvLocation"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mIvAvatar"
             app:layout_constraintTop_toTopOf="@id/MyQRCodeActivity_mIvAvatar"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
             android:id="@+id/MyQRCodeActivity_mTvLocation"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="12dp"
             android:ellipsize="end"
+            android:gravity="start"
             android:singleLine="true"
-            android:text="广东 深圳"
             app:layout_constraintBottom_toBottomOf="@id/MyQRCodeActivity_mIvAvatar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mIvAvatar"
             app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mTvNickname" />
 
@@ -79,8 +84,8 @@
         <ImageView
             android:id="@+id/MyQRCodeActivity_mIvQRCode"
             android:layout_width="280dp"
-            android:visibility="invisible"
             android:layout_height="280dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvHint"
             app:layout_constraintEnd_toEndOf="parent"
@@ -92,7 +97,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="扫描上面的二维码，添加我好友"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

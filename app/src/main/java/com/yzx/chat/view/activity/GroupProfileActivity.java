@@ -68,6 +68,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private ProgressDialog mProgressDialog;
     private GroupMembersAdapter mAdapter;
 
+    private String mGroupID;
     private ArrayList<GroupMemberBean> mGroupMemberList;
 
     @Override
@@ -121,11 +122,11 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
         mClClearMessage.setOnClickListener(mOnClearMessageClickListener);
 
-        String groupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
-        if (TextUtils.isEmpty(groupID)) {
+        mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
+        if (TextUtils.isEmpty(mGroupID)) {
             finish();
         } else {
-            mPresenter.init(groupID);
+            mPresenter.init(mGroupID);
         }
     }
 
@@ -275,7 +276,10 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private final View.OnClickListener mOnQRCodeClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            Intent intent = new Intent(GroupProfileActivity.this,MyQRCodeActivity.class);
+            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_QR_TYPE,MyQRCodeActivity.QR_CODE_TYPE_GROUP);
+            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_GROUP_ID,mGroupID);
+            startActivity(intent);
         }
     };
 

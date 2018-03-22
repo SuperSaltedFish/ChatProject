@@ -37,4 +37,7 @@ public interface GroupApi {
     @HttpApi(RequestMethod = "POST", Path = "group/quit")
     Call<JsonResponse<Void>> quit(@HttpParam("groupID") String groupID);
 
+    @HttpApi(RequestMethod = "POST", Path = "group/getTempGroupID")
+    Call<JsonResponse<GetTempGroupID>> getTempGroupID(@HttpParam("groupID") String groupID);
+
 }

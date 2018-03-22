@@ -2,6 +2,8 @@ package com.yzx.chat.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.UserBean;
 
 /**
  * Created by YZX on 2018年02月26日.
@@ -20,7 +22,13 @@ public class MyQRCodeActivityContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void updateQRCode();
+        UserBean getUserInfo();
+
+        GroupBean getGroupInfo(String groupID);
+
+        void updateUserQRCode();
+
+        void updateGroupQRCode(String groupID);
 
     }
 }

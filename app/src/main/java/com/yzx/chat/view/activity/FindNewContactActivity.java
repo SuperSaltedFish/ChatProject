@@ -113,7 +113,9 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private final View.OnClickListener mOnMyPhoneClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(FindNewContactActivity.this, MyQRCodeActivity.class));
+            Intent intent = new Intent(FindNewContactActivity.this, MyQRCodeActivity.class);
+            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_QR_TYPE, MyQRCodeActivity.QR_CODE_TYPE_USER);
+            startActivity(intent);
         }
     };
 
