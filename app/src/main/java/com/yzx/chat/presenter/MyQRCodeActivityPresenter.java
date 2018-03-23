@@ -1,7 +1,9 @@
 package com.yzx.chat.presenter;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import com.yzx.chat.R;
 import com.yzx.chat.base.BaseHttpCallback;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
@@ -14,7 +16,11 @@ import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.util.BitmapUtil;
+import com.yzx.chat.util.MD5Util;
 
 /**
  * Created by YZX on 2018年02月26日.
@@ -77,10 +83,20 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
             @Override
             protected void onFailure(String message) {
                 isUpdating = false;
-                mMyQRCodeActivityView.showError(message);
+                mMyQRCodeActivityView.showHint(message);
             }
         });
         sHttpExecutor.submit(mGetTempUserIDCall);
+    }
+
+    @Override
+    public void saveQRCodeToLocal(Bitmap bitmap,String id) {
+        String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryManager.getPublicImagePath(), MD5Util.encrypt16(id));
+        if (TextUtils.isEmpty(savePath)) {
+            mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeFail));
+        } else {
+            mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeSuccess) + savePath);
+        }
     }
 
     @Override
@@ -101,7 +117,7 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
             @Override
             protected void onFailure(String message) {
                 isUpdating = false;
-                mMyQRCodeActivityView.showError(message);
+                mMyQRCodeActivityView.showHint(message);
             }
         });
         sHttpExecutor.submit(mGetTempGroupIDCall);

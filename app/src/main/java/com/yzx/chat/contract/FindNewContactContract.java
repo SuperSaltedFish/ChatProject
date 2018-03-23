@@ -14,7 +14,7 @@ public class FindNewContactContract {
 
 
     public interface View extends BaseView<Presenter> {
-        void searchSuccess(UserBean user);
+        void searchSuccess(UserBean user,boolean isContact);
         void searchNotExist();
         void searchFail();
     }

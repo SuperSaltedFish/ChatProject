@@ -121,4 +121,32 @@ public class BitmapUtil {
         }
     }
 
+    public static String saveBitmapToJPEG(Bitmap bitmap, String path, String fileName) {
+        String filePath = path + fileName + ".jpeg";
+        FileOutputStream fOut;
+        try {
+            fOut = new FileOutputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        try {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fOut);
+            return filePath;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                fOut.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                fOut.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

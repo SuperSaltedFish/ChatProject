@@ -202,6 +202,9 @@
     <string name="ContactOperationAdapter_DefaultReason">请求添加好友</string>
     <string name="ImageMultiSelectorActivity_SelectedCountLimitHint">最多只能选择%d张图片</string>
     <string name="CropImageActivity_SaveAvatarFail">保存头像失败，请稍候再试！</string>
+    <string name="MyQRCodeActivity_SaveQRCodeFail">保存图片失败，请稍候再试！</string>
+    <string name="MyQRCodeActivity_SaveQRCodeSuccess">图片保存到</string>
+
     <string name="GroupProfileActivity_GroupQRCodeTitle">群二维码</string>
     <string name="GroupProfileActivity_GroupQRCodeHint">通过扫描二维码可加入该群聊</string>
     <string name="MyQRCodeActivity_QRCodeHint">扫描上面的二维码，添加我好友</string>

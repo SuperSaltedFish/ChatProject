@@ -1,5 +1,7 @@
 package com.yzx.chat.tool;
 
+import android.os.Environment;
+
 import com.yzx.chat.configure.AppApplication;
 
 import java.io.File;
@@ -14,11 +16,15 @@ public class DirectoryManager {
 
     private static final String PRIVATE_DATA_BASE_PATH = AppApplication.getAppContext().getFilesDir().getPath();
 
-    private static final String PUBLIC_DATA_BASE_PATH = AppApplication.getAppContext().getExternalFilesDir(null).getPath();
+    private static final String PROTECTED_DATA_BASE_PATH = AppApplication.getAppContext().getExternalFilesDir(null).getPath();
+
+    private static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath()+"/Chat";
 
     private static final String PATH_VOICE_RECORDER = "/VoiceRecorder/";
 
     private static final String PATH_TEMP = "/temp/";
+
+    private static final String PATH_IMAGE = "/image/";
 
     public static void init() {
         File file;
@@ -26,17 +32,26 @@ public class DirectoryManager {
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(PUBLIC_DATA_BASE_PATH + PATH_TEMP);
+        file = new File(PROTECTED_DATA_BASE_PATH + PATH_TEMP);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        file = new File(PUBLIC_DATA_BASE_PATH + PATH_IMAGE);
         if (!file.exists()) {
             file.mkdirs();
         }
     }
 
-    public static String getVoiceRecorderPath() {
+    public static String getPrivateVoiceRecorderPath() {
         return PRIVATE_DATA_BASE_PATH + PATH_VOICE_RECORDER;
     }
 
-    public static String getTempPath() {
+    public static String getProtectedTempPath() {
         return PRIVATE_DATA_BASE_PATH + PATH_TEMP;
+    }
+
+    public static String getPublicImagePath() {
+        return PUBLIC_DATA_BASE_PATH + PATH_IMAGE;
     }
 }

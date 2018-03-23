@@ -1,5 +1,7 @@
 package com.yzx.chat.contract;
 
+import android.graphics.Bitmap;
+
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 import com.yzx.chat.bean.GroupBean;
@@ -16,7 +18,7 @@ public class MyQRCodeActivityContract {
 
         void showQRCode(String content);
 
-        void showError(String error);
+        void showHint(String hint);
     }
 
 
@@ -29,6 +31,8 @@ public class MyQRCodeActivityContract {
         void updateUserQRCode();
 
         void updateGroupQRCode(String groupID);
+
+        void saveQRCodeToLocal(Bitmap bitmap,String id);
 
     }
 }

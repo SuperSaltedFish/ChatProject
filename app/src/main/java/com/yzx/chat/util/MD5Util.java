@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 
 public class MD5Util {
-    public static String encrypt(String string) {
+    public static String encrypt32(String string) {
         byte[] hash;
         try {
             hash = MessageDigest.getInstance("MD5").digest(string.getBytes());
@@ -25,5 +25,14 @@ public class MD5Util {
             hex.append(Integer.toHexString(b & 0xFF));
         }
         return hex.toString();
+    }
+
+    public static String encrypt16(String string) {
+        String md5 = encrypt32(string);
+        int length = md5.length();
+        if (length > 16) {
+            return md5.substring(length - 16, length);
+        }
+        return md5;
     }
 }

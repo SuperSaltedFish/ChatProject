@@ -175,7 +175,7 @@ public class IMClient {
                             failure("server error : user result is empty");
                             return;
                         }
-                        mDBHelper = new DBHelper(sAppContext, MD5Util.encrypt(userBean.getUserID()), Constants.DATABASE_VERSION);
+                        mDBHelper = new DBHelper(sAppContext, MD5Util.encrypt32(userBean.getUserID()), Constants.DATABASE_VERSION);
                         boolean isUpdateSuccess = true;
                         if (!UserManager.update(token, userBean, mDBHelper.getReadWriteHelper())) {
                             isUpdateSuccess = false;
@@ -210,7 +210,7 @@ public class IMClient {
                             failure("get userID or token is null from local");
                             return;
                         }
-                        mDBHelper = new DBHelper(sAppContext, MD5Util.encrypt(userID), Constants.DATABASE_VERSION);
+                        mDBHelper = new DBHelper(sAppContext, MD5Util.encrypt32(userID), Constants.DATABASE_VERSION);
                         if (initFromLocal()) {
                             loginIMServer(token);
                         } else {

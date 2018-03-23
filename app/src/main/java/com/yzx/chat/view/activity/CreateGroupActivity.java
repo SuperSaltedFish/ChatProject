@@ -6,6 +6,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -52,7 +54,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private IndexBarView mIndexBarView;
     private TextView mTvIndexBarHint;
     private FlowLayout mFlowLayout;
-    private Button mBtnConfirm;
+    private MenuItem mConfirmMenuItem;
     private ProgressDialog mProgressDialog;
     private List<ContactBean> mContactList;
     private List<ContactBean> mSelectedContactList;
@@ -69,7 +71,6 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mRecyclerView = findViewById(R.id.CreateGroupActivity_mRecyclerView);
         mIndexBarView = findViewById(R.id.CreateGroupActivity_mIndexBarView);
         mTvIndexBarHint = findViewById(R.id.CreateGroupActivity_mTvIndexBarHint);
-        mBtnConfirm = findViewById(R.id.ProfileModifyActivity_mBtnConfirm);
         mHeaderView = getLayoutInflater().inflate(R.layout.item_create_group_header, (ViewGroup) getWindow().getDecorView(), false);
         mFlowLayout = mHeaderView.findViewById(R.id.CreateGroupActivity_mFlowLayout);
         mContactList = IMClient.getInstance().contactManager().getAllContacts();
@@ -117,8 +118,6 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mProgressDialog.setCancelable(false);
         mProgressDialog.setCanceledOnTouchOutside(false);
 
-        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
-
         mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
         if (!TextUtils.isEmpty(mGroupID)) {
             mProgressDialog.setHintText(getString(R.string.ProgressHint_Add));
@@ -138,9 +137,18 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
     }
 
-    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_create_group, menu);
+        mConfirmMenuItem = menu.findItem(R.id.CreateGroupMenu_Confirm);
+        mConfirmMenuItem.setEnabled(false);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.CreateGroupMenu_Confirm) {
             if (TextUtils.isEmpty(mGroupID)) {
                 mProgressDialog.show(getString(R.string.ProgressHint_Create));
                 mPresenter.createGroup(mSelectedContactList);
@@ -148,8 +156,11 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 mProgressDialog.show(getString(R.string.ProgressHint_Add));
                 mPresenter.addMembers(mGroupID, mSelectedContactList);
             }
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-    };
+        return true;
+    }
 
     private final CreateGroupAdapter.OnItemSelectedChangeListener mOnItemSelectedChangeListener = new CreateGroupAdapter.OnItemSelectedChangeListener() {
         @Override
@@ -168,7 +179,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                     mFlowLayout.removeView(needRemoveView);
                 }
             }
-            mBtnConfirm.setEnabled(mSelectedContactList.size() > 0);
+            mConfirmMenuItem.setEnabled(mSelectedContactList.size() > 0);
         }
     };
 

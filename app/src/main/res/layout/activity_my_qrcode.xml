@@ -21,6 +21,7 @@
         app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/MyQRCodeActivity_mClQRCodeLayout"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -530,7 +530,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (mVoiceRecorder.getAmplitudeChangeHandler() == null) {
                     mVoiceRecorder.setAmplitudeChangeHandler(new Handler(mAmplitudeView.getLooper()));
                 }
-                mVoiceRecorder.setSavePath(DirectoryManager.getVoiceRecorderPath() + "a.amr");
+                mVoiceRecorder.setSavePath(DirectoryManager.getPrivateVoiceRecorderPath() + "a.amr");
                 mVoiceRecorder.prepare();
                 mVoiceRecorder.start();
                 mVoiceRecorderDownTimer.start();

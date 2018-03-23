@@ -1,6 +1,10 @@
 package com.yzx.chat.view.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -43,6 +47,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
 
     private String mGroupID;
     private int mCurrentQRCodeType;
+    private ConstraintLayout mClQRCodeLayout;
 
 
     @Override
@@ -60,6 +65,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
         mFlSave = findViewById(R.id.MyQRCodeActivity_mFlSave);
         mTvLocation = findViewById(R.id.MyQRCodeActivity_mTvLocation);
         mTvNickname = findViewById(R.id.MyQRCodeActivity_mTvNickname);
+        mClQRCodeLayout = findViewById(R.id.MyQRCodeActivity_mClQRCodeLayout);
         mTvHint = findViewById(R.id.MyQRCodeActivity_mTvHint);
     }
 
@@ -71,8 +77,14 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
             return;
         }
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
+                actionBar.setTitle(R.string.MyQRCodeActivity_Title);
+            }else {
+                actionBar.setTitle(R.string.MyQRCodeActivity_Title2);
+            }
         }
 
         mFlScan.setOnClickListener(mOnScanClickListener);
@@ -145,7 +157,19 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
     private final View.OnClickListener mOnSaveClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            mClQRCodeLayout.setDrawingCacheEnabled(true);
+            Bitmap bitmap = mClQRCodeLayout.getDrawingCache();
+            float scale = 800f / bitmap.getHeight();
+            Matrix matrix = new Matrix();
+            matrix.preScale(scale, scale);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+            if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
+                mPresenter.saveQRCodeToLocal(bitmap, mPresenter.getUserInfo().getUserID());
+            } else {
+                mPresenter.saveQRCodeToLocal(bitmap, mGroupID);
+            }
+            bitmap.recycle();
+            mClQRCodeLayout.setDrawingCacheEnabled(false);
         }
     };
 
@@ -162,8 +186,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
     }
 
     @Override
-    public void showError(String error) {
+    public void showHint(String error) {
         showToast(error);
-        finish();
     }
 }

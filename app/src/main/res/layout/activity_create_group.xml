@@ -15,23 +15,7 @@
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/CreateGroupActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
-
-        <Button
-            android:id="@+id/ProfileModifyActivity_mBtnConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical|end"
-            android:background="@null"
-            android:enabled="false"
-            android:elevation="2dp"
-            android:minWidth="0dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:text="@string/Confirm"
-            android:textColor="@color/selector_text_enable_change_light" />
-
-    </android.support.v7.widget.Toolbar>
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/CreateGroupActivity_mRecyclerView"

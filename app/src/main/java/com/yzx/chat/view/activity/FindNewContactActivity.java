@@ -139,11 +139,17 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     @Override
-    public void searchSuccess(UserBean user) {
+    public void searchSuccess(UserBean user, boolean isContact) {
         enableSearchHint(false);
-        Intent intent = new Intent(this, StrangerProfileActivity.class);
-        intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
-        startActivity(intent);
+        if (isContact) {
+            Intent intent = new Intent(this, ContactProfileActivity.class);
+            intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, user.getUserID());
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, StrangerProfileActivity.class);
+            intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
+            startActivity(intent);
+        }
     }
 
     @Override

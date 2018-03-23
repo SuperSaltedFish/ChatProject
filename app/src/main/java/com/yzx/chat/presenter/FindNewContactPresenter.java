@@ -3,11 +3,13 @@ package com.yzx.chat.presenter;
 import android.os.Handler;
 
 import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.contract.FindNewContactContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.SearchUserBean;
 import com.yzx.chat.network.api.user.UserApi;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
@@ -60,7 +62,8 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
                 if (userList == null || userList.size() == 0) {
                     mFindNewContactContractView.searchNotExist();
                 } else {
-                    mFindNewContactContractView.searchSuccess(userList.get(0));
+                    UserBean user = userList.get(0);
+                    mFindNewContactContractView.searchSuccess(user, IMClient.getInstance().contactManager().getContact(user.getUserID()) != null);
                 }
                 isSearching = false;
 
