@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +24,7 @@ import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.presenter.CreateGroupPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.view.CircleImageView;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
@@ -55,8 +56,10 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private TextView mTvIndexBarHint;
     private FlowLayout mFlowLayout;
     private MenuItem mConfirmMenuItem;
+    private SearchView mSearchView;
     private ProgressDialog mProgressDialog;
-    private List<ContactBean> mContactList;
+    private List<ContactBean> mAllContactList;
+    private List<ContactBean> mFilterContactList;
     private List<ContactBean> mSelectedContactList;
     private List<ContactBean> mAlreadyJoinContactList;
     private String mGroupID;
@@ -73,24 +76,27 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mTvIndexBarHint = findViewById(R.id.CreateGroupActivity_mTvIndexBarHint);
         mHeaderView = getLayoutInflater().inflate(R.layout.item_create_group_header, (ViewGroup) getWindow().getDecorView(), false);
         mFlowLayout = mHeaderView.findViewById(R.id.CreateGroupActivity_mFlowLayout);
-        mContactList = IMClient.getInstance().contactManager().getAllContacts();
-        if (mContactList == null) {
+        mAllContactList = IMClient.getInstance().contactManager().getAllContacts();
+        if (mAllContactList == null) {
             return;
         }
+        mFilterContactList = new ArrayList<>(mAllContactList.size());
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Create));
-        mSelectedContactList = new ArrayList<>(mContactList.size() / 2 + 1);
-        mCreateGroupAdapter = new CreateGroupAdapter(mContactList, mSelectedContactList);
+        mSelectedContactList = new ArrayList<>(mAllContactList.size() / 2 + 1);
+        mCreateGroupAdapter = new CreateGroupAdapter(mFilterContactList, mSelectedContactList);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        if (mContactList == null) {
+        if (mAllContactList == null) {
             finish();
             return;
         }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        mFilterContactList.addAll(mAllContactList);
 
         mFlowLayout.setItemSpace((int) AndroidUtil.dip2px(4));
         mFlowLayout.setLineSpace((int) AndroidUtil.dip2px(4));
@@ -107,6 +113,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mRecyclerView.setHasFixedSize(true);
         // mContactRecyclerView.setItemAnimator(new NoAnimations());
         mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
+        mRecyclerView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.text_secondary_color_black));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
@@ -129,7 +136,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 contact.setUserProfile(member.getUserProfile());
                 mAlreadyJoinContactList.add(contact);
             }
-            mAlreadyJoinContactList.retainAll(mContactList);
+            mAlreadyJoinContactList.retainAll(mAllContactList);
             if (mAlreadyJoinContactList.size() > 0) {
                 mCreateGroupAdapter.setDisableSelectedList(mAlreadyJoinContactList);
             }
@@ -137,11 +144,40 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
     }
 
+    private void setupSearch() {
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mFilterContactList.clear();
+                if (TextUtils.isEmpty(newText)) {
+                    mFilterContactList.addAll(mAllContactList);
+                } else {
+                    newText = newText.toLowerCase();
+                    for (ContactBean contact : mAllContactList) {
+                        if (contact.getName().contains(newText) || contact.getAbbreviation().contains(newText)) {
+                            mFilterContactList.add(contact);
+                        }
+                    }
+                }
+                mCreateGroupAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_create_group, menu);
         mConfirmMenuItem = menu.findItem(R.id.CreateGroupMenu_Confirm);
+        MenuItem searchItem = menu.findItem(R.id.CreateGroupMenu_Search);
+        mSearchView = (SearchView) searchItem.getActionView();
         mConfirmMenuItem.setEnabled(false);
+        setupSearch();
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -157,7 +193,12 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 mPresenter.addMembers(mGroupID, mSelectedContactList);
             }
         } else {
-            return super.onOptionsItemSelected(item);
+            if (!mSearchView.isIconified()) {
+                mSearchView.setQuery(null, false);
+                mSearchView.setIconified(true);
+            } else {
+                return super.onOptionsItemSelected(item);
+            }
         }
         return true;
     }
@@ -166,14 +207,14 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         @Override
         public void onItemSelectedChange(int position, boolean isSelect) {
             if (isSelect) {
-                mSelectedContactList.add(mContactList.get(position - 1));
+                mSelectedContactList.add(mAllContactList.get(position - 1));
                 CircleImageView avatar = new CircleImageView(CreateGroupActivity.this);
                 avatar.setId(position);
                 avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 avatar.setImageResource(R.drawable.temp_head_image);
                 mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidUtil.dip2px(40), (int) AndroidUtil.dip2px(40)));
             } else {
-                mSelectedContactList.remove(mContactList.get(position - 1));
+                mSelectedContactList.remove(mAllContactList.get(position - 1));
                 View needRemoveView = mFlowLayout.findViewById(position);
                 if (needRemoveView != null) {
                     mFlowLayout.removeView(needRemoveView);

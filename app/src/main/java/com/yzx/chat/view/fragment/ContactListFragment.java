@@ -39,6 +39,7 @@ import com.yzx.chat.view.activity.HomeActivity;
 import com.yzx.chat.view.activity.RemarkInfoActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.BadgeView;
@@ -133,6 +134,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvSearchContact.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
         mRvSearchContact.setAdapter(mSearchAdapter);
+        mRvSearchContact.addOnScrollListener(new AutoCloseKeyboardScrollListener(getActivity()));
 
         mLlContactOperation.setOnClickListener(mOnContactOperationClick);
         mLlGroup.setOnClickListener(mOnGroupClick);
