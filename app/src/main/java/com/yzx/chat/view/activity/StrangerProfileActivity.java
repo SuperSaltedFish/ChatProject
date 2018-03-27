@@ -31,6 +31,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private UserBean mUserBean;
     private ProgressDialog mProgressDialog;
     private ImageView mIvAvatar;
+    private TextView mTvNickname;
+    private TextView mTvExplain;
     private TextView mTvContentNickname;
     private TextView mTvContentLocation;
     private TextView mTvContentBirthday;
@@ -47,6 +49,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         mTvContentLocation = findViewById(R.id.Profile_mTvContentLocation);
         mTvContentBirthday = findViewById(R.id.Profile_mTvContentBirthday);
         mIvAvatar = findViewById(R.id.StrangerProfileActivity_mIvAvatar);
+        mTvNickname = findViewById(R.id.StrangerProfileActivity_mTvNickname);
+        mTvExplain = findViewById(R.id.StrangerProfileActivity_mTvExplain);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Send));
     }
 
@@ -67,7 +71,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
             finish();
             return;
         }
-
+        mTvNickname.setText(mUserBean.getNickname());
+        mTvExplain.setText(mUserBean.getSignature());
         mTvContentNickname.setText(mUserBean.getNickname());
         if (TextUtils.isEmpty(mUserBean.getLocation())) {
             mTvContentLocation.setText(R.string.ProfileModifyActivity_NoSet);

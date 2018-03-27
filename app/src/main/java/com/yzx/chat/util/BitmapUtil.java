@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Size;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -95,9 +96,19 @@ public class BitmapUtil {
 
     public static String saveBitmapToPNG(Bitmap bitmap, String path, String fileName) {
         String filePath = path + fileName + ".png";
+        File file = new File( filePath);
+        try {
+            if(!file.exists()&&!file.createNewFile()){
+                LogUtil.e("createNewFile fail");
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
         FileOutputStream fOut;
         try {
-            fOut = new FileOutputStream(filePath);
+            fOut = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;

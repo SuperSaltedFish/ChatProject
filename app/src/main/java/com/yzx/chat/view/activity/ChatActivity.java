@@ -284,7 +284,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         // mRvChatView.setItemAnimator(new NoAnimations());
-        mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
+        mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this){
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState!=RecyclerView.SCROLL_STATE_IDLE){
+                    if(isShowMoreInput()){
+                        hintMoreInput();
+                    }
+                }
+            }
+        });
+
 
         mAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
             @Override
@@ -635,6 +646,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 mClOtherPanelLayout.setVisibility(View.VISIBLE);
                 break;
         }
+        mRvChatView.scrollToPosition(0);
     }
 
     private final View.OnClickListener mOnProfileClickListener = new View.OnClickListener() {

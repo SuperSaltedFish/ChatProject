@@ -241,9 +241,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         @Override
         public void onFinish() {
             isAllowResendVerifyCode = true;
-            if (!isDisableInput) {
-                mBtnResend.setEnabled(true);
-            }
+            mBtnResend.setEnabled(!isDisableInput);
             mBtnResend.setText(mResendName);
         }
     };
@@ -570,7 +568,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
                             int[] location = new int[2];
                             scrollToView.getLocationInWindow(location);
                             //计算root滚动高度，使scrollToView在可见区域的底部
-                            scrollHeight = (location[1] + scrollToView.getHeight()+ (int)AndroidUtil.dip2px(8)) - rect.bottom;
+                            scrollHeight = (location[1] + scrollToView.getHeight() + (int) AndroidUtil.dip2px(8)) - rect.bottom;
                         } else {
                             scrollHeight = -root.getScrollY();
                         }
@@ -580,7 +578,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
                             EditText editText = (EditText) focusView;
                             View label = root.findViewById(editText.getLabelFor());
                             if (label != null && label.getY() - rootInvisibleHeight <= 0) {
-                                scrollHeight =-root.getScrollY();
+                                scrollHeight = -root.getScrollY();
 
                             }
                         }

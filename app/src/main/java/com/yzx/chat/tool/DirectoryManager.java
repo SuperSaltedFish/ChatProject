@@ -55,7 +55,7 @@ public class DirectoryManager {
     }
 
     public static String getProtectedTempPath() {
-        return PRIVATE_DATA_BASE_PATH + PATH_TEMP;
+        return PROTECTED_DATA_BASE_PATH + PATH_TEMP;
     }
 
     public static String getPublicImagePath() {

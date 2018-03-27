@@ -72,7 +72,7 @@
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvNickname"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="26dp"
                     android:gravity="center_horizontal"
                     android:textColor="@color/text_main_color_white"
                     android:textSize="22sp"

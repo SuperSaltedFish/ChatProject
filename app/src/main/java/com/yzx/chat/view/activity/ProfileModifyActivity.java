@@ -249,7 +249,7 @@ public class ProfileModifyActivity extends BaseCompatActivity<ProfileModifyContr
                 mDatePickerDialog = new DatePickerDialog(ProfileModifyActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        mTvBirthday.setText(String.format(getString(R.string.ProfileModifyActivity_DateFormat), year, month, dayOfMonth));
+                        mTvBirthday.setText(String.format(getString(R.string.ProfileModifyActivity_DateFormat), year, month+1, dayOfMonth));
                         mCalendar.set(Calendar.YEAR, year);
                         mCalendar.set(Calendar.MONTH, month);
                         mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);

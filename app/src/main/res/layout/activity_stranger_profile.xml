@@ -31,7 +31,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:popupTheme="@style/ToolbarPopupTheme"
                 app:theme="@style/ToolbarTheme"
-                app:titleTextAppearance="@style/ToolbarTitleTheme.Light"/>
+                app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
 
             <com.yzx.chat.widget.view.CircleImageView
@@ -43,7 +43,7 @@
                 android:padding="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
+                app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
 
             <TextView
                 android:id="@+id/StrangerProfileActivity_mTvNickname"
@@ -54,12 +54,12 @@
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/StrangerProfileActivity_mIvAvatar" />
+                app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mIvAvatar" />
 
             <TextView
                 android:id="@+id/StrangerProfileActivity_mTvExplain"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="16dp"
                 android:gravity="center"
                 android:paddingEnd="80dp"
                 android:paddingStart="80dp"
@@ -67,7 +67,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/StrangerProfileActivity_mTvNickname" />
+                app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvNickname" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -111,7 +111,7 @@
                 android:text="@string/StrangerProfile_SetPermissionTitle"
                 android:textColor="@color/text_primary_color_black"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/StrangerProfileActivity_mTvContentRemind"
+                app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mTvContentRemind"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -126,7 +126,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/StrangerProfileActivity_mTvLabelRemind" />
+                app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvLabelRemind" />
 
             <View
                 android:layout_width="0dp"

@@ -245,7 +245,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
+                    if (mCurrVerifyType == VERIFY_TYPE_LOGIN||mCurrVerifyType==VERIFY_TYPE_REGISTER) {
                         mLoginView.verifyFailure(error);
                     } else {
                         mLoginView.loginFailure(error);
