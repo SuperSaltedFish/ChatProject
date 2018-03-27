@@ -180,6 +180,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     mLoginView.inputLoginVerifyCode(response.isSkipVerify());
                 } else {
                     mLoginView.inputRegisterVerifyCode();
+                    AndroidUtil.showToast(response.getVerifyCode());
                 }
             }
 

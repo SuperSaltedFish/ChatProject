@@ -6,7 +6,9 @@ import android.view.View;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.RSAUtil;
+import com.yzx.chat.widget.view.VideoTextureView;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -56,8 +58,16 @@ public class TestActivity extends BaseCompatActivity {
 //        NetworkExecutor.getInstance().submit(call);
     }
 
-    public void onClick(View v) {
+    private boolean i = true;
 
+    public void onClick(View v) {
+        VideoTextureView videoTextureView = findViewById(R.id.ssss);
+        if (i) {
+            videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.h264");
+            i = false;
+        }else {
+            videoTextureView.stopRecorder(true);
+        }
     }
 
     public void onClick2(View v) {

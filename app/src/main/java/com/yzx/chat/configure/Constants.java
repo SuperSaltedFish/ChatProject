@@ -8,7 +8,7 @@ public class Constants {
 
 
 //    public static final String URL_API_BASE = "http://192.168.16.103:3000/v1/api/";
-    public static final String URL_API_BASE = "http://118.89.17.132:3000/v1/api/";
+    public static final String URL_API_BASE = "http://111.231.238.209:3000/v1/api/";
 
     public static final String URL_MAP_IMAGE_FORMAT = "http://restapi.amap.com/v3/staticmap?markers=-1,http://118.89.17.132:3000/ic_location_flag.png,0:%f,%f&size=400*160&zoom=15&key=ded050da042a8b77a62c6cda02cc330a";
 

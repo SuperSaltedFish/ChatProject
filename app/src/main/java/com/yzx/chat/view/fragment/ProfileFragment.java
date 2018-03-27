@@ -19,6 +19,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.contract.ProfileModifyContract;
 import com.yzx.chat.presenter.ProfileModifyPresenter;
+import com.yzx.chat.view.activity.LoginActivity;
 import com.yzx.chat.view.activity.ProfileModifyActivity;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
@@ -77,6 +78,14 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
         mVpAlbum.addOnPageChangeListener(mOnAlbumPageChangeListener);
 
         mTsAlbumName.setFactory(mAlbumViewFactory);
+
+        mTsAlbumName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(mContext, LoginActivity.class));
+                getActivity().finish();
+            }
+        });
 
         mLlEditProfile.setOnClickListener(mOnEditProfileClickListener);
 

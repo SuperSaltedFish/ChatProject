@@ -26,6 +26,8 @@ public class DirectoryManager {
 
     private static final String PATH_IMAGE = "/image/";
 
+    private static final String PATH_VIDEO = "/Video/";
+
     public static void init() {
         File file;
         file = new File(PRIVATE_DATA_BASE_PATH + PATH_VOICE_RECORDER);
@@ -41,6 +43,11 @@ public class DirectoryManager {
         if (!file.exists()) {
             file.mkdirs();
         }
+
+        file = new File(PUBLIC_DATA_BASE_PATH + PATH_VIDEO);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
     }
 
     public static String getPrivateVoiceRecorderPath() {
@@ -53,5 +60,9 @@ public class DirectoryManager {
 
     public static String getPublicImagePath() {
         return PUBLIC_DATA_BASE_PATH + PATH_IMAGE;
+    }
+
+    public static String getPublicVideoPath() {
+        return PUBLIC_DATA_BASE_PATH + PATH_VIDEO;
     }
 }
