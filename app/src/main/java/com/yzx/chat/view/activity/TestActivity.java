@@ -8,6 +8,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.RSAUtil;
+import com.yzx.chat.util.VideoRecorder;
 import com.yzx.chat.widget.view.VideoTextureView;
 
 import java.security.KeyPair;
@@ -63,9 +64,19 @@ public class TestActivity extends BaseCompatActivity {
     public void onClick(View v) {
         VideoTextureView videoTextureView = findViewById(R.id.ssss);
         if (i) {
-            videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.h264");
+            videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.mp4", 15*1000, new VideoRecorder.OnRecorderStateListener() {
+                @Override
+                public void onComplete(String filePath, long duration) {
+                    i = true;
+                }
+
+                @Override
+                public void onError(String error) {
+                    i = true;
+                }
+            });
             i = false;
-        }else {
+        } else {
             videoTextureView.stopRecorder(true);
         }
     }

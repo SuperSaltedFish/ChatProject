@@ -82,8 +82,9 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
         mTsAlbumName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(mContext, LoginActivity.class));
-                getActivity().finish();
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
 

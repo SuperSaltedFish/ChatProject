@@ -17,7 +17,7 @@ public class VoiceRecorder {
     public static final int MAX_AMPLITUDE = 32767;
 
     private static final int DEFAULT_MAX_DURATION = 60 * 1000;
-    private static final int DEFAULT_GET_AMPLITUDE_INTERVAL = 1000 / 16;
+    private static final int DEFAULT_AMPLITUDE_REFRESH_INTERVAL = 1000 / 16;
 
     private String mSavePath;
     private int mMaxDuration;
@@ -28,7 +28,7 @@ public class VoiceRecorder {
     private String initFailReason;
     private MediaRecorder mRecorder;
     private long mStartRecorderTime;
-    private int mGetAmplitudeInterval = DEFAULT_GET_AMPLITUDE_INTERVAL;
+    private int mGetAmplitudeInterval = DEFAULT_AMPLITUDE_REFRESH_INTERVAL;
     private int mCurrentAmplitude;
 
     private final Object mRecorderLock = new Object();
