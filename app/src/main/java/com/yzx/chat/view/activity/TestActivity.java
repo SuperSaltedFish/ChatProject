@@ -64,21 +64,11 @@ public class TestActivity extends BaseCompatActivity {
     public void onClick(View v) {
         VideoTextureView videoTextureView = findViewById(R.id.ssss);
         if (i) {
-            videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.mp4", 15*1000, new VideoRecorder.OnRecorderStateListener() {
-                @Override
-                public void onComplete(String filePath, long duration) {
-                    i = true;
-                }
-
-                @Override
-                public void onError(String error) {
-                    i = true;
-                }
-            });
-            i = false;
+            videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.mp4");
         } else {
-            videoTextureView.stopRecorder(true);
+            videoTextureView.stopRecorder();
         }
+        i = !i;
     }
 
     public void onClick2(View v) {

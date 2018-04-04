@@ -25,7 +25,7 @@ import android.view.Surface;
 import android.view.TextureView;
 
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.VideoRecorder;
+import com.yzx.chat.util.VoiceCodec;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -48,7 +48,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     private static final String TAG = "VideoTextureView";
 
     private static final Size DEFAULT_VIDEO_SIZE_4_3 = new Size(800, 600);
-    private static final Size DEFAULT_VIDEO_SIZE_16_9 = new Size(1280, 720);
+    private static final Size DEFAULT_VIDEO_SIZE_16_9 = new Size(960, 540);
     private static final Size ASPECT_RATIO_SIZE_16_9 = new Size(16, 9);
     private static final Size ASPECT_RATIO_SIZE_4_3 = new Size(4, 3);
 
@@ -104,7 +104,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
 
     private Context mContext;
 
-    private VideoRecorder mVideoRecorder;
+    private VoiceCodec mVoiceCodec;
     private Integer mSensorOrientation;
 
     private Size mPreviewSize;
@@ -211,7 +211,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     mCamera = camera;
-                    mVideoRecorder = new VideoRecorder();
+                    mVoiceCodec = new VoiceCodec(mVideoSize.getWidth(), mVideoSize.getHeight());
                     configureTransform(previewWidth, previewHeight);
                     startPreview();
                 }
@@ -345,7 +345,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     }
 
 
-    public boolean startRecorder(final String savePath, int maxDuration, final VideoRecorder.OnRecorderStateListener listener) {
+    public boolean startRecorder(final String savePath) {
         if (mCamera == null || isRecorderMode || TextUtils.isEmpty(savePath) || mPreviewSession == null) {
             return false;
         }
@@ -364,30 +364,11 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 orientationHint = INVERSE_ORIENTATIONS.get(getDisplayRotation());
                 break;
         }
-        mMediaSurface = mVideoRecorder.prepare(savePath, mVideoSize.getWidth(), mVideoSize.getHeight(), maxDuration, orientationHint);
+        mMediaSurface = mVoiceCodec.prepare(savePath);
         if (mMediaSurface == null) {
             LogUtil.e("VideoRecorder prepare fail");
             return false;
         }
-        mVideoRecorder.setOnRecorderStateListener(new VideoRecorder.OnRecorderStateListener() {
-            @Override
-            public void onComplete(String filePath, long duration) {
-                isRecorderMode = false;
-                if (listener != null) {
-                    listener.onComplete(filePath, duration);
-                }
-                startPreview();
-            }
-
-            @Override
-            public void onError(String error) {
-                isRecorderMode = false;
-                if (listener != null) {
-                    listener.onError(error);
-                }
-                startPreview();
-            }
-        });
         closePreviewSession();
         getSurfaceTexture().setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         try {
@@ -396,7 +377,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     mPreviewSession = session;
                     update();
-                    mVideoRecorder.start();
+                    mVoiceCodec.start();
                 }
 
                 @Override
@@ -420,17 +401,12 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         return true;
     }
 
-    public void stopRecorder(final boolean isSave) {
+    public void stopRecorder() {
         if (!isRecorderMode) {
             return;
         }
-        String videoFilePath = mVideoRecorder.stop();
-        if (!TextUtils.isEmpty(videoFilePath) && !isSave) {
-            File file = new File(videoFilePath);
-            if (file.exists()) {
-                file.delete();
-            }
-        }
+        mVoiceCodec.stop();
+        startPreview();
         isRecorderMode = false;
     }
 
