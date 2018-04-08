@@ -211,7 +211,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     mCamera = camera;
-                    mVoiceCodec = new VoiceCodec(mVideoSize.getWidth(), mVideoSize.getHeight());
+                    mVoiceCodec =  VoiceCodec.createEncoder(mVideoSize.getWidth(), mVideoSize.getHeight());
                     configureTransform(previewWidth, previewHeight);
                     startPreview();
                 }
@@ -364,7 +364,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 orientationHint = INVERSE_ORIENTATIONS.get(getDisplayRotation());
                 break;
         }
-        mMediaSurface = mVoiceCodec.prepare(savePath);
+        mMediaSurface = mVoiceCodec.start(savePath);
         if (mMediaSurface == null) {
             LogUtil.e("VideoRecorder prepare fail");
             return false;
@@ -377,7 +377,6 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     mPreviewSession = session;
                     update();
-                    mVoiceCodec.start();
                 }
 
                 @Override
