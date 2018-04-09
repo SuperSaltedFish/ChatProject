@@ -137,7 +137,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doUpload(String remoteUrl, String params, HashMap<String, List<String>> uploadPath) {
+    public static Result doUpload(String remoteUrl, String params, Map<String, List<String>> uploadPath) {
         LogUtil.e("开始访问：" + remoteUrl);
         Result result = new Result();
         do {

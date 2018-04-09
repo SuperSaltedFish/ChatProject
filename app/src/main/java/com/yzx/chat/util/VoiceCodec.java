@@ -269,6 +269,10 @@ public class VoiceCodec {
             codec.releaseOutputBuffer(index, false);
         }
 
+        @Override
+        public void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format) {
+            mVideoTrackIndex = mMediaMuxer.addTrack(format);
+        }
     };
 
     private final SimpleCodecCallback mAudioCodecCallback = new SimpleCodecCallback() {
@@ -293,7 +297,6 @@ public class VoiceCodec {
                         mPresentationTimeUs = SystemClock.elapsedRealtimeNanos() / 1000 - mNowTime;
                         mAudioCodec.queueInputBuffer(index, 0, readLength, mPresentationTimeUs, 0);
                     }
-                    LogUtil.e("aaaaaaaaaaaaaaa");
                 }
             }
         }
@@ -306,6 +309,11 @@ public class VoiceCodec {
                 LogUtil.e("mAudioCodecCallback");
             }
             codec.releaseOutputBuffer(index, false);
+        }
+
+        @Override
+        public void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format) {
+            mAudioTrackIndex = mMediaMuxer.addTrack(format);
         }
     };
 

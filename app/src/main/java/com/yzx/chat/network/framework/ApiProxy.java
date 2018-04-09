@@ -13,7 +13,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ApiProxy {
@@ -85,8 +87,8 @@ public class ApiProxy {
         }
 
         private void parseParamsAnnotation(Annotation[][] annotations, Object[] params, HttpRequestImpl httpRequest) {
-            HashMap<String, Object> paramsMap = new HashMap<>();
-            HashMap<String, List<String>> uploadMap = null;
+            Map<String, Object> paramsMap = new LinkedHashMap<>();
+            Map<String, List<String>> uploadMap = null;
             for (int i = 0, size = annotations.length; i < size; i++) {
                 for (int j = 0, length = annotations[i].length; j < length; j++) {
                     if (annotations[i][j] instanceof HttpParam) {
@@ -95,7 +97,7 @@ public class ApiProxy {
                     } else if (annotations[i][j] instanceof UploadPath) {
                         UploadPath uploadPath = (UploadPath) annotations[i][j];
                         if (uploadMap == null) {
-                            uploadMap = new HashMap<>();
+                            uploadMap = new LinkedHashMap<>();
                             httpRequest.setUploadMap(uploadMap);
                         }
                         List<String> uploadList;
