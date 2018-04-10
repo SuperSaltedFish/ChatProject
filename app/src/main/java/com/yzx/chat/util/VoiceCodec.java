@@ -7,22 +7,24 @@ import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.media.MediaRecorder;
-import android.media.MediaSyncEvent;
-import android.os.CountDownTimer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.Surface;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedTransferQueue;
 
 /**
  * Created by YZX on 2018年04月01日.
@@ -86,6 +88,7 @@ public class VoiceCodec {
         format.setInteger(MediaFormat.KEY_BIT_RATE, videoWidth * videoHeight * 2);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, 30);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 5);
+        format.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileHigh);
         format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000 / 30);
         videoCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         return videoCodec;
@@ -118,6 +121,7 @@ public class VoiceCodec {
     private Handler mCodecHandler;
 
     private boolean isStarting;
+    private boolean isStartingMuxer;
     private int mVideoTrackIndex;
     private int mAudioTrackIndex;
 
@@ -130,10 +134,9 @@ public class VoiceCodec {
 
         int buffSize = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buffSize);
-        //mAudioRecord.setRecordPositionUpdateListener(new AudioRecordUpdateListener(), mCodecHandler);
-        //  mAudioRecord.setPositionNotificationPeriod(buffSize / (2 * 16 * 1 / 8));
         mAudioBuffer = new byte[buffSize];
-
+        mVideoTrackIndex = -1;
+        mAudioTrackIndex = -1;
     }
 
 
@@ -148,15 +151,12 @@ public class VoiceCodec {
         }
         try {
             mMediaMuxer = new MediaMuxer(savePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-            mVideoTrackIndex = mMediaMuxer.addTrack(mVideoCodec.getOutputFormat());
-            mAudioTrackIndex = mMediaMuxer.addTrack(mAudioCodec.getOutputFormat());
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
 
         mVideoSurface = mVideoCodec.createInputSurface();
-        mMediaMuxer.start();
         mVideoCodec.start();
         mAudioCodec.start();
         mAudioRecord.startRecording();
@@ -205,14 +205,13 @@ public class VoiceCodec {
             public void run() {
                 destroyVideoCodec();
                 destroyAudioCodec();
-                if (mCodecHandler != null) {
-                    mCodecHandler.removeCallbacksAndMessages(null);
-                    mCodecHandler.getLooper().quit();
-                    mCodecHandler = null;
-                }
                 if (mMediaMuxer != null) {
                     mMediaMuxer.stop();
                     mMediaMuxer.release();
+                }
+                if (mCodecHandler != null) {
+                    mCodecHandler.getLooper().quitSafely();
+                    mCodecHandler = null;
                 }
                 isStarting = false;
             }
@@ -220,50 +219,23 @@ public class VoiceCodec {
 
     }
 
-//    private class CollectAudioThread extends Thread {
-//
-//        private boolean mIsQuit;
-//
-//        @Override
-//        public void run() {
-//            super.run();
-//            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-//            ByteBuffer inputBuffer;
-//            long nowTime = SystemClock.elapsedRealtimeNanos() / 1000;
-//            long presentationTimeUs;
-//            mAudioRecord.startRecording();
-//            mAudioRecord.setRecordPositionUpdateListener();
-//            mAudioRecord.setPositionNotificationPeriod()
-//            mAudioRecord.setRecordPositionUpdateListener(null, null);
-//            while (!mIsQuit) {
-//                int readLength = mAudioRecord.read(mAudioBuffer, 0, mAudioBuffer.length);
-//                if (readLength > 0) {
-//                    int index = mAudioCodec.dequeueInputBuffer(-1);
-//                    if (index >= 0) {
-//                        inputBuffer = mAudioCodec.getInputBuffer(index);
-//                        if (inputBuffer != null) {
-//                            inputBuffer.clear();
-//                            inputBuffer.limit(mAudioBuffer.length);
-//                            inputBuffer.put(mAudioBuffer);
-//                            presentationTimeUs = SystemClock.elapsedRealtimeNanos() / 1000 - nowTime;
-//                            mAudioCodec.queueInputBuffer(index, 0, mAudioBuffer.length, presentationTimeUs, 0);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        public void quit() {
-//            mIsQuit = true;
-//            this.interrupt();
-//        }
-//    }
 
     private final SimpleCodecCallback mVideoCodecCallback = new SimpleCodecCallback() {
+        private long mStartTime;
+
         @Override
         public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
+            if (mVideoTrackIndex != -1 && mAudioTrackIndex != -1 && !isStartingMuxer) {
+                mMediaMuxer.start();
+                isStartingMuxer = true;
+            }
+
             ByteBuffer outPutByteBuffer = codec.getOutputBuffer(index);
-            if (outPutByteBuffer != null && info.size > 0) {
+            if (outPutByteBuffer != null && info.size > 0 && isStartingMuxer) {
+                if (mStartTime <= 0) {
+                    mStartTime = info.presentationTimeUs;
+                }
+                info.presentationTimeUs -= mStartTime;
                 mMediaMuxer.writeSampleData(mVideoTrackIndex, outPutByteBuffer, info);
             }
             codec.releaseOutputBuffer(index, false);
@@ -271,20 +243,17 @@ public class VoiceCodec {
 
         @Override
         public void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format) {
-            mVideoTrackIndex = mMediaMuxer.addTrack(format);
+            if (mVideoTrackIndex == -1) {
+                mVideoTrackIndex = mMediaMuxer.addTrack(format);
+            }
         }
     };
 
     private final SimpleCodecCallback mAudioCodecCallback = new SimpleCodecCallback() {
-
-        private long mNowTime;
-        private long mPresentationTimeUs;
+        private long mStartTime;
 
         @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
-            if (mNowTime == 0) {
-                mNowTime = SystemClock.elapsedRealtimeNanos() / 1000;
-            }
             int readLength = 0;
             while (readLength == 0) {
                 readLength = mAudioRecord.read(mAudioBuffer, 0, mAudioBuffer.length);
@@ -294,8 +263,7 @@ public class VoiceCodec {
                         inputBuffer.clear();
                         inputBuffer.limit(readLength);
                         inputBuffer.put(mAudioBuffer, 0, readLength);
-                        mPresentationTimeUs = SystemClock.elapsedRealtimeNanos() / 1000 - mNowTime;
-                        mAudioCodec.queueInputBuffer(index, 0, readLength, mPresentationTimeUs, 0);
+                        mAudioCodec.queueInputBuffer(index, 0, readLength, System.nanoTime() / 1000, 0);
                     }
                 }
             }
@@ -304,49 +272,23 @@ public class VoiceCodec {
         @Override
         public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
             ByteBuffer outPutByteBuffer = codec.getOutputBuffer(index);
-            if (outPutByteBuffer != null && info.size > 0) {
+            if (outPutByteBuffer != null && info.size > 0 && isStartingMuxer) {
+                if (mStartTime <= 0) {
+                    mStartTime = info.presentationTimeUs;
+                }
+                info.presentationTimeUs -= mStartTime;
                 mMediaMuxer.writeSampleData(mAudioTrackIndex, outPutByteBuffer, info);
-                LogUtil.e("mAudioCodecCallback");
             }
             codec.releaseOutputBuffer(index, false);
         }
 
         @Override
         public void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format) {
-            mAudioTrackIndex = mMediaMuxer.addTrack(format);
+            if (mAudioTrackIndex == -1) {
+                mAudioTrackIndex = mMediaMuxer.addTrack(format);
+            }
         }
     };
-
-    private class AudioRecordUpdateListener implements AudioRecord.OnRecordPositionUpdateListener {
-        private long mNowTime = SystemClock.elapsedRealtimeNanos() / 1000;
-        private long mPresentationTimeUs;
-
-        @Override
-        public void onMarkerReached(AudioRecord recorder) {
-
-        }
-
-        @Override
-        public void onPeriodicNotification(AudioRecord recorder) {
-            if (mNowTime == 0) {
-                mNowTime = SystemClock.elapsedRealtimeNanos() / 1000;
-            }
-            int readLength = mAudioRecord.read(mAudioBuffer, 0, mAudioBuffer.length);
-            if (readLength > 0) {
-                int index = mAudioCodec.dequeueInputBuffer(-1);
-                if (index >= 0) {
-                    ByteBuffer inputBuffer = mAudioCodec.getInputBuffer(index);
-                    if (inputBuffer != null) {
-                        inputBuffer.clear();
-                        inputBuffer.limit(mAudioBuffer.length);
-                        inputBuffer.put(mAudioBuffer);
-                        mPresentationTimeUs = SystemClock.elapsedRealtimeNanos() / 1000 - mNowTime;
-                        mAudioCodec.queueInputBuffer(index, 0, mAudioBuffer.length, mPresentationTimeUs, 0);
-                    }
-                }
-            }
-        }
-    }
 
     private static class SimpleCodecCallback extends MediaCodec.Callback {
 
