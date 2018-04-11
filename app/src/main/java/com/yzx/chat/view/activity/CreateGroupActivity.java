@@ -286,7 +286,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         conversation.setConversationTitle(group.getName());
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
         startActivity(intent);
-        AndroidUtil.finishActivityInstackAbove(HomeActivity.class);
+        AndroidUtil.finishActivityInStackAbove(HomeActivity.class);
 
     }
 
