@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -107,6 +108,18 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     public View getParentView() {
         return mParentView;
+    }
+
+    protected void showToast(String content) {
+        showToast(content, Toast.LENGTH_SHORT);
+    }
+
+    protected void showLongToast(String content) {
+        showToast(content, Toast.LENGTH_LONG);
+    }
+
+    protected void showToast(String content, int duration) {
+        Toast.makeText(mContext,content,duration).show();
     }
 
 

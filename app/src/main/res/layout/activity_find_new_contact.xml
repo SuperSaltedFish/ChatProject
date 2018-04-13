@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.yzx.chat.view.activity.FindNewContactActivity">
+    tools:context=".mvp.view.activity.FindNewContactActivity">
 
     <android.support.constraint.Guideline
         android:id="@+id/FindNewContactActivity_mGuideline"

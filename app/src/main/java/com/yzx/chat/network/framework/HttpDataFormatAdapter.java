@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,10 @@ import java.util.Map;
 public interface HttpDataFormatAdapter {
 
     @Nullable
-    String requestToString(String url, Map<String, Object> params, String requestMethod);
+    String paramsToString(String url, List<Pair<String, Object>> params, String requestMethod);
+
+    @Nullable
+    Map<HttpParamsType, List<Pair<String, Object>>> multiParamsFormat(String url,  Map<HttpParamsType, List<Pair<String, Object>>> params, String requestMethod);
 
     @Nullable
     Object responseToObject(String url, String httpResponse, Type genericType);

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.ImageViewPagerActivity">
+    tools:context=".mvp.view.activity.ImageViewPagerActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"

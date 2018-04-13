@@ -4,8 +4,6 @@ package com.yzx.chat.network.framework;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.yzx.chat.util.LogUtil;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -18,7 +16,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +29,6 @@ public class Http {
 
     @NonNull
     public static Result doGet(String remoteUrl, String params) {
-        LogUtil.e("开始访问：" + remoteUrl);
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -75,7 +71,6 @@ public class Http {
 
     @NonNull
     public static Result doPost(String remoteUrl, String params) {
-        LogUtil.e("开始访问：" + remoteUrl);
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -137,8 +132,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doUpload(String remoteUrl, String params, Map<String, List<String>> uploadPath) {
-        LogUtil.e("开始访问：" + remoteUrl);
+    public static Result doPostByMultiParams(String remoteUrl, Map<HttpParamsType, List<Pair<String, Object>>> params) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -161,87 +155,99 @@ public class Http {
                 break;
             }
 
-            DataOutputStream outStream;
-            try {
-                outStream = new DataOutputStream(conn.getOutputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-                conn.disconnect();
-                result.throwable = e;
-                break;
-            }
-
-            if (!TextUtils.isEmpty(params)) {
-                params = String.format("--%s\r\nContent-Disposition: form-data; name=\"params\"\r\nContent-Type: text/plain;charset=UTF-8\nContent-Transfer-Encoding: 8bit\r\n\r\n%s\r\n", BOUNDARY, params);
+            if (params != null && params.size() > 0) {
+                DataOutputStream outStream;
                 try {
-                    outStream.writeBytes(params);
-                } catch (IOException e) {
-                    result.throwable = e;
-                    try {
-                        outStream.close();
-                    } catch (IOException e2) {
-                        e2.printStackTrace();
-                    }
-                    conn.disconnect();
-                    break;
-                }
-            }
-
-            FileInputStream is = null;
-            for (Map.Entry<String, List<String>> entry : uploadPath.entrySet()) {
-                String key = entry.getKey();
-                List<String> value = entry.getValue();
-                try {
-                    for (String path : value) {
-                        File file = new File(path);
-                        if(!file.exists()){
-                            continue;
-                        }
-                        String head = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\";filename=\"%s\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", BOUNDARY,key, path);
-                        is = new FileInputStream(path);
-                        outStream.writeBytes(head);
-                        byte[] bytes = new byte[1024];
-                        int len;
-                        while ((len = is.read(bytes)) != -1) {
-                            outStream.write(bytes, 0, len);
-                        }
-                        outStream.writeBytes("\r\n");
-                        is.close();
-                    }
-                } catch (IOException e) {
-                    try {
-                        outStream.close();
-                    } catch (IOException e2) {
-                        e2.printStackTrace();
-                    }
-                    conn.disconnect();
-                    result.throwable = e;
-                    break;
-                } finally {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }
-            }
-
-            try {
-                outStream.writeBytes(String.format("--%s--\r\n",BOUNDARY));
-                outStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                try {
-                    outStream.close();
+                    outStream = new DataOutputStream(conn.getOutputStream());
                 } catch (IOException e) {
                     e.printStackTrace();
+                    conn.disconnect();
+                    result.throwable = e;
+                    break;
+                }
+
+                ParamsType_For:
+                for (Map.Entry<HttpParamsType, List<Pair<String, Object>>> entry : params.entrySet()) {
+                    List<Pair<String, Object>> paramsList = entry.getValue();
+                    switch (entry.getKey()) {
+                        case PARAMETER_HTTP:
+                            String dataItem;
+                            for (Pair<String, Object> paramsPair : paramsList) {
+                                dataItem = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\"\r\nContent-Type: text/plain;charset=UTF-8\nContent-Transfer-Encoding: 8bit\r\n\r\n%s\r\n", BOUNDARY, paramsPair.key, paramsPair.value);
+                                try {
+                                    outStream.writeBytes(dataItem);
+                                } catch (IOException e) {
+                                    result.throwable = e;
+                                    try {
+                                        outStream.close();
+                                    } catch (IOException e2) {
+                                        e2.printStackTrace();
+                                    }
+                                    conn.disconnect();
+                                    break ParamsType_For;
+                                }
+                            }
+                            break;
+                        case PARAMETER_UPLOAD:
+                            for (Pair<String, Object> paramsPair : paramsList) {
+                                FileInputStream is = null;
+                                List<String> value = (List<String>) paramsPair.value;
+                                if (value == null) {
+                                    continue;
+                                }
+                                try {
+                                    for (String path : value) {
+                                        File file = new File(path);
+                                        if (!file.exists()) {
+                                            continue;
+                                        }
+                                        String head = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\";filename=\"%s\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", BOUNDARY, paramsPair.key, path);
+                                        is = new FileInputStream(path);
+                                        outStream.writeBytes(head);
+                                        byte[] bytes = new byte[1024];
+                                        int len;
+                                        while ((len = is.read(bytes)) != -1) {
+                                            outStream.write(bytes, 0, len);
+                                        }
+                                        outStream.writeBytes("\r\n");
+                                        is.close();
+                                    }
+                                } catch (IOException e) {
+                                    try {
+                                        outStream.close();
+                                    } catch (IOException e2) {
+                                        e2.printStackTrace();
+                                    }
+                                    conn.disconnect();
+                                    result.throwable = e;
+                                    break ParamsType_For;
+                                } finally {
+                                    if (is != null) {
+                                        try {
+                                            is.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+                try {
+                    outStream.writeBytes(String.format("--%s--\r\n", BOUNDARY));
+                    outStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        outStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-
             try {
                 int responseCode = conn.getResponseCode();
                 result.responseCode = responseCode;

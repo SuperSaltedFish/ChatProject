@@ -5,6 +5,7 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
+import com.yzx.chat.network.framework.MultiParams;
 import com.yzx.chat.network.framework.UploadPath;
 
 /**
@@ -35,6 +36,7 @@ public interface UserApi {
                                                @HttpParam("location") String location,
                                                @HttpParam("signature") String signature);
 
+    @MultiParams
     @HttpApi(RequestMethod = "POST", Path = "user/uploadAvatar")
     Call<JsonResponse<UploadAvatarBean>> uploadAvatar(@UploadPath("uploadAvatar") String avatarPath);
 }

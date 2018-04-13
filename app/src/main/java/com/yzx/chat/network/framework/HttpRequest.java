@@ -9,10 +9,10 @@ public interface HttpRequest {
 
     String url();
 
-    Map<String, Object> params();
+    Map<HttpParamsType, List<Pair<String, Object>>> params();
 
     String requestMethod();
 
-    Map<String, List<String>> uploadMap();
+    boolean isMultiParams();
 
 }

@@ -48,119 +48,119 @@
 
 
         <activity
-            android:name=".view.activity.SplashActivity"
+            android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-
-        <activity
-            android:name=".view.activity.LoginActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/LoginTheme">
-
-        </activity>
-        <activity
-            android:name=".view.activity.HomeActivity"
-            android:windowSoftInputMode="adjustPan">
-
-        </activity>
-        <activity
-            android:name=".view.activity.ChatActivity"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
-        <activity
-            android:name=".view.activity.QrCodeScanActivity"
-            android:theme="@style/NoBackgroundDarkTheme">
-
-        </activity>
-        <activity
-            android:name=".view.activity.ImageMultiSelectorActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
-        <activity
-            android:name=".view.activity.ImageViewPagerActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
-        <activity android:name=".view.activity.ContactProfileActivity">
-
-        </activity>
-
-        <activity
-            android:name=".view.activity.FindNewContactActivity"
-            android:theme="@style/TransparentStatusBarLightTheme"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
-
-        <activity android:name=".view.activity.RemarkInfoActivity">
-
-        </activity>
-
-        <activity android:name=".view.activity.ContactOperationActivity">
-
-        </activity>
-
-        <activity android:name=".view.activity.ModifyContactLabelActivity">
-
-        </activity>
-
-        <activity android:name=".view.activity.StrangerProfileActivity">
-
-        </activity>
-
-        <activity android:name=".view.activity.ProfileModifyActivity">
-
-        </activity>
-        <activity android:name=".view.activity.SignatureEditActivity">
-
-        </activity>
-        <activity
-            android:name=".view.activity.ImageSingleSelectorActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
-        <activity
-            android:name=".view.activity.ImageOriginalActivity"
-            android:theme="@style/FullScreenDarkTheme">
-
-        </activity>
-        <activity
-            android:name=".view.activity.GroupProfileActivity"
-            android:theme="@style/TransparentStatusBarLightTheme">
-
-        </activity>
-        <activity
-            android:name=".view.activity.CreateGroupActivity"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
-        <activity
-            android:name=".view.activity.MyQRCodeActivity"
-            android:theme="@style/NoBackgroundLightTheme">
-
-        </activity>
-
-        <activity android:name=".view.activity.LocationMapActivity">
-
-        </activity>
-
-        <activity android:name=".view.activity.TestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.GroupListActivity" />
-        <activity android:name=".view.activity.CropImageActivity"
+
+        <activity
+            android:name=".mvp.view.activity.LoginActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/LoginTheme">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.HomeActivity"
+            android:windowSoftInputMode="adjustPan">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.ChatActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.QrCodeScanActivity"
+            android:theme="@style/NoBackgroundDarkTheme">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.ImageMultiSelectorActivity"
+            android:theme="@style/BaseDarkTheme">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.ImageViewPagerActivity"
+            android:theme="@style/BaseDarkTheme">
+
+        </activity>
+        <activity android:name=".mvp.view.activity.ContactProfileActivity">
+
+        </activity>
+
+        <activity
+            android:name=".mvp.view.activity.FindNewContactActivity"
+            android:theme="@style/TransparentStatusBarLightTheme"
+            android:windowSoftInputMode="adjustNothing">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.RemarkInfoActivity">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.ContactOperationActivity">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.ModifyContactLabelActivity">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.StrangerProfileActivity">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.ProfileModifyActivity">
+
+        </activity>
+        <activity android:name=".mvp.view.activity.SignatureEditActivity">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.ImageSingleSelectorActivity"
+            android:theme="@style/BaseDarkTheme">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.ImageOriginalActivity"
+            android:theme="@style/FullScreenDarkTheme">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.GroupProfileActivity"
+            android:theme="@style/TransparentStatusBarLightTheme">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.CreateGroupActivity"
+            android:windowSoftInputMode="adjustNothing">
+
+        </activity>
+        <activity
+            android:name=".mvp.view.activity.MyQRCodeActivity"
+            android:theme="@style/NoBackgroundLightTheme">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.LocationMapActivity">
+
+        </activity>
+
+        <activity android:name=".mvp.view.activity.TestActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".mvp.view.activity.GroupListActivity" />
+        <activity android:name=".mvp.view.activity.CropImageActivity"
             android:theme="@style/BaseDarkTheme">
 
         </activity>

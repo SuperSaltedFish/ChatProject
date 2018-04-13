@@ -30,9 +30,9 @@ import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
-import com.yzx.chat.view.activity.ChatActivity;
-import com.yzx.chat.view.activity.ImageOriginalActivity;
-import com.yzx.chat.view.activity.LocationMapActivity;
+import com.yzx.chat.mvp.view.activity.ChatActivity;
+import com.yzx.chat.mvp.view.activity.ImageOriginalActivity;
+import com.yzx.chat.mvp.view.activity.LocationMapActivity;
 
 import java.io.File;
 import java.util.List;

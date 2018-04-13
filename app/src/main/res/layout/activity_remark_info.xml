@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.activity.RemarkInfoActivity">
+    tools:context=".mvp.view.activity.RemarkInfoActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"

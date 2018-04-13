@@ -22,8 +22,11 @@ import com.yzx.chat.network.api.auth.UserInfoBean;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
+import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.network.framework.NetworkExecutor;
+import com.yzx.chat.network.framework.Pair;
+import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -100,11 +103,11 @@ public class IMClient {
 
     public void loginByToken(Call<JsonResponse<UserInfoBean>> loginOrRegisterOrTokenVerifyCall, final ResultCallback<Void> resultCallback) {
         loginOrRegisterOrTokenVerifyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
-            private Gson mGson = new GsonBuilder().serializeNulls().create();
+            private Gson mGson = ApiHelper.getDefaultGsonInstance();
 
             @Nullable
             @Override
-            public String requestToString(String url, Map<String, Object> params, String requestMethod) {
+            public String paramsToString(String url, List<Pair<String, Object>> params, String requestMethod) {
                 JsonRequest request = new JsonRequest();
                 request.setParams(params);
                 request.setStatus(200);
@@ -114,6 +117,12 @@ public class IMClient {
                 if (json != null) {
                     return json;
                 }
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Map<HttpParamsType, List<Pair<String, Object>>> multiParamsFormat(String url, Map<HttpParamsType, List<Pair<String, Object>>> params, String requestMethod) {
                 return null;
             }
 

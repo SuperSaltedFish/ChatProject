@@ -12,8 +12,10 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,12 +55,14 @@ public class ApiProxy {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Annotation[] annotations = method.getAnnotations();
             HttpRequestImpl httpRequest = null;
+            boolean isMultiParams = false;
             for (Annotation annotation : annotations) {
                 if (annotation instanceof HttpApi) {
                     httpRequest = new HttpRequestImpl();
                     parseMethodAnnotation((HttpApi) annotation, httpRequest);
                     parseParamsAnnotation(method.getParameterAnnotations(), args, httpRequest);
-                    break;
+                } else if (annotation instanceof MultiParams) {
+                    isMultiParams = true;
                 }
             }
             if (httpRequest == null) {
@@ -67,14 +71,14 @@ public class ApiProxy {
             if (method.getReturnType() != Call.class) {
                 throw new RuntimeException("The return value type of the \"" + method.getName() + "\" method must be " + CallImpl.class);
             }
+            httpRequest.enableMultiParams(isMultiParams);
             Type genericReturnType = method.getGenericReturnType();
             if (genericReturnType instanceof ParameterizedType) {
                 Type type = ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
                 if (type instanceof WildcardType) {
                     throw new RuntimeException("The \"" + method.getName() + "\" method must explicitly declare the generic parameters of the returned value");
                 }
-                CallImpl call = new CallImpl(httpRequest, mDefaultHttpDataFormatAdapter, type);
-                return call;
+                return new CallImpl(httpRequest, mDefaultHttpDataFormatAdapter, type);
             } else {
                 throw new RuntimeException("The return value of \"" + method.getName() + "\" must explicitly declare generic parameters");
             }
@@ -86,32 +90,52 @@ public class ApiProxy {
             httpRequest.setUrl(mBaseUrl + annotation.Path());
         }
 
+        @SuppressWarnings("unchecked")
         private void parseParamsAnnotation(Annotation[][] annotations, Object[] params, HttpRequestImpl httpRequest) {
-            Map<String, Object> paramsMap = new LinkedHashMap<>();
-            Map<String, List<String>> uploadMap = null;
+            Map<HttpParamsType, List<Pair<String, Object>>> paramsTypeMap = new EnumMap<>(HttpParamsType.class);
             for (int i = 0, size = annotations.length; i < size; i++) {
                 for (int j = 0, length = annotations[i].length; j < length; j++) {
                     if (annotations[i][j] instanceof HttpParam) {
-                        HttpParam httpParam = (HttpParam) annotations[i][j];
-                        paramsMap.put(httpParam.value(), params[i]);
-                    } else if (annotations[i][j] instanceof UploadPath) {
-                        UploadPath uploadPath = (UploadPath) annotations[i][j];
-                        if (uploadMap == null) {
-                            uploadMap = new LinkedHashMap<>();
-                            httpRequest.setUploadMap(uploadMap);
+                        List<Pair<String, Object>> paramsList = paramsTypeMap.get(HttpParamsType.PARAMETER_HTTP);
+                        if (paramsList == null) {
+                            paramsList = new ArrayList<>();
+                            paramsTypeMap.put(HttpParamsType.PARAMETER_HTTP, paramsList);
                         }
-                        List<String> uploadList;
+                        HttpParam httpParam = (HttpParam) annotations[i][j];
+                        paramsList.add(new Pair<>(httpParam.value(), params[i]));
+                    } else if (annotations[i][j] instanceof UploadPath) {
+                        List<Pair<String, Object>> paramsList = paramsTypeMap.get(HttpParamsType.PARAMETER_UPLOAD);
+                        if (paramsList == null) {
+                            paramsList = new ArrayList<>();
+                            paramsTypeMap.put(HttpParamsType.PARAMETER_UPLOAD, paramsList);
+                        }
+                        UploadPath uploadPath = (UploadPath) annotations[i][j];
+                        String paramsName = uploadPath.value();
+                        if (TextUtils.isEmpty(paramsName)) {
+                            continue;
+                        }
+                        List<String> pathList = null;
+                        for (Pair<String, Object> pair : paramsList) {
+                            if (paramsName.equals(pair.key)) {
+                                pathList = (List<String>) pair.value;
+                                break;
+                            }
+                        }
+                        if (pathList == null) {
+                            pathList = new ArrayList<>();
+                            paramsList.add(new Pair<String, Object>(paramsName, pathList));
+                        }
+
                         if (params[i] instanceof List) {
-                            uploadList = (List<String>) params[i];
-                            if (uploadList.size() > 0) {
-                                uploadMap.put(uploadPath.value(), uploadList);
+                            try {
+                                pathList.addAll((List<String>) params[i]);
+                            } catch (ClassCastException e) {
+                                throw new RuntimeException(UploadPath.class.getSimpleName() + " only support String and List<String> type as a parameter");
                             }
                         } else if (params[i] instanceof String) {
                             String path = (String) params[i];
                             if (!TextUtils.isEmpty(path)) {
-                                uploadList = new ArrayList<>(1);
-                                uploadList.add(path);
-                                uploadMap.put(uploadPath.value(), uploadList);
+                                pathList.add((String) params[i]);
                             }
                         } else {
                             throw new RuntimeException(UploadPath.class.getSimpleName() + " does not support the " + params[i].getClass() + " type as a parameter");
@@ -119,7 +143,7 @@ public class ApiProxy {
                     }
                 }
             }
-            httpRequest.setParams(paramsMap);
+            httpRequest.setParams(paramsTypeMap);
         }
     }
 

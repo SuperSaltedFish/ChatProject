@@ -8,9 +8,9 @@ import java.util.Map;
 public class HttpRequestImpl implements HttpRequest {
 
     private String mUrl;
-    private Map<String, Object> mParams;
+    private Map<HttpParamsType, List<Pair<String, Object>>> mParams;
     private String mRequestMethod;
-    private Map<String, List<String>>  mUploadMap;
+    private boolean isMultiParams;
 
     @Override
     public String url() {
@@ -18,7 +18,7 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
-    public Map<String, Object> params() {
+    public Map<HttpParamsType, List<Pair<String, Object>>> params() {
         return mParams;
     }
 
@@ -28,25 +28,24 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
-    public Map<String, List<String>> uploadMap() {
-        return mUploadMap;
-    }
-
-    public void setUploadMap(Map<String, List<String>> uploadList) {
-        mUploadMap = uploadList;
-    }
-
-    public void setRequestMethod(String requestMethod) {
-        mRequestMethod = requestMethod;
+    public boolean isMultiParams() {
+        return isMultiParams;
     }
 
     public void setUrl(String url) {
         mUrl = url;
     }
 
-    public void setParams(Map<String, Object> params) {
+    public void setParams(Map<HttpParamsType, List<Pair<String, Object>>> params) {
         mParams = params;
     }
 
+    public void setRequestMethod(String requestMethod) {
+        mRequestMethod = requestMethod;
+    }
+
+    public void enableMultiParams(boolean enable) {
+        isMultiParams = enable;
+    }
 }
 

@@ -6,8 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.view.fragment.ContactInfoFragment;
-import com.yzx.chat.view.fragment.ContactMomentsFragment;
+import com.yzx.chat.mvp.view.fragment.ContactInfoFragment;
+import com.yzx.chat.mvp.view.fragment.ContactMomentsFragment;
 
 /**
  * Created by YZX on 2018年01月06日.

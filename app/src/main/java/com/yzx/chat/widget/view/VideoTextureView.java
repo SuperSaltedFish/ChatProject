@@ -14,7 +14,7 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.MediaRecorder;
+import android.media.MediaCodec;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -25,7 +25,7 @@ import android.view.Surface;
 import android.view.TextureView;
 
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.VoiceCodec;
+import com.yzx.chat.util.VoiceEncoder;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -104,7 +104,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
 
     private Context mContext;
 
-    private VoiceCodec mVoiceCodec;
+    private VoiceEncoder mVoiceCodec;
     private Integer mSensorOrientation;
 
     private Size mPreviewSize;
@@ -112,7 +112,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     private Size mAspectRatio;
 
     private Surface mPreviewSurface;
-    private Surface mMediaSurface;
+    private Surface mMediaCodecInputSurface;
 
     private CameraDevice mCamera;
     private CaptureRequest.Builder mPreviewAndVideoRequestBuilder;
@@ -191,7 +191,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         mSensorOrientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
 
         Size videoSize = mAspectRatio.equals(ASPECT_RATIO_SIZE_4_3) ? DEFAULT_VIDEO_SIZE_4_3 : DEFAULT_VIDEO_SIZE_16_9;
-        mVideoSize = chooseMinVideoSize(confMap.getOutputSizes(MediaRecorder.class), mAspectRatio, videoSize.getWidth(), videoSize.getHeight());
+        mVideoSize = chooseMinVideoSize(confMap.getOutputSizes(MediaCodec.class), mAspectRatio, videoSize.getWidth(), videoSize.getHeight());
         if (mVideoSize == null) {
             return;
         }
@@ -211,7 +211,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     mCamera = camera;
-                    mVoiceCodec =  VoiceCodec.createEncoder(mVideoSize.getWidth(), mVideoSize.getHeight());
+                    mVoiceCodec = VoiceEncoder.createEncoder(mVideoSize.getWidth(), mVideoSize.getHeight());
                     configureTransform(previewWidth, previewHeight);
                     startPreview();
                 }
@@ -236,9 +236,15 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
             return;
         }
         closePreviewSession();
+        mMediaCodecInputSurface = mVoiceCodec.prepare();
+        List<Surface> outputs = new ArrayList<>(2);
+        outputs.add(mPreviewSurface);
+        if (mMediaCodecInputSurface != null) {
+            outputs.add(mMediaCodecInputSurface);
+        }
         getSurfaceTexture().setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         try {
-            mCamera.createCaptureSession(Collections.singletonList(mPreviewSurface), new CameraCaptureSession.StateCallback() {
+            mCamera.createCaptureSession(outputs, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     mPreviewSession = session;
@@ -281,10 +287,12 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         } else {
             mPreviewAndVideoRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
         }
-        mPreviewAndVideoRequestBuilder.removeTarget(mMediaSurface);
-        if (isRecorderMode) {
-            mPreviewAndVideoRequestBuilder.addTarget(mMediaSurface);
-        }
+//        if (mMediaCodecInputSurface != null) {
+//            mPreviewAndVideoRequestBuilder.removeTarget(mMediaCodecInputSurface);
+//            if (isRecorderMode) {
+//                mPreviewAndVideoRequestBuilder.addTarget(mMediaCodecInputSurface);
+//            }
+//        }
         if (mPreviewSession != null) {
             try {
                 mPreviewSession.setRepeatingRequest(mPreviewAndVideoRequestBuilder.build(), new CameraCaptureSession.CaptureCallback() {
@@ -346,7 +354,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
 
 
     public boolean startRecorder(final String savePath) {
-        if (mCamera == null || isRecorderMode || TextUtils.isEmpty(savePath) || mPreviewSession == null) {
+        if (mCamera == null || isRecorderMode || TextUtils.isEmpty(savePath) || mPreviewSession == null || mMediaCodecInputSurface == null) {
             return false;
         }
         File file = new File(savePath);
@@ -364,40 +372,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 orientationHint = INVERSE_ORIENTATIONS.get(getDisplayRotation());
                 break;
         }
-        mMediaSurface = mVoiceCodec.start(savePath);
-        if (mMediaSurface == null) {
-            LogUtil.e("VideoRecorder prepare fail");
-            return false;
-        }
-        closePreviewSession();
-        getSurfaceTexture().setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-        try {
-            mCamera.createCaptureSession(Arrays.asList(mPreviewSurface, mMediaSurface), new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession session) {
-                    mPreviewSession = session;
-                    update();
-                }
-
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                    mPreviewSession = null;
-                    isRecorderMode = false;
-                }
-
-                @Override
-                public void onClosed(@NonNull CameraCaptureSession session) {
-                    super.onClosed(session);
-                    mPreviewSession = null;
-                    isRecorderMode = false;
-                }
-            }, null);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-            mCamera.close();
-            mCamera = null;
-        }
-        return true;
+        return mVoiceCodec.start(savePath);
     }
 
     public void stopRecorder() {
@@ -405,7 +380,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
             return;
         }
         mVoiceCodec.stop();
-        startPreview();
+        //startPreview();
         isRecorderMode = false;
     }
 

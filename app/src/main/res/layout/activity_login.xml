@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.LoginActivity">
+    tools:context=".mvp.view.activity.LoginActivity">
 
     <ImageView
         android:id="@+id/LoginActivity_mIvBackground"
@@ -22,7 +22,7 @@
         android:fitsSystemWindows="true"
         android:inAnimation="@anim/view_flipper_in_right"
         android:outAnimation="@anim/view_flipper_out_left"
-        tools:context=".view.activity.LoginActivity">
+        tools:context=".mvp.view.activity.LoginActivity">
 
 
         <include layout="@layout/flipper_login" />

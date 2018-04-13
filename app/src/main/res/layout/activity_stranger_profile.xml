@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:overScrollMode="never"
-    tools:context="com.yzx.chat.view.activity.StrangerProfileActivity">
+    tools:context=".mvp.view.activity.StrangerProfileActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

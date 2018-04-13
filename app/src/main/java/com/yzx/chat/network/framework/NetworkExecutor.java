@@ -3,6 +3,8 @@ package com.yzx.chat.network.framework;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -82,22 +84,24 @@ public class NetworkExecutor {
                 return;
             }
             HttpDataFormatAdapter adapter = call.getHttpDataFormatAdapter();
-            final HttpRequest request = call.getHttpRequest();
-            String resultParams = adapter.requestToString(request.url(), request.params(), request.requestMethod());
+            HttpRequest request = call.getHttpRequest();
+            Map<HttpParamsType, List<Pair<String, Object>>> params = request.params();
             Http.Result result;
-            switch (request.requestMethod()) {
-                case "GET":
-                    result = Http.doGet(request.url(), resultParams);
-                    break;
-                case "POST":
-                    if (request.uploadMap() != null) {
-                        result = Http.doUpload(request.url(), resultParams, request.uploadMap());
-                    } else {
-                        result = Http.doPost(request.url(), resultParams);
-                    }
-                    break;
-                default:
-                    throw new RuntimeException("unknown request method:" + request.requestMethod());
+            if (request.isMultiParams()) {
+                params = adapter.multiParamsFormat(request.url(), params, request.requestMethod());
+                result = Http.doPostByMultiParams(request.url(), params);
+            } else {
+                String strParams = adapter.paramsToString(request.url(), params.get(HttpParamsType.PARAMETER_HTTP), request.requestMethod());
+                switch (request.requestMethod()) {
+                    case "GET":
+                        result = Http.doGet(request.url(), strParams);
+                        break;
+                    case "POST":
+                        result = Http.doPost(request.url(), strParams);
+                        break;
+                    default:
+                        throw new RuntimeException("unknown request method:" + request.requestMethod());
+                }
             }
             Throwable throwable = result.getThrowable();
             if (throwable != null) {
