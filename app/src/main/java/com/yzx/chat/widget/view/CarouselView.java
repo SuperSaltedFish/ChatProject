@@ -64,16 +64,26 @@ public class CarouselView extends ViewPager {
     }
 
     private void delayedShowNext() {
-        mHandler.removeCallbacksAndMessages(null);
-        if (mCarouselRunnable == null) {
-            mCarouselRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    setCurrentItem(getCurrentItem() + 1, true);
-                }
-            };
+        if (mCarouselInterval > 0) {
+            mHandler.removeCallbacksAndMessages(null);
+            if (mCarouselRunnable == null) {
+                mCarouselRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        setCurrentItem(getCurrentItem() + 1, true);
+                    }
+                };
+            }
+            mHandler.postDelayed(mCarouselRunnable, mCarouselInterval);
         }
-        mHandler.postDelayed(mCarouselRunnable, mCarouselInterval);
+    }
+
+    public void onResume() {
+        delayedShowNext();
+    }
+
+    public void onPause() {
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     private final PagerAdapter mPagerAdapter = new PagerAdapter() {
@@ -124,9 +134,7 @@ public class CarouselView extends ViewPager {
     private final OnPageChangeListener mOnPageChangeListener = new SimpleOnPageChangeListener() {
         @Override
         public void onPageSelected(final int position) {
-            if (mCarouselInterval != 0) {
-                delayedShowNext();
-            }
+            delayedShowNext();
         }
     };
 
