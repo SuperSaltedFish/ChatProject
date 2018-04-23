@@ -125,22 +125,30 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     @SuppressWarnings("unchecked")
     private void initPresenter() {
-        Type type = this.getClass().getGenericSuperclass();
         if (this instanceof BaseView) {
             BaseView view = (BaseView) this;
             mPresenter = (P) view.getPresenter();
-            if (mPresenter != null && type instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) type;
-                Type genericType = parameterizedType.getActualTypeArguments()[0];
-                Class<?>[] interfaces = mPresenter.getClass().getInterfaces();
-                for (Class c : interfaces) {
-                    if (c == genericType) {
-                        mPresenter.attachView(view);
-                        return;
-                    }
-                }
-                mPresenter = null;
+            if(mPresenter==null){
+                return;
             }
+            Class aClass = this.getClass();
+            while(aClass!=null){
+                Type type = aClass.getGenericSuperclass();
+                if (type instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) type;
+                    Type genericType = parameterizedType.getActualTypeArguments()[0];
+                    Class<?>[] interfaces = mPresenter.getClass().getInterfaces();
+                    for (Class c : interfaces) {
+                        if (c == genericType) {
+                            mPresenter.attachView(view);
+                            return;
+                        }
+                    }
+                }else {
+                    aClass = aClass.getSuperclass();
+                }
+            }
+
         }
     }
 }

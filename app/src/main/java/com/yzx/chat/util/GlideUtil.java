@@ -24,9 +24,8 @@ public class GlideUtil {
         if (url == null || view == null) {
             return;
         }
-        if (view.getTag() != null) {
-            GlideApp.with(context).clear(view);
-        }
+        GlideApp.with(context).clear(view);
+
         GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -39,9 +38,7 @@ public class GlideUtil {
         if (url == null || view == null) {
             return;
         }
-        if (view.getTag() != null) {
-            GlideApp.with(context).clear(view);
-        }
+        GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -54,9 +51,7 @@ public class GlideUtil {
         if (url == null || view == null) {
             return;
         }
-        if (view.getTag() != null) {
-            GlideApp.with(context).clear(view);
-        }
+        GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -69,15 +64,13 @@ public class GlideUtil {
         if (view == null) {
             return;
         }
-        if (view.getTag() != null) {
-            GlideApp.with(context).clear(view);
-        }
+        GlideApp.with(context).clear(view);
 
         if (url == null) {
             url = R.drawable.ic_avatar_default;
         } else if (url instanceof String) {
             String strUrl = (String) url;
-            if (TextUtils.isEmpty(strUrl)||"-".equals(strUrl)) {
+            if (TextUtils.isEmpty(strUrl) || "-".equals(strUrl)) {
                 url = R.drawable.ic_avatar_default;
             }
         }
