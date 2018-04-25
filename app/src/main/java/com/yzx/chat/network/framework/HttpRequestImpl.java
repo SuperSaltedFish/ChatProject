@@ -1,11 +1,10 @@
 package com.yzx.chat.network.framework;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-public class HttpRequestImpl implements HttpRequest {
+class HttpRequestImpl implements HttpRequest {
 
     private String mUrl;
     private Map<HttpParamsType, List<Pair<String, Object>>> mParams;

@@ -107,7 +107,7 @@ public class NetworkExecutor {
             if (throwable != null) {
                 error(call, throwable);
             } else {
-                HttpResponseImpl response = new HttpResponseImpl();
+                HttpResponseImpl response = new HttpResponseImpl(call.getGenericType());
                 int responseCode = result.getResponseCode();
                 response.setResponseCode(responseCode);
                 if (responseCode == 200) {

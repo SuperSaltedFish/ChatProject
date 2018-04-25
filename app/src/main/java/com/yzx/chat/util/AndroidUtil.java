@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ArrayRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -161,6 +162,11 @@ public class AndroidUtil {
     public static String getString(@StringRes int resID) {
         return sAppContext.getString(resID);
     }
+
+    public static String[] getStringArray(@ArrayRes int resID) {
+        return sAppContext.getResources().getStringArray(resID);
+    }
+
 
     @ColorInt
     public static int getColor(@ColorRes int resID) {

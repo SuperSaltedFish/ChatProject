@@ -2,6 +2,8 @@ package com.yzx.chat.network.framework;
 
 import android.support.annotation.Nullable;
 
+import java.lang.reflect.Type;
+
 
 public interface HttpResponse<T> {
 
@@ -9,5 +11,7 @@ public interface HttpResponse<T> {
 
     @Nullable
     T getResponse();
+
+    Type getGenericType();
 
 }

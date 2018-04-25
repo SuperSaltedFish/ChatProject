@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import java.lang.reflect.Type;
 
 
-public class CallImpl<T> implements Call<T> {
+class CallImpl<T> implements Call<T> {
 
     private HttpCallback<T> mCallback;
     private HttpRequest mHttpRequest;
@@ -14,7 +14,7 @@ public class CallImpl<T> implements Call<T> {
     private HttpDataFormatAdapter mAdapter;
     private Type mGenericType;
 
-    public CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter,Type genericType) {
+    CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter, Type genericType) {
         mHttpRequest = httpRequest;
         mAdapter = adapter;
         mGenericType = genericType;
