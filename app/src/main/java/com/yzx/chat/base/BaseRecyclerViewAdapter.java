@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter.BaseViewHolder>
         extends RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseViewHolder> {
 
-    private static final int HOLDER_TYPE_HEADER = -1;
-    private static final int HOLDER_TYPE_FOOTER = -2;
+    private static final int DEFAULT_HOLDER_TYPE_HEADER = -1;
+    private static final int DEFAULT_HOLDER_TYPE_FOOTER = -2;
 
     public Context mContext;
 
@@ -37,15 +37,23 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return super.getItemViewType(position);
     }
 
+    public int getHeaderViewHolderType() {
+        return DEFAULT_HOLDER_TYPE_HEADER;
+    }
+
+    public int getFooterViewHolderType() {
+        return DEFAULT_HOLDER_TYPE_FOOTER;
+    }
+
     @Override
     public final BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (mContext == null) {
             mContext = parent.getContext();
         }
-        if (viewType == HOLDER_TYPE_HEADER) {
+        if (viewType == DEFAULT_HOLDER_TYPE_HEADER) {
             return new BaseViewHolder(mHeaderView);
         }
-        if (viewType == HOLDER_TYPE_FOOTER) {
+        if (viewType == DEFAULT_HOLDER_TYPE_FOOTER) {
             return new BaseViewHolder(mFooterView);
         }
         return getViewHolder(parent, viewType);
@@ -87,10 +95,10 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     @Override
     public final int getItemViewType(int position) {
         if (mHeaderView != null && position == 0) {
-            return HOLDER_TYPE_HEADER;
+            return DEFAULT_HOLDER_TYPE_HEADER;
         }
         if (mFooterView != null && position == getItemCount() - 1) {
-            return HOLDER_TYPE_FOOTER;
+            return DEFAULT_HOLDER_TYPE_FOOTER;
         }
         if (mHeaderView != null) {
             return getViewHolderType(position - 1);
