@@ -20,6 +20,8 @@
 
     <application>
 
+        <!-- imlib config begin -->
+
         <service
             android:name="io.rong.imlib.ipc.RongService"
             android:exported="true"

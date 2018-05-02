@@ -61,6 +61,9 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
     @Override
     public final void onBindViewHolder(BaseViewHolder holder, int position) {
+        if (mContext == null) {
+            mContext = holder.itemView.getContext();
+        }
         if (mHeaderView != null) {
             if (position != 0) {
                 bindDataToViewHolder((VH) holder, position - 1);
