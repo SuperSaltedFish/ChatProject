@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
@@ -25,7 +24,6 @@ import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.network.framework.Pair;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
@@ -107,7 +105,7 @@ public class IMClient {
 
             @Nullable
             @Override
-            public String paramsToString(String url, List<Pair<String, Object>> params, String requestMethod) {
+            public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
                 JsonRequest request = new JsonRequest();
                 request.setParams(params);
                 request.setStatus(200);
@@ -122,7 +120,7 @@ public class IMClient {
 
             @Nullable
             @Override
-            public Map<HttpParamsType, List<Pair<String, Object>>> multiParamsFormat(String url, Map<HttpParamsType, List<Pair<String, Object>>> params, String requestMethod) {
+            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
                 return null;
             }
 

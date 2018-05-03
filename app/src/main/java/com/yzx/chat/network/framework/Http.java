@@ -132,7 +132,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doPostByMultiParams(String remoteUrl, Map<HttpParamsType, List<Pair<String, Object>>> params) {
+    public static Result doPostByMultiParams(String remoteUrl, Map<HttpParamsType,Map<String, Object>> params) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -167,13 +167,13 @@ public class Http {
                 }
 
                 ParamsType_For:
-                for (Map.Entry<HttpParamsType, List<Pair<String, Object>>> entry : params.entrySet()) {
-                    List<Pair<String, Object>> paramsList = entry.getValue();
+                for (Map.Entry<HttpParamsType,Map<String, Object>> entry : params.entrySet()) {
+                    Map<String, Object> paramsMap = entry.getValue();
                     switch (entry.getKey()) {
                         case PARAMETER_HTTP:
                             String dataItem;
-                            for (Pair<String, Object> paramsPair : paramsList) {
-                                dataItem = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\"\r\nContent-Type: text/plain;charset=UTF-8\nContent-Transfer-Encoding: 8bit\r\n\r\n%s\r\n", BOUNDARY, paramsPair.key, paramsPair.value);
+                            for (Map.Entry<String,Object> paramsItem : paramsMap.entrySet()) {
+                                dataItem = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\"\r\nContent-Type: text/plain;charset=UTF-8\nContent-Transfer-Encoding: 8bit\r\n\r\n%s\r\n", BOUNDARY, paramsItem.getKey(), paramsItem.getValue());
                                 try {
                                     outStream.writeBytes(dataItem);
                                 } catch (IOException e) {
@@ -189,9 +189,9 @@ public class Http {
                             }
                             break;
                         case PARAMETER_UPLOAD:
-                            for (Pair<String, Object> paramsPair : paramsList) {
+                            for (Map.Entry<String,Object> paramsItem : paramsMap.entrySet()) {
                                 FileInputStream is = null;
-                                List<String> value = (List<String>) paramsPair.value;
+                                List<String> value = (List<String>) paramsItem.getValue();
                                 if (value == null) {
                                     continue;
                                 }
@@ -201,7 +201,7 @@ public class Http {
                                         if (!file.exists()) {
                                             continue;
                                         }
-                                        String head = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\";filename=\"%s\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", BOUNDARY, paramsPair.key, path);
+                                        String head = String.format("--%s\r\nContent-Disposition: form-data; name=\"%s\";filename=\"%s\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", BOUNDARY, paramsItem.getKey(), path);
                                         is = new FileInputStream(path);
                                         outStream.writeBytes(head);
                                         byte[] bytes = new byte[1024];

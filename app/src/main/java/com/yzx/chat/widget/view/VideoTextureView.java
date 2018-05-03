@@ -25,13 +25,12 @@ import android.view.Surface;
 import android.view.TextureView;
 
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.VoiceEncoder;
+import com.yzx.chat.util.VoiceCodec;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -104,7 +103,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
 
     private Context mContext;
 
-    private VoiceEncoder mVoiceCodec;
+    private VoiceCodec mVoiceCodec;
     private Integer mSensorOrientation;
 
     private Size mPreviewSize;
@@ -211,7 +210,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     mCamera = camera;
-                    mVoiceCodec = VoiceEncoder.createEncoder(mVideoSize.getWidth(), mVideoSize.getHeight());
+                    mVoiceCodec = VoiceCodec.createEncoder(mVideoSize.getWidth(), mVideoSize.getHeight());
                     configureTransform(previewWidth, previewHeight);
                     startPreview();
                 }
@@ -236,7 +235,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
             return;
         }
         closePreviewSession();
-        mMediaCodecInputSurface = mVoiceCodec.prepare();
+        //mMediaCodecInputSurface = mVoiceCodec.prepare();
         List<Surface> outputs = new ArrayList<>(2);
         outputs.add(mPreviewSurface);
         if (mMediaCodecInputSurface != null) {

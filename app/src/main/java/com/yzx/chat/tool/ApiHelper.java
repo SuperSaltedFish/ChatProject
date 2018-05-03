@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -17,13 +16,11 @@ import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
-import com.yzx.chat.network.framework.Pair;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -38,8 +35,6 @@ public class ApiHelper {
             .serializeNulls()
             .enableComplexMapKeySerialization()
             .registerTypeAdapter(String.class, new NullStringToEmptyAdapter())
-            .registerTypeAdapter(new TypeToken<List<Pair<String, Object>>>() {
-            }.getType(), new PairListAdapter())
             .create();
 
     public static Object getProxyInstance(Class<?> interfaceClass) {
@@ -54,7 +49,7 @@ public class ApiHelper {
 
         @Nullable
         @Override
-        public String paramsToString(String url, List<Pair<String, Object>> params, String requestMethod) {
+        public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
             LogUtil.e("开始访问：" + url);
             if (params == null || params.size() == 0) {
                 return null;
@@ -76,11 +71,11 @@ public class ApiHelper {
 
         @NonNull
         @Override
-        public Map<HttpParamsType, List<Pair<String, Object>>> multiParamsFormat(String url, Map<HttpParamsType, List<Pair<String, Object>>> params, String requestMethod) {
+        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
             LogUtil.e("开始访问：" + url);
-            List<Pair<String, Object>> httpParams = params.get(HttpParamsType.PARAMETER_HTTP);
+            Map<String, Object> httpParams = params.get(HttpParamsType.PARAMETER_HTTP);
             if (httpParams == null) {
-                httpParams = new ArrayList<>(1);
+                httpParams = new LinkedHashMap<>(2);
                 params.put(HttpParamsType.PARAMETER_HTTP, httpParams);
             }
             JsonRequest request = new JsonRequest();
@@ -88,7 +83,7 @@ public class ApiHelper {
             request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().userManager().getToken() : null);
             String json = sGson.toJson(request);
             LogUtil.e("request: " + json);
-            httpParams.add(new Pair<String, Object>("params", json));
+            httpParams.put("params", json);
             return params;
         }
 
@@ -137,58 +132,5 @@ public class ApiHelper {
             writer.value(value);
         }
     }
-
-    private static class PairAdapter extends TypeAdapter<Pair<String, Object>> {
-
-        @Override
-        public void write(JsonWriter out, Pair<String, Object> value) throws IOException {
-            out.beginObject();
-            out.name(value.key);
-            Object paramsValue = value.value;
-            if (paramsValue instanceof String) {
-                out.value((String) paramsValue);
-            } else if (paramsValue instanceof Number) {
-                out.value((Number) paramsValue);
-            } else if (paramsValue instanceof Boolean) {
-                out.value((Boolean) paramsValue);
-            }
-            out.endObject();
-        }
-
-        @Override
-        public Pair<String, Object> read(JsonReader in) throws IOException {
-            return null;
-        }
-    }
-
-    private static class PairListAdapter extends TypeAdapter<List<Pair<String, Object>>> {
-
-        @Override
-        public void write(JsonWriter out, List<Pair<String, Object>> value) throws IOException {
-            if (value == null || value.size() == 0) {
-                return;
-            }
-            out.beginObject();
-            Object paramsValue;
-            for (Pair<String, Object> pair : value) {
-                paramsValue = pair.value;
-                out.name(pair.key);
-                if (paramsValue instanceof String) {
-                    out.value((String) paramsValue);
-                } else if (paramsValue instanceof Number) {
-                    out.value((Number) paramsValue);
-                } else if (paramsValue instanceof Boolean) {
-                    out.value((Boolean) paramsValue);
-                }
-            }
-            out.endObject();
-        }
-
-        @Override
-        public List<Pair<String, Object>> read(JsonReader in) throws IOException {
-            return null;
-        }
-    }
-
 
 }

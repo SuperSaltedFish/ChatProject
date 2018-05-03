@@ -1,13 +1,12 @@
 package com.yzx.chat.network.framework;
 
-import java.util.List;
 import java.util.Map;
 
 
 class HttpRequestImpl implements HttpRequest {
 
     private String mUrl;
-    private Map<HttpParamsType, List<Pair<String, Object>>> mParams;
+    private  Map<HttpParamsType,Map<String, Object>> mParams;
     private String mRequestMethod;
     private boolean isMultiParams;
 
@@ -17,7 +16,7 @@ class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
-    public Map<HttpParamsType, List<Pair<String, Object>>> params() {
+    public  Map<HttpParamsType,Map<String, Object>> params() {
         return mParams;
     }
 
@@ -35,7 +34,7 @@ class HttpRequestImpl implements HttpRequest {
         mUrl = url;
     }
 
-    public void setParams(Map<HttpParamsType, List<Pair<String, Object>>> params) {
+    public void setParams( Map<HttpParamsType,Map<String, Object>> params) {
         mParams = params;
     }
 

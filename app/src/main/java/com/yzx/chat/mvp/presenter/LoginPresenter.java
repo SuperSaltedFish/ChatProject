@@ -20,7 +20,6 @@ import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
-import com.yzx.chat.network.framework.Pair;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
@@ -31,7 +30,6 @@ import com.yzx.chat.util.RSAUtil;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -150,13 +148,14 @@ public class LoginPresenter implements LoginContract.Presenter {
         mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
             @Nullable
             @Override
-            public String paramsToString(String url, List<Pair<String, Object>> params, String requestMethod) {
+            public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
+                LogUtil.e("开始访问：" + url);
                 return null;
             }
 
             @Nullable
             @Override
-            public Map<HttpParamsType, List<Pair<String, Object>>> multiParamsFormat(String url, Map<HttpParamsType, List<Pair<String, Object>>> params, String requestMethod) {
+            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url,Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
                 return null;
             }
 
@@ -267,7 +266,8 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Nullable
         @Override
-        public String paramsToString(String url, List<Pair<String, Object>> params, String requestMethod) {
+        public String paramsToString(String url,Map<String, Object> params, String requestMethod) {
+            LogUtil.e("开始访问：" + url);
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
@@ -280,7 +280,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Nullable
         @Override
-        public Map<HttpParamsType, List<Pair<String, Object>>> multiParamsFormat(String url, Map<HttpParamsType, List<Pair<String, Object>>> params, String requestMethod) {
+        public  Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
             return null;
         }
 
@@ -288,11 +288,13 @@ public class LoginPresenter implements LoginContract.Presenter {
         @Override
         public Object responseToObject(String url, String httpResponse, Type genericType) {
             byte[] data = Base64Util.decode(httpResponse);
-            if (data == null) {
+            if (data == null||data.length==0) {
+                LogUtil.e("response: " + null);
                 return null;
             }
             data = CryptoManager.rsaDecrypt(data);
             if (data == null) {
+                LogUtil.e("response: " + null);
                 return null;
             }
             String strData = new String(data);

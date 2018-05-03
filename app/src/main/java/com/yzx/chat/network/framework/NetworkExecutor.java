@@ -85,7 +85,7 @@ public class NetworkExecutor {
             }
             HttpDataFormatAdapter adapter = call.getHttpDataFormatAdapter();
             HttpRequest request = call.getHttpRequest();
-            Map<HttpParamsType, List<Pair<String, Object>>> params = request.params();
+            Map<HttpParamsType, Map<String, Object>> params = request.params();
             Http.Result result;
             if (request.isMultiParams()) {
                 params = adapter.multiParamsFormat(request.url(), params, request.requestMethod());

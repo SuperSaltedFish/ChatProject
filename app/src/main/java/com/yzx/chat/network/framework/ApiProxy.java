@@ -11,7 +11,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -92,22 +91,22 @@ public class ApiProxy {
 
         @SuppressWarnings("unchecked")
         private void parseParamsAnnotation(Annotation[][] annotations, Object[] params, HttpRequestImpl httpRequest) {
-            Map<HttpParamsType, List<Pair<String, Object>>> paramsTypeMap = new EnumMap<>(HttpParamsType.class);
+            Map<HttpParamsType, Map<String, Object>> paramsTypeMap = new EnumMap<>(HttpParamsType.class);
             for (int i = 0, size = annotations.length; i < size; i++) {
                 for (int j = 0, length = annotations[i].length; j < length; j++) {
                     if (annotations[i][j] instanceof HttpParam) {
-                        List<Pair<String, Object>> paramsList = paramsTypeMap.get(HttpParamsType.PARAMETER_HTTP);
-                        if (paramsList == null) {
-                            paramsList = new ArrayList<>();
-                            paramsTypeMap.put(HttpParamsType.PARAMETER_HTTP, paramsList);
+                        Map<String, Object> paramsMap = paramsTypeMap.get(HttpParamsType.PARAMETER_HTTP);
+                        if (paramsMap == null) {
+                            paramsMap = new LinkedHashMap<>();
+                            paramsTypeMap.put(HttpParamsType.PARAMETER_HTTP, paramsMap);
                         }
                         HttpParam httpParam = (HttpParam) annotations[i][j];
-                        paramsList.add(new Pair<>(httpParam.value(), params[i]));
+                        paramsMap.put(httpParam.value(), params[i]);
                     } else if (annotations[i][j] instanceof UploadPath) {
-                        List<Pair<String, Object>> paramsList = paramsTypeMap.get(HttpParamsType.PARAMETER_UPLOAD);
-                        if (paramsList == null) {
-                            paramsList = new ArrayList<>();
-                            paramsTypeMap.put(HttpParamsType.PARAMETER_UPLOAD, paramsList);
+                        Map<String, Object> paramsMap  = paramsTypeMap.get(HttpParamsType.PARAMETER_UPLOAD);
+                        if (paramsMap == null) {
+                            paramsMap = new LinkedHashMap<>();
+                            paramsTypeMap.put(HttpParamsType.PARAMETER_UPLOAD, paramsMap);
                         }
                         UploadPath uploadPath = (UploadPath) annotations[i][j];
                         String paramsName = uploadPath.value();
@@ -115,15 +114,15 @@ public class ApiProxy {
                             continue;
                         }
                         List<String> pathList = null;
-                        for (Pair<String, Object> pair : paramsList) {
-                            if (paramsName.equals(pair.key)) {
-                                pathList = (List<String>) pair.value;
+                        for (Map.Entry<String, Object> item: paramsMap.entrySet()) {
+                            if (paramsName.equals(item.getKey())) {
+                                pathList = (List<String>) item.getValue();
                                 break;
                             }
                         }
                         if (pathList == null) {
-                            pathList = new ArrayList<>();
-                            paramsList.add(new Pair<String, Object>(paramsName, pathList));
+                            pathList = new LinkedList<>();
+                            paramsMap.put(paramsName, pathList);
                         }
 
                         if (params[i] instanceof List) {
