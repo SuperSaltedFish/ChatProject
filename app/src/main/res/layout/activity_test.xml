@@ -6,15 +6,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.yzx.chat.widget.view.VideoTextureView
+    <com.yzx.chat.widget.view.Camera2RecodeView
         android:id="@+id/ssss"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
-        android:onClick="onClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
+        android:onClick="onClick"
         android:text="Button" />
+
 </FrameLayout>

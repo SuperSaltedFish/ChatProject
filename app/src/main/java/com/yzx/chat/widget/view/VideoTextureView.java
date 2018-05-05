@@ -136,39 +136,6 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         setSurfaceTextureListener(this);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        int ratioW;
-        int ratioH;
-        int rotation = getDisplayRotation();
-        if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
-            ratioW = mAspectRatio.getWidth();
-            ratioH = mAspectRatio.getHeight();
-        } else {
-            ratioW = mAspectRatio.getHeight();
-            ratioH = mAspectRatio.getWidth();
-        }
-
-
-        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
-            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(width * ratioH / ratioW, MeasureSpec.EXACTLY));
-        } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-            super.onMeasure(MeasureSpec.makeMeasureSpec(height * ratioW / ratioH, MeasureSpec.EXACTLY), heightMeasureSpec);
-        } else {
-            if (height <= width * ratioH / ratioW) {
-                width = height * ratioW / ratioH;
-                super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
-            } else {
-                height = width * ratioH / ratioW;
-                super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
-            }
-        }
-    }
-
 
     private void openCamera(final int previewWidth, final int previewHeight) {
         final CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
@@ -204,7 +171,6 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         if (mPreviewSize == null) {
             return;
         }
-
         try {
             cameraManager.openCamera(cameraId, new CameraDevice.StateCallback() {
                 @Override
@@ -235,11 +201,13 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
             return;
         }
         closePreviewSession();
-        //mMediaCodecInputSurface = mVoiceCodec.prepare();
         List<Surface> outputs = new ArrayList<>(2);
         outputs.add(mPreviewSurface);
-        if (mMediaCodecInputSurface != null) {
-            outputs.add(mMediaCodecInputSurface);
+        if (mVoiceCodec != null) {
+            mMediaCodecInputSurface = mVoiceCodec.getInputSurface();
+            if (mMediaCodecInputSurface != null) {
+                outputs.add(mMediaCodecInputSurface);
+            }
         }
         getSurfaceTexture().setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         try {
@@ -286,12 +254,12 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         } else {
             mPreviewAndVideoRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
         }
-//        if (mMediaCodecInputSurface != null) {
-//            mPreviewAndVideoRequestBuilder.removeTarget(mMediaCodecInputSurface);
-//            if (isRecorderMode) {
-//                mPreviewAndVideoRequestBuilder.addTarget(mMediaCodecInputSurface);
-//            }
-//        }
+        if (mMediaCodecInputSurface != null) {
+            mPreviewAndVideoRequestBuilder.removeTarget(mMediaCodecInputSurface);
+            if (isRecorderMode) {
+                mPreviewAndVideoRequestBuilder.addTarget(mMediaCodecInputSurface);
+            }
+        }
         if (mPreviewSession != null) {
             try {
                 mPreviewSession.setRepeatingRequest(mPreviewAndVideoRequestBuilder.build(), new CameraCaptureSession.CaptureCallback() {
@@ -307,25 +275,25 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     }
 
     private void configureTransform(int viewWidth, int viewHeight) {
-        if (mPreviewSize == null) {
-            return;
-        }
-        int rotation = getDisplayRotation();
-        Matrix matrix = new Matrix();
-        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
-        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
-        float centerX = viewRect.centerX();
-        float centerY = viewRect.centerY();
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
-            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-            float scale = Math.max(
-                    (float) viewHeight / mPreviewSize.getHeight(),
-                    (float) viewWidth / mPreviewSize.getWidth());
-            matrix.postScale(scale, scale, centerX, centerY);
-            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
-            this.setTransform(matrix);
-        }
+//        if (mPreviewSize == null) {
+//            return;
+//        }
+//        int rotation = getDisplayRotation();
+//        Matrix matrix = new Matrix();
+//        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+//        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
+//        float centerX = viewRect.centerX();
+//        float centerY = viewRect.centerY();
+//        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+//            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+//            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+//            float scale = Math.max(
+//                    (float) viewHeight / mPreviewSize.getHeight(),
+//                    (float) viewWidth / mPreviewSize.getWidth());
+//            matrix.postScale(scale, scale, centerX, centerY);
+//            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+//            this.setTransform(matrix);
+//        }
     }
 
     private int getDisplayRotation() {
@@ -356,12 +324,6 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         if (mCamera == null || isRecorderMode || TextUtils.isEmpty(savePath) || mPreviewSession == null || mMediaCodecInputSurface == null) {
             return false;
         }
-        File file = new File(savePath);
-        if (file.exists() && !file.delete()) {
-            LogUtil.e("delete file fail");
-            return false;
-        }
-        isRecorderMode = true;
         int orientationHint = 0;
         switch (mSensorOrientation) {
             case SENSOR_ORIENTATION_DEFAULT_DEGREES:
@@ -371,7 +333,12 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
                 orientationHint = INVERSE_ORIENTATIONS.get(getDisplayRotation());
                 break;
         }
-        return mVoiceCodec.start(savePath);
+        boolean isSuccess = mVoiceCodec.start(savePath);
+        if(isSuccess){
+            isRecorderMode = true;
+            update();
+        }
+        return isSuccess;
     }
 
     public void stopRecorder() {
@@ -379,8 +346,8 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
             return;
         }
         mVoiceCodec.stop();
-        //startPreview();
-        isRecorderMode = false;
+        mPreviewAndVideoRequestBuilder.removeTarget(mMediaCodecInputSurface);
+        startPreview();
     }
 
 
