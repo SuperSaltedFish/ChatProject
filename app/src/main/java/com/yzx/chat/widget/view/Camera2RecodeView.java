@@ -2,11 +2,16 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CaptureRequest;
 import android.media.MediaCodec;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.Surface;
 
+import com.yzx.chat.util.Camera2Helper;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoiceCodec;
 
@@ -96,9 +101,19 @@ public class Camera2RecodeView extends Camera2PreviewView {
     @Override
     protected List<Surface> getOutPutSurfaces() {
         List<Surface> surfaces = super.getOutPutSurfaces();
-        if (surfaces != null && mVideoSurface != null&&isRecording) {
+        if (surfaces != null && mVideoSurface != null && isRecording) {
             surfaces.add(mVideoSurface);
         }
         return surfaces;
+    }
+
+    @Override
+    protected CaptureRequest.Builder getCaptureRequestBuilder(CameraDevice device) {
+        try {
+            return Camera2Helper.getRecodeTypeCaptureRequestBuilder(device);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

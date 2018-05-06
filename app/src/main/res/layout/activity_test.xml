@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.yzx.chat.widget.view.Camera2RecodeView
+    <com.yzx.chat.widget.view.Camera2PreviewView
         android:id="@+id/ssss"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

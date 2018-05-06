@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.util.AttributeSet;
 import android.util.Size;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 
@@ -31,14 +36,17 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
 
     protected static final int MAX_PREVIEW_WIDTH = 1920;
     protected static final int MAX_PREVIEW_HEIGHT = 1080;
+    private static final int FOCUS_AREA_SIZE = 200;
     private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
     private Context mContext;
     private Surface mCameraOutSurface;
     protected Camera2Helper mCamera2Helper;
+    private CameraDevice mCameraDevice;
 
     private Size mAspectRatioSize;
     private Size mPreviewSize;
+    private Rect mCameraActiveArrayRect;
 
     public Camera2PreviewView(Context context) {
         this(context, null);
@@ -79,15 +87,29 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     }
 
     public void onResume() {
-        if (mCamera2Helper != null) {
+        if (mCamera2Helper != null && mCamera2Helper.isAllowRepeatingRequest() && !mCamera2Helper.isPreviewing()) {
             mCamera2Helper.recoverPreview();
         }
     }
 
     public void onPause() {
-        if (mCamera2Helper != null) {
+        if (mCamera2Helper != null && mCamera2Helper.isPreviewing()) {
             mCamera2Helper.stopPreview();
         }
+    }
+
+    public void reopenCamera() {
+        if (mCamera2Helper != null) {
+            closeCamera();
+            mCamera2Helper.openCamera();
+        }
+    }
+
+    public void closeCamera() {
+        if (mCamera2Helper != null) {
+            mCamera2Helper.closeCamera();
+        }
+        mCameraDevice = null;
     }
 
     public void setAspectRatioSize(Size aspectRatioSize) {
@@ -101,17 +123,16 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         return mAspectRatioSize;
     }
 
-    protected void reopenCamera() {
-        if (mCamera2Helper != null) {
-            mCamera2Helper.closeCamera();
-            mCamera2Helper.openCamera();
-        }
-    }
-
     protected void refreshPreview() {
-        if (mCamera2Helper != null) {
-            mCamera2Helper.startPreview(getOutPutSurfaces());
+        CaptureRequest.Builder builder = getCaptureRequestBuilder(mCameraDevice);
+        if (builder == null) {
+            LogUtil.e("create CaptureRequest.Builder fail");
+            return;
         }
+        for (Surface target : getOutPutSurfaces()) {
+            builder.addTarget(target);
+        }
+        mCamera2Helper.startPreview(builder);
     }
 
     protected List<Surface> getAvailableSurfaces() {
@@ -132,6 +153,68 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         return null;
     }
 
+    protected CaptureRequest.Builder getCaptureRequestBuilder(CameraDevice device) {
+        try {
+            return Camera2Helper.getPreviewTypeCaptureRequestBuilder(device);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mCamera2Helper == null || !mCamera2Helper.isPreviewing() || mCameraActiveArrayRect == null) {
+            return false;
+        }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+//                int cameraActiveWidth = mCameraActiveArrayRect.width();
+//                int cameraActiveHeight = mCameraActiveArrayRect.height();
+//                int viewWidth = getWidth();
+//                int viewHeight = getHeight();
+//                int rotation = getDisplayRotation();
+//                int centerX;
+//                int centerY;
+//                if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+//                    centerX = (int) event.getX() * cameraActiveWidth / viewWidth;
+//                    centerY = (int) event.getY() * cameraActiveHeight / viewHeight;
+//                } else {
+//                    centerX = (int) event.getY() * cameraActiveWidth / viewHeight;
+//                    centerY = (int) event.getX() * cameraActiveHeight / viewWidth;
+//                }
+//                int focusLeft = centerX + FOCUS_AREA_SIZE > cameraActiveWidth ? cameraActiveWidth - FOCUS_AREA_SIZE : centerX + FOCUS_AREA_SIZE;
+//                int focusTop = centerY + FOCUS_AREA_SIZE > cameraActiveHeight ? cameraActiveHeight - FOCUS_AREA_SIZE : centerY + FOCUS_AREA_SIZE;
+//                int focusRight = focusLeft + FOCUS_AREA_SIZE;
+//                int focusBottom = focusTop + FOCUS_AREA_SIZE;
+//                Rect focusRect = new Rect(focusLeft, focusTop, focusRight, focusBottom);
+                int totalWidth;
+                int totalHeight;
+                int touchX;
+                int touchY;
+                int rotate = (mCamera2Helper.getCameraSensorOrientation() - getDisplayRotation() * 90 + 360) % 360;
+                if (rotate == 90) {
+                    totalWidth = getHeight();
+                    totalHeight = getWidth();
+                    touchX = (int) event.getY();
+                    touchY = (int) (totalHeight - event.getX());
+                } else if (rotate == 270) {
+                    totalWidth = getHeight();
+                    totalHeight = getWidth();
+                    touchY = (int) event.getX();
+                    touchX = (int) (totalWidth - event.getY());
+                } else {
+                    totalWidth = getWidth();
+                    totalHeight = getHeight();
+                    touchX = (int) event.getX();
+                    touchY = (int) event.getY();
+                }
+                mCamera2Helper.focusOnTouch(touchX, touchY, totalWidth, totalHeight, mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                break;
+        }
+        return true;
+    }
+
     protected int getDisplayRotation() {
         if (mContext instanceof Activity) {
             return ((Activity) mContext).getWindowManager().getDefaultDisplay().getRotation();
@@ -139,6 +222,7 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
             return 0;
         }
     }
+
 
     private void setupPreview(SurfaceTexture surface, int width, int height) {
         boolean swappedDimensions = false;
@@ -165,6 +249,7 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         if (mPreviewSize == null) {
             return;
         }
+        mCameraActiveArrayRect = mCamera2Helper.getCameraCharacteristics().get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
         surface.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         mCameraOutSurface = new Surface(surface);
         configureTransform(width, height);
@@ -213,9 +298,7 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        if (mCamera2Helper != null) {
-            mCamera2Helper.closeCamera();
-        }
+        closeCamera();
         return true;
     }
 
@@ -225,40 +308,27 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     }
 
     @Override
-    public void onCameraOpened(Camera2Helper helper, CameraDevice camera, boolean isOpenSuccessfully) {
+    public void onCameraOpened(CameraDevice camera, boolean isOpenSuccessfully) {
         if (isOpenSuccessfully) {
+            mCameraDevice = camera;
             mCamera2Helper.createCaptureSession(getAvailableSurfaces());
         } else {
-            mCamera2Helper.closeCamera();
-            mCamera2Helper = null;
             LogUtil.e("CameraOpened fail");
         }
     }
 
     @Override
-    public void onCaptureSessionCreated(Camera2Helper helper, CameraCaptureSession session, boolean isCreatedSuccessfully) {
+    public void onCaptureSessionCreated(CameraDevice camera, CameraCaptureSession session, boolean isCreatedSuccessfully) {
         if (isCreatedSuccessfully) {
-            helper.startPreview(getOutPutSurfaces());
+            refreshPreview();
         } else {
-            mCamera2Helper.closeCamera();
-            mCamera2Helper = null;
             LogUtil.e("CaptureSessionCreated fail");
         }
     }
 
     @Override
-    public void onPreviewStarted(Camera2Helper helper, CaptureRequest captureRequest, boolean isStartedSuccessfully) {
-
-    }
-
-    @Override
-    public void onPreviewStopped(Camera2Helper helper) {
-
-    }
-
-    @Override
-    public void onCameraOperatingError(Camera2Helper helper, CameraAccessException exception) {
-        helper.closeCamera();
+    public void onCameraOperatingError(CameraAccessException exception) {
+        closeCamera();
         exception.printStackTrace();
     }
 }
