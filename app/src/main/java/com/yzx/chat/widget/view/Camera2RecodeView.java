@@ -9,6 +9,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.media.MediaCodec;
 import android.util.AttributeSet;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.Surface;
 
 import com.yzx.chat.util.Camera2Helper;
@@ -25,6 +26,25 @@ public class Camera2RecodeView extends Camera2PreviewView {
 
     protected static final int MAX_VIDEO_WIDTH = 1280;
     protected static final int MAX_VIDEO_HEIGHT = 720;
+
+    private static final int SENSOR_ORIENTATION_DEFAULT_DEGREES = 90;
+    private static final int SENSOR_ORIENTATION_INVERSE_DEGREES = 270;
+    private static final SparseIntArray DEFAULT_ORIENTATIONS = new SparseIntArray();
+    private static final SparseIntArray INVERSE_ORIENTATIONS = new SparseIntArray();
+
+    static {
+        DEFAULT_ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        DEFAULT_ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        DEFAULT_ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        DEFAULT_ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+
+    static {
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_180, 90);
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_270, 0);
+    }
 
     VoiceCodec mVoiceCodec;
     private Surface mVideoSurface;
@@ -76,14 +96,32 @@ public class Camera2RecodeView extends Camera2PreviewView {
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        super.onSurfaceTextureAvailable(surface, width, height);
         if (mCamera2Helper != null) {
             Size videoOptimalSize = mCamera2Helper.chooseOptimalSize(MediaCodec.class, MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT, getAspectRatioSize());
             if (videoOptimalSize == null) {
                 return;
             }
-            mVoiceCodec = VoiceCodec.createEncoder(videoOptimalSize.getWidth(), videoOptimalSize.getHeight());
+            int videoRotation;
+            switch (mCamera2Helper.getCameraSensorOrientation()) {
+                case SENSOR_ORIENTATION_DEFAULT_DEGREES:
+                    videoRotation = DEFAULT_ORIENTATIONS.get(getDisplayRotation());
+                    break;
+                case SENSOR_ORIENTATION_INVERSE_DEGREES:
+                    videoRotation = INVERSE_ORIENTATIONS.get(getDisplayRotation());
+                    break;
+                default:
+                    videoRotation = 0;
+            }
+            mVoiceCodec = VoiceCodec.createEncoder(videoOptimalSize.getWidth(), videoOptimalSize.getHeight(), videoRotation);
         }
+        super.onSurfaceTextureAvailable(surface, width, height);
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        super.onSurfaceTextureDestroyed(surface);
+        mVoiceCodec.release();
+        return true;
     }
 
     @Override

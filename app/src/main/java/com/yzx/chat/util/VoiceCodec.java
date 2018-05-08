@@ -29,9 +29,9 @@ public abstract class VoiceCodec {
     private static final int AUDIO_BIT_RATE = 64000;
 
 
-    public static VoiceCodec createEncoder(final int videoWidth, final int videoHeight) {
+    public static VoiceCodec createEncoder(final int videoWidth, final int videoHeight, final int videoRotation) {
         try {
-            return new VoiceEncoder(videoWidth, videoHeight);
+            return new VoiceEncoder(videoWidth, videoHeight, videoRotation);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -82,15 +82,17 @@ public abstract class VoiceCodec {
 
         private int mVideoWidth;
         private int mVideoHeight;
+        private int mVideoRotation;
         private boolean isStarting;
 
         private int mVideoTrackIndex;
         private int mAudioTrackIndex;
         private boolean isStartingMuxer;
 
-        VoiceEncoder(int videoWidth, int videoHeight) throws IOException {
+        VoiceEncoder(int videoWidth, int videoHeight, int videoRotation) throws IOException {
             mVideoWidth = videoWidth;
             mVideoHeight = videoHeight;
+            mVideoRotation = videoRotation;
             HandlerThread codecThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
             codecThread.start();
             mEncodeHandler = new Handler(codecThread.getLooper());
@@ -144,6 +146,7 @@ public abstract class VoiceCodec {
             }
             try {
                 mMediaMuxer = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                mMediaMuxer.setOrientationHint(mVideoRotation);
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -170,7 +173,7 @@ public abstract class VoiceCodec {
                         mAudioCodec.flush();
                         mVideoCodec.stop();
                         mAudioCodec.stop();
-                        if(isStartingMuxer){
+                        if (isStartingMuxer) {
                             mMediaMuxer.stop();
                         }
                         reset();

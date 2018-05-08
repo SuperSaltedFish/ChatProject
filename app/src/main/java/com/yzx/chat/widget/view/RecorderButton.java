@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
-import android.widget.ImageView;
 
 /**
  * Created by YZX on 2017年12月08日.
@@ -17,7 +16,7 @@ import android.widget.ImageView;
 
 public class RecorderButton extends android.support.v7.widget.AppCompatImageView {
 
-    private onRecorderTouchListener mListener;
+    private OnRecorderTouchListener mListener;
     private boolean isCancel;
     private boolean isTouchOutOfBounds;
 
@@ -106,11 +105,11 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
         isCancel = true;
     }
 
-    public void setOnRecorderTouchListener(onRecorderTouchListener listener) {
+    public void setOnRecorderTouchListener(OnRecorderTouchListener listener) {
         mListener = listener;
     }
 
-    public interface onRecorderTouchListener {
+    public interface OnRecorderTouchListener {
         void onDown();
 
         void onUp();

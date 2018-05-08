@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -18,11 +19,12 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
 
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Size;
-import android.view.MotionEvent;
 import android.view.Surface;
 
 import java.util.ArrayList;
@@ -39,6 +41,8 @@ import java.util.concurrent.TimeUnit;
  */
 @TargetApi(21)
 public class Camera2Helper {
+
+    private static final String TAG = "Camera2Helper";
 
     @Nullable
     public static Camera2Helper createFrontCamera2Helper(Context context) {
@@ -78,7 +82,10 @@ public class Camera2Helper {
 
     public static CaptureRequest.Builder getPreviewTypeCaptureRequestBuilder(CameraDevice device) throws CameraAccessException {
         CaptureRequest.Builder builder = device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-        builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);//使用3A模式
+        builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);//3A自动
+        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);//开启自动对焦
+        builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);//开启自动曝光
+        builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);//开启自动白平衡
         builder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);//开启光学防抖
         builder.set(CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_FAST);//在不降低相对于传感器输出的帧率的情况下应用降噪
         return builder;
@@ -86,9 +93,9 @@ public class Camera2Helper {
 
     public static CaptureRequest.Builder getRecodeTypeCaptureRequestBuilder(CameraDevice device) throws CameraAccessException {
         CaptureRequest.Builder builder = device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
-        builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);//使用3A模式
-        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);//开启自动对焦
-        builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);//开启自动曝光
+        builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);//3A自动
+        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);//开启自动对焦
+        builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);//开启自动曝光
         builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);//开启自动白平衡
         builder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);//开启光学防抖
         builder.set(CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_FAST);//在不降低相对于传感器输出的帧率的情况下应用降噪
@@ -102,6 +109,8 @@ public class Camera2Helper {
     private Integer mCameraSensorOrientation;
     private Semaphore mCameraOpenCloseLock;
 
+    private HandlerThread mCameraHandlerThread;
+    private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCameraSession;
     private CaptureRequest.Builder mCurrentCaptureRequestBuilder;
@@ -132,6 +141,9 @@ public class Camera2Helper {
             if (mCameraDevice != null) {
                 throw new IllegalStateException("The camera is already Open");
             }
+            mCameraHandlerThread = new HandlerThread(TAG);
+            mCameraHandlerThread.start();
+            mCameraHandler = new Handler(mCameraHandlerThread.getLooper());
             mCameraManager.openCamera(mCameraID, new CameraDevice.StateCallback() {
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
@@ -153,7 +165,7 @@ public class Camera2Helper {
                     LogUtil.e("openCamera fail, error=" + error);
                     mOnCameraStateListener.onCameraOpened(camera, false);
                 }
-            }, null);
+            }, mCameraHandler);
         } catch (CameraAccessException e) {
             mOnCameraStateListener.onCameraOperatingError(e);
         } catch (InterruptedException e) {
@@ -168,6 +180,14 @@ public class Camera2Helper {
             if (mCameraDevice != null) {
                 mCameraDevice.close();
                 mCameraDevice = null;
+            }
+            if (mCameraHandler != null) {
+                mCameraHandler.removeCallbacksAndMessages(null);
+                mCameraHandler = null;
+            }
+            if (mCameraHandlerThread != null) {
+                mCameraHandlerThread.quit();
+                mCameraHandlerThread = null;
             }
             mCurrentCaptureRequestBuilder = null;
             isAllowRepeatingRequest = false;
@@ -204,7 +224,7 @@ public class Camera2Helper {
                 public void onClosed(@NonNull CameraCaptureSession session) {
                     isAllowRepeatingRequest = false;
                 }
-            }, null);
+            }, mCameraHandler);
         } catch (CameraAccessException e) {
             mOnCameraStateListener.onCameraOperatingError(e);
         }
@@ -222,7 +242,7 @@ public class Camera2Helper {
     public void startPreview(@NonNull CaptureRequest.Builder captureRequestBuilder) {
         checkCameraState();
         mCurrentCaptureRequestBuilder = captureRequestBuilder;
-        startRepeatingRequest(mCurrentCaptureRequestBuilder, null);
+        startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
     }
 
     public void stopPreview() {
@@ -235,7 +255,7 @@ public class Camera2Helper {
     public void recoverPreview() {
         checkCameraState();
         if (!isPreviewing) {
-            startRepeatingRequest(mCurrentCaptureRequestBuilder, null);
+            startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
         }
     }
 
@@ -245,16 +265,9 @@ public class Camera2Helper {
         }
         isEnableFlash = isEnable;
         if (isPreviewing) {
-            startRepeatingRequest(mCurrentCaptureRequestBuilder, null);
+            mCurrentCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, isEnableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+            startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
         }
-    }
-
-    public boolean isPreviewing() {
-        return isPreviewing;
-    }
-
-    public boolean isAllowRepeatingRequest() {
-        return isAllowRepeatingRequest;
     }
 
     public int getCameraSensorOrientation() {
@@ -268,43 +281,53 @@ public class Camera2Helper {
         return mCameraCharacteristics;
     }
 
-    private void startRepeatingRequest(final CaptureRequest.Builder builder, MeteringRectangle[] focusRectangleArr) {
-        builder.set(CaptureRequest.FLASH_MODE, isEnableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
-        try {
-            if (focusRectangleArr == null || focusRectangleArr.length == 0) {
-                builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-                mCurrentCaptureRequest = builder.build();
-                mCameraSession.setRepeatingRequest(mCurrentCaptureRequest, null, null);
-            } else {
-                builder.set(CaptureRequest.CONTROL_AF_REGIONS, focusRectangleArr);
-                builder.set(CaptureRequest.CONTROL_AE_REGIONS, focusRectangleArr);
-                builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
-                builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
-                builder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-                mCurrentCaptureRequest = builder.build();
-                mCameraSession.setRepeatingRequest(mCurrentCaptureRequest, new CameraCaptureSession.CaptureCallback() {
-                    private boolean isFocusComplete;
+    public float getMaxZoomValue() {
+        Float maxZoom = mCameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+        return maxZoom == null ? 1 : maxZoom;
+    }
 
-                    @Override
-                    public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-                        if (isFocusComplete) {
-                            return;
-                        }
-                        Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-                        if (null == afState) {
-                            return;
-                        }
-                        if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState || CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
-                            builder.set(CaptureRequest.CONTROL_AF_REGIONS, null);
-                            builder.set(CaptureRequest.CONTROL_AE_REGIONS, null);
-                            builder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-                            builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
-                            startRepeatingRequest(builder, null);
-                            isFocusComplete = true;
-                        }
+    private void startRepeatingRequest(final CaptureRequest captureRequest, final boolean lockFocus) {
+        try {
+            mCurrentCaptureRequest = captureRequest;
+            mCameraSession.setRepeatingRequest(mCurrentCaptureRequest, new CameraCaptureSession.CaptureCallback() {
+                private Integer mCurrentAfState = -1;
+
+                @Override
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+                    if (afState == null || afState.equals(mCurrentAfState)) {
+                        return;
                     }
-                }, null);
-            }
+                    mCurrentAfState = afState;
+                    switch (mCurrentAfState) {
+                        case CameraMetadata.CONTROL_AF_STATE_ACTIVE_SCAN:
+                        case CameraMetadata.CONTROL_AF_STATE_PASSIVE_SCAN:
+//                            LogUtil.e("Focusing");
+                            //   focusFocusing();
+                            break;
+                        case CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED:
+                        case CameraMetadata.CONTROL_AF_STATE_PASSIVE_FOCUSED:
+//                            LogUtil.e("Complete");
+                            //   isFocusComplete = true;
+                            //   focusSucceed();
+                            if (lockFocus) {
+                                mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                                startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
+                            }
+                            break;
+                        case CameraMetadata.CONTROL_AF_STATE_INACTIVE:
+//                            LogUtil.e("Inactive");
+                            //   focusInactive();
+                            break;
+                        case CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
+                        case CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
+//                            LogUtil.e("Failed");
+                            //  isFocusComplete = true;
+                            //   focusFailed();
+                            break;
+                    }
+                }
+            }, mCameraHandler);
             isPreviewing = true;
         } catch (CameraAccessException e) {
             mOnCameraStateListener.onCameraOperatingError(e);
@@ -361,31 +384,11 @@ public class Camera2Helper {
         }
     }
 
-    public void focus(MeteringRectangle[] focusRectangleArr) {
-        checkCameraState();
-        if (isPreviewing) {
-            startRepeatingRequest(mCurrentCaptureRequestBuilder, focusRectangleArr);
-        }
-    }
-
-    public void focusOnTouch(int touchX, int touchY, int totalWidth, int totalHeight, int previewWidth, int previewHeight) {
-        if (mCurrentCaptureRequest == null || !isPreviewing) {
+    public void focus(int x, int y, int previewWidth, int previewHeight) {
+        if (!isPreviewing) {
             return;
         }
-        double scale;
-        double horizontalOffset = 0;
-        double verticalOffset = 0;
-        if (previewHeight * totalWidth > previewWidth * totalHeight) {
-            scale = totalWidth * 1.0 / previewWidth;
-            verticalOffset = (previewHeight - totalHeight / scale) / 2;
-        } else {
-            scale = totalHeight * 1.0 / previewHeight;
-            horizontalOffset = (previewWidth - totalWidth / scale) / 2;
-        }
-        // 计算取到的图像相对于裁剪区域的缩放系数，以及位移
-        double focusX = touchX / scale + horizontalOffset;
-        double focusY = touchY / scale + verticalOffset;
-
+        //预览坐标转crop坐标
         Rect cropRegion = mCurrentCaptureRequest.get(CaptureRequest.SCALER_CROP_REGION);
         if (cropRegion == null) {
             cropRegion = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
@@ -393,34 +396,83 @@ public class Camera2Helper {
                 return;
             }
         }
-        LogUtil.e(cropRegion.toString());
-        int cropWidth = cropRegion.width();
-        int cropHeight = cropRegion.height();
-        if (previewHeight * cropWidth > previewWidth * cropHeight) {
-            scale = cropHeight * 1.0 / previewHeight;
-            verticalOffset = 0;
-            horizontalOffset = (cropWidth - scale * previewWidth) / 2;
-        } else {
-            scale = cropWidth * 1.0 / previewWidth;
-            horizontalOffset = 0;
+        double cropWidth = cropRegion.width();
+        double cropHeight = cropRegion.height();
+        double scale;
+        double horizontalOffset = 0;
+        double verticalOffset = 0;
+        if ((previewWidth * 1.0 / previewHeight) > (cropWidth / cropHeight)) {
+            scale = cropWidth / previewWidth;
             verticalOffset = (cropHeight - scale * previewHeight) / 2;
+        } else {
+            scale = cropHeight / previewHeight;
+            horizontalOffset = (cropWidth - scale * previewWidth) / 2;
         }
-        // 将点击区域相对于图像的坐标，转化为相对于成像区域的坐标
-        focusX = focusX * scale + horizontalOffset + cropRegion.left;
-        focusY = focusY * scale + verticalOffset + cropRegion.top;
+        x = (int) (x * scale + horizontalOffset);
+        y = (int) (y * scale + verticalOffset);
 
-        double tapAreaRatio = 0.1;
+        double focusAreaRatio = 0.05;
         Rect rect = new Rect();
-        rect.left = clamp((int) (focusX - tapAreaRatio / 2 * cropRegion.width()), 0, cropRegion.width());
-        rect.right = clamp((int) (focusX + tapAreaRatio / 2 * cropRegion.width()), 0, cropRegion.width());
-        rect.top = clamp((int) (focusY - tapAreaRatio / 2 * cropRegion.height()), 0, cropRegion.height());
-        rect.bottom = clamp((int) (focusY + tapAreaRatio / 2 * cropRegion.height()), 0, cropRegion.height());
+        rect.left = clamp((int) (x - focusAreaRatio / 2 * cropWidth), 0, (int) cropWidth);
+        rect.right = clamp((int) (x + focusAreaRatio / 2 * cropWidth), 0, (int) cropWidth);
+        rect.top = clamp((int) (y - focusAreaRatio / 2 * cropHeight), 0, (int) cropHeight);
+        rect.bottom = clamp((int) (y + focusAreaRatio / 2 * cropHeight), 0, (int) cropHeight);
+        rect.left += cropRegion.left;
+        rect.right += cropRegion.left;
+        rect.top += cropRegion.top;
+        rect.bottom += cropRegion.top;
 
-        focus(new MeteringRectangle[]{new MeteringRectangle(rect, 1000)});
+        LogUtil.e(rect.toString());
+
+       // mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+        mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX - 1)});
+        mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX - 1)});
+        mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+        mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
+        mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+        startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), true);
+    }
+
+    public void zoom(float zoomLevel) {
+        if (mCurrentCaptureRequest == null || !isPreviewing) {
+            return;
+        }
+        float maxZoom = getMaxZoomValue();
+        if (zoomLevel > maxZoom) {
+            zoomLevel = maxZoom;
+        }
+        if (zoomLevel < 1) {
+            zoomLevel = 1;
+        }
+
+        //预览坐标转crop坐标
+        Rect cameraActiveRegion = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+        if (cameraActiveRegion == null) {
+            return;
+        }
+        int maxCropWidth = cameraActiveRegion.width();
+        int maxCropHeight = cameraActiveRegion.height();
+        int cropWidth = (int) (maxCropWidth / zoomLevel);
+        int cropHeight = (int) (maxCropHeight / zoomLevel);
+        Rect cropRect = new Rect();
+        cropRect.left = (maxCropWidth - cropWidth) / 2;
+        cropRect.right = cropRect.left + cropWidth;
+        cropRect.top = (maxCropHeight - cropHeight) / 2;
+        cropRect.bottom = cropRect.top + cropHeight;
+        mCurrentCaptureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, cropRect);
+        startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
     }
 
     public void setOnCameraStateListener(OnCameraStateListener onCameraStateListener) {
         mOnCameraStateListener = onCameraStateListener;
+    }
+
+    public boolean isPreviewing() {
+        return isPreviewing;
+    }
+
+    public boolean isAllowRepeatingRequest() {
+        return isAllowRepeatingRequest;
     }
 
     public boolean isSupportOIS() {
@@ -433,6 +485,7 @@ public class Camera2Helper {
         return supportCount != null && supportCount.length > 1;
     }
 
+
     public interface OnCameraStateListener {
         void onCameraOpened(CameraDevice camera, boolean isOpenSuccessfully);
 
@@ -440,6 +493,7 @@ public class Camera2Helper {
 
         void onCameraOperatingError(CameraAccessException exception);
     }
+
 
     public static class SimpleOnCameraStateListener implements OnCameraStateListener {
 

@@ -533,7 +533,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
         }, null);
 
-        mBtnRecorder.setOnRecorderTouchListener(new RecorderButton.onRecorderTouchListener() {
+        mBtnRecorder.setOnRecorderTouchListener(new RecorderButton.OnRecorderTouchListener() {
             private boolean isOutOfBounds;
 
             @Override

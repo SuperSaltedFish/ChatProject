@@ -23,6 +23,8 @@
     <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--允许程序控制屏幕常亮了-->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
 
     <application
@@ -153,6 +155,7 @@
         </activity>
 
         <activity android:name=".mvp.view.activity.TestActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/FullScreenDarkTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

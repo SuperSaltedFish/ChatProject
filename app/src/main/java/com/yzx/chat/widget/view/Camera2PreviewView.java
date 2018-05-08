@@ -4,28 +4,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Matrix;
-import android.graphics.Rect;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.MeteringRectangle;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
 
 import com.yzx.chat.util.Camera2Helper;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +32,8 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
 
     protected static final int MAX_PREVIEW_WIDTH = 1920;
     protected static final int MAX_PREVIEW_HEIGHT = 1080;
-    private static final int FOCUS_AREA_SIZE = 200;
+    protected static final int ZOOM_MAX_TRIGGER_DISTANCE = 800;
+    protected static final float ZOOM_MIN_LEVEL = 1f;
     private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
     private Context mContext;
@@ -46,7 +43,8 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
 
     private Size mAspectRatioSize;
     private Size mPreviewSize;
-    private Rect mCameraActiveArrayRect;
+    private float mCameraMaxZoomLevel;
+    private float mCurrentZoom = ZOOM_MIN_LEVEL;
 
     public Camera2PreviewView(Context context) {
         this(context, null);
@@ -59,8 +57,10 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public Camera2PreviewView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        setSurfaceTextureListener(this);
+        mCamera2Helper = Camera2Helper.createBackCamera2Helper(mContext);
         mAspectRatioSize = DEFAULT_ASPECT_RATIO;
+        setSurfaceTextureListener(this);
+        setOnTouchListener(mOnGestureTouchListener);
     }
 
     @Override
@@ -162,58 +162,101 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         return null;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (mCamera2Helper == null || !mCamera2Helper.isPreviewing() || mCameraActiveArrayRect == null) {
-            return false;
+    private final OnTouchListener mOnGestureTouchListener = new OnTouchListener() {
+        private final static int MAX_POINTER_COUNT = 2;
+        private Point mSingleDownPoint = new Point();
+        private boolean isMultiPointerMode;
+        private boolean isDiscarded;
+        private int mFingerSpacingWhenDown;
+        private float mZoomingLevelWhenDown;
+        private float mZoomingLevel;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (mCamera2Helper == null || !mCamera2Helper.isPreviewing()) {
+                return false;
+            }
+            int pointerCount = event.getPointerCount();
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    mSingleDownPoint.set((int) event.getX(), (int) event.getY());
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (!isDiscarded && !isMultiPointerMode) {
+                        int x = (int) event.getX();
+                        int y = (int) event.getY();
+                        if (getSpacing(x, y, mSingleDownPoint.x, mSingleDownPoint.y) < 50) {
+                            int totalWidth;
+                            int totalHeight;
+                            int touchX;
+                            int touchY;
+                            int rotate = (mCamera2Helper.getCameraSensorOrientation() - getDisplayRotation() * 90 + 360) % 360;
+                            switch (rotate) {
+                                case 90:
+                                    totalWidth = getHeight();
+                                    totalHeight = getWidth();
+                                    touchX = y;
+                                    touchY = totalHeight - x;
+                                    break;
+                                case 270:
+                                    totalWidth = getHeight();
+                                    totalHeight = getWidth();
+                                    touchY = x;
+                                    touchX = totalWidth - y;
+                                    break;
+                                default:
+                                    totalWidth = getWidth();
+                                    totalHeight = getHeight();
+                                    touchX = x;
+                                    touchY = y;
+                                    break;
+                            }
+                            mCamera2Helper.focus(touchX, touchY, totalWidth, totalHeight);
+                        }
+                    }
+                    mCurrentZoom = mZoomingLevel;
+                    isDiscarded = false;
+                    isMultiPointerMode = false;
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    isMultiPointerMode = true;
+                    if (!isDiscarded && pointerCount == MAX_POINTER_COUNT) {
+                        mFingerSpacingWhenDown = getSpacing(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
+                        mZoomingLevelWhenDown = mCurrentZoom;
+                    } else {
+                        isDiscarded = true;
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (!isDiscarded && pointerCount == MAX_POINTER_COUNT) {
+                        int fingerSpacing = getSpacing(event.getX(0), event.getY(0), event.getX(1), event.getY(1));
+                        int diff = fingerSpacing - mFingerSpacingWhenDown;
+                        if (Math.abs(diff) > ZOOM_MAX_TRIGGER_DISTANCE / (mCameraMaxZoomLevel * 20)) {
+                            mZoomingLevel = mZoomingLevelWhenDown + diff * mCameraMaxZoomLevel / ZOOM_MAX_TRIGGER_DISTANCE;
+                            if (mZoomingLevel > mCameraMaxZoomLevel) {
+                                mFingerSpacingWhenDown += (mZoomingLevel - mCameraMaxZoomLevel) * ZOOM_MAX_TRIGGER_DISTANCE / mCameraMaxZoomLevel;
+                                mZoomingLevel = mCameraMaxZoomLevel;
+                            } else if (mZoomingLevel < ZOOM_MIN_LEVEL) {
+                                mFingerSpacingWhenDown -= (ZOOM_MIN_LEVEL - mZoomingLevel) * ZOOM_MAX_TRIGGER_DISTANCE / mCameraMaxZoomLevel;
+                                mZoomingLevel = ZOOM_MIN_LEVEL;
+                            }
+                            if (mCurrentZoom != mZoomingLevel) {
+                                mCurrentZoom = mZoomingLevel;
+                                mCamera2Helper.zoom(mZoomingLevel);
+                            }
+                        }
+                    }
+
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    isDiscarded = false;
+                    isMultiPointerMode = false;
+                    break;
+            }
+
+            return true;
         }
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-//                int cameraActiveWidth = mCameraActiveArrayRect.width();
-//                int cameraActiveHeight = mCameraActiveArrayRect.height();
-//                int viewWidth = getWidth();
-//                int viewHeight = getHeight();
-//                int rotation = getDisplayRotation();
-//                int centerX;
-//                int centerY;
-//                if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-//                    centerX = (int) event.getX() * cameraActiveWidth / viewWidth;
-//                    centerY = (int) event.getY() * cameraActiveHeight / viewHeight;
-//                } else {
-//                    centerX = (int) event.getY() * cameraActiveWidth / viewHeight;
-//                    centerY = (int) event.getX() * cameraActiveHeight / viewWidth;
-//                }
-//                int focusLeft = centerX + FOCUS_AREA_SIZE > cameraActiveWidth ? cameraActiveWidth - FOCUS_AREA_SIZE : centerX + FOCUS_AREA_SIZE;
-//                int focusTop = centerY + FOCUS_AREA_SIZE > cameraActiveHeight ? cameraActiveHeight - FOCUS_AREA_SIZE : centerY + FOCUS_AREA_SIZE;
-//                int focusRight = focusLeft + FOCUS_AREA_SIZE;
-//                int focusBottom = focusTop + FOCUS_AREA_SIZE;
-//                Rect focusRect = new Rect(focusLeft, focusTop, focusRight, focusBottom);
-                int totalWidth;
-                int totalHeight;
-                int touchX;
-                int touchY;
-                int rotate = (mCamera2Helper.getCameraSensorOrientation() - getDisplayRotation() * 90 + 360) % 360;
-                if (rotate == 90) {
-                    totalWidth = getHeight();
-                    totalHeight = getWidth();
-                    touchX = (int) event.getY();
-                    touchY = (int) (totalHeight - event.getX());
-                } else if (rotate == 270) {
-                    totalWidth = getHeight();
-                    totalHeight = getWidth();
-                    touchY = (int) event.getX();
-                    touchX = (int) (totalWidth - event.getY());
-                } else {
-                    totalWidth = getWidth();
-                    totalHeight = getHeight();
-                    touchX = (int) event.getX();
-                    touchY = (int) event.getY();
-                }
-                mCamera2Helper.focusOnTouch(touchX, touchY, totalWidth, totalHeight, mPreviewSize.getWidth(), mPreviewSize.getHeight());
-                break;
-        }
-        return true;
-    }
+    };
 
     protected int getDisplayRotation() {
         if (mContext instanceof Activity) {
@@ -249,9 +292,9 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         if (mPreviewSize == null) {
             return;
         }
-        mCameraActiveArrayRect = mCamera2Helper.getCameraCharacteristics().get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
         surface.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         mCameraOutSurface = new Surface(surface);
+        mCameraMaxZoomLevel = mCamera2Helper.getMaxZoomValue();
         configureTransform(width, height);
         mCamera2Helper.setOnCameraStateListener(this);
         mCamera2Helper.openCamera();
@@ -283,7 +326,6 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        mCamera2Helper = Camera2Helper.createBackCamera2Helper(mContext);
         if (mCamera2Helper != null) {
             setupPreview(surface, width, height);
         }
@@ -330,5 +372,12 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public void onCameraOperatingError(CameraAccessException exception) {
         closeCamera();
         exception.printStackTrace();
+    }
+
+
+    private static int getSpacing(float x1, float y1, float x2, float y2) {
+        float x = x1 - x2;
+        float y = y1 - y2;
+        return (int) Math.sqrt(x * x + y * y);
     }
 }
