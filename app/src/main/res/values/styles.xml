@@ -43,6 +43,11 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
+    <style name="FullScreenLightNoBackgroundTheme" parent="DefaultLightTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
     <style name="LoginTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowTranslucentStatus">true</item>

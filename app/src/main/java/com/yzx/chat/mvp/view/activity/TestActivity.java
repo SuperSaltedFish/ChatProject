@@ -13,9 +13,9 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoiceCodec;
 import com.yzx.chat.widget.view.Camera2PreviewView;
 import com.yzx.chat.widget.view.Camera2RecodeView;
+import com.yzx.chat.widget.view.RecorderButton;
 
 import java.io.File;
-
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -29,7 +29,7 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void init(Bundle savedInstanceState) {
 
-        mCamera2PreviewView = findViewById(R.id.ssss);
+          mCamera2PreviewView = findViewById(R.id.ssss);
     }
 
     @Override
@@ -47,28 +47,30 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mCamera2PreviewView.onResume();
+          mCamera2PreviewView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mCamera2PreviewView.onPause();
+           mCamera2PreviewView.onPause();
     }
 
     private boolean i = true;
 
     public void onClick(View v) {
-        Camera2RecodeView videoTextureView = findViewById(R.id.ssss);
-        if (i) {
-            if (new File(DirectoryManager.getPublicVideoPath() + "adw.mp4").exists()) {
-                new File(DirectoryManager.getPublicVideoPath() + "adw.mp4").delete();
-            }
-            LogUtil.e("" + videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.mp4"));
-        } else {
-            videoTextureView.stopRecorder();
-        }
-        i = !i;
+        RecorderButton recorderButton = (RecorderButton) v;
+
+//        Camera2RecodeView videoTextureView = findViewById(R.id.ssss);
+//        if (i) {
+//            if (new File(DirectoryManager.getPublicVideoPath() + "adw.mp4").exists()) {
+//                new File(DirectoryManager.getPublicVideoPath() + "adw.mp4").delete();
+//            }
+//            LogUtil.e("" + videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.mp4"));
+//        } else {
+//            videoTextureView.stopRecorder();
+//        }
+//        i = !i;
     }
 
 }

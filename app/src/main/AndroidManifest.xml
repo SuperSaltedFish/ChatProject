@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--允许程序控制屏幕常亮了-->
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 
     <application
@@ -52,11 +52,7 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
         </activity>
 
         <activity
@@ -154,17 +150,29 @@
 
         </activity>
 
-        <activity android:name=".mvp.view.activity.TestActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/FullScreenDarkTheme">
+
+        <activity
+            android:name=".mvp.view.activity.VideoRecorderActivity"
+            android:theme="@style/FullScreenLightNoBackgroundTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".mvp.view.activity.TestActivity"
+            android:theme="@style/FullScreenDarkTheme">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
         <activity android:name=".mvp.view.activity.GroupListActivity" />
-        <activity android:name=".mvp.view.activity.CropImageActivity"
+        <activity
+            android:name=".mvp.view.activity.CropImageActivity"
             android:theme="@style/BaseDarkTheme">
 
         </activity>

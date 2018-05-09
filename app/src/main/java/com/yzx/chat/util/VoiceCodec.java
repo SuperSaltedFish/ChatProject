@@ -10,10 +10,8 @@ import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.Surface;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
@@ -64,12 +62,18 @@ public abstract class VoiceCodec {
 
     public abstract void release();
 
+    public abstract boolean isRunning();
+
     public abstract void setOutputSurface(Surface surface);
 
     public abstract Surface getInputSurface();
 
 
     private static class VoiceEncoder extends VoiceCodec {
+
+        private int mVideoWidth;
+        private int mVideoHeight;
+        private int mVideoRotation;
 
         private MediaCodec mVideoCodec;
         private MediaCodec mAudioCodec;
@@ -78,16 +82,13 @@ public abstract class VoiceCodec {
         private MediaMuxer mMediaMuxer;
         private Surface mInputSurface;
 
-        private byte[] mAudioBuffer;
 
-        private int mVideoWidth;
-        private int mVideoHeight;
-        private int mVideoRotation;
-        private boolean isStarting;
+        private byte[] mAudioBuffer;
 
         private int mVideoTrackIndex;
         private int mAudioTrackIndex;
         private boolean isStartingMuxer;
+        private boolean isStartingEncoded;
 
         VoiceEncoder(int videoWidth, int videoHeight, int videoRotation) throws IOException {
             mVideoWidth = videoWidth;
@@ -121,7 +122,7 @@ public abstract class VoiceCodec {
                             e.printStackTrace();
                             break;
                         }
-                        reset();
+                        configureCodec();
                     } while (false);
                     latch.countDown();
                 }
@@ -136,80 +137,104 @@ public abstract class VoiceCodec {
             }
         }
 
+        private void configureCodec() {
+            mVideoCodec.reset();
+            mAudioCodec.reset();
+            mVideoCodec.configure(VoiceCodec.createVideoEncoderMediaFormat(mVideoWidth, mVideoHeight), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mAudioCodec.configure(VoiceCodec.createAudioEncoderMediaFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mVideoCodec.setCallback(new VideoCodecCallback());
+            mAudioCodec.setCallback(new AudioCodecCallback());
+        }
+
         @Override
         public boolean start(String filePath) {
-            if (isStarting) {
-                throw new RuntimeException("The VoiceCodec is already Starting");
+            synchronized (this) {
+                if (isStartingEncoded) {
+                    throw new RuntimeException("The VoiceCodec is already Starting");
+                }
+                if (mVideoCodec == null || mAudioCodec == null) {
+                    throw new RuntimeException("The VoiceCodec is already release");
+                }
+                try {
+                    mMediaMuxer = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+                    mMediaMuxer.setOrientationHint(mVideoRotation);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                mVideoTrackIndex = -1;
+                mAudioTrackIndex = -1;
+                isStartingMuxer = false;
+                mAudioRecord.startRecording();
+                mVideoCodec.start();
+                mAudioCodec.start();
+                isStartingEncoded = true;
             }
-            if (mVideoCodec == null || mAudioCodec == null) {
-                throw new RuntimeException("The VoiceCodec is already release");
-            }
-            try {
-                mMediaMuxer = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-                mMediaMuxer.setOrientationHint(mVideoRotation);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-            mVideoTrackIndex = -1;
-            mAudioTrackIndex = -1;
-            isStartingMuxer = false;
-            mAudioRecord.startRecording();
-            mVideoCodec.start();
-            mAudioCodec.start();
-            isStarting = true;
             return true;
         }
 
         @Override
         public void stop() {
-            final CountDownLatch latch = new CountDownLatch(1);
-            mEncodeHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (isStarting) {
-                        mAudioRecord.stop();
-                        mVideoCodec.signalEndOfInputStream();
-                        mAudioCodec.flush();
-                        mVideoCodec.stop();
-                        mAudioCodec.stop();
-                        if (isStartingMuxer) {
-                            mMediaMuxer.stop();
-                        }
-                        reset();
-                        mMediaMuxer.release();
-                        mMediaMuxer = null;
-                        mInputSurface = null;
-                        isStarting = false;
+            synchronized (this) {
+                try {
+                    if (!isStartingEncoded) {
+                        return;
                     }
-                    latch.countDown();
+                    final CountDownLatch latch = new CountDownLatch(1);
+                    mEncodeHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAudioRecord.stop();
+                            if (mVideoTrackIndex != -1) {
+                                mVideoCodec.signalEndOfInputStream();
+                            }
+                            mVideoCodec.stop();
+                            mAudioCodec.stop();
+                            if (isStartingMuxer) {
+                                mMediaMuxer.stop();
+                            }
+                            configureCodec();
+                            mMediaMuxer.release();
+                            mMediaMuxer = null;
+                            mInputSurface = null;
+                            isStartingEncoded = false;
+                            latch.countDown();
+                        }
+                    });
+                    latch.await();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
                 }
-            });
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
         }
 
         @Override
         public void release() {
-            stop();
-            if (mVideoCodec != null) {
-                mVideoCodec.release();
-                mVideoCodec = null;
+            synchronized (this) {
+                if (mVideoCodec != null) {
+                    mVideoCodec.release();
+                    mVideoCodec = null;
+                }
+                if (mAudioCodec != null) {
+                    mAudioCodec.release();
+                    mAudioCodec = null;
+                }
+                if (mEncodeHandler != null) {
+                    mEncodeHandler.getLooper().quitSafely();
+                    mEncodeHandler = null;
+                }
+                if (mAudioRecord != null) {
+                    mAudioRecord.release();
+                }
             }
-            if (mAudioCodec != null) {
-                mAudioCodec.release();
-                mAudioCodec = null;
-            }
-            if (mEncodeHandler != null) {
-                mEncodeHandler.getLooper().quitSafely();
-                mEncodeHandler = null;
-            }
-            if (mAudioRecord != null) {
-                mAudioRecord.release();
+
+        }
+
+        @Override
+        public boolean isRunning() {
+            synchronized (this) {
+                return isStartingEncoded;
             }
         }
 
@@ -220,23 +245,16 @@ public abstract class VoiceCodec {
 
         @Override
         public Surface getInputSurface() {
-            if (mInputSurface == null && !isStarting) {
-                mInputSurface = mVideoCodec.createInputSurface();
+            synchronized (this) {
+                if (mInputSurface == null && !isStartingEncoded) {
+                    mInputSurface = mVideoCodec.createInputSurface();
+                }
             }
             return mInputSurface;
         }
 
-        public void reset() {
-            mVideoCodec.reset();
-            mAudioCodec.reset();
-            mVideoCodec.configure(VoiceCodec.createVideoEncoderMediaFormat(mVideoWidth, mVideoHeight), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-            mAudioCodec.configure(VoiceCodec.createAudioEncoderMediaFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-            mVideoCodec.setCallback(mVideoCodecCallback);
-            mAudioCodec.setCallback(mAudioCodecCallback);
-        }
-
-        private final SimpleCodecCallback mVideoCodecCallback = new SimpleCodecCallback() {
-            private long mStartTime;
+        private class VideoCodecCallback extends SimpleCodecCallback {
+            private long mStartPresentationTime;
 
             @Override
             public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
@@ -244,13 +262,12 @@ public abstract class VoiceCodec {
                     mMediaMuxer.start();
                     isStartingMuxer = true;
                 }
-
                 ByteBuffer outPutByteBuffer = codec.getOutputBuffer(index);
                 if (outPutByteBuffer != null && info.size > 0 && isStartingMuxer) {
-                    if (mStartTime <= 0) {
-                        mStartTime = info.presentationTimeUs;
+                    if (mStartPresentationTime <= 0) {
+                        mStartPresentationTime = info.presentationTimeUs;
                     }
-                    info.presentationTimeUs -= mStartTime;
+                    info.presentationTimeUs -= mStartPresentationTime;
                     mMediaMuxer.writeSampleData(mVideoTrackIndex, outPutByteBuffer, info);
                 }
                 codec.releaseOutputBuffer(index, false);
@@ -262,10 +279,10 @@ public abstract class VoiceCodec {
                     mVideoTrackIndex = mMediaMuxer.addTrack(format);
                 }
             }
-        };
+        }
 
-        private final SimpleCodecCallback mAudioCodecCallback = new SimpleCodecCallback() {
-            private long mStartTime;
+        private class AudioCodecCallback extends SimpleCodecCallback {
+            private long mStartPresentationTime;
 
             @Override
             public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
@@ -288,10 +305,10 @@ public abstract class VoiceCodec {
             public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
                 ByteBuffer outPutByteBuffer = codec.getOutputBuffer(index);
                 if (outPutByteBuffer != null && info.size > 0 && isStartingMuxer) {
-                    if (mStartTime <= 0) {
-                        mStartTime = info.presentationTimeUs;
+                    if (mStartPresentationTime <= 0) {
+                        mStartPresentationTime = info.presentationTimeUs;
                     }
-                    info.presentationTimeUs -= mStartTime;
+                    info.presentationTimeUs -= mStartPresentationTime;
                     mMediaMuxer.writeSampleData(mAudioTrackIndex, outPutByteBuffer, info);
                 }
                 codec.releaseOutputBuffer(index, false);
@@ -303,13 +320,10 @@ public abstract class VoiceCodec {
                     mAudioTrackIndex = mMediaMuxer.addTrack(format);
                 }
             }
-        };
-
+        }
     }
 
-
     private static class SimpleCodecCallback extends MediaCodec.Callback {
-
         @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
 

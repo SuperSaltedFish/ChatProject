@@ -209,5 +209,7 @@
     <string name="GroupProfileActivity_GroupQRCodeHint">通过扫描二维码可加入该群聊</string>
     <string name="MyQRCodeActivity_QRCodeHint">扫描上面的二维码，添加我好友</string>
     <string name="MyQRCodeActivity_QRCodeHint2">扫描上面的二维码，进入群组</string>
+    <string name="VideoRecorderActivity_RecorderFail">目前相机无法录制视频，请稍后再试</string>
+    <string name="VideoRecorderActivity_PlayVideoError">无法播放录制内容，请稍后再试！</string>
 
 </resources>

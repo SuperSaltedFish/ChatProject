@@ -63,36 +63,23 @@ public class Camera2RecodeView extends Camera2PreviewView {
 
     }
 
-
-    public boolean startRecorder(final String savePath) {
-        if (isRecording) {
-            throw new IllegalStateException("The Camera2RecodeView is already recoding");
-        }
-        if (mVoiceCodec == null) {
-            LogUtil.e("startRecorder fail : The VoiceCodec is not initialized");
-            return false;
-        }
-        if (!mCamera2Helper.isPreviewing()) {
-            LogUtil.e("startRecorder fail : The Camera is not open");
-            return false;
-        }
-        boolean isSuccess = mVoiceCodec.start(savePath);
-        if (isSuccess) {
-            isRecording = true;
-            refreshPreview();
-        }
-        return isSuccess;
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopRecorder();
     }
 
-    public void stopRecorder() {
-        if (!isRecording) {
-            return;
-        }
-        mVoiceCodec.stop();
-        reopenCamera();
-        isRecording = false;
+    @Override
+    public void switchCamera(int cameraType) {
+        super.switchCamera(cameraType);
+        stopRecorder(false);
     }
 
+    @Override
+    public void closeCamera() {
+        super.closeCamera();
+        stopRecorder(false);
+    }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
@@ -153,5 +140,48 @@ public class Camera2RecodeView extends Camera2PreviewView {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean startRecorder(final String savePath) {
+        if (isRecording) {
+            throw new IllegalStateException("The Camera2RecodeView is already recoding");
+        }
+        if (mVoiceCodec == null) {
+            LogUtil.e("startRecorder fail : The VoiceCodec is not initialized");
+            return false;
+        }
+        if (!mCamera2Helper.isPreviewing()) {
+            LogUtil.e("startRecorder fail : The Camera is not open");
+            return false;
+        }
+        boolean isSuccess = mVoiceCodec.start(savePath);
+        if (isSuccess) {
+            isRecording = true;
+            refreshPreview();
+        }
+        return isSuccess;
+    }
+
+    public void stopRecorder() {
+        stopRecorder(true);
+    }
+
+    private void stopRecorder(boolean isRestartPreview) {
+        if (!isRecording) {
+            return;
+        }
+        long s = System.currentTimeMillis();
+        if (mVoiceCodec.isRunning()) {
+            mVoiceCodec.stop();
+        }
+        LogUtil.e(""+(System.currentTimeMillis()-s));
+        isRecording = false;
+        if (isRestartPreview) {
+            recreateCaptureSession();
+        }
+    }
+
+    public boolean isRecording() {
+        return isRecording;
     }
 }

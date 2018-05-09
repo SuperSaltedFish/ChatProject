@@ -289,45 +289,42 @@ public class Camera2Helper {
     private void startRepeatingRequest(final CaptureRequest captureRequest, final boolean lockFocus) {
         try {
             mCurrentCaptureRequest = captureRequest;
-            mCameraSession.setRepeatingRequest(mCurrentCaptureRequest, new CameraCaptureSession.CaptureCallback() {
-                private Integer mCurrentAfState = -1;
+            if (!lockFocus) {
+                mCameraSession.setRepeatingRequest(mCurrentCaptureRequest, null, mCameraHandler);
+            } else {
+                mCameraSession.setRepeatingRequest(mCurrentCaptureRequest, new CameraCaptureSession.CaptureCallback() {
+                    private Integer mCurrentAfState = -1;
 
-                @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-                    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-                    if (afState == null || afState.equals(mCurrentAfState)) {
-                        return;
-                    }
-                    mCurrentAfState = afState;
-                    switch (mCurrentAfState) {
-                        case CameraMetadata.CONTROL_AF_STATE_ACTIVE_SCAN:
-                        case CameraMetadata.CONTROL_AF_STATE_PASSIVE_SCAN:
-//                            LogUtil.e("Focusing");
-                            //   focusFocusing();
-                            break;
-                        case CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED:
-                        case CameraMetadata.CONTROL_AF_STATE_PASSIVE_FOCUSED:
-//                            LogUtil.e("Complete");
-                            //   isFocusComplete = true;
-                            //   focusSucceed();
-                            if (lockFocus) {
+                    @Override
+                    public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                        Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+                        if (afState == null || afState.equals(mCurrentAfState)) {
+                            return;
+                        }
+                        mCurrentAfState = afState;
+                        switch (mCurrentAfState) {
+                            case CameraMetadata.CONTROL_AF_STATE_ACTIVE_SCAN:
+                            case CameraMetadata.CONTROL_AF_STATE_PASSIVE_SCAN:
+                                //   focusFocusing();
+                                break;
+                            case CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED:
+                            case CameraMetadata.CONTROL_AF_STATE_PASSIVE_FOCUSED:
+                                //   focusSucceed();
                                 mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
                                 startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
-                            }
-                            break;
-                        case CameraMetadata.CONTROL_AF_STATE_INACTIVE:
-//                            LogUtil.e("Inactive");
-                            //   focusInactive();
-                            break;
-                        case CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
-                        case CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
-//                            LogUtil.e("Failed");
-                            //  isFocusComplete = true;
-                            //   focusFailed();
-                            break;
+
+                                break;
+                            case CameraMetadata.CONTROL_AF_STATE_INACTIVE:
+                                //   focusInactive();
+                                break;
+                            case CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
+                            case CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
+                                //   focusFailed();
+                                break;
+                        }
                     }
-                }
-            }, mCameraHandler);
+                }, mCameraHandler);
+            }
             isPreviewing = true;
         } catch (CameraAccessException e) {
             mOnCameraStateListener.onCameraOperatingError(e);
@@ -424,7 +421,7 @@ public class Camera2Helper {
 
         LogUtil.e(rect.toString());
 
-       // mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+        // mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
         mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX - 1)});
         mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX - 1)});
         mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);

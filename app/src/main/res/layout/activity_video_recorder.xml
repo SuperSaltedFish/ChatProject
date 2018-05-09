@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".mvp.view.activity.VideoRecorderActivity">
+
+    <VideoView
+        android:id="@+id/VideoRecorderActivity_mVideoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+    <com.yzx.chat.widget.view.Camera2RecodeView
+        android:id="@+id/VideoRecorderActivity_mCamera2RecodeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/VideoRecorderActivity_mGuideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <ImageView
+        android:id="@+id/VideoRecorderActivity_mIvClose"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_close"
+        android:tint="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/VideoRecorderActivity_mGuideline1" />
+
+    <ImageView
+        android:id="@+id/VideoRecorderActivity_mIvFlash"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:padding="14dp"
+        android:src="@drawable/selector_src_camera_flash"
+        app:layout_constraintEnd_toStartOf="@id/VideoRecorderActivity_mIvSwitchCamera"
+        app:layout_constraintTop_toBottomOf="@id/VideoRecorderActivity_mGuideline1" />
+
+    <ImageView
+        android:id="@+id/VideoRecorderActivity_mIvSwitchCamera"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:padding="14dp"
+        android:src="@drawable/ic_camera_switch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/VideoRecorderActivity_mGuideline1" />
+
+
+    <com.yzx.chat.widget.view.RecorderButton
+        android:id="@+id/VideoRecorderActivity_mRecorderButton"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="64dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_fingerprint"
+        app:layout_constraintBottom_toBottomOf="@id/VideoRecorderActivity_mGuideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
+
+    <com.yzx.chat.widget.view.CircleImageView
+        android:id="@+id/VideoRecorderActivity_mIvConfirm"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:src="@drawable/ic_confirm"
+        android:tint="?attr/colorAccent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/VideoRecorderActivity_mGuideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/VideoRecorderActivity_mRecorderButton"
+        app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
+
+    <com.yzx.chat.widget.view.CircleImageView
+        android:id="@+id/VideoRecorderActivity_mIvRestart"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:src="@drawable/ic_return"
+        android:tint="?attr/colorAccent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/VideoRecorderActivity_mGuideline2"
+        app:layout_constraintEnd_toStartOf="@id/VideoRecorderActivity_mRecorderButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/VideoRecorderActivity_mGuideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+
+
+</android.support.constraint.ConstraintLayout>

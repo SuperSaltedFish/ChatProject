@@ -9,8 +9,10 @@ import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.MotionEvent;
@@ -21,6 +23,8 @@ import android.view.View;
 import com.yzx.chat.util.Camera2Helper;
 import com.yzx.chat.util.LogUtil;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +34,14 @@ import java.util.List;
  */
 public class Camera2PreviewView extends TextureView implements TextureView.SurfaceTextureListener, Camera2Helper.OnCameraStateListener {
 
+    public static final int CAMERA_TYPE_FRONT = CameraCharacteristics.LENS_FACING_FRONT;
+    public static final int CAMERA_TYPE_BACK = CameraCharacteristics.LENS_FACING_BACK;
+
+    @IntDef({CAMERA_TYPE_FRONT, CAMERA_TYPE_BACK})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CameraType {
+    }
+
     protected static final int MAX_PREVIEW_WIDTH = 1920;
     protected static final int MAX_PREVIEW_HEIGHT = 1080;
     protected static final int ZOOM_MAX_TRIGGER_DISTANCE = 800;
@@ -37,14 +49,21 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
     private Context mContext;
+    private OnPreviewStateListener mOnPreviewStateListener;
     private Surface mCameraOutSurface;
-    protected Camera2Helper mCamera2Helper;
-    private CameraDevice mCameraDevice;
+    private SurfaceTexture mPreviewSurfaceTexture;
+    private int mPreviewSurfaceWidth;
+    private int mPreviewSurfaceHeight;
 
-    private Size mAspectRatioSize;
-    private Size mPreviewSize;
-    private float mCameraMaxZoomLevel;
+
+    private CameraDevice mCameraDevice;
+    protected Camera2Helper mCamera2Helper;
+
+    private int mCurrentCameraType = -1;
+    private float mCameraMaxZoomLevel = ZOOM_MIN_LEVEL;
     private float mCurrentZoom = ZOOM_MIN_LEVEL;
+    private Size mPreviewSize;
+    private Size mAspectRatioSize;
 
     public Camera2PreviewView(Context context) {
         this(context, null);
@@ -57,10 +76,10 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public Camera2PreviewView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        mCamera2Helper = Camera2Helper.createBackCamera2Helper(mContext);
         mAspectRatioSize = DEFAULT_ASPECT_RATIO;
         setSurfaceTextureListener(this);
         setOnTouchListener(mOnGestureTouchListener);
+        switchCamera(CAMERA_TYPE_BACK);
     }
 
     @Override
@@ -89,27 +108,60 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public void onResume() {
         if (mCamera2Helper != null && mCamera2Helper.isAllowRepeatingRequest() && !mCamera2Helper.isPreviewing()) {
             mCamera2Helper.recoverPreview();
+            callbackPreviewListener(true);
         }
     }
 
     public void onPause() {
         if (mCamera2Helper != null && mCamera2Helper.isPreviewing()) {
             mCamera2Helper.stopPreview();
+            callbackPreviewListener(false);
         }
     }
 
-    public void reopenCamera() {
+    public void switchCamera(@CameraType int cameraType) {
+        if (mCurrentCameraType == cameraType) {
+            return;
+        }
+        closeCamera();
+        mCurrentCameraType = cameraType;
+        switch (mCurrentCameraType) {
+            case CAMERA_TYPE_BACK:
+                mCamera2Helper = Camera2Helper.createBackCamera2Helper(mContext);
+                break;
+            case CAMERA_TYPE_FRONT:
+                mCamera2Helper = Camera2Helper.createFrontCamera2Helper(mContext);
+                break;
+        }
         if (mCamera2Helper != null) {
-            closeCamera();
-            mCamera2Helper.openCamera();
+            mCamera2Helper.setOnCameraStateListener(this);
+            mCameraMaxZoomLevel = mCamera2Helper.getMaxZoomValue();
+            if (mCameraOutSurface != null) {
+                setupPreviewSize(mPreviewSurfaceWidth, mPreviewSurfaceHeight);
+                configureTransform(mPreviewSurfaceWidth, mPreviewSurfaceHeight);
+                mCamera2Helper.openCamera();
+            }
         }
     }
 
     public void closeCamera() {
         if (mCamera2Helper != null) {
+            if (mCamera2Helper.isPreviewing()) {
+                callbackPreviewListener(false);
+            }
             mCamera2Helper.closeCamera();
         }
+        mCurrentCameraType = -1;
+        mCameraMaxZoomLevel = ZOOM_MIN_LEVEL;
+        mCurrentZoom = ZOOM_MIN_LEVEL;
+        mPreviewSize = null;
         mCameraDevice = null;
+    }
+
+    public void setEnableFlash(boolean isEnable) {
+        if (mCamera2Helper != null) {
+            mCamera2Helper.setEnableFlash(isEnable);
+        }
     }
 
     public void setAspectRatioSize(Size aspectRatioSize) {
@@ -123,6 +175,10 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         return mAspectRatioSize;
     }
 
+    public void setOnPreviewStateListener(OnPreviewStateListener onPreviewStateListener) {
+        mOnPreviewStateListener = onPreviewStateListener;
+    }
+
     protected void refreshPreview() {
         CaptureRequest.Builder builder = getCaptureRequestBuilder(mCameraDevice);
         if (builder == null) {
@@ -133,6 +189,15 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
             builder.addTarget(target);
         }
         mCamera2Helper.startPreview(builder);
+    }
+
+    protected void recreateCaptureSession() {
+        if (mCamera2Helper != null) {
+            if (mCamera2Helper.isPreviewing()) {
+                callbackPreviewListener(false);
+            }
+            mCamera2Helper.createCaptureSession(getAvailableSurfaces());
+        }
     }
 
     protected List<Surface> getAvailableSurfaces() {
@@ -160,6 +225,76 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    protected int getDisplayRotation() {
+        if (mContext instanceof Activity) {
+            return ((Activity) mContext).getWindowManager().getDefaultDisplay().getRotation();
+        } else {
+            return 0;
+        }
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    private void setupPreviewSize(int width, int height) {
+        boolean swappedDimensions = false;
+        int sensorOrientation = mCamera2Helper.getCameraSensorOrientation();
+        switch (getDisplayRotation()) {
+            case Surface.ROTATION_0:
+            case Surface.ROTATION_180:
+                if (sensorOrientation == 90 || sensorOrientation == 270) {
+                    swappedDimensions = true;
+                }
+                break;
+            case Surface.ROTATION_90:
+            case Surface.ROTATION_270:
+                if (sensorOrientation == 0 || sensorOrientation == 180) {
+                    swappedDimensions = true;
+                }
+                break;
+        }
+        if (swappedDimensions) {
+            mPreviewSize = mCamera2Helper.chooseOptimalSize(SurfaceTexture.class, height, width, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize);
+        } else {
+            mPreviewSize = mCamera2Helper.chooseOptimalSize(SurfaceTexture.class, width, height, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize);
+        }
+        if (mPreviewSize == null) {
+            return;
+        }
+        mPreviewSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+    }
+
+    private void configureTransform(int viewWidth, int viewHeight) {
+        if (mCameraOutSurface == null || mPreviewSize == null) {
+            return;
+        }
+        int rotation = getDisplayRotation();
+        Matrix matrix = new Matrix();
+        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
+        float centerX = viewRect.centerX();
+        float centerY = viewRect.centerY();
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+            float scale = Math.max((float) viewHeight / mPreviewSize.getHeight(), (float) viewWidth / mPreviewSize.getWidth());
+            matrix.postScale(scale, scale, centerX, centerY);
+            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+        } else if (Surface.ROTATION_180 == rotation) {
+            matrix.postRotate(180, centerX, centerY);
+        }
+        setTransform(matrix);
+    }
+
+    private void callbackPreviewListener(boolean isPreviewStarted) {
+        if (mOnPreviewStateListener != null) {
+            if (isPreviewStarted) {
+                mOnPreviewStateListener.onPreviewStarted(mCurrentCameraType);
+            } else {
+                mOnPreviewStateListener.onPreviewStopped(mCurrentCameraType);
+            }
+        }
     }
 
     private final OnTouchListener mOnGestureTouchListener = new OnTouchListener() {
@@ -258,81 +393,25 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         }
     };
 
-    protected int getDisplayRotation() {
-        if (mContext instanceof Activity) {
-            return ((Activity) mContext).getWindowManager().getDefaultDisplay().getRotation();
-        } else {
-            return 0;
-        }
-    }
-
-
-    private void setupPreview(SurfaceTexture surface, int width, int height) {
-        boolean swappedDimensions = false;
-        int sensorOrientation = mCamera2Helper.getCameraSensorOrientation();
-        switch (getDisplayRotation()) {
-            case Surface.ROTATION_0:
-            case Surface.ROTATION_180:
-                if (sensorOrientation == 90 || sensorOrientation == 270) {
-                    swappedDimensions = true;
-                }
-                break;
-            case Surface.ROTATION_90:
-            case Surface.ROTATION_270:
-                if (sensorOrientation == 0 || sensorOrientation == 180) {
-                    swappedDimensions = true;
-                }
-                break;
-        }
-        if (swappedDimensions) {
-            mPreviewSize = mCamera2Helper.chooseOptimalSize(SurfaceTexture.class, height, width, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize);
-        } else {
-            mPreviewSize = mCamera2Helper.chooseOptimalSize(SurfaceTexture.class, width, height, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize);
-        }
-        if (mPreviewSize == null) {
-            return;
-        }
-        surface.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-        mCameraOutSurface = new Surface(surface);
-        mCameraMaxZoomLevel = mCamera2Helper.getMaxZoomValue();
-        configureTransform(width, height);
-        mCamera2Helper.setOnCameraStateListener(this);
-        mCamera2Helper.openCamera();
-    }
-
-    private void configureTransform(int viewWidth, int viewHeight) {
-        if (mCameraOutSurface == null) {
-            return;
-        }
-        int rotation = getDisplayRotation();
-        Matrix matrix = new Matrix();
-        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
-        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
-        float centerX = viewRect.centerX();
-        float centerY = viewRect.centerY();
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
-            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-            float scale = Math.max((float) viewHeight / mPreviewSize.getHeight(), (float) viewWidth / mPreviewSize.getWidth());
-            matrix.postScale(scale, scale, centerX, centerY);
-            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
-        } else if (Surface.ROTATION_180 == rotation) {
-            matrix.postRotate(180, centerX, centerY);
-        }
-        setTransform(matrix);
-    }
-
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        mPreviewSurfaceTexture = surface;
+        mCameraOutSurface = new Surface(surface);
+        mPreviewSurfaceWidth = width;
+        mPreviewSurfaceHeight = height;
         if (mCamera2Helper != null) {
-            setupPreview(surface, width, height);
+            setupPreviewSize(width, height);
+            configureTransform(width, height);
+            mCamera2Helper.openCamera();
         }
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        mPreviewSurfaceWidth = width;
+        mPreviewSurfaceHeight = height;
         if (mCamera2Helper != null) {
             configureTransform(width, height);
         }
@@ -353,7 +432,7 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public void onCameraOpened(CameraDevice camera, boolean isOpenSuccessfully) {
         if (isOpenSuccessfully) {
             mCameraDevice = camera;
-            mCamera2Helper.createCaptureSession(getAvailableSurfaces());
+            recreateCaptureSession();
         } else {
             LogUtil.e("CameraOpened fail");
         }
@@ -363,6 +442,7 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public void onCaptureSessionCreated(CameraDevice camera, CameraCaptureSession session, boolean isCreatedSuccessfully) {
         if (isCreatedSuccessfully) {
             refreshPreview();
+            callbackPreviewListener(true);
         } else {
             LogUtil.e("CaptureSessionCreated fail");
         }
@@ -379,5 +459,12 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         float x = x1 - x2;
         float y = y1 - y2;
         return (int) Math.sqrt(x * x + y * y);
+    }
+
+    public interface OnPreviewStateListener {
+
+        void onPreviewStarted(int cameraType);
+
+        void onPreviewStopped(int cameraType);
     }
 }
