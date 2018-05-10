@@ -71,29 +71,29 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     @Override
-    public void setConversationToTop(Conversation conversation, boolean isTop) {
+    public void setConversationTop(Conversation conversation, boolean isTop) {
         mIMClient.conversationManager().setConversationTop(conversation, isTop);
     }
 
 
     @Override
-    public void removeConversation(Conversation conversation) {
+    public void deleteConversation(Conversation conversation) {
         mIMClient.conversationManager().removeConversation(conversation);
     }
 
     @Override
-    public void clearChatMessages(Conversation conversation) {
+    public void clearConversationMessages(Conversation conversation) {
         mIMClient.conversationManager().clearAllConversationMessages(conversation);
     }
 
     @Override
-    public boolean isConnected() {
+    public boolean isConnectedToServer() {
         return mIMClient.isConnected();
     }
 
 
     private void refreshComplete(DiffUtil.DiffResult diffResult) {
-        mConversationView.updateConversationListView(diffResult, mConversationList);
+        mConversationView.updateConversationsFromUI(diffResult, mConversationList);
     }
 
     private final IMClient.OnConnectionStateChangeListener mOnConnectionStateChangeListener = new IMClient.OnConnectionStateChangeListener() {
@@ -104,7 +104,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             if (!isConnected) {
                 isConnected = true;
                 refreshAllConversations();
-                mConversationView.enableDisconnectionHint(false);
+                mConversationView.setEnableDisconnectionHint(false);
             }
         }
 
@@ -112,7 +112,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         public void onDisconnected(String reason) {
             if (isConnected) {
                 isConnected = false;
-                mConversationView.enableDisconnectionHint(true);
+                mConversationView.setEnableDisconnectionHint(true);
             }
         }
     };
@@ -132,25 +132,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             LogUtil.e("Conversation change,code: " + typeCode);
             switch (typeCode) {
                 case ConversationManager.UPDATE_TYPE_REMOVE:
-                    if (conversation.getUnreadMessageCount() != 0) {
-                        mIMClient.conversationManager().clearConversationUnreadStatus(conversation);
-                        return;
-                    }
-                    synchronized (ConversationPresenter.class) {
-                        for (int i = 0, size = mConversationList.size(); i < size; i++) {
-                            if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
-                                mConversationList.remove(i);
-                                mHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mConversationView.removeConversationItem(conversation);
-                                    }
-                                });
-                                break;
-                            }
-                        }
-                    }
-                    break;
                 case ConversationManager.UPDATE_TYPE_CLEAR_UNREAD_STATUS:
                 case ConversationManager.UPDATE_TYPE_SAVE_DRAFT:
                 case ConversationManager.UPDATE_TYPE_SET_TOP:
@@ -175,44 +156,40 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 IMClient chatManager = IMClient.getInstance();
                 List<Conversation> oldConversationList = oldConversation[0];
                 List<Conversation> newConversationList = chatManager.conversationManager().getAllConversations();
-                if (newConversationList == null) {
-                    return null;
-                }
-
-
-                String conversationID;
-                Iterator<Conversation> it = newConversationList.iterator();
-                while (it.hasNext()) {
-                    Conversation conversation = it.next();
-                    conversationID = conversation.getTargetId();
-                    if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
-                        chatManager.conversationManager().clearConversationUnreadStatus(conversation);
-                        conversation.setUnreadMessageCount(0);
-                    }
-                    switch (conversation.getConversationType()) {
-                        case PRIVATE:
-                            ContactBean contactBean = chatManager.contactManager().getContact(conversationID);
-                            if (contactBean != null) {
-                                conversation.setConversationTitle(contactBean.getName());
-                                conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
-                            }else{
-                                IMClient.getInstance().conversationManager().removeConversation(conversation,false);
-                                it.remove();
-                            }
-                            break;
-                        case GROUP:
-                            GroupBean group = chatManager.groupManager().getGroup(conversationID);
-                            if (group != null) {
-                                conversation.setConversationTitle(group.getName());
-                                conversation.setPortraitUrl(group.getAvatarUrlFromMember());
-                            }else{
-                                IMClient.getInstance().conversationManager().removeConversation(conversation,false);
-                                it.remove();
-                            }
-                            break;
+                if (newConversationList != null) {
+                    String conversationID;
+                    Iterator<Conversation> it = newConversationList.iterator();
+                    while (it.hasNext()) {
+                        Conversation conversation = it.next();
+                        conversationID = conversation.getTargetId();
+                        if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
+                            chatManager.conversationManager().clearConversationUnreadStatus(conversation);
+                            conversation.setUnreadMessageCount(0);
+                        }
+                        switch (conversation.getConversationType()) {
+                            case PRIVATE:
+                                ContactBean contactBean = chatManager.contactManager().getContact(conversationID);
+                                if (contactBean != null) {
+                                    conversation.setConversationTitle(contactBean.getName());
+                                    conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
+                                } else {
+                                    IMClient.getInstance().conversationManager().removeConversation(conversation, false);
+                                    it.remove();
+                                }
+                                break;
+                            case GROUP:
+                                GroupBean group = chatManager.groupManager().getGroup(conversationID);
+                                if (group != null) {
+                                    conversation.setConversationTitle(group.getName());
+                                    conversation.setPortraitUrl(group.getAvatarUrlFromMember());
+                                } else {
+                                    IMClient.getInstance().conversationManager().removeConversation(conversation, false);
+                                    it.remove();
+                                }
+                                break;
+                        }
                     }
                 }
-
                 DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<Conversation>(oldConversationList, newConversationList) {
                     @Override
                     public boolean isItemEquals(Conversation oldItem, Conversation newItem) {
@@ -242,7 +219,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     }
                 }, true);
                 oldConversationList.clear();
-                oldConversationList.addAll(newConversationList);
+                if(newConversationList!=null&&newConversationList.size()>0){
+                    oldConversationList.addAll(newConversationList);
+                }
                 return diffResult;
             }
         }

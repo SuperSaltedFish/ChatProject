@@ -25,7 +25,7 @@ import com.yzx.chat.widget.view.RecorderButton;
 public class VideoRecorderActivity extends BaseCompatActivity {
 
     public static final String INTENT_EXTRA_SAVE_PATH = "SavePath";
-    public static final int RESULT_CODE = "VideoRecorderActivity".hashCode();
+    public static final int RESULT_CODE = VideoRecorderActivity.class.hashCode();
 
     private static final int CURRENT_STATE_PREVIEW = 1;
     private static final int CURRENT_STATE_RECORDER = 2;

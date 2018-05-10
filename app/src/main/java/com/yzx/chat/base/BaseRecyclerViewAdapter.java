@@ -2,6 +2,9 @@ package com.yzx.chat.base;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.recyclerview.extensions.AsyncListDiffer;
+import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +22,9 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     private static final int DEFAULT_HOLDER_TYPE_FOOTER = -2;
 
     public Context mContext;
-
     private View mHeaderView;
     private View mFooterView;
-
     private OnScrollToBottomListener mScrollToBottomListener;
-
     private int mLastBindPosition;
 
     public abstract VH getViewHolder(ViewGroup parent, int viewType);
@@ -68,7 +68,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
             if (position != 0) {
                 bindDataToViewHolder((VH) holder, position - 1);
             }
-        } else if (mFooterView == null || position != getItemCount()-1) {
+        } else if (mFooterView == null || position != getItemCount() - 1) {
             bindDataToViewHolder((VH) holder, position);
         }
 
@@ -219,7 +219,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
     }
 
-    public static class ListUpdateCallback implements android.support.v7.util.ListUpdateCallback{
+    public static class ListUpdateCallback implements android.support.v7.util.ListUpdateCallback {
 
         private BaseRecyclerViewAdapter mAdapter;
 

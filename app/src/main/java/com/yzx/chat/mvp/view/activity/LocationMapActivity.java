@@ -66,7 +66,7 @@ import java.util.List;
 
 public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityContract.Presenter> implements LocationMapActivityContract.View {
 
-    public static final int RESULT_CODE = 2000;
+    public static final int RESULT_CODE = LocationMapActivity.class.hashCode();
     public static final String INTENT_EXTRA_POI = "POI";
 
     private static final int MODE_SEND = 0;

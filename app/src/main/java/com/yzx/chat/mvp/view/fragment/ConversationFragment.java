@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -88,9 +89,10 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.divider_color_black)));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
+        ((DefaultItemAnimator)(mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
 
         setOverflowMenu();
-        enableDisconnectionHint(!mPresenter.isConnected());
+        setEnableDisconnectionHint(!mPresenter.isConnectedToServer());
     }
 
     private void setOverflowMenu() {
@@ -105,13 +107,13 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                 Conversation conversation = mConversationList.get(index);
                 switch (menuID) {
                     case R.id.ConversationMenu_Top:
-                        mPresenter.setConversationToTop(conversation, !conversation.isTop());
+                        mPresenter.setConversationTop(conversation, !conversation.isTop());
                         break;
                     case R.id.ConversationMenu_Remove:
-                        mPresenter.removeConversation(conversation);
+                        mPresenter.deleteConversation(conversation);
                         break;
                     case R.id.ConversationMenu_Clean:
-                        mPresenter.clearChatMessages(conversation);
+                        mPresenter.clearConversationMessages(conversation);
                         break;
                 }
             }
@@ -174,7 +176,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
 
     @Override
-    public void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
+    public void updateConversationsFromUI(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
         mConversationList.clear();
         mConversationList.addAll(newConversationList);
@@ -184,7 +186,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
 
     @Override
-    public void removeConversationItem(Conversation conversation) {
+    public void removeConversationFromUI(Conversation conversation) {
         for (int i = 0, size = mConversationList.size(); i < size; i++) {
             if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
                 mConversationList.remove(i);
@@ -196,7 +198,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    public void enableDisconnectionHint(boolean isEnable) {
+    public void setEnableDisconnectionHint(boolean isEnable) {
         if(mAdapter==null){
             return;
         }

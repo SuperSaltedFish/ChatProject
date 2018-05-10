@@ -12,17 +12,16 @@ import com.yzx.chat.base.BaseView;
 public class LoginContract {
 
     public interface View extends BaseView<Presenter> {
-        void inputLoginVerifyCode(boolean isSkipVerify);
 
-        void inputRegisterVerifyCode();
+        void jumpToLoginPage();
 
-        void verifySuccess();
+        void jumpToRegisterPage();
 
-        void loginFailure(String reason);
+        void jumpToVerifyPage();
 
-        void registerFailure(String reason);
+        void showErrorHint(String error);
 
-        void verifyFailure(String reason);
+        void startSplashActivity();
     }
 
 
@@ -34,9 +33,9 @@ public class LoginContract {
 
         void register(String username, String password, String nickname, String verifyCode);
 
-        void verifyLogin(String username, String password);
+        void tryObtainLoginVerifyCode(String username, String password);
 
-        void verifyRegister(String username);
+        void obtainRegisterVerifyCode(String username);
     }
 
 

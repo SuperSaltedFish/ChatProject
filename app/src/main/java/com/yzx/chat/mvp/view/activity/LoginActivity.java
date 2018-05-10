@@ -38,6 +38,9 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     private final static int MIN_PASSWORD_LENGTH = 8;
 
+    public final static int VERIFY_TYPE_LOGIN = 1;
+    public final static int VERIFY_TYPE_REGISTER = 2;
+
     private ViewFlipper mVfPageSwitch;
     private Button mBtnLogin;
     private Button mBtnRegister;
@@ -76,44 +79,42 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
 
     protected void init(Bundle savedInstanceState) {
-        mVfPageSwitch = (ViewFlipper) findViewById(R.id.LoginActivity_mVfPageSwitch);
-        mBtnLogin = (Button) findViewById(R.id.FlipperLogin_mBtnLogin);
-        mBtnRegister = (Button) findViewById(R.id.FlipperRegister_mBtnRegister);
-        mBtnVerify = (Button) findViewById(R.id.FlipperVerify_mBtnVerify);
-        mBtnResend = (Button) findViewById(R.id.FlipperVerify_mBtnResend);
-        mBtnJumpToRegister = (Button) findViewById(R.id.FlipperLogin_mTvJumpToRegister);
-        mBtnJumpToLogin = (Button) findViewById(R.id.FlipperRegister_mBtnJumpToLogin);
-        mPbLoginProgress = (ProgressBar) findViewById(R.id.FlipperLogin_mPbLoginProgress);
-        mPbRegisterProgress = (ProgressBar) findViewById(R.id.FlipperRegister_mPbRegisterProgress);
-        mPbVerifyProgress = (ProgressBar) findViewById(R.id.FlipperVerify_mPbVerifyProgress);
-        mEtLoginUsername = (EditText) findViewById(R.id.FlipperLogin_mEtUsername);
-        mEtLoginPassword = (EditText) findViewById(R.id.FlipperLogin_mEtPassword);
-        mEtVerifyCode = (EditText) findViewById(R.id.FlipperVerify_mEtVerifyCode);
-        mEtRegisterUsername = (EditText) findViewById(R.id.FlipperRegister_mEtUsername);
-        mEtRegisterNickname = (EditText) findViewById(R.id.FlipperRegister_mEtNickname);
-        mEtRegisterPassword = (EditText) findViewById(R.id.FlipperRegister_mEtPassword);
-        mEtRegisterConfirm = (EditText) findViewById(R.id.FlipperRegister_mEtConfirm);
-        mTvLoginHint = (TextView) findViewById(R.id.FlipperLogin_mTvLoginHint);
-        mTvRegisterHint = (TextView) findViewById(R.id.FlipperRegister_mTvRegisterHint);
-        mTvVerifyHint = (TextView) findViewById(R.id.FlipperVerify_mTvVerifyHint);
-        mIBtnRegisterBack = (ImageButton) findViewById(R.id.FlipperRegister_mIBtnRegisterBack);
-        mIBtnVerifyBack = (ImageButton) findViewById(R.id.FlipperVerify_mIBtnVerifyBack);
-        mIvBackground = (ImageView) findViewById(R.id.LoginActivity_mIvBackground);
+        mVfPageSwitch = findViewById(R.id.LoginActivity_mVfPageSwitch);
+        mBtnLogin = findViewById(R.id.FlipperLogin_mBtnLogin);
+        mBtnRegister = findViewById(R.id.FlipperRegister_mBtnRegister);
+        mBtnVerify = findViewById(R.id.FlipperVerify_mBtnVerify);
+        mBtnResend = findViewById(R.id.FlipperVerify_mBtnResend);
+        mBtnJumpToRegister = findViewById(R.id.FlipperLogin_mTvJumpToRegister);
+        mBtnJumpToLogin = findViewById(R.id.FlipperRegister_mBtnJumpToLogin);
+        mPbLoginProgress = findViewById(R.id.FlipperLogin_mPbLoginProgress);
+        mPbRegisterProgress = findViewById(R.id.FlipperRegister_mPbRegisterProgress);
+        mPbVerifyProgress = findViewById(R.id.FlipperVerify_mPbVerifyProgress);
+        mEtLoginUsername = findViewById(R.id.FlipperLogin_mEtUsername);
+        mEtLoginPassword = findViewById(R.id.FlipperLogin_mEtPassword);
+        mEtVerifyCode = findViewById(R.id.FlipperVerify_mEtVerifyCode);
+        mEtRegisterUsername = findViewById(R.id.FlipperRegister_mEtUsername);
+        mEtRegisterNickname = findViewById(R.id.FlipperRegister_mEtNickname);
+        mEtRegisterPassword = findViewById(R.id.FlipperRegister_mEtPassword);
+        mEtRegisterConfirm = findViewById(R.id.FlipperRegister_mEtConfirm);
+        mTvLoginHint = findViewById(R.id.FlipperLogin_mTvLoginHint);
+        mTvRegisterHint = findViewById(R.id.FlipperRegister_mTvRegisterHint);
+        mTvVerifyHint = findViewById(R.id.FlipperVerify_mTvVerifyHint);
+        mIBtnRegisterBack = findViewById(R.id.FlipperRegister_mIBtnRegisterBack);
+        mIBtnVerifyBack = findViewById(R.id.FlipperVerify_mIBtnVerifyBack);
+        mIvBackground = findViewById(R.id.LoginActivity_mIvBackground);
         mTranslateAnimation = AnimationUtils.loadAnimation(this, R.anim.bg_translate_anim);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        mBtnLogin.setOnClickListener(mOnBtnLoginClick);
-        mBtnRegister.setOnClickListener(mOnBtnRegisterClick);
-        mBtnVerify.setOnClickListener(mOnBtnVerifyClick);
-        mBtnResend.setOnClickListener(mOnBtnResendClick);
-        mIBtnRegisterBack.setOnClickListener(mOnIBtnBackClick);
-        mIBtnVerifyBack.setOnClickListener(mOnIBtnBackClick);
-        mBtnJumpToRegister.setOnClickListener(mOnBtnJumpToRegisterClick);
-        mBtnJumpToRegister.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-        mBtnJumpToLogin.setOnClickListener(mOnBtnJumpToLoginClick);
-        mBtnJumpToLogin.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+        mBtnLogin.setOnClickListener(mOnViewClickListener);
+        mBtnRegister.setOnClickListener(mOnViewClickListener);
+        mBtnVerify.setOnClickListener(mOnViewClickListener);
+        mBtnResend.setOnClickListener(mOnViewClickListener);
+        mIBtnRegisterBack.setOnClickListener(mOnViewClickListener);
+        mIBtnVerifyBack.setOnClickListener(mOnViewClickListener);
+        mBtnJumpToRegister.setOnClickListener(mOnViewClickListener);
+        mBtnJumpToLogin.setOnClickListener(mOnViewClickListener);
         mEtLoginUsername.addTextChangedListener(mTextWatcher);
         mEtLoginPassword.addTextChangedListener(mTextWatcher);
         mEtRegisterUsername.addTextChangedListener(mTextWatcher);
@@ -123,6 +124,8 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mEtVerifyCode.addTextChangedListener(mTextWatcher);
         mIvBackground.startAnimation(mTranslateAnimation);
 
+        mBtnJumpToRegister.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+        mBtnJumpToLogin.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
 
         autoScrollView(mVfPageSwitch, mBtnLogin);
     }
@@ -140,73 +143,41 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         mVerifyCountDown.cancel();
     }
 
-    private final View.OnClickListener mOnBtnLoginClick = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (!isDisableInput) {
-                loginVerify(false);
-            }
-        }
-    };
-
-    private final View.OnClickListener mOnBtnRegisterClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!isDisableInput) {
-                registerVerify(false);
-            }
-        }
-    };
-
-    private final View.OnClickListener mOnBtnVerifyClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!isDisableInput) {
-                if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
-                    login(false);
-                } else {
-                    register();
+                switch (v.getId()) {
+                    case R.id.FlipperLogin_mBtnLogin:
+                        loginAfterObtainVerifyCode(true);
+                        break;
+                    case R.id.FlipperRegister_mBtnRegister:
+                        checkRegisterInfoAndObtainVerifyCode(true);
+                        break;
+                    case R.id.FlipperVerify_mBtnVerify:
+                        if (mVerifyType == VERIFY_TYPE_LOGIN) {
+                            loginByVerifyCode();
+                        } else {
+                            register();
+                        }
+                        break;
+                    case R.id.FlipperVerify_mBtnResend:
+                        sendVerifyCode();
+                        break;
+                    case R.id.FlipperLogin_mTvJumpToRegister:
+                        jumpToRegisterPage();
+                        break;
+                    case R.id.FlipperRegister_mBtnJumpToLogin:
+                        jumpToLoginPage();
+                        break;
+                    case R.id.FlipperRegister_mIBtnRegisterBack:
+                    case R.id.FlipperVerify_mIBtnVerifyBack:
+                        backPager();
+                        break;
                 }
             }
         }
     };
-
-    private final View.OnClickListener mOnBtnResendClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!isDisableInput) {
-                resendVerifyCode();
-            }
-        }
-    };
-
-    private final View.OnClickListener mOnBtnJumpToRegisterClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!isDisableInput) {
-                jumpToRegisterPager();
-            }
-        }
-    };
-
-    private final View.OnClickListener mOnBtnJumpToLoginClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!isDisableInput) {
-                jumpToLoginPager();
-            }
-        }
-    };
-
-    private final View.OnClickListener mOnIBtnBackClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!isDisableInput) {
-                backPager();
-            }
-        }
-    };
-
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
@@ -240,18 +211,14 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
         @Override
         public void onFinish() {
-            isAllowResendVerifyCode = true;
-            mBtnResend.setEnabled(!isDisableInput);
-            mBtnResend.setText(mResendName);
+            setAllowResendVerifyCode(true);
         }
     };
 
-
-    private void loginVerify(boolean isReVerify) {
+    private void loginAfterObtainVerifyCode(boolean isPlayAnimation) {
         mTvLoginHint.setText(null);
         final String username = mEtLoginUsername.getText().toString();
         final String password = mEtLoginPassword.getText().toString();
-
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             showError(mTvLoginHint, getString(R.string.LoginActivity_Error_NoneInput));
             return;
@@ -264,43 +231,55 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             showError(mTvLoginHint, getString(R.string.LoginActivity_Error_PasswordLength) + MIN_PASSWORD_LENGTH);
             return;
         }
-        if (!isReVerify) {
-            mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
-        }
-        if (isReVerify) {
-            mPresenter.verifyLogin(username, password);
-        } else {
-            startProgressAnim(mBtnLogin, mPbLoginProgress, true, new AnimatorListenerAdapter() {
+        if (isPlayAnimation) {
+            startProgressAnimIfNeed(mBtnLogin, mPbLoginProgress, true, new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mPresenter.verifyLogin(username, password);
+                    mPresenter.tryObtainLoginVerifyCode(username, password);
                 }
             });
+        } else {
+            mPresenter.tryObtainLoginVerifyCode(username, password);
         }
     }
 
-    private void login(boolean isSkipVerify) {
+    private void loginByVerifyCode() {
+        mTvVerifyHint.setText(null);
         final String username = mEtLoginUsername.getText().toString();
         final String password = mEtLoginPassword.getText().toString();
-        String verifyCode = mEtVerifyCode.getText().toString();
-        if (!isSkipVerify) {
-            if (TextUtils.isEmpty(verifyCode)) {
-                showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
-                return;
-            }
-        } else {
-            verifyCode = "";
+        final String verifyCode = mEtVerifyCode.getText().toString();
+        if (TextUtils.isEmpty(verifyCode)) {
+            showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
+            return;
         }
-        final String finalVerifyCode = verifyCode;
-        startProgressAnim(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
+        startProgressAnimIfNeed(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mPresenter.login(username, password, finalVerifyCode);
+                mPresenter.login(username, password, verifyCode);
+            }
+        });
+
+    }
+
+    private void register() {
+        mTvVerifyHint.setText(null);
+        final String username = mEtRegisterUsername.getText().toString();
+        final String nickname = mEtRegisterNickname.getText().toString();
+        final String password = mEtRegisterPassword.getText().toString();
+        final String verifyCode = mEtVerifyCode.getText().toString();
+        if (TextUtils.isEmpty(verifyCode)) {
+            showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
+            return;
+        }
+        startProgressAnimIfNeed(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mPresenter.register(username, password, nickname, verifyCode);
             }
         });
     }
 
-    private void registerVerify(boolean isReVerify) {
+    private void checkRegisterInfoAndObtainVerifyCode(boolean isPlayAnimation) {
         mTvRegisterHint.setText(null);
         final String username = mEtRegisterUsername.getText().toString();
         final String nickname = mEtRegisterNickname.getText().toString();
@@ -323,106 +302,70 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             showError(mTvRegisterHint, getString(R.string.LoginActivity_Error_IllegalPassword));
             return;
         }
-        if (!isReVerify) {
-            mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
-        }
-        if (isReVerify) {
-            mPresenter.verifyRegister(username);
-        } else {
-            startProgressAnim(mBtnRegister, mPbRegisterProgress, true, new AnimatorListenerAdapter() {
+        if (isPlayAnimation) {
+            startProgressAnimIfNeed(mBtnRegister, mPbRegisterProgress, true, new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mPresenter.verifyRegister(username);
+                    mPresenter.obtainRegisterVerifyCode(username);
                 }
             });
+        } else {
+            mPresenter.obtainRegisterVerifyCode(username);
         }
     }
 
-    private void register() {
-        final String username = mEtRegisterUsername.getText().toString();
-        final String nickname = mEtRegisterNickname.getText().toString();
-        final String password = mEtRegisterPassword.getText().toString();
-        final String verifyCode = mEtVerifyCode.getText().toString();
-
-        if (TextUtils.isEmpty(verifyCode)) {
-            showError(mTvVerifyHint, getString(R.string.LoginActivity_Error_NoneVerify));
-            return;
+    private void sendVerifyCode() {
+        switch (mVerifyType) {
+            case VERIFY_TYPE_LOGIN:
+                loginAfterObtainVerifyCode(false);
+                break;
+            case VERIFY_TYPE_REGISTER:
+                checkRegisterInfoAndObtainVerifyCode(false);
+                break;
+            default:
+                return;
         }
-        startProgressAnim(mBtnVerify, mPbVerifyProgress, true, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mPresenter.register(username, password, nickname, verifyCode);
-            }
-        });
-    }
-
-    private void resendVerifyCode() {
         setAllowResendVerifyCode(false);
         mBtnResend.setText(R.string.LoginActivity_Error_Resending);
-        if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
-            loginVerify(true);
-        } else {
-            registerVerify(true);
-        }
-    }
-
-    private void startCountDownTimer() {
-        setAllowResendVerifyCode(false);
         mVerifyCountDown.cancel();
         mVerifyCountDown.start();
     }
 
-    private void startProgressAnim(final Button btn, final ProgressBar bar, final boolean isCloseAnim, Animator.AnimatorListener listener) {
+
+    private void startProgressAnimIfNeed(final Button btn, final ProgressBar bar, final boolean isCloseAnim, Animator.AnimatorListener listener) {
         if (isCloseAnim) {
-            setDisableInputState(true);
-            AnimationUtil.circularRevealHideAnim(btn, listener, new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    bar.setVisibility(View.VISIBLE);
-                }
+            if (btn.getVisibility() == View.VISIBLE) {
+                setDisableInputState(true);
+                AnimationUtil.circularRevealHideAnim(btn, listener, new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        bar.setVisibility(View.VISIBLE);
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animation.removeAllListeners();
-                    btn.setVisibility(View.INVISIBLE);
-                }
-            });
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        animation.removeAllListeners();
+                        btn.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
         } else {
-            AnimationUtil.circularRevealShowAnim(btn, listener, new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    btn.setVisibility(View.VISIBLE);
-                }
+            if (btn.getVisibility() == View.INVISIBLE) {
+                AnimationUtil.circularRevealShowAnim(btn, listener, new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        btn.setVisibility(View.VISIBLE);
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animation.removeAllListeners();
-                    bar.setVisibility(View.INVISIBLE);
-                    setDisableInputState(false);
-                }
-            });
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        animation.removeAllListeners();
+                        bar.setVisibility(View.INVISIBLE);
+                        setDisableInputState(false);
+                    }
+                });
+            }
         }
-    }
-
-    private void jumpToLoginPager() {
-        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
-        if (mVfPageSwitch.getDisplayedChild() != 0) {
-            mVfPageSwitch.setDisplayedChild(0);
-        }
-    }
-
-    private void jumpToRegisterPager() {
-        mVerifyType = LoginPresenter.VERIFY_TYPE_NONE;
-        if (mVfPageSwitch.getDisplayedChild() != 1) {
-            mVfPageSwitch.setDisplayedChild(1);
-        }
-    }
-
-    private void jumpToVerifyPager() {
-        if (mVfPageSwitch.getDisplayedChild() != 2) {
-            mVfPageSwitch.setDisplayedChild(2);
-        }
-        startCountDownTimer();
     }
 
     private void backPager() {
@@ -431,16 +374,15 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
                 super.onBackPressed();
                 break;
             case 1:
-                jumpToLoginPager();
+                jumpToLoginPage();
                 break;
             case 2:
                 mPresenter.reset();
-                if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
-                    jumpToLoginPager();
+                if (mVerifyType == VERIFY_TYPE_LOGIN) {
+                    jumpToLoginPage();
                 } else {
-                    jumpToRegisterPager();
+                    jumpToRegisterPage();
                 }
-                mEtVerifyCode.setText(null);
                 break;
         }
 
@@ -462,7 +404,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     private void setAllowResendVerifyCode(boolean isAllow) {
         isAllowResendVerifyCode = isAllow;
-        mBtnResend.setEnabled(isAllow);
+        mBtnResend.setEnabled((!isDisableInput) && isAllowResendVerifyCode);
         mBtnResend.setText(R.string.LoginActivity_Layout_Resend);
 
     }
@@ -477,86 +419,13 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
         hintView.startAnimation(animation);
     }
 
-    @Override
-    public LoginContract.Presenter getPresenter() {
-        return new LoginPresenter();
-    }
-
-    @Override
-    public void inputLoginVerifyCode(boolean isSkipVerify) {
-        if (isSkipVerify) {
-            login(true);
-        } else {
-            jumpToVerifyPager();
-            mBtnVerify.setText(R.string.LoginActivity_Layout_Login);
-            startProgressAnim(mBtnLogin, mPbLoginProgress, false, null);
-            mVerifyType = LoginPresenter.VERIFY_TYPE_LOGIN;
-        }
-    }
-
-    @Override
-    public void inputRegisterVerifyCode() {
-        jumpToVerifyPager();
-        mBtnVerify.setText(R.string.LoginActivity_Layout_Register);
-        startProgressAnim(mBtnRegister, mPbRegisterProgress, false, null);
-        mVerifyType = LoginPresenter.VERIFY_TYPE_REGISTER;
-    }
-
-    @Override
-    public void verifySuccess() {
-        ProgressBar bar;
-        if (mVfPageSwitch.getDisplayedChild() == 0) {
-            bar = mPbLoginProgress;
-        } else {
-            bar = mPbVerifyProgress;
-        }
-        AnimationUtil.circularRevealShowByFullActivityAnim(LoginActivity.this, bar, R.drawable.bg_splash, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                animation.removeAllListeners();
-                Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
-                intent.putExtra(SplashActivity.INTENT_EXTRA_LOGGED, true);
-                LoginActivity.this.startActivity(intent);
-                LoginActivity.this.finish();
-            }
-        });
-    }
-
-    @Override
-    public void loginFailure(String reason) {
-        if (mVerifyType == LoginPresenter.VERIFY_TYPE_LOGIN) {
-            verifyFailure(reason);
-            setAllowResendVerifyCode(true);
-        } else {
-            startProgressAnim(mBtnLogin, mPbLoginProgress, false, null);
-            showError(mTvLoginHint, reason);
-        }
-    }
-
-    @Override
-    public void registerFailure(String reason) {
-        if (mVerifyType == LoginPresenter.VERIFY_TYPE_REGISTER) {
-            verifyFailure(reason);
-            setAllowResendVerifyCode(true);
-        } else {
-            startProgressAnim(mBtnRegister, mPbRegisterProgress, false, null);
-            showError(mTvRegisterHint, reason);
-        }
-    }
-
-    @Override
-    public void verifyFailure(String reason) {
-        startProgressAnim(mBtnVerify, mPbVerifyProgress, false, null);
-        showError(mTvVerifyHint, reason);
-    }
-
 
     private void autoScrollView(final View root, final View scrollToView) {
         root.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        int scrollHeight = 0;
+                        int scrollHeight;
                         Rect rect = new Rect();
                         //获取root在窗体的可视区域
                         root.getWindowVisibleDisplayFrame(rect);
@@ -585,5 +454,94 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
                         root.scrollBy(0, scrollHeight);
                     }
                 });
+    }
+
+    @Override
+    public LoginContract.Presenter getPresenter() {
+        return new LoginPresenter();
+    }
+
+    @Override
+    public void jumpToLoginPage() {
+        if (mVfPageSwitch.getDisplayedChild() != 0) {
+            mVfPageSwitch.setDisplayedChild(0);
+            mVerifyCountDown.cancel();
+        }
+    }
+
+    @Override
+    public void jumpToRegisterPage() {
+        if (mVfPageSwitch.getDisplayedChild() != 1) {
+            mVfPageSwitch.setDisplayedChild(1);
+            mVerifyCountDown.cancel();
+        }
+    }
+
+    @Override
+    public void jumpToVerifyPage() {
+        int currentPageIndex = mVfPageSwitch.getDisplayedChild();
+        switch (currentPageIndex) {
+            case 0:
+                mBtnVerify.setText(R.string.LoginActivity_Layout_Login);
+                mVerifyType = VERIFY_TYPE_LOGIN;
+                break;
+            case 1:
+                mBtnVerify.setText(R.string.LoginActivity_Layout_Register);
+                mVerifyType = VERIFY_TYPE_REGISTER;
+                break;
+            default:
+                return;
+        }
+        mTvVerifyHint.setText(null);
+        mEtVerifyCode.setText(null);
+        mVfPageSwitch.setDisplayedChild(2);
+        mVerifyCountDown.start();
+        startProgressAnimIfNeed(mBtnLogin, mPbRegisterProgress, false, null);
+        startProgressAnimIfNeed(mBtnRegister, mPbRegisterProgress, false, null);
+    }
+
+    @Override
+    public void showErrorHint(String error) {
+        switch (mVfPageSwitch.getDisplayedChild()) {
+            case 0:
+                showError(mTvLoginHint, error);
+                startProgressAnimIfNeed(mBtnLogin, mPbRegisterProgress, false, null);
+                break;
+            case 1:
+                showError(mTvRegisterHint, error);
+                startProgressAnimIfNeed(mBtnRegister, mPbRegisterProgress, false, null);
+                break;
+            case 2:
+                showError(mTvVerifyHint, error);
+                startProgressAnimIfNeed(mBtnVerify, mPbRegisterProgress, false, null);
+                break;
+        }
+    }
+
+
+    @Override
+    public void startSplashActivity() {
+        int currentPageIndex = mVfPageSwitch.getDisplayedChild();
+        ProgressBar bar;
+        switch (currentPageIndex) {
+            case 0:
+                bar = mPbLoginProgress;
+                break;
+            case 2:
+                bar = mPbVerifyProgress;
+                break;
+            default:
+                return;
+        }
+        AnimationUtil.circularRevealShowByFullActivityAnim(LoginActivity.this, bar, R.drawable.bg_splash, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animation.removeAllListeners();
+                Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                intent.putExtra(SplashActivity.INTENT_EXTRA_LOGGED, true);
+                LoginActivity.this.startActivity(intent);
+                LoginActivity.this.finish();
+            }
+        });
     }
 }

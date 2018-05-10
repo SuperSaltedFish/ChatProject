@@ -38,10 +38,10 @@
         android:clipToPadding="false"
         android:overScrollMode="never"
         android:paddingBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mLlInputLayout"
+        app:layout_constraintBottom_toTopOf="@id/ChatActivity_mLlInputLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Default_mToolbar" />
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
 
     <com.yzx.chat.widget.view.KeyboardPanelSwitcher
         android:id="@+id/ChatActivity_mLlInputLayout"
@@ -172,8 +172,8 @@
                 android:background="@drawable/selector_bg_chat_panel_item"
                 android:padding="8dp"
                 android:src="@drawable/ic_image"
-                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendImage"
-                app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mIvSendVideo"
+                app:layout_constraintBottom_toTopOf="@id/ChatActivity_mTvSendImage"
+                app:layout_constraintEnd_toStartOf="@id/ChatActivity_mIvSendVideo"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -186,9 +186,9 @@
                 android:background="@drawable/selector_bg_chat_panel_item"
                 android:padding="8dp"
                 android:src="@drawable/ic_camera"
-                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendVideo"
-                app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mIvSendLocation"
-                app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvSendImage"
+                app:layout_constraintBottom_toTopOf="@id/ChatActivity_mTvSendVideo"
+                app:layout_constraintEnd_toStartOf="@id/ChatActivity_mIvSendLocation"
+                app:layout_constraintStart_toEndOf="@id/ChatActivity_mIvSendImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="spread" />
 
@@ -199,9 +199,9 @@
                 android:background="@drawable/selector_bg_chat_panel_item"
                 android:padding="8dp"
                 android:src="@drawable/ic_location"
-                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendLocation"
-                app:layout_constraintEnd_toStartOf="@+id/ChatActivity_mIvSendFile"
-                app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvSendVideo"
+                app:layout_constraintBottom_toTopOf="@id/ChatActivity_mTvSendLocation"
+                app:layout_constraintEnd_toStartOf="@id/ChatActivity_mIvSendFile"
+                app:layout_constraintStart_toEndOf="@id/ChatActivity_mIvSendVideo"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="spread" />
 
@@ -212,9 +212,9 @@
                 android:background="@drawable/selector_bg_chat_panel_item"
                 android:padding="8dp"
                 android:src="@drawable/ic_file"
-                app:layout_constraintBottom_toTopOf="@+id/ChatActivity_mTvSendFile"
+                app:layout_constraintBottom_toTopOf="@id/ChatActivity_mTvSendFile"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ChatActivity_mIvSendLocation"
+                app:layout_constraintStart_toEndOf="@id/ChatActivity_mIvSendLocation"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="spread" />
 
@@ -227,9 +227,9 @@
                 android:text="@string/Album"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendImage"
-                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendImage"
-                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendImage" />
+                app:layout_constraintEnd_toEndOf="@id/ChatActivity_mIvSendImage"
+                app:layout_constraintStart_toStartOf="@id/ChatActivity_mIvSendImage"
+                app:layout_constraintTop_toBottomOf="@id/ChatActivity_mIvSendImage" />
 
             <TextView
                 android:id="@+id/ChatActivity_mTvSendVideo"
@@ -237,12 +237,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:includeFontPadding="false"
-                android:text="拍摄"
+                android:text="@string/shoot"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendVideo"
-                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendVideo"
-                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendVideo" />
+                app:layout_constraintEnd_toEndOf="@id/ChatActivity_mIvSendVideo"
+                app:layout_constraintStart_toStartOf="@id/ChatActivity_mIvSendVideo"
+                app:layout_constraintTop_toBottomOf="@id/ChatActivity_mIvSendVideo" />
 
             <TextView
                 android:id="@+id/ChatActivity_mTvSendLocation"
@@ -253,9 +253,9 @@
                 android:text="@string/Location"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendLocation"
-                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendLocation"
-                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendLocation" />
+                app:layout_constraintEnd_toEndOf="@id/ChatActivity_mIvSendLocation"
+                app:layout_constraintStart_toStartOf="@id/ChatActivity_mIvSendLocation"
+                app:layout_constraintTop_toBottomOf="@id/ChatActivity_mIvSendLocation" />
 
             <TextView
                 android:id="@+id/ChatActivity_mTvSendFile"
@@ -266,9 +266,9 @@
                 android:text="文件"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/ChatActivity_mIvSendFile"
-                app:layout_constraintStart_toStartOf="@+id/ChatActivity_mIvSendFile"
-                app:layout_constraintTop_toBottomOf="@+id/ChatActivity_mIvSendFile" />
+                app:layout_constraintEnd_toEndOf="@id/ChatActivity_mIvSendFile"
+                app:layout_constraintStart_toStartOf="@id/ChatActivity_mIvSendFile"
+                app:layout_constraintTop_toBottomOf="@id/ChatActivity_mIvSendFile" />
 
         </android.support.constraint.ConstraintLayout>
 

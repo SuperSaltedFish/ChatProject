@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -77,6 +78,7 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
+        ((DefaultItemAnimator)(mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
 
         mAdapter.setOnAcceptContactRequestListener(mOnAcceptContactRequestListener);
 

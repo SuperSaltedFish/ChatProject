@@ -52,7 +52,11 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -154,11 +158,7 @@
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
             android:theme="@style/FullScreenLightNoBackgroundTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity

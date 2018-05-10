@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.text.emoji.widget.EmojiEditText;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -77,6 +78,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 2;
     private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 3;
+    private static final int REQUEST_PERMISSION_CAMERA = 4;
 
     public static final String INTENT_EXTRA_CONVERSATION = "Conversation";
 
@@ -97,6 +99,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private ImageView mIvProfile;
     private ImageView mIvSendImage;
     private ImageView mIvSendLocation;
+    private ImageView mIvSendVideo;
     private VoiceRecorder mVoiceRecorder;
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
@@ -163,6 +166,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
                     startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
                     break;
+                case REQUEST_PERMISSION_CAMERA:
+                    startActivityForResult(new Intent(this, VideoRecorderActivity.class), 0);
+                    break;
             }
         } else {
             showToast(getString(R.string.PermissionMiss));
@@ -175,22 +181,24 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (data == null) {
             return;
         }
-        switch (resultCode) {
-            case ImageMultiSelectorActivity.RESULT_CODE:
-                boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
-                ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
-                if (imageList != null && imageList.size() > 0) {
-                    for (String path : imageList) {
-                        mPresenter.sendImageMessage(path, isOriginal);
-                    }
+        if (resultCode == ImageMultiSelectorActivity.RESULT_CODE) {
+            boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
+            ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
+            if (imageList != null && imageList.size() > 0) {
+                for (String path : imageList) {
+                    mPresenter.sendImageMessage(path, isOriginal);
                 }
-                break;
-            case LocationMapActivity.RESULT_CODE:
-                PoiItem poi = data.getParcelableExtra(LocationMapActivity.INTENT_EXTRA_POI);
-                if (poi != null) {
-                    mPresenter.sendLocationMessage(poi);
-                }
-                break;
+            }
+        } else if (resultCode == LocationMapActivity.RESULT_CODE) {
+            PoiItem poi = data.getParcelableExtra(LocationMapActivity.INTENT_EXTRA_POI);
+            if (poi != null) {
+                mPresenter.sendLocationMessage(poi);
+            }
+        } else if (resultCode == VideoRecorderActivity.RESULT_CODE) {
+            String videoPath = data.getStringExtra(VideoRecorderActivity.INTENT_EXTRA_SAVE_PATH);
+            if (!TextUtils.isEmpty(videoPath)) {
+                mPresenter.sendVideoMessage(videoPath);
+            }
         }
     }
 
@@ -221,6 +229,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvProfile = findViewById(R.id.ChatActivity_mIvProfile);
         mIvSendImage = findViewById(R.id.ChatActivity_mIvSendImage);
         mIvSendLocation = findViewById(R.id.ChatActivity_mIvSendLocation);
+        mIvSendVideo = findViewById(R.id.ChatActivity_mIvSendVideo);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
@@ -283,13 +292,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setLayoutManager(layoutManager);
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
-        // mRvChatView.setItemAnimator(new NoAnimations());
-        mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this){
+        ((DefaultItemAnimator)(mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
+        mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this) {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(newState!=RecyclerView.SCROLL_STATE_IDLE){
-                    if(isShowMoreInput()){
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    if (isShowMoreInput()) {
                         hintMoreInput();
                     }
                 }
@@ -438,6 +447,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+            }
+        });
+
+        mIvSendVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
             }
         });
     }

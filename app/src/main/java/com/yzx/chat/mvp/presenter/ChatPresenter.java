@@ -25,6 +25,7 @@ import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
+import io.rong.message.MediaMessageContent;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -135,6 +136,12 @@ public class ChatPresenter implements ChatContract.Presenter {
         LocationMessage locationMessage = LocationMessage.obtain(latitude, longitude, title + "/" + address, Uri.parse(url));
         locationMessage.setExtra(poi.getPoiId());
         sendMessage(locationMessage);
+    }
+
+    @Override
+    public void sendVideoMessage(String filePath) {
+        Uri uri = Uri.parse("file://" + filePath);
+
     }
 
     @Override

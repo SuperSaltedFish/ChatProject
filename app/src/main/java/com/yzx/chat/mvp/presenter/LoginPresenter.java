@@ -41,10 +41,6 @@ import java.util.Map;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
-    public final static int VERIFY_TYPE_NONE = 0;
-    public final static int VERIFY_TYPE_LOGIN = 1;
-    public final static int VERIFY_TYPE_REGISTER = 2;
-
     private LoginContract.View mLoginView;
     private Gson mGson;
     private AuthApi mAuthApi;
@@ -53,14 +49,13 @@ public class LoginPresenter implements LoginContract.Presenter {
     private Call<JsonResponse<UserInfoBean>> mRegisterCall;
     private Call<JsonResponse<ObtainSMSCode>> mObtainSMSCodeCall;
     private String mServerSecretKey;
-    private int mCurrVerifyType;
 
 
     private Handler mHandler;
 
     public LoginPresenter() {
         mAuthApi = (AuthApi) ApiHelper.getProxyInstance(AuthApi.class);
-        mGson =ApiHelper.getDefaultGsonInstance();
+        mGson = ApiHelper.getDefaultGsonInstance();
         mHandler = new Handler(Looper.myLooper());
 
         IMClient.getInstance().logout();
@@ -92,35 +87,41 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void login(String username, String password, String verifyCode) {
         initLoginCall(username, password, verifyCode);
-        IMClient.getInstance().login(mLoginCall,mLoginOrRegisterCallBack);
+        IMClient.getInstance().login(mLoginCall, mLoginOrRegisterCallBack);
     }
 
     @Override
     public void register(String username, String password, String nickname, String verifyCode) {
         initRegisterCall(username, password, nickname, verifyCode);
-        IMClient.getInstance().login(mRegisterCall,mLoginOrRegisterCallBack);
+        IMClient.getInstance().login(mRegisterCall, mLoginOrRegisterCallBack);
     }
 
     @Override
-    public void verifyLogin(String username, String password) {
+    public void tryObtainLoginVerifyCode(String username, String password) {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
         data.put("password", password);
         data.put("deviceID", CryptoManager.getDeviceID());
-        mCurrVerifyType = VERIFY_TYPE_LOGIN;
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_LOGIN, data);
         startVerify(mObtainSMSCodeCall);
     }
 
     @Override
-    public void verifyRegister(String username) {
+    public void obtainRegisterVerifyCode(String username) {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
-        mCurrVerifyType = VERIFY_TYPE_REGISTER;
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_REGISTER, data);
         startVerify(mObtainSMSCodeCall);
     }
 
+    private void startVerify(Call<?> afterCall) {
+        if (mServerSecretKey == null) {
+            initSecretKeyCall();
+            sHttpExecutor.submit(mGetSecretKeyCall, afterCall);
+        } else {
+            sHttpExecutor.submit(afterCall);
+        }
+    }
 
     private void initSecretKeyCall() {
         AsyncUtil.cancelCall(mGetSecretKeyCall);
@@ -133,11 +134,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
             @Override
             protected void onFailure(String message) {
-                if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
-                    mLoginView.loginFailure(message);
-                } else {
-                    mLoginView.registerFailure(message);
-                }
+                mLoginView.showErrorHint(message);
             }
 
             @Override
@@ -155,7 +152,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
             @Nullable
             @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url,Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
+            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
                 return null;
             }
 
@@ -168,7 +165,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         });
     }
 
-    private void initSMSCodeCall(String username, String type, Map<String, Object> data) {
+    private void initSMSCodeCall(final String username, final String type, final Map<String, Object> data) {
         AsyncUtil.cancelCall(mObtainSMSCodeCall);
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
@@ -178,26 +175,17 @@ public class LoginPresenter implements LoginContract.Presenter {
         mObtainSMSCodeCall.setCallback(new BaseHttpCallback<ObtainSMSCode>() {
             @Override
             protected void onSuccess(ObtainSMSCode response) {
-                if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
-                    if (response.isSkipVerify()) {
-                        mCurrVerifyType = VERIFY_TYPE_NONE;
-                    } else {
-                        AndroidUtil.showToast(response.getVerifyCode());
-                    }
-                    mLoginView.inputLoginVerifyCode(response.isSkipVerify());
+                if (response.isSkipVerify()) {
+                    login(username, (String) data.get("password"), "");
                 } else {
-                    mLoginView.inputRegisterVerifyCode();
                     AndroidUtil.showToast(response.getVerifyCode());
+                    mLoginView.jumpToVerifyPage();
                 }
             }
 
             @Override
             protected void onFailure(String message) {
-                if (mCurrVerifyType == VERIFY_TYPE_LOGIN) {
-                    mLoginView.loginFailure(message);
-                } else {
-                    mLoginView.registerFailure(message);
-                }
+                mLoginView.showErrorHint(message);
             }
         });
         mObtainSMSCodeCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
@@ -226,23 +214,13 @@ public class LoginPresenter implements LoginContract.Presenter {
         mRegisterCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
     }
 
-    private void startVerify(Call<?> afterCall) {
-        if (mServerSecretKey == null) {
-            initSecretKeyCall();
-            sHttpExecutor.submit(mGetSecretKeyCall, afterCall);
-        } else {
-            sHttpExecutor.submit(afterCall);
-        }
-    }
-
-
     private final ResultCallback<Void> mLoginOrRegisterCallBack = new ResultCallback<Void>() {
         @Override
         public void onSuccess(Void result) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mLoginView.verifySuccess();
+                    mLoginView.startSplashActivity();
                 }
             });
         }
@@ -252,11 +230,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (mCurrVerifyType == VERIFY_TYPE_LOGIN||mCurrVerifyType==VERIFY_TYPE_REGISTER) {
-                        mLoginView.verifyFailure(error);
-                    } else {
-                        mLoginView.loginFailure(error);
-                    }
+                    mLoginView.showErrorHint(error);
                 }
             });
         }
@@ -266,7 +240,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Nullable
         @Override
-        public String paramsToString(String url,Map<String, Object> params, String requestMethod) {
+        public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
             LogUtil.e("开始访问：" + url);
             JsonRequest request = new JsonRequest();
             request.setParams(params);
@@ -280,7 +254,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Nullable
         @Override
-        public  Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
+        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
             return null;
         }
 
@@ -288,7 +262,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         @Override
         public Object responseToObject(String url, String httpResponse, Type genericType) {
             byte[] data = Base64Util.decode(httpResponse);
-            if (data == null||data.length==0) {
+            if (data == null || data.length == 0) {
                 LogUtil.e("response: " + null);
                 return null;
             }

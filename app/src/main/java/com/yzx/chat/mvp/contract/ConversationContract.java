@@ -21,11 +21,11 @@ public class ConversationContract {
 
     public interface View extends BaseView<Presenter> {
 
-        void updateConversationListView(DiffUtil.DiffResult diffResult, List<Conversation> conversationList);
+        void updateConversationsFromUI(DiffUtil.DiffResult diffResult, List<Conversation> conversationList);
 
-        void removeConversationItem(Conversation conversation);
+        void removeConversationFromUI(Conversation conversation);
 
-        void enableDisconnectionHint(boolean isEnable);
+        void setEnableDisconnectionHint(boolean isEnable);
 
     }
 
@@ -33,12 +33,12 @@ public class ConversationContract {
     public interface Presenter extends BasePresenter<View> {
         void refreshAllConversations();
 
-        void setConversationToTop(Conversation conversation, boolean isTop);
+        void setConversationTop(Conversation conversation, boolean isTop);
 
-        void removeConversation(Conversation conversation);
+        void deleteConversation(Conversation conversation);
 
-        void clearChatMessages(Conversation conversation);
+        void clearConversationMessages(Conversation conversation);
 
-        boolean isConnected();
+        boolean isConnectedToServer();
     }
 }

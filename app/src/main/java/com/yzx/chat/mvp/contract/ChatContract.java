@@ -49,6 +49,8 @@ public class ChatContract {
 
         void sendLocationMessage(PoiItem poi);
 
+        void sendVideoMessage(String filePath);
+
         void loadMoreMessage(int lastMessageID);
 
         boolean isLoadingMore();
