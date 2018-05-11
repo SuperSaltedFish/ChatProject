@@ -582,19 +582,29 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         protected void performClickImageContent() {
             ImageMessage imageMessage = (ImageMessage) mMessage.getContent();
-            String imagePath = imageMessage.getLocalUri().getPath();
-            if (TextUtils.isEmpty(imagePath) || !new File(imagePath).exists()) {
-                AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_ImageAlreadyDeleted));
-            } else {
-                Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
-                if (stackTopActivity instanceof ChatActivity) {
-                    Intent intent = new Intent(stackTopActivity, ImageOriginalActivity.class);
-                    intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
-                    ChatMessageAdapter.ImageSendMessageHolder holder = (ChatMessageAdapter.ImageSendMessageHolder) this;
-                    ViewCompat.setTransitionName(holder.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, holder.mIvContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
-                    ActivityCompat.startActivity(stackTopActivity, intent, options.toBundle());
+            Uri imageUri = imageMessage.getLocalUri();
+            if (imageUri == null || TextUtils.isEmpty(imageUri.getPath()) ||! new File(imageUri.getPath()).exists()) {
+                imageUri = imageMessage.getMediaUrl();
+                if (imageUri == null || TextUtils.isEmpty(imageUri.getPath())) {
+                    AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_ImageAlreadyDeleted));
+                    return;
                 }
+            }
+            Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
+            if (stackTopActivity instanceof ChatActivity) {
+                Intent intent = new Intent(stackTopActivity, ImageOriginalActivity.class);
+                intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_URI, imageUri);
+                View transition;
+                if (this instanceof ImageSendMessageHolder) {
+                    transition = ((ImageSendMessageHolder) this).mIvContent;
+                } else if (this instanceof ImageReceiveMessageHolder) {
+                    transition = ((ImageReceiveMessageHolder) this).mIvContent;
+                } else {
+                    return;
+                }
+                ViewCompat.setTransitionName(transition, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, transition, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                ActivityCompat.startActivity(stackTopActivity, intent, options.toBundle());
             }
         }
 

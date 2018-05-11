@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
@@ -17,7 +18,7 @@ import com.yzx.chat.util.GlideUtil;
 
 public class ImageOriginalActivity extends BaseCompatActivity {
 
-    public static final String INTENT_EXTRA_IMAGE_PATH = "ImagePath";
+    public static final String INTENT_EXTRA_IMAGE_URI = "ImageUri";
     public static final String TRANSITION_NAME_IMAGE = "TransitionNameImage";
 
     private PhotoView mPhotoView;
@@ -35,12 +36,12 @@ public class ImageOriginalActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        String imagePath = getIntent().getStringExtra(INTENT_EXTRA_IMAGE_PATH);
-        if (TextUtils.isEmpty(imagePath)) {
+        Uri imageUri = getIntent().getParcelableExtra(INTENT_EXTRA_IMAGE_URI);
+        if (imageUri==null) {
             finish();
             return;
         }
-        GlideUtil.loadFromUrl(this, mPhotoView, "file://" + imagePath);
+        GlideUtil.loadFromUrl(this, mPhotoView, imageUri);
     }
 
     @Override

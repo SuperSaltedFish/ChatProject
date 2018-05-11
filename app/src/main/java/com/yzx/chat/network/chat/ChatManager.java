@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.yzx.chat.util.LogUtil;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +15,6 @@ import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
-
 /**
  * Created by YZX on 2017年12月31日.
  * 每一个不曾起舞的日子 都是对生命的辜负
