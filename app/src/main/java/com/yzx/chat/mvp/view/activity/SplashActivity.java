@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.mvp.contract.SplashContract;
@@ -15,8 +14,6 @@ import com.yzx.chat.mvp.presenter.SplashPresenter;
 public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter> implements SplashContract.View {
 
     private static int PERMISSIONS_REQUEST_CODE = 1;
-
-    public static final String INTENT_EXTRA_LOGGED = "isAlreadyLogged";
 
     @Override
     protected int getLayoutID() {
@@ -37,17 +34,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
         if (isSuccess) {
             if (requestCode == PERMISSIONS_REQUEST_CODE) {
-                boolean isAlreadyLogged = getIntent().getBooleanExtra(INTENT_EXTRA_LOGGED, false);
-                if (isAlreadyLogged) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            startHomeActivity();
-                        }
-                    }, 1000);
-                } else {
-                    mPresenter.login();
-                }
+                    mPresenter.checkLogin();
             }
         }else {
             finish();

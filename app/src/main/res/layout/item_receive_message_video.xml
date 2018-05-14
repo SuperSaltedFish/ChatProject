@@ -37,8 +37,8 @@
             android:scaleType="centerCrop" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_play" />
 
@@ -47,6 +47,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="8dp"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
 

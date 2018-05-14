@@ -119,6 +119,13 @@
             android:name=".mvp.view.activity.CropImageActivity"
             android:theme="@style/BaseDarkTheme"></activity>
         <activity android:name=".mvp.view.activity.VideoPlayActivity"></activity>
+
+        <receiver android:name=".broadcast.UninstallReceive" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

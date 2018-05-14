@@ -36,6 +36,7 @@ import com.yzx.chat.mvp.view.activity.ImageOriginalActivity;
 import com.yzx.chat.mvp.view.activity.LocationMapActivity;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -573,7 +574,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 params.width = Math.max(thumbnailWidth, mIvVideoThumbnail.getMinimumWidth());
                 params.height = Math.max(thumbnailHeight, mIvVideoThumbnail.getMinimumHeight());
             }
+            mTvVideoDuration.setText(videoTimeFormat(videoMessage.getDuration()));
             GlideUtil.loadFromUrl(mIvVideoThumbnail.getContext(), mIvVideoThumbnail, thumbnailUri);
+        }
+
+        private static String videoTimeFormat(long millisecond) {
+            int second = (int) Math.ceil(millisecond / 1000.0);
+            return String.format(Locale.getDefault(), "%d:%02d", second / 60, second % 60);
         }
     }
 

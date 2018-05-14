@@ -91,7 +91,7 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
 
     @Override
     public void saveQRCodeToLocal(Bitmap bitmap,String id) {
-        String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryManager.getPublicImagePath(), MD5Util.encrypt16(id));
+        String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryManager.getUserImagePath(), MD5Util.encrypt16(id));
         if (TextUtils.isEmpty(savePath)) {
             mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeFail));
         } else {

@@ -537,9 +537,7 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
-                Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
-                intent.putExtra(SplashActivity.INTENT_EXTRA_LOGGED, true);
-                LoginActivity.this.startActivity(intent);
+                LoginActivity.this.startActivity(new Intent(LoginActivity.this, SplashActivity.class));
                 LoginActivity.this.finish();
             }
         });

@@ -245,5 +245,16 @@ public class VideoMessage extends MediaMessageContent {
             return new VideoMessage[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "VideoMessage{" +
+                "mThumbUri=" + mThumbUri +
+                ", mBase64='" + mBase64 + '\'' +
+                ", mDuration=" + mDuration +
+                ", mName='" + mName + '\'' +
+                ", mSize=" + mSize +
+                '}';
+    }
 }
 

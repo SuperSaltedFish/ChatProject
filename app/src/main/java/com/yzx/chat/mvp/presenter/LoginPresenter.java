@@ -21,6 +21,7 @@ import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;

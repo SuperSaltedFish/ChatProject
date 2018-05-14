@@ -9,17 +9,15 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.MD5Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import io.rong.common.FileUtils;
 import io.rong.common.RLog;
-import io.rong.imlib.NativeClient;
 import io.rong.imlib.model.Message;
 import io.rong.message.MessageHandler;
 
@@ -34,7 +32,7 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
     private static final int THUMB_COMPRESSED_WIDTH_SIZE = 158;
     private static final int THUMB_COMPRESSED_HEIGHT_SIZE = 280;
     private static final int THUMB_COMPRESSED_QUALITY = 50;
-    private final static String VIDEO_THUMBNAIL_PATH = DirectoryManager.getPublicThumbnailPath();
+    private static final String VIDEO_THUMBNAIL_PATH = DirectoryManager.getPublicThumbnailPath();
 
     public VideoMessageHandler(Context context) {
         super(context);
@@ -56,10 +54,9 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
                 return;
             }
             File file = new File(VIDEO_THUMBNAIL_PATH + MD5Util.encrypt16(message.getSenderUserId() + message.getTargetId() + message.getMessageId()) + ".jpeg");
-            if (file.exists()) {
-                file.delete();
+            if (!file.exists()) {
+                FileUtils.byte2File(data, file.getParent(), file.getName());
             }
-            FileUtils.byte2File(data, file.getParent(), file.getName());
             model.setThumbUri(Uri.fromFile(file));
             model.setBase64(null);
         }
@@ -73,22 +70,25 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
         if (videoInfo == null) {
             return;
         }
+        LogUtil.e(model.toString());
         if (videoInfo.thumbnail != null) {
-            File file = new File(VIDEO_THUMBNAIL_PATH + MD5Util.encrypt16(message.getSenderUserId() + message.getTargetId() + message.getMessageId()) + ".jpeg");
-            if (file.exists()) {
-                file.delete();
-            }
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            try {
-                videoInfo.thumbnail.compress(Bitmap.CompressFormat.JPEG, THUMB_COMPRESSED_QUALITY, outputStream);
-                byte[] data = outputStream.toByteArray();
+            File file = new File(VIDEO_THUMBNAIL_PATH + MD5Util.encrypt32(message.getSenderUserId() + message.getTargetId() + message.getMessageId()) + ".jpeg");
+            if (!file.exists()) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                try {
+                    videoInfo.thumbnail.compress(Bitmap.CompressFormat.JPEG, THUMB_COMPRESSED_QUALITY, outputStream);
+                    byte[] data = outputStream.toByteArray();
+                    model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
+                    FileUtils.byte2File(data, file.getParent(), file.getName());
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                byte[] data = FileUtils.file2byte(file);
                 model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
-                FileUtils.byte2File(data, file.getParent(), file.getName());
-                model.setThumbUri(Uri.fromFile(file));
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            model.setThumbUri(Uri.fromFile(file));
             videoInfo.thumbnail.recycle();
         }
         model.setDuration(videoInfo.duration);
@@ -139,7 +139,7 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
             }
             videoInfo.thumbnail = scaleBitmap;
         }
-        if (TextUtils.isEmpty(duration)) {
+        if (!TextUtils.isEmpty(duration)) {
             videoInfo.duration = Integer.parseInt(duration);
         }
         videoInfo.size = file.length();

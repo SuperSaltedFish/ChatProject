@@ -34,8 +34,6 @@ public class AppApplication extends Application {
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
 
-            DirectoryManager.init();
-
             AndroidUtil.init(this);
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));

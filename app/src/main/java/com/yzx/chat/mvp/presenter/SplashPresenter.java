@@ -14,6 +14,7 @@ import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.network.chat.UserManager;
+import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
@@ -42,36 +43,51 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     @Override
-    public void login() {
-        String token = UserManager.getLocalToken();
-        if (TextUtils.isEmpty(token)) {
-            mSplashView.startLoginActivity();
+    public void checkLogin() {
+        if (IMClient.getInstance().isLogged()) {
+            initDirectory();
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSplashView.startHomeActivity();
+                }
+            }, 1000);
         } else {
-            mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
-            IMClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSplashView.startHomeActivity();
-                        }
-                    });
-                }
+            String token = UserManager.getLocalToken();
+            if (TextUtils.isEmpty(token)) {
+                mSplashView.startLoginActivity();
+            } else {
+                mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
+                IMClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                initDirectory();
+                                mSplashView.startHomeActivity();
+                            }
+                        });
+                    }
 
-                @Override
-                public void onFailure(String error) {
-                    LogUtil.e(error);
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSplashView.error(AndroidUtil.getString(R.string.SplashPresenter_TokenIncorrect));
-                            mSplashView.startLoginActivity();
-                        }
-                    });
-                }
-            });
+                    @Override
+                    public void onFailure(String error) {
+                        LogUtil.e(error);
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSplashView.error(AndroidUtil.getString(R.string.SplashPresenter_TokenIncorrect));
+                                mSplashView.startLoginActivity();
+                            }
+                        });
+                    }
+                });
+            }
         }
+    }
 
+
+    private void initDirectory() {
+        DirectoryManager.initUserDirectory(IMClient.getInstance().userManager().getUserID());
     }
 }

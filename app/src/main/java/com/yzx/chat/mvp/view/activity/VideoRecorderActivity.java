@@ -3,9 +3,7 @@ package com.yzx.chat.mvp.view.activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.constraint.Group;
 import android.text.TextUtils;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.VideoView;
@@ -13,7 +11,6 @@ import android.widget.VideoView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.tool.DirectoryManager;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.MD5Util;
 import com.yzx.chat.widget.view.Camera2RecodeView;
 import com.yzx.chat.widget.view.RecorderButton;
@@ -225,7 +222,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
         @Override
         public void onProgressAnimationStart() {
-            mCurrentVideoPath = DirectoryManager.getPublicVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
+            mCurrentVideoPath = DirectoryManager.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
             if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
                 showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
                 mRecorderButton.reset();
