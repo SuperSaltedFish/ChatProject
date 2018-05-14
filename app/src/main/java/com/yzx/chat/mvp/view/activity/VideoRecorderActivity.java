@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.constraint.Group;
+import android.text.TextUtils;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
@@ -147,12 +148,15 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     private void restartPreview() {
         mVideoView.stopPlayback();
         setCurrentState(CURRENT_STATE_PREVIEW);
+        mCurrentVideoPath = null;
     }
 
     private void confirmVideo() {
-        Intent intent = new Intent();
-        intent.putExtra(INTENT_EXTRA_SAVE_PATH, mCurrentVideoPath);
-        setResult(RESULT_CODE, intent);
+        if(!TextUtils.isEmpty(mCurrentVideoPath)){
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_EXTRA_SAVE_PATH, mCurrentVideoPath);
+            setResult(RESULT_CODE, intent);
+        }
         finish();
     }
 

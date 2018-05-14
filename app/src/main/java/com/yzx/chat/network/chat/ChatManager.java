@@ -2,6 +2,7 @@ package com.yzx.chat.network.chat;
 
 import android.text.TextUtils;
 
+import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.LogUtil;
 
 import java.util.Collections;
@@ -15,6 +16,13 @@ import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.imlib.model.MessageContent;
+import io.rong.message.FileMessage;
+import io.rong.message.ImageMessage;
+import io.rong.message.LocationMessage;
+import io.rong.message.TextMessage;
+import io.rong.message.VoiceMessage;
+
 /**
  * Created by YZX on 2017年12月31日.
  * 每一个不曾起舞的日子 都是对生命的辜负
@@ -25,19 +33,21 @@ public class ChatManager {
 
     private RongIMClient mRongIMClient;
     private IMClient.SubManagerCallback mSubManagerCallback;
+    private SendMessageCallbackWrapper mSendMessageCallbackWrapper;
     private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
-    private Map<OnMessageSendStateChangeListener, String> mMessageSendStateChangeListenerMap;
+    private Map<OnMessageSendListener, String> mMessageSendStateChangeListenerMap;
     private List<OnChatMessageUnreadCountChangeListener> mChatMessageUnreadCountChangeListeners;
 
     private volatile int mUnreadChatMessageCount;
     private final Object mUpdateChatUnreadCountLock = new Object();
 
-    public ChatManager(IMClient.SubManagerCallback subManagerCallback) {
+    ChatManager(IMClient.SubManagerCallback subManagerCallback) {
         if (subManagerCallback == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
         mSubManagerCallback = subManagerCallback;
         mRongIMClient = RongIMClient.getInstance();
+        mSendMessageCallbackWrapper = new SendMessageCallbackWrapper();
         mMessageListenerMap = new HashMap<>();
         mMessageSendStateChangeListenerMap = new HashMap<>();
         mChatMessageUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnChatMessageUnreadCountChangeListener>());
@@ -52,7 +62,14 @@ public class ChatManager {
     }
 
     public void sendMessage(Message message) {
-        mRongIMClient.sendMessage(message, null, null, mSendMessageCallback);
+        MessageContent content = message.getContent();
+        if (content instanceof TextMessage || content instanceof VoiceMessage) {
+            mRongIMClient.sendMessage(message, null, null, (IRongCallback.ISendMessageCallback) mSendMessageCallbackWrapper);
+        } else if (content instanceof ImageMessage || content instanceof FileMessage || content instanceof VideoMessage) {
+            mRongIMClient.sendMediaMessage(message, null, null, mSendMessageCallbackWrapper);
+        } else if (content instanceof LocationMessage) {
+            mRongIMClient.sendLocationMessage(message, null, null, mSendMessageCallbackWrapper);
+        }
     }
 
     public void setVoiceMessageAsListened(Message message) {
@@ -133,13 +150,13 @@ public class ChatManager {
         mMessageListenerMap.remove(listener);
     }
 
-    public void addOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener, String conversationID) {
+    public void addOnMessageSendStateChangeListener(OnMessageSendListener listener, String conversationID) {
         if (!mMessageSendStateChangeListenerMap.containsKey(listener)) {
             mMessageSendStateChangeListenerMap.put(listener, conversationID);
         }
     }
 
-    public void removeOnMessageSendStateChangeListener(OnMessageSendStateChangeListener listener) {
+    public void removeOnMessageSendStateChangeListener(OnMessageSendListener listener) {
         mMessageSendStateChangeListenerMap.remove(listener);
     }
 
@@ -180,13 +197,24 @@ public class ChatManager {
         }
     }
 
-    private final IRongCallback.ISendMessageCallback mSendMessageCallback = new IRongCallback.ISendMessageCallback() {
+    private class SendMessageCallbackWrapper extends RongIMClient.SendImageMessageCallback implements IRongCallback.ISendMediaMessageCallback {
+
         @Override
         public void onAttached(Message message) {
             String conversationID = message.getTargetId();
-            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+            for (Map.Entry<OnMessageSendListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendProgress(message);
+                    entry.getKey().onAttached(message);
+                }
+            }
+        }
+
+        @Override
+        public void onProgress(Message message, int i) {
+            String conversationID = message.getTargetId();
+            for (Map.Entry<OnMessageSendListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onProgress(message, i);
                 }
             }
         }
@@ -194,9 +222,9 @@ public class ChatManager {
         @Override
         public void onSuccess(Message message) {
             String conversationID = message.getTargetId();
-            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+            for (Map.Entry<OnMessageSendListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendSuccess(message);
+                    entry.getKey().onSuccess(message);
                 }
             }
         }
@@ -205,22 +233,35 @@ public class ChatManager {
         public void onError(Message message, RongIMClient.ErrorCode errorCode) {
             LogUtil.e("send message fail:" + errorCode);
             String conversationID = message.getTargetId();
-            for (Map.Entry<OnMessageSendStateChangeListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+            for (Map.Entry<OnMessageSendListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
                 if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
-                    entry.getKey().onSendFail(message);
+                    entry.getKey().onError(message);
                 }
             }
         }
-    };
 
+        @Override
+        public void onCanceled(Message message) {
+            String conversationID = message.getTargetId();
+            for (Map.Entry<OnMessageSendListener, String> entry : mMessageSendStateChangeListenerMap.entrySet()) {
+                if (conversationID.equals(entry.getValue()) || entry.getValue() == null) {
+                    entry.getKey().onCanceled(message);
+                }
+            }
+        }
+    }
 
-    public interface OnMessageSendStateChangeListener {
+    public interface OnMessageSendListener {
 
-        void onSendProgress(Message message);
+        void onAttached(Message message);
 
-        void onSendSuccess(Message message);
+        void onProgress(Message message, int progress);
 
-        void onSendFail(Message message);
+        void onSuccess(Message message);
+
+        void onError(Message message);
+
+        void onCanceled(Message message);
     }
 
     public interface OnChatMessageUnreadCountChangeListener {
@@ -230,5 +271,6 @@ public class ChatManager {
     public interface OnChatMessageReceiveListener {
         void onChatMessageReceived(Message message, int untreatedCount);
     }
+
 
 }

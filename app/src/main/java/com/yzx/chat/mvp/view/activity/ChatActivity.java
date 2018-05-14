@@ -453,7 +453,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA);
             }
         });
     }

@@ -352,10 +352,10 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
-            if (!isPositionComplete ) {
-                if(mCurrentMode == MODE_SEND){
+            if (!isPositionComplete) {
+                if (mCurrentMode == MODE_SEND) {
                     mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
-                }else {
+                } else {
                     mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mShareLatLng, DEFAULT_ZOOM));
                 }
             }

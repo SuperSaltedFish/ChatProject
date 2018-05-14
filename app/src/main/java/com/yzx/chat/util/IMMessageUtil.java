@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 
 import com.yzx.chat.R;
+import com.yzx.chat.network.chat.extra.VideoMessage;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.MessageContent;
@@ -49,6 +50,8 @@ public class IMMessageUtil {
                 return AndroidUtil.getString(R.string.EMMessageUtil_EmotionInfo);
             } else if (message instanceof FileMessage) {
                 return AndroidUtil.getString(R.string.EMMessageUtil_FileInfo);
+            }else if (message instanceof VideoMessage) {
+                return AndroidUtil.getString(R.string.EMMessageUtil_VideoInfo);
             }
             return "";
         }

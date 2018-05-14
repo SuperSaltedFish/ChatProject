@@ -12,7 +12,7 @@
         android:layout_height="40dp" />
 
     <FrameLayout
-        android:id="@+id/ChatAdapter_mFlPlayLayout"
+        android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:background="@drawable/bg_chat_item_recv"
@@ -27,7 +27,7 @@
             android:padding="3dp" />
 
         <TextView
-            android:id="@+id/ChatAdapter_mTvVoiceTimeLength"
+            android:id="@+id/ChatAdapter_mTvVoiceDuration"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end|center_vertical"

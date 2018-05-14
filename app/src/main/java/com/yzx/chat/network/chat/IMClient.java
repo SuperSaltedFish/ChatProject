@@ -18,6 +18,7 @@ import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.UserInfoBean;
+import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpCallback;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
@@ -41,6 +42,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
@@ -90,6 +92,10 @@ public class IMClient {
         mRongIMClient = RongIMClient.getInstance();
         RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
         RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+        try {
+            RongIMClient.registerMessageType(VideoMessage.class);
+        } catch (AnnotationNotFoundException ignored) {
+        }
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
         mWorkExecutor = new ThreadPoolExecutor(
                 0,
@@ -456,6 +462,7 @@ public class IMClient {
                 case "RC:TxtMsg":
                 case "RC:VcMsg":
                 case "RC:ImgMsg":
+                case "Custom:VideoMsg":
                     mChatManager.onReceiveContactNotificationMessage(message, i);
                     break;
                 case "RC:ContactNtf":
@@ -469,14 +476,6 @@ public class IMClient {
             return true;
         }
     };
-
-    public interface OnLoginListener {
-
-        void onLoginSuccess(boolean isConnectedToServer);
-
-        void onLoginFailure(String error);
-
-    }
 
     public interface OnConnectionStateChangeListener {
 

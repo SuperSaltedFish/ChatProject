@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical|end"
-    android:paddingEnd="8dp"
-    android:paddingTop="3dp"
     android:paddingBottom="3dp"
-    android:paddingStart="8dp">
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
+    android:paddingTop="3dp">
 
     <ImageView
         android:id="@+id/ChatMessageAdapter_mIvMessageState"
@@ -16,7 +16,6 @@
         android:padding="2dp" />
 
     <android.support.v7.widget.CardView
-        android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardCornerRadius="3dp"
@@ -24,6 +23,7 @@
         app:cardUseCompatPadding="true">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/ChatMessageAdapter_mContentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

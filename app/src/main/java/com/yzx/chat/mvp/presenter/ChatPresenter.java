@@ -13,6 +13,7 @@ import com.yzx.chat.mvp.contract.ChatContract;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
@@ -25,7 +26,6 @@ import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
-import io.rong.message.MediaMessageContent;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -60,7 +60,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void detachView() {
         mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
+        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mIMClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mChatView = null;
@@ -82,9 +82,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         mChatView.enableLoadMoreHint(false);
 
         mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener);
+        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
-        mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendStateChangeListener, sConversationID);
+        mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
 
 
         if (mConversation.getUnreadMessageCount() != 0) {
@@ -141,7 +141,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void sendVideoMessage(String filePath) {
         Uri uri = Uri.parse("file://" + filePath);
-
+        sendMessage(VideoMessage.obtain(uri));
     }
 
     @Override
@@ -246,20 +246,30 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
     };
 
-    private final ChatManager.OnMessageSendStateChangeListener mOnMessageSendStateChangeListener = new ChatManager.OnMessageSendStateChangeListener() {
+    private final ChatManager.OnMessageSendListener mOnMessageSendListener = new ChatManager.OnMessageSendListener() {
         @Override
-        public void onSendProgress(Message message) {
+        public void onAttached(Message message) {
             mChatView.addNewMessage(message);
             mIsConversationStateChange = true;
         }
 
         @Override
-        public void onSendSuccess(Message message) {
+        public void onProgress(Message message, int progress) {
+
+        }
+
+        @Override
+        public void onSuccess(Message message) {
             mChatView.updateMessage(message);
         }
 
         @Override
-        public void onSendFail(Message message) {
+        public void onError(Message message) {
+            mChatView.updateMessage(message);
+        }
+
+        @Override
+        public void onCanceled(Message message) {
             mChatView.updateMessage(message);
         }
     };

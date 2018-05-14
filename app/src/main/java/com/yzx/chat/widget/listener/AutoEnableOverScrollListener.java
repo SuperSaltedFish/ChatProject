@@ -25,6 +25,6 @@ public class AutoEnableOverScrollListener extends RecyclerView.OnScrollListener 
 
     public void setEnableOverScroll(boolean isEnable) {
         mSmartRefreshLayout.setEnableRefresh(isEnable);
-        mSmartRefreshLayout.setEnableLoadmore(isEnable);
+        mSmartRefreshLayout.setEnableLoadMore(isEnable);
     }
 }

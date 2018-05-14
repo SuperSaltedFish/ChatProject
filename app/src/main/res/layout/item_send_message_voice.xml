@@ -14,20 +14,20 @@
 
 
     <FrameLayout
-        android:id="@+id/ChatAdapter_mFlPlayLayout"
+        android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:background="@drawable/bg_chat_item_send"
         android:minWidth="80dp">
 
         <TextView
-            android:id="@+id/ChatAdapter_mTvVoiceTimeLength"
+            android:id="@+id/ChatAdapter_mTvVoiceDuration"
             android:layout_width="wrap_content"
-            android:paddingStart="8dp"
-            android:textColor="@color/text_main_color_white_alpha"
             android:layout_height="match_parent"
             android:layout_gravity="start|center_vertical"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:textColor="@color/text_main_color_white_alpha" />
 
         <ImageView
             android:id="@+id/ChatMessageAdapter_mIvPlayIcon"

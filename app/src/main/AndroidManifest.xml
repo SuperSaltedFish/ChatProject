@@ -16,16 +16,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 允许程序使用录音设备 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--允许程序访问WiFi网络信息-->
+    <!-- 允许程序访问WiFi网络信息 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--允许程序读写手机状态和身份-->
+    <!-- 允许程序读写手机状态和身份 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--允许程序访问CellID或WiFi热点来获取粗略的位置-->
+    <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--允许程序控制屏幕常亮了-->
+    <!-- 允许程序控制屏幕常亮了 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
 
     <application
         android:name=".configure.AppApplication"
@@ -35,19 +34,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/DefaultLightTheme">
-
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="810aa1b6f44962b87f87059d20335acf" />
-
         <meta-data
             android:name="RONG_CLOUD_APP_KEY"
             android:value="82hegw5u8dlsx" />
-
         <meta-data
             android:name="android.max_aspect"
             android:value="2.2" />
-
 
         <activity
             android:name=".mvp.view.activity.SplashActivity"
@@ -58,124 +53,72 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".mvp.view.activity.LoginActivity"
             android:launchMode="singleTask"
-            android:theme="@style/LoginTheme">
-
-        </activity>
+            android:theme="@style/LoginTheme"></activity>
         <activity
             android:name=".mvp.view.activity.HomeActivity"
-            android:windowSoftInputMode="adjustPan">
-
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".mvp.view.activity.ChatActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity
             android:name=".mvp.view.activity.QrCodeScanActivity"
-            android:theme="@style/NoBackgroundDarkTheme">
-
-        </activity>
+            android:theme="@style/NoBackgroundDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageMultiSelectorActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
+            android:theme="@style/BaseDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageViewPagerActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.ContactProfileActivity">
-
-        </activity>
-
+            android:theme="@style/BaseDarkTheme"></activity>
+        <activity android:name=".mvp.view.activity.ContactProfileActivity"></activity>
         <activity
             android:name=".mvp.view.activity.FindNewContactActivity"
             android:theme="@style/TransparentStatusBarLightTheme"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
-
-        <activity android:name=".mvp.view.activity.RemarkInfoActivity">
-
-        </activity>
-
-        <activity android:name=".mvp.view.activity.ContactOperationActivity">
-
-        </activity>
-
-        <activity android:name=".mvp.view.activity.ModifyContactLabelActivity">
-
-        </activity>
-
-        <activity android:name=".mvp.view.activity.StrangerProfileActivity">
-
-        </activity>
-
-        <activity android:name=".mvp.view.activity.ProfileModifyActivity">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.SignatureEditActivity">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing"></activity>
+        <activity android:name=".mvp.view.activity.RemarkInfoActivity"></activity>
+        <activity android:name=".mvp.view.activity.ContactOperationActivity"></activity>
+        <activity android:name=".mvp.view.activity.ModifyContactLabelActivity"></activity>
+        <activity android:name=".mvp.view.activity.StrangerProfileActivity"></activity>
+        <activity android:name=".mvp.view.activity.ProfileModifyActivity"></activity>
+        <activity android:name=".mvp.view.activity.SignatureEditActivity"></activity>
         <activity
             android:name=".mvp.view.activity.ImageSingleSelectorActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
+            android:theme="@style/BaseDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageOriginalActivity"
-            android:theme="@style/FullScreenDarkTheme">
-
-        </activity>
+            android:theme="@style/FullScreenDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.GroupProfileActivity"
-            android:theme="@style/TransparentStatusBarLightTheme">
-
-        </activity>
+            android:theme="@style/TransparentStatusBarLightTheme"></activity>
         <activity
             android:name=".mvp.view.activity.CreateGroupActivity"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing"></activity>
         <activity
             android:name=".mvp.view.activity.MyQRCodeActivity"
-            android:theme="@style/NoBackgroundLightTheme">
-
-        </activity>
-
-        <activity android:name=".mvp.view.activity.LocationMapActivity">
-
-        </activity>
-
-
+            android:theme="@style/NoBackgroundLightTheme"></activity>
+        <activity android:name=".mvp.view.activity.LocationMapActivity"></activity>
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
-            android:theme="@style/FullScreenLightNoBackgroundTheme">
-
-        </activity>
-
+            android:theme="@style/FullScreenLightNoBackgroundTheme"></activity>
         <activity
             android:name=".mvp.view.activity.TestActivity"
             android:theme="@style/FullScreenDarkTheme">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".mvp.view.activity.GroupListActivity" />
         <activity
             android:name=".mvp.view.activity.CropImageActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
+            android:theme="@style/BaseDarkTheme"></activity>
+        <activity android:name=".mvp.view.activity.VideoPlayActivity"></activity>
     </application>
 
 </manifest>

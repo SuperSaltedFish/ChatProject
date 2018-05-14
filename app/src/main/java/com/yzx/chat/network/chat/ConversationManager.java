@@ -31,7 +31,7 @@ public class ConversationManager {
 
     private List<OnConversationStateChangeListener> mConversationStateChangeListeners;
 
-    public ConversationManager(IMClient.SubManagerCallback subManagerCallback) {
+    ConversationManager(IMClient.SubManagerCallback subManagerCallback) {
         if (subManagerCallback == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }

@@ -36,6 +36,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     public static final String INTENT_EXTRA_CURRENT_POSITION = "CurrentPosition";
     public static final String INTENT_EXTRA_IS_ORIGINAL = "IsOriginal";
     public static final String INTENT_EXTRA_MAX_SELECTED_COUNT = "MaxSelectedCount";
+    public static final String INTENT_EXTRA_IS_SENDING = "IsSending";
 
     private ViewPager mViewPager;
     private CheckBox mCbSelected;
@@ -48,8 +49,8 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     private ArrayList<String> mSelectedList;
     private int mCurrentPosition;
     private boolean isOriginal;
-
     private int mMaxSelectedCount;
+    private boolean isSending;
 
 
     @Override
@@ -71,19 +72,20 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         mMaxSelectedCount = getIntent().getIntExtra(INTENT_EXTRA_MAX_SELECTED_COUNT, 0);
         if (mImageList == null || mImageList.size() == 0||mMaxSelectedCount==0) {
             finish();
+            return;
         }
         if (mSelectedList == null) {
             mSelectedList = new ArrayList<>();
         }
         mPagerAdapter = new LocalImageViewPagerAdapter(this, mImageList);
         mSelectedAdapter = new ImageSelectedAdapter(mSelectedList);
-
-        mRBtnOriginal.setOnClickListener(mOnOriginalClickListener);
-        mRBtnOriginal.setChecked(isOriginal);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        if(mSelectedList==null){
+            return;
+        }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -100,6 +102,11 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         mOnPageChangeListener.onPageSelected(mCurrentPosition);
 
         mCbSelected.setOnCheckedChangeListener(mOnSelectedChangeListener);
+
+        mBtnConfirm.setOnClickListener(mOnViewClickListener);
+        mRBtnOriginal.setOnClickListener(mOnViewClickListener);
+        mRBtnOriginal.setChecked(isOriginal);
+
         tryShowSelectedView();
         updateBtnConfirmText();
 
@@ -110,6 +117,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         Intent intent = new Intent();
         intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);
         intent.putExtra(INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+        intent.putExtra(INTENT_EXTRA_IS_SENDING,isSending);
         setResult(RESULT_CODE, intent);
         finish();
     }
@@ -132,6 +140,22 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
             mBtnConfirm.setEnabled(false);
         }
     }
+
+    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.ImageViewpagerActivity_mBtnConfirm:
+                    isSending = true;
+                    onBackPressed();
+                    break;
+                case R.id.ImageViewpagerActivity_mRBtnOriginal:
+                    isOriginal = !isOriginal;
+                    mRBtnOriginal.setChecked(isOriginal);
+                    break;
+            }
+        }
+    };
 
     private final CompoundButton.OnCheckedChangeListener mOnSelectedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
@@ -193,14 +217,6 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
                     mCbSelected.setChecked(false);
                 }
             }
-        }
-    };
-
-    private final View.OnClickListener mOnOriginalClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            isOriginal = !isOriginal;
-            mRBtnOriginal.setChecked(isOriginal);
         }
     };
 

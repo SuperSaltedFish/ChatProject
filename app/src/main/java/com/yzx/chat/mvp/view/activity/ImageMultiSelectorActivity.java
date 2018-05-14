@@ -188,6 +188,9 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
                 mSelectedList.addAll(selectList);
                 mLocalMultiImageAdapter.notifyDataSetChanged();
             }
+            if (data.getBooleanExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_SENDING, false)) {
+                mOnConfirmClickListener.onClick(null);
+            }
         }
     }
 
@@ -282,10 +285,10 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         public boolean onItemSelect(int position, boolean isSelect) {
             if (isSelect) {
                 if (!mSelectedList.contains(mCurrentImagePathList.get(position))) {
-                    if(mSelectedList.size()>=MAX_SELECTED_COUNT){
-                        showToast(String.format(getString(R.string.ImageMultiSelectorActivity_SelectedCountLimitHint),MAX_SELECTED_COUNT));
+                    if (mSelectedList.size() >= MAX_SELECTED_COUNT) {
+                        showToast(String.format(getString(R.string.ImageMultiSelectorActivity_SelectedCountLimitHint), MAX_SELECTED_COUNT));
                         return false;
-                    }else {
+                    } else {
                         mSelectedList.add(mCurrentImagePathList.get(position));
                     }
                 }

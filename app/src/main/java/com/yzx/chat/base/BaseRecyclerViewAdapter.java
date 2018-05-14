@@ -21,7 +21,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     private static final int DEFAULT_HOLDER_TYPE_HEADER = -1;
     private static final int DEFAULT_HOLDER_TYPE_FOOTER = -2;
 
-    public Context mContext;
+    protected Context mContext;
     private View mHeaderView;
     private View mFooterView;
     private OnScrollToBottomListener mScrollToBottomListener;

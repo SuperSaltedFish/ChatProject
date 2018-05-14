@@ -18,7 +18,7 @@ public class DirectoryManager {
 
     private static final String PROTECTED_DATA_BASE_PATH = AppApplication.getAppContext().getExternalFilesDir(null).getPath();
 
-    private static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath()+"/Chat";
+    private static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath() + "/Chat";
 
     private static final String PATH_VOICE_RECORDER = "/VoiceRecorder/";
 
@@ -28,23 +28,30 @@ public class DirectoryManager {
 
     private static final String PATH_VIDEO = "/Video/";
 
+    private static final String PATH_THUMBNAIL = "/Thumbnail/";
+
     public static void init() {
         File file;
-        file = new File(PRIVATE_DATA_BASE_PATH + PATH_VOICE_RECORDER);
+        file = new File(getPrivateVoiceRecorderPath());
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(PROTECTED_DATA_BASE_PATH + PATH_TEMP);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-
-        file = new File(PUBLIC_DATA_BASE_PATH + PATH_IMAGE);
+        file = new File(getProtectedTempPath());
         if (!file.exists()) {
             file.mkdirs();
         }
 
-        file = new File(PUBLIC_DATA_BASE_PATH + PATH_VIDEO);
+        file = new File(getPublicImagePath());
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        file = new File(getPublicVideoPath());
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        file = new File(getPublicThumbnailPath());
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -64,5 +71,9 @@ public class DirectoryManager {
 
     public static String getPublicVideoPath() {
         return PUBLIC_DATA_BASE_PATH + PATH_VIDEO;
+    }
+
+    public static String getPublicThumbnailPath() {
+        return PUBLIC_DATA_BASE_PATH + PATH_THUMBNAIL;
     }
 }
