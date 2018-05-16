@@ -40,7 +40,6 @@
 
     <style name="FullScreenDarkTheme" parent="BaseDarkTheme">
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="FullScreenLightNoBackgroundTheme" parent="DefaultLightTheme">

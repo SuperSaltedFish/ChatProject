@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -13,14 +15,16 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoiceCodec;
 import com.yzx.chat.widget.view.Camera2PreviewView;
 import com.yzx.chat.widget.view.Camera2RecodeView;
+import com.yzx.chat.widget.view.MediaControllerView;
 import com.yzx.chat.widget.view.RecorderButton;
 
 import java.io.File;
 
 
 public class TestActivity extends BaseCompatActivity {
-    Camera2PreviewView mCamera2PreviewView;
 
+private VideoView vvv;
+private MediaControllerView mMediaControllerView;
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
@@ -28,8 +32,16 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
+        vvv = findViewById(R.id.vvv);
+        mMediaControllerView = new MediaControllerView(this);
+        mMediaControllerView.setAnchorView(vvv);
+        mMediaControllerView.setMediaPlayer(vvv);
+        vvv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-          mCamera2PreviewView = findViewById(R.id.ssss);
+            }
+        });
     }
 
     @Override
@@ -38,39 +50,8 @@ public class TestActivity extends BaseCompatActivity {
     }
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-          mCamera2PreviewView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-           mCamera2PreviewView.onPause();
-    }
-
-    private boolean i = true;
-
     public void onClick(View v) {
-        RecorderButton recorderButton = (RecorderButton) v;
-
-//        Camera2RecodeView videoTextureView = findViewById(R.id.ssss);
-//        if (i) {
-//            if (new File(DirectoryManager.getPublicVideoPath() + "adw.mp4").exists()) {
-//                new File(DirectoryManager.getPublicVideoPath() + "adw.mp4").delete();
-//            }
-//            LogUtil.e("" + videoTextureView.startRecorder(DirectoryManager.getPublicVideoPath() + "adw.mp4"));
-//        } else {
-//            videoTextureView.stopRecorder();
-//        }
-//        i = !i;
+        mMediaControllerView.show();
     }
 
 }

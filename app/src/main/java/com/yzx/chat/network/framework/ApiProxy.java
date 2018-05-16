@@ -54,14 +54,14 @@ public class ApiProxy {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Annotation[] annotations = method.getAnnotations();
             HttpRequestImpl httpRequest = null;
-            boolean isMultiParams = false;
+            boolean enableMultiParams = false;
             for (Annotation annotation : annotations) {
                 if (annotation instanceof HttpApi) {
                     httpRequest = new HttpRequestImpl();
                     parseMethodAnnotation((HttpApi) annotation, httpRequest);
                     parseParamsAnnotation(method.getParameterAnnotations(), args, httpRequest);
                 } else if (annotation instanceof MultiParams) {
-                    isMultiParams = true;
+                    enableMultiParams = true;
                 }
             }
             if (httpRequest == null) {
@@ -70,7 +70,7 @@ public class ApiProxy {
             if (method.getReturnType() != Call.class) {
                 throw new RuntimeException("The return value type of the \"" + method.getName() + "\" method must be " + CallImpl.class);
             }
-            httpRequest.enableMultiParams(isMultiParams);
+            httpRequest.setEnableMultiParams(enableMultiParams);
             Type genericReturnType = method.getGenericReturnType();
             if (genericReturnType instanceof ParameterizedType) {
                 Type type = ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];

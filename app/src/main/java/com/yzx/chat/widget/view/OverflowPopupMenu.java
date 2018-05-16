@@ -55,7 +55,7 @@ public class OverflowPopupMenu extends PopupWindow {
         this.setContentView(mMenuListView);
         this.setOutsideTouchable(false);
         this.setFocusable(true);
-        if (menuRes > 0) {
+        if (menuRes != 0) {
             inflate(menuRes);
         }
         mItemPadding = (int) AndroidUtil.dip2px(12);

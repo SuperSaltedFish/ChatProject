@@ -3,21 +3,20 @@
     android:id="@+id/FlowLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:gravity="bottom"
     android:orientation="vertical">
 
-    <com.yzx.chat.widget.view.Camera2RecodeView
-        android:id="@+id/ssss"
+    <VideoView
+        android:layout_gravity="bottom"
+        android:id="@+id/vvv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="300dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick" />
 
-    <com.yzx.chat.widget.view.RecorderButton
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="64dp"
-        android:onClick="onClick"
-        android:padding="8dp"
-        android:src="@drawable/ic_fingerprint" />
 
 </FrameLayout>

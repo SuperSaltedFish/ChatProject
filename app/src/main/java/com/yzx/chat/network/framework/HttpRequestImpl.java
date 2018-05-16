@@ -42,7 +42,7 @@ class HttpRequestImpl implements HttpRequest {
         mRequestMethod = requestMethod;
     }
 
-    public void enableMultiParams(boolean enable) {
+    public void setEnableMultiParams(boolean enable) {
         isMultiParams = enable;
     }
 }

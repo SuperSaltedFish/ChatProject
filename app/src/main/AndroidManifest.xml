@@ -47,11 +47,11 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
@@ -103,29 +103,30 @@
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
             android:theme="@style/FullScreenLightNoBackgroundTheme"></activity>
-        <activity
-            android:name=".mvp.view.activity.TestActivity"
-            android:theme="@style/FullScreenDarkTheme">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
         <activity android:name=".mvp.view.activity.GroupListActivity" />
         <activity
             android:name=".mvp.view.activity.CropImageActivity"
             android:theme="@style/BaseDarkTheme"></activity>
-        <activity android:name=".mvp.view.activity.VideoPlayActivity"></activity>
+        <activity android:name=".mvp.view.activity.VideoPlayActivity"
+            android:theme="@style/FullScreenDarkTheme"></activity>
 
-        <receiver android:name=".broadcast.UninstallReceive" >
+        <receiver android:name=".broadcast.UninstallReceive">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".mvp.view.activity.TestActivity"
+            android:theme="@style/FullScreenDarkTheme">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

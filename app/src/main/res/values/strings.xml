@@ -158,7 +158,8 @@
     <string name="ProfileModifyActivity_Woman">女</string>
     <string name="ProfileModifyActivity_AvatarLabel">头像</string>
     <string name="ProfileModifyActivity_NoneNickname">昵称不能为空</string>
-    <string name="ChatActivity_ImageAlreadyDeleted">图片已经删除，无法查看</string>
+    <string name="ChatActivity_ImageAlreadyOverdue">图片已经过期，无法查看</string>
+    <string name="ChatActivity_VideoAlreadyOverdue">视频已经过期，无法播放</string>
     <string name="Profile_LabelNickname">昵称</string>
     <string name="Profile_LabelLocation">所在地区</string>
     <string name="Profile_LabelBirthday">出生日期</string>

@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.CallSuper;
-import android.support.text.emoji.widget.EmojiTextView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
@@ -25,6 +24,7 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.mvp.view.activity.VideoPlayActivity;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.BitmapUtil;
@@ -36,18 +36,15 @@ import com.yzx.chat.mvp.view.activity.ImageOriginalActivity;
 import com.yzx.chat.mvp.view.activity.LocationMapActivity;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import io.rong.imlib.model.Message;
-import io.rong.imlib.model.MessageContent;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
-import io.rong.message.VoiceMessageHandler;
 
 
 /**
@@ -320,7 +317,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             if (imageUri == null || TextUtils.isEmpty(imageUri.getPath()) || !new File(imageUri.getPath()).exists()) {
                 imageUri = imageMessage.getMediaUrl();
                 if (imageUri == null || TextUtils.isEmpty(imageUri.getPath())) {
-                    AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_ImageAlreadyDeleted));
+                    AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_ImageAlreadyOverdue));
                     return;
                 }
             }
@@ -381,8 +378,25 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         void performClickVideoContent() {
             VideoMessage videoMessage = (VideoMessage) mMessage.getContent();
-
-
+            Uri videoUri = videoMessage.getLocalPath();
+            if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
+                videoUri = videoMessage.getMediaUrl();
+                if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
+                    AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_VideoAlreadyOverdue));
+                    return;
+                }
+            }
+            Uri thumbUri = videoMessage.getThumbUri();
+            Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
+            if (stackTopActivity instanceof ChatActivity) {
+                Intent intent = new Intent(stackTopActivity, VideoPlayActivity.class);
+                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_VIDEO_URI, videoUri);
+                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_THUMBNAIL_URI, thumbUri);
+                View transition = ((VideoViewHolder) mViewHolder).mIvVideoThumbnail;
+                ViewCompat.setTransitionName(transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
+                ActivityCompat.startActivity(stackTopActivity, intent, options.toBundle());
+            }
         }
 
 
