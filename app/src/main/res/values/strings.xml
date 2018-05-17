@@ -83,6 +83,7 @@
     <string name="ProgressHint_Modify">正在修改...</string>
     <string name="ProgressHint_Quit">正在退出...</string>
     <string name="ProgressHint_Upload">正在上传...</string>
+    <string name="ProgressHint_DownloadVideo">正在下载视频\n(%d%%)</string>
 
     <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
     <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
@@ -213,5 +214,6 @@
     <string name="VideoRecorderActivity_RecorderFail">目前相机无法录制视频，请稍后再试</string>
     <string name="VideoRecorderActivity_PlayVideoError">无法播放录制内容，请稍后再试！</string>
     <string name="shoot">拍摄</string>
+    <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
 
 </resources>

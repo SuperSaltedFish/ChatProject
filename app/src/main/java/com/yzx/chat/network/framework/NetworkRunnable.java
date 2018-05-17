@@ -44,19 +44,19 @@ public class NetworkRunnable implements Runnable {
         Http.Result result;
         switch (requestType) {
             case GET:
-                result = Http.doGet(url, strParams);
+                result = Http.doGet(url, strParams,call);
                 break;
             case POST:
-                result = Http.doPost(url, strParams);
+                result = Http.doPost(url, strParams,call);
                 break;
             case GET_DOWNLOAD:
-                result = Http.doGetByDownload(url, strParams, request.savePath(), processListener);
+                result = Http.doGetByDownload(url, strParams, request.savePath(), processListener,call);
                 break;
             case POST_DOWNLOAD:
-                result = Http.doPostByDownload(url, strParams, request.savePath(), processListener);
+                result = Http.doPostByDownload(url, strParams, request.savePath(), processListener,call);
                 break;
             case POST_MULTI_PARAMS:
-                result = Http.doPostByMultiParams(url, adapter != null ? adapter.multiParamsFormat(request) : request.params());
+                result = Http.doPostByMultiParams(url, adapter != null ? adapter.multiParamsFormat(request) : request.params(),call);
                 break;
             default:
                 throw new RuntimeException("unknown request type:" + request.requestType());

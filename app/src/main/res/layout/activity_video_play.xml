@@ -7,19 +7,19 @@
 
 
     <VideoView
-        android:layout_gravity="center"
         android:id="@+id/VideoPlayActivity_mVideoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-     />
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
     <ImageView
-        android:layout_gravity="center"
         android:id="@+id/VideoPlayActivity_mIvThumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:scaleType="centerCrop" />
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:visibility="visible" />
 
 
 </merge>

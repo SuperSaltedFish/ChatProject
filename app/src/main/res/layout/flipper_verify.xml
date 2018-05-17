@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:gravity="center"
-        android:inputType="textPassword"
+        android:inputType="numberPassword"
         android:maxLength="5"
         android:singleLine="true"
         android:paddingBottom="16dp"

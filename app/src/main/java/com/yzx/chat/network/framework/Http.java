@@ -33,7 +33,7 @@ public class Http {
     private final static int READ_TIMEOUT = 20000;
 
     @NonNull
-    public static Result doGet(String remoteUrl, String params,Cancellable cancellable) {
+    public static Result doGet(String remoteUrl, String params, Cancellable cancellable) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -62,7 +62,7 @@ public class Http {
                 int responseCode = conn.getResponseCode();
                 result.responseCode = responseCode;
                 if (HttpURLConnection.HTTP_OK == responseCode) { //连接成功
-                    readDataFromInputStreamByString(conn.getInputStream(), conn.getContentLength(), result,cancellable);
+                    readDataFromInputStreamByString(conn.getInputStream(), conn.getContentLength(), result, cancellable);
                 }
             } catch (IOException e) {
                 result.throwable = e;
@@ -73,7 +73,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doPost(String remoteUrl, String params,Cancellable cancellable) {
+    public static Result doPost(String remoteUrl, String params, Cancellable cancellable) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -122,7 +122,7 @@ public class Http {
                 int responseCode = conn.getResponseCode();
                 result.responseCode = responseCode;
                 if (HttpURLConnection.HTTP_OK == responseCode) { //连接成功
-                    readDataFromInputStreamByString(conn.getInputStream(), conn.getContentLength(), result,cancellable);
+                    readDataFromInputStreamByString(conn.getInputStream(), conn.getContentLength(), result, cancellable);
                 }
             } catch (IOException e) {
                 result.throwable = e;
@@ -133,7 +133,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doGetByDownload(String remoteUrl, String params, String savePath, DownloadProcessListener listener,Cancellable cancellable) {
+    public static Result doGetByDownload(String remoteUrl, String params, String savePath, DownloadProcessListener listener, Cancellable cancellable) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -163,7 +163,7 @@ public class Http {
                 result.responseCode = responseCode;
                 if (HttpURLConnection.HTTP_OK == responseCode) { //连接成功
                     long fileSize = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? conn.getContentLengthLong() : conn.getContentLength();
-                    saveFileFromInputStream(conn.getInputStream(), fileSize, getFilePath(remoteUrl, savePath, conn.getHeaderField("Content-Disposition")), result, listener,cancellable);
+                    saveFileFromInputStream(conn.getInputStream(), fileSize, getFilePath(remoteUrl, savePath, conn.getHeaderField("Content-Disposition")), result, listener, cancellable);
                 }
             } catch (IOException e) {
                 result.throwable = e;
@@ -174,7 +174,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doPostByDownload(String remoteUrl, String params, String savePath, DownloadProcessListener listener,Cancellable cancellable) {
+    public static Result doPostByDownload(String remoteUrl, String params, String savePath, DownloadProcessListener listener, Cancellable cancellable) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -224,7 +224,7 @@ public class Http {
                 result.responseCode = responseCode;
                 if (HttpURLConnection.HTTP_OK == responseCode) { //连接成功
                     long fileSize = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? conn.getContentLengthLong() : conn.getContentLength();
-                    saveFileFromInputStream(conn.getInputStream(), fileSize, getFilePath(remoteUrl, savePath, conn.getHeaderField("Content-Disposition")), result, listener,cancellable);
+                    saveFileFromInputStream(conn.getInputStream(), fileSize, getFilePath(remoteUrl, savePath, conn.getHeaderField("Content-Disposition")), result, listener, cancellable);
                 }
             } catch (IOException e) {
                 result.throwable = e;
@@ -235,7 +235,7 @@ public class Http {
     }
 
     @NonNull
-    public static Result doPostByMultiParams(String remoteUrl, Map<HttpParamsType, Map<String, Object>> params,Cancellable cancellable) {
+    public static Result doPostByMultiParams(String remoteUrl, Map<HttpParamsType, Map<String, Object>> params, Cancellable cancellable) {
         Result result = new Result();
         do {
             HttpURLConnection conn = null;
@@ -355,7 +355,7 @@ public class Http {
                 int responseCode = conn.getResponseCode();
                 result.responseCode = responseCode;
                 if (HttpURLConnection.HTTP_OK == responseCode) { //连接成功
-                    readDataFromInputStreamByString(conn.getInputStream(), conn.getContentLength(), result,cancellable);
+                    readDataFromInputStreamByString(conn.getInputStream(), conn.getContentLength(), result, cancellable);
                 }
             } catch (IOException e) {
                 result.throwable = e;
@@ -394,6 +394,15 @@ public class Http {
         BufferedInputStream in = new BufferedInputStream(inputStream);
         FileOutputStream outputStream = null;
         try {
+            File file = new File(savePath);
+            if (file.exists()) {
+                if (file.length() == fileSize) {
+                    result.downloadPath = savePath;
+                    return;
+                }
+            } else {
+                file.createNewFile();
+            }
             outputStream = new FileOutputStream(new File(savePath));
             byte[] buf = new byte[2048];
             long alreadyDownloadSize = 0;
@@ -435,21 +444,29 @@ public class Http {
         if (savePath.lastIndexOf('.') > savePath.lastIndexOf('/')) {
             file = new File(savePath);
         } else {
-            if (TextUtils.isEmpty(remoteFileName)) {
+            String fileName = null;
+            if (!TextUtils.isEmpty(remoteFileName)) {
+                String[] items = remoteFileName.split(";");
+                String keywork = "filename=";
+                for (String item : items) {
+                    if (!TextUtils.isEmpty(item) && item.contains(keywork)&&keywork.length()+1<item.length()    ) {
+                        fileName = item.substring(item.lastIndexOf(keywork)+keywork.length()+1).replace("\"", "");
+                        break;
+                    }
+                }
+            }
+            if (TextUtils.isEmpty(fileName)) {
                 downloadUrl = TextUtils.isEmpty(downloadUrl) ? null : URLDecoder.decode(downloadUrl, "UTF-8");
                 if (downloadUrl != null && downloadUrl.lastIndexOf('/') + 1 < downloadUrl.length()) {
-                    remoteFileName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1);
+                    fileName = downloadUrl.substring(downloadUrl.lastIndexOf('/') + 1);
                 } else {
-                    remoteFileName = String.valueOf(System.currentTimeMillis());
+                    fileName = String.valueOf(System.currentTimeMillis());
                 }
             }
             if (!file.exists()) {
                 file.mkdirs();
             }
-            file = new File(file.getPath() + File.separator + remoteFileName);
-        }
-        if (!file.exists()) {
-            file.createNewFile();
+            file = new File(file.getPath() + File.separator + fileName);
         }
         return file.getPath();
     }
