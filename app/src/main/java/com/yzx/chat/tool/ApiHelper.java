@@ -16,6 +16,8 @@ import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
+import com.yzx.chat.network.framework.HttpRequest;
+import com.yzx.chat.network.framework.RequestType;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.IOException;
@@ -49,8 +51,9 @@ public class ApiHelper {
 
         @Nullable
         @Override
-        public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
-            LogUtil.e("开始访问：" + url);
+        public String paramsToString(HttpRequest httpRequest) {
+            Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
+            LogUtil.e("开始访问：" + httpRequest.url());
             if (params == null || params.size() == 0) {
                 return null;
             }
@@ -71,8 +74,9 @@ public class ApiHelper {
 
         @NonNull
         @Override
-        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
-            LogUtil.e("开始访问：" + url);
+        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
+            LogUtil.e("开始访问：" + httpRequest.url());
+            Map<HttpParamsType, Map<String, Object>> params = httpRequest.params();
             Map<String, Object> httpParams = params.get(HttpParamsType.PARAMETER_HTTP);
             if (httpParams == null) {
                 httpParams = new LinkedHashMap<>(2);

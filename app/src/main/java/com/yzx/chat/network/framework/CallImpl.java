@@ -7,12 +7,14 @@ import java.lang.reflect.Type;
 
 class CallImpl<T> implements Call<T> {
 
-    private HttpCallback<T> mCallback;
+    private ResponseCallback<T> mResponseCallback;
+    private DownloadCallback mDownloadCallback;
     private HttpRequest mHttpRequest;
-    private boolean isCancel;
-    private boolean isCallbackRunOnMainThread;
     private HttpDataFormatAdapter mAdapter;
     private Type mGenericType;
+    private boolean isCancel;
+    private boolean isResponseCallbackRunOnMainThread;
+    private boolean isDownloadCallbackRunOnMainThread;
 
     CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter, Type genericType) {
         mHttpRequest = httpRequest;
@@ -20,36 +22,47 @@ class CallImpl<T> implements Call<T> {
         mGenericType = genericType;
     }
 
+
     @Override
-    public void cancel() {
-        isCancel = true;
-        destroy();
+    public boolean isResponseCallbackRunOnMainThread() {
+        return isResponseCallbackRunOnMainThread;
     }
 
     @Override
-    public boolean isCallbackRunOnMainThread() {
-        return isCallbackRunOnMainThread;
+    public boolean isDownloadCallbackRunOnMainThread() {
+        return isDownloadCallbackRunOnMainThread;
     }
 
     @Override
-    public boolean isCancel() {
-        return isCancel;
+    public void setResponseCallback(@Nullable ResponseCallback<T> callback) {
+        setResponseCallback(callback, true);
     }
 
     @Override
-    public void setCallback(@Nullable HttpCallback<T> callback) {
-        setCallback(callback, true);
+    public void setResponseCallback(@Nullable ResponseCallback<T> callback, boolean runOnMainThread) {
+        mResponseCallback = callback;
+        isResponseCallbackRunOnMainThread = runOnMainThread;
     }
 
     @Override
-    public void setCallback(@Nullable HttpCallback<T> callback, boolean runOnMainThread) {
-        mCallback = callback;
-        isCallbackRunOnMainThread = runOnMainThread;
+    public void setDownloadCallback(@Nullable DownloadCallback callback) {
+        setDownloadCallback(callback, true);
     }
 
     @Override
-    public HttpCallback<T> getCallback() {
-        return mCallback;
+    public void setDownloadCallback(@Nullable DownloadCallback callback, boolean runOnMainThread) {
+        mDownloadCallback = callback;
+        isDownloadCallbackRunOnMainThread = runOnMainThread;
+    }
+
+    @Override
+    public ResponseCallback<T> getResponseCallback() {
+        return mResponseCallback;
+    }
+
+    @Override
+    public DownloadCallback getDownloadCallback() {
+        return mDownloadCallback;
     }
 
     @Override
@@ -72,10 +85,21 @@ class CallImpl<T> implements Call<T> {
         return mGenericType;
     }
 
+    @Override
+    public void cancel() {
+        isCancel = true;
+        destroy();
+    }
+
+    @Override
+    public boolean isCancel() {
+        return isCancel;
+    }
+
     private void destroy() {
-        mCallback =null;
+        mResponseCallback = null;
         mAdapter = null;
-        mHttpRequest =null;
+        mHttpRequest = null;
     }
 
 }

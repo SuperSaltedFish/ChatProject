@@ -2,8 +2,7 @@ package com.yzx.chat.mvp.presenter;
 
 import android.os.Handler;
 
-import com.yzx.chat.base.BaseHttpCallback;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.FindNewContactContract;
 import com.yzx.chat.network.api.JsonResponse;
@@ -55,7 +54,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
         isSearching = true;
         AsyncUtil.cancelCall(mSearchUserCall);
         mSearchUserCall = mUserApi.searchUser(nicknameOrTelephone);
-        mSearchUserCall.setCallback(new BaseHttpCallback<SearchUserBean>() {
+        mSearchUserCall.setResponseCallback(new BaseResponseCallback<SearchUserBean>() {
             @Override
             protected void onSuccess(SearchUserBean response) {
                 List<UserBean> userList = response.getUserList();

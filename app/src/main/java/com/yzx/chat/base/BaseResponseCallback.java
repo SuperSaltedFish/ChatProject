@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.yzx.chat.R;
 import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.framework.HttpCallback;
+import com.yzx.chat.network.framework.ResponseCallback;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -18,7 +18,7 @@ import java.lang.reflect.Type;
  */
 
 
-public abstract class BaseHttpCallback<T> implements HttpCallback<JsonResponse<T>> {
+public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonResponse<T>> {
 
     protected abstract void onSuccess(T response);
 

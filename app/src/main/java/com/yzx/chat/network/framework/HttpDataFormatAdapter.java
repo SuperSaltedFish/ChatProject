@@ -14,10 +14,10 @@ import java.util.Map;
 public interface HttpDataFormatAdapter {
 
     @Nullable
-    String paramsToString(String url, Map<String, Object> params, String requestMethod);
+    String paramsToString(HttpRequest httpRequest);
 
     @Nullable
-    Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod);
+    Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest);
 
     @Nullable
     Object responseToObject(String url, String httpResponse, Type genericType);

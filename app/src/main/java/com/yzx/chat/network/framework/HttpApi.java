@@ -11,6 +11,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HttpApi {
-    String RequestMethod() default "GET";
-    String Path() default "";
+    RequestType RequestType();
+
+    String url();
+
+    String savePath() default "";
 }

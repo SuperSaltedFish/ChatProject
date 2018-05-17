@@ -20,9 +20,10 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.UserInfoBean;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.HttpCallback;
+import com.yzx.chat.network.framework.ResponseCallback;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
+import com.yzx.chat.network.framework.HttpRequest;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
@@ -111,7 +112,8 @@ public class IMClient {
 
             @Nullable
             @Override
-            public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
+            public String paramsToString(HttpRequest httpRequest) {
+                Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
                 JsonRequest request = new JsonRequest();
                 request.setParams(params);
                 request.setStatus(200);
@@ -126,7 +128,7 @@ public class IMClient {
 
             @Nullable
             @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
+            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
                 return null;
             }
 
@@ -156,7 +158,7 @@ public class IMClient {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final Result<Boolean> result = new Result<>(true);
                 final Result<String> errorMessage = new Result<>(AndroidUtil.getString(R.string.Server_Error));
-                loginOrRegisterOrTokenVerifyCall.setCallback(new HttpCallback<JsonResponse<UserInfoBean>>() {
+                loginOrRegisterOrTokenVerifyCall.setResponseCallback(new ResponseCallback<JsonResponse<UserInfoBean>>() {
                     @Override
                     public void onResponse(HttpResponse<JsonResponse<UserInfoBean>> response) {
                         if (response.getResponseCode() != 200) {

@@ -3,7 +3,7 @@ package com.yzx.chat.network.chat;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.UserDao;
@@ -53,7 +53,7 @@ public class UserManager {
     public void updateProfile(final String nickname, final int sex, final String birthday, final String location, final String signature, final ResultCallback<Void> callback) {
         AsyncUtil.cancelCall(mUpdateUserProfileCall);
         mUpdateUserProfileCall = mUserApi.updateUserProfile(nickname, sex, birthday, location, signature);
-        mUpdateUserProfileCall.setCallback(new BaseHttpCallback<Void>() {
+        mUpdateUserProfileCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 mUserBean.setNickname(nickname);
@@ -75,7 +75,7 @@ public class UserManager {
     public void uploadAvatar(String imagePath, final ResultCallback<UploadAvatarBean> callback) {
         AsyncUtil.cancelCall(mUploadAvatarCall);
         mUploadAvatarCall = mUserApi.uploadAvatar(imagePath);
-        mUploadAvatarCall.setCallback(new BaseHttpCallback<UploadAvatarBean>() {
+        mUploadAvatarCall.setResponseCallback(new BaseResponseCallback<UploadAvatarBean>() {
             @Override
             protected void onSuccess(UploadAvatarBean response) {
                 mUserBean.setAvatar(response.getAvatarUrl());

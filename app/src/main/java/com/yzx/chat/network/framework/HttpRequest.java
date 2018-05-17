@@ -8,10 +8,10 @@ public interface HttpRequest {
 
     String url();
 
+    String savePath();
+
     Map<HttpParamsType,Map<String, Object>> params();
 
-    String requestMethod();
-
-    boolean isMultiParams();
+    RequestType requestType();
 
 }

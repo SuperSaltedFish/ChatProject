@@ -5,6 +5,7 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
+import com.yzx.chat.network.framework.RequestType;
 
 import java.util.List;
 
@@ -16,28 +17,28 @@ import java.util.List;
 
 public interface GroupApi {
 
-    @HttpApi(RequestMethod = "POST", Path = "group/getGroupList")
+    @HttpApi(RequestType = RequestType.POST, url = "group/getGroupList")
     Call<JsonResponse<Void>> getGroupList();
 
-    @HttpApi(RequestMethod = "POST", Path = "group/rename")
+    @HttpApi(RequestType = RequestType.POST, url = "group/rename")
     Call<JsonResponse<Void>> rename(@HttpParam("groupID") String groupID, @HttpParam("name") String newName);
 
-    @HttpApi(RequestMethod = "POST", Path = "group/updateNotice")
+    @HttpApi(RequestType = RequestType.POST, url = "group/updateNotice")
     Call<JsonResponse<Void>> updateNotice(@HttpParam("groupID") String groupID, @HttpParam("notice") String newNotice);
 
-    @HttpApi(RequestMethod = "POST", Path = "group/updateAlias")
+    @HttpApi(RequestType = RequestType.POST, url = "group/updateAlias")
     Call<JsonResponse<Void>> updateAlias(@HttpParam("groupID") String groupID, @HttpParam("alias") String newAlias);
 
-    @HttpApi(RequestMethod = "POST", Path = "group/create")
+    @HttpApi(RequestType = RequestType.POST, url = "group/create")
     Call<JsonResponse<CreateGroupBean>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
 
-    @HttpApi(RequestMethod = "POST", Path = "group/add")
+    @HttpApi(RequestType = RequestType.POST, url = "group/add")
     Call<JsonResponse<CreateGroupBean>> add(@HttpParam("groupID") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
 
-    @HttpApi(RequestMethod = "POST", Path = "group/quit")
+    @HttpApi(RequestType = RequestType.POST, url = "group/quit")
     Call<JsonResponse<Void>> quit(@HttpParam("groupID") String groupID);
 
-    @HttpApi(RequestMethod = "POST", Path = "group/getTempGroupID")
+    @HttpApi(RequestType = RequestType.POST, url = "group/getTempGroupID")
     Call<JsonResponse<GetTempGroupID>> getTempGroupID(@HttpParam("groupID") String groupID);
 
 }

@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.MyQRCodeActivityContract;
@@ -73,7 +73,7 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
         isUpdating = true;
         AsyncUtil.cancelCall(mGetTempUserIDCall);
         mGetTempUserIDCall = mUserApi.getTempUserID();
-        mGetTempUserIDCall.setCallback(new BaseHttpCallback<GetTempUserID>() {
+        mGetTempUserIDCall.setResponseCallback(new BaseResponseCallback<GetTempUserID>() {
             @Override
             protected void onSuccess(GetTempUserID response) {
                 isUpdating = false;
@@ -107,7 +107,7 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
         isUpdating = true;
         AsyncUtil.cancelCall(mGetTempGroupIDCall);
         mGetTempGroupIDCall = mGroupApi.getTempGroupID(groupID);
-        mGetTempGroupIDCall.setCallback(new BaseHttpCallback<GetTempGroupID>() {
+        mGetTempGroupIDCall.setResponseCallback(new BaseResponseCallback<GetTempGroupID>() {
             @Override
             protected void onSuccess(GetTempGroupID response) {
                 isUpdating = false;

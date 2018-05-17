@@ -5,7 +5,7 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
-import com.yzx.chat.network.framework.MultiParams;
+import com.yzx.chat.network.framework.RequestType;
 import com.yzx.chat.network.framework.UploadPath;
 
 /**
@@ -16,27 +16,27 @@ import com.yzx.chat.network.framework.UploadPath;
 
 public interface UserApi {
 
-    @HttpApi(RequestMethod = "POST", Path = "user/getUserProfile")
+    @HttpApi(RequestType = RequestType.POST, url = "user/getUserProfile")
     Call<JsonResponse<GetUserProfileBean>> getUserProfile(@HttpParam("targetUserID") String userID);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/searchUser")
+    @HttpApi(RequestType = RequestType.POST, url = "user/searchUser")
     Call<JsonResponse<SearchUserBean>> searchUser(@HttpParam("queryCondition") String nicknameOrTelephone);
 
 
-    @HttpApi(RequestMethod = "POST", Path = "user/getTempUserID")
+    @HttpApi(RequestType = RequestType.POST, url = "user/getTempUserID")
     Call<JsonResponse<GetTempUserID>> getTempUserID();
 
-    @HttpApi(RequestMethod = "POST", Path = "user/getUserProfileByTempUserID")
+    @HttpApi(RequestType = RequestType.POST, url = "user/getUserProfileByTempUserID")
     Call<JsonResponse<UserBean>> getUserProfileByTempUserID(@HttpParam("tempUserID") String tempUserID);
 
-    @HttpApi(RequestMethod = "POST", Path = "user/updateUserProfile")
+    @HttpApi(RequestType = RequestType.POST, url = "user/updateUserProfile")
     Call<JsonResponse<Void>> updateUserProfile(@HttpParam("nickname") String nickname,
                                                @HttpParam("sex") int sex,
                                                @HttpParam("birthday") String birthday,
                                                @HttpParam("location") String location,
                                                @HttpParam("signature") String signature);
 
-    @MultiParams
-    @HttpApi(RequestMethod = "POST", Path = "user/uploadAvatar")
+
+    @HttpApi(RequestType = RequestType.POST_MULTI_PARAMS, url = "user/uploadAvatar")
     Call<JsonResponse<UploadAvatarBean>> uploadAvatar(@UploadPath("uploadAvatar") String avatarPath);
 }

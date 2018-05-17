@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.mvp.contract.LoginContract;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
@@ -20,8 +20,8 @@ import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
+import com.yzx.chat.network.framework.HttpRequest;
 import com.yzx.chat.tool.ApiHelper;
-import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
@@ -127,7 +127,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private void initSecretKeyCall() {
         AsyncUtil.cancelCall(mGetSecretKeyCall);
         mGetSecretKeyCall = mAuthApi.getSignature();
-        mGetSecretKeyCall.setCallback(new BaseHttpCallback<GetSecretKeyBean>() {
+        mGetSecretKeyCall.setResponseCallback(new BaseResponseCallback<GetSecretKeyBean>() {
             @Override
             protected void onSuccess(GetSecretKeyBean response) {
                 mServerSecretKey = response.getSecretKey();
@@ -146,14 +146,14 @@ public class LoginPresenter implements LoginContract.Presenter {
         mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
             @Nullable
             @Override
-            public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
-                LogUtil.e("开始访问：" + url);
+            public String paramsToString(HttpRequest httpRequest) {
+                LogUtil.e("开始访问：" + httpRequest.url());
                 return null;
             }
 
             @Nullable
             @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
+            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
                 return null;
             }
 
@@ -173,7 +173,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 type,
                 CryptoManager.getBase64RSAPublicKey(),
                 data);
-        mObtainSMSCodeCall.setCallback(new BaseHttpCallback<ObtainSMSCode>() {
+        mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCode>() {
             @Override
             protected void onSuccess(ObtainSMSCode response) {
                 if (response.isSkipVerify()) {
@@ -241,8 +241,9 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Nullable
         @Override
-        public String paramsToString(String url, Map<String, Object> params, String requestMethod) {
-            LogUtil.e("开始访问：" + url);
+        public String paramsToString(HttpRequest httpRequest) {
+            Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
+            LogUtil.e("开始访问：" + httpRequest.url());
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
@@ -255,7 +256,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Nullable
         @Override
-        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(String url, Map<HttpParamsType, Map<String, Object>> params, String requestMethod) {
+        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
             return null;
         }
 

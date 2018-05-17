@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 
 
-public interface HttpCallback<T> {
+public interface ResponseCallback<T> {
 
     void onResponse(HttpResponse<T> response);
 

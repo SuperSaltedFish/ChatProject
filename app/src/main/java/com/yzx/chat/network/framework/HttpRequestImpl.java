@@ -6,9 +6,9 @@ import java.util.Map;
 class HttpRequestImpl implements HttpRequest {
 
     private String mUrl;
-    private  Map<HttpParamsType,Map<String, Object>> mParams;
-    private String mRequestMethod;
-    private boolean isMultiParams;
+    private String mSavePath;
+    private Map<HttpParamsType, Map<String, Object>> mParams;
+    private RequestType mRequestType;
 
     @Override
     public String url() {
@@ -16,34 +16,37 @@ class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
-    public  Map<HttpParamsType,Map<String, Object>> params() {
+    public String savePath() {
+        return mSavePath;
+    }
+
+    @Override
+    public Map<HttpParamsType, Map<String, Object>> params() {
         return mParams;
     }
 
     @Override
-    public String requestMethod() {
-        return mRequestMethod;
+    public RequestType requestType() {
+        return mRequestType;
     }
 
-    @Override
-    public boolean isMultiParams() {
-        return isMultiParams;
-    }
 
     public void setUrl(String url) {
         mUrl = url;
     }
 
-    public void setParams( Map<HttpParamsType,Map<String, Object>> params) {
+    public void setSavePath(String savePath) {
+        mSavePath = savePath;
+    }
+
+    public void setParams(Map<HttpParamsType, Map<String, Object>> params) {
         mParams = params;
     }
 
-    public void setRequestMethod(String requestMethod) {
-        mRequestMethod = requestMethod;
+    public void setRequestType(RequestType requestType) {
+        mRequestType = requestType;
     }
 
-    public void setEnableMultiParams(boolean enable) {
-        isMultiParams = enable;
-    }
+
 }
 

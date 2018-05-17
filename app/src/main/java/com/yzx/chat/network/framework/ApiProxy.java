@@ -54,14 +54,12 @@ public class ApiProxy {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Annotation[] annotations = method.getAnnotations();
             HttpRequestImpl httpRequest = null;
-            boolean enableMultiParams = false;
             for (Annotation annotation : annotations) {
                 if (annotation instanceof HttpApi) {
                     httpRequest = new HttpRequestImpl();
                     parseMethodAnnotation((HttpApi) annotation, httpRequest);
                     parseParamsAnnotation(method.getParameterAnnotations(), args, httpRequest);
-                } else if (annotation instanceof MultiParams) {
-                    enableMultiParams = true;
+                    break;
                 }
             }
             if (httpRequest == null) {
@@ -70,7 +68,6 @@ public class ApiProxy {
             if (method.getReturnType() != Call.class) {
                 throw new RuntimeException("The return value type of the \"" + method.getName() + "\" method must be " + CallImpl.class);
             }
-            httpRequest.setEnableMultiParams(enableMultiParams);
             Type genericReturnType = method.getGenericReturnType();
             if (genericReturnType instanceof ParameterizedType) {
                 Type type = ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
@@ -85,8 +82,9 @@ public class ApiProxy {
 
 
         private void parseMethodAnnotation(HttpApi annotation, HttpRequestImpl httpRequest) {
-            httpRequest.setRequestMethod(annotation.RequestMethod());
-            httpRequest.setUrl(mBaseUrl + annotation.Path());
+            httpRequest.setRequestType(annotation.RequestType());
+            httpRequest.setUrl(mBaseUrl + annotation.url());
+            httpRequest.setSavePath(annotation.savePath());
         }
 
         @SuppressWarnings("unchecked")
@@ -103,7 +101,7 @@ public class ApiProxy {
                         HttpParam httpParam = (HttpParam) annotations[i][j];
                         paramsMap.put(httpParam.value(), params[i]);
                     } else if (annotations[i][j] instanceof UploadPath) {
-                        Map<String, Object> paramsMap  = paramsTypeMap.get(HttpParamsType.PARAMETER_UPLOAD);
+                        Map<String, Object> paramsMap = paramsTypeMap.get(HttpParamsType.PARAMETER_UPLOAD);
                         if (paramsMap == null) {
                             paramsMap = new LinkedHashMap<>();
                             paramsTypeMap.put(HttpParamsType.PARAMETER_UPLOAD, paramsMap);
@@ -114,7 +112,7 @@ public class ApiProxy {
                             continue;
                         }
                         List<String> pathList = null;
-                        for (Map.Entry<String, Object> item: paramsMap.entrySet()) {
+                        for (Map.Entry<String, Object> item : paramsMap.entrySet()) {
                             if (paramsName.equals(item.getKey())) {
                                 pathList = (List<String>) item.getValue();
                                 break;

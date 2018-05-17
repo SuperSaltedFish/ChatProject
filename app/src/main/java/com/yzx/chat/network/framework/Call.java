@@ -6,19 +6,23 @@ import android.support.annotation.Nullable;
 import java.lang.reflect.Type;
 
 
-public interface Call<T> {
+public interface Call<T> extends Cancellable {
 
-    void cancel();
+    boolean isResponseCallbackRunOnMainThread();
 
-    boolean isCallbackRunOnMainThread();
+    boolean isDownloadCallbackRunOnMainThread();
 
-    boolean isCancel();
+    void setResponseCallback(@Nullable ResponseCallback<T> callback);
 
-    void setCallback(@Nullable HttpCallback<T> callback);
+    void setResponseCallback(@Nullable ResponseCallback<T> callback, boolean runOnMainThread);
 
-    void setCallback(@Nullable HttpCallback<T> callback, boolean runOnMainThread);
+    void setDownloadCallback(@Nullable DownloadCallback callback);
 
-    HttpCallback<T> getCallback();
+    void setDownloadCallback(@Nullable DownloadCallback callback, boolean runOnMainThread);
+
+    ResponseCallback<T> getResponseCallback();
+
+    DownloadCallback getDownloadCallback();
 
     HttpRequest getHttpRequest();
 

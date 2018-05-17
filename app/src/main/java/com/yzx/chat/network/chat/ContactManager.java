@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.UserBean;
@@ -123,7 +123,7 @@ public class ContactManager {
     public void requestContact(final UserBean user, final String reason, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRequestContact);
         mRequestContact = mContactApi.requestContact(user.getUserID(), reason);
-        mRequestContact.setCallback(new BaseHttpCallback<Void>() {
+        mRequestContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 ContactOperationBean operation = new ContactOperationBean();
@@ -158,7 +158,7 @@ public class ContactManager {
     public void rejectContact(final ContactOperationBean contactOperation, final String reason, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRejectContact);
         mRejectContact = mContactApi.rejectContact(contactOperation.getUser().getUserID(), reason);
-        mRejectContact.setCallback(new BaseHttpCallback<Void>() {
+        mRejectContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 contactOperation.setReason(reason);
@@ -190,7 +190,7 @@ public class ContactManager {
     public void acceptContact(final ContactOperationBean contactOperation, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mAcceptContact);
         mAcceptContact = mContactApi.acceptContact(contactOperation.getUser().getUserID());
-        mAcceptContact.setCallback(new BaseHttpCallback<Void>() {
+        mAcceptContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
@@ -239,7 +239,7 @@ public class ContactManager {
     public void deleteContact(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mDeleteContact);
         mDeleteContact = mContactApi.deleteContact(contact.getUserProfile().getUserID());
-        mDeleteContact.setCallback(new BaseHttpCallback<Void>() {
+        mDeleteContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mContactDao.delete(contact);
@@ -273,7 +273,7 @@ public class ContactManager {
     public void updateContact(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mUpdateContact);
         mUpdateContact = mContactApi.updateRemark(contact.getUserProfile().getUserID(), contact.getRemark());
-        mUpdateContact.setCallback(new BaseHttpCallback<Void>() {
+        mUpdateContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 contact.getRemark().setUploadFlag(0);

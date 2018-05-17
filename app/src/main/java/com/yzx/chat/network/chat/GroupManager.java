@@ -3,7 +3,7 @@ package com.yzx.chat.network.chat;
 import android.os.Parcel;
 
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseHttpCallback;
+import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
@@ -114,7 +114,7 @@ public class GroupManager {
     public void createGroup(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<GroupBean> resultCallback) {
         AsyncUtil.cancelCall(mCreateGroupCall);
         mCreateGroupCall = mGroupApi.createGroup(groupID, memberList);
-        mCreateGroupCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
+        mCreateGroupCall.setResponseCallback(new BaseResponseCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
                 GroupBean group = response.getGroup();
@@ -144,7 +144,7 @@ public class GroupManager {
     public void addMember(final String groupID, final List<CreateGroupMemberBean> memberList, final ResultCallback<GroupBean> resultCallback) {
         AsyncUtil.cancelCall(mAddMemberCall);
         mAddMemberCall = mGroupApi.add(groupID, memberList);
-        mAddMemberCall.setCallback(new BaseHttpCallback<CreateGroupBean>() {
+        mAddMemberCall.setResponseCallback(new BaseResponseCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
                 GroupBean group = response.getGroup();
@@ -176,7 +176,7 @@ public class GroupManager {
     public void quitGroup(final String groupID, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mQuitGroupCall);
         mQuitGroupCall = mGroupApi.quit(groupID);
-        mQuitGroupCall.setCallback(new BaseHttpCallback<Void>() {
+        mQuitGroupCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupDao.deleteGroupAndMember(groupID);
@@ -207,7 +207,7 @@ public class GroupManager {
     public void renameGroup(final String groupID, final String newName, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRenameGroupCall);
         mRenameGroupCall = mGroupApi.rename(groupID, newName);
-        mRenameGroupCall.setCallback(new BaseHttpCallback<Void>() {
+        mRenameGroupCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupDao.updateGroupName(groupID, newName);
@@ -244,7 +244,7 @@ public class GroupManager {
     public void updateGroupNotice(final String groupID, final String newNotice, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mUpdateGroupNoticeCall);
         mUpdateGroupNoticeCall = mGroupApi.updateNotice(groupID, newNotice);
-        mUpdateGroupNoticeCall.setCallback(new BaseHttpCallback<Void>() {
+        mUpdateGroupNoticeCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupDao.updateGroupNotice(groupID, newNotice);
@@ -281,7 +281,7 @@ public class GroupManager {
     public void updateMemberAlias(final String groupID, final String memberID, final String newAlias, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mUpdateAliasCall);
         mUpdateAliasCall = mGroupApi.updateAlias(groupID, newAlias);
-        mUpdateAliasCall.setCallback(new BaseHttpCallback<Void>() {
+        mUpdateAliasCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 boolean success = mGroupMemberDao.updateMemberAlias(groupID, memberID, newAlias);
