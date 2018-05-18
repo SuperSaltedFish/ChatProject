@@ -56,10 +56,10 @@ public class BadgeView extends View {
     }
 
     private void setDefault() {
-        setBadgeTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, mContext.getResources().getDisplayMetrics()));
+        setBadgeTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, mContext.getResources().getDisplayMetrics()));
         setBadgeTextColor(Color.WHITE);
         setBadgeBackgroundColor(Color.RED);
-        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 4, mContext.getResources().getDisplayMetrics());
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
         setPadding(padding, padding, padding, padding);
     }
 

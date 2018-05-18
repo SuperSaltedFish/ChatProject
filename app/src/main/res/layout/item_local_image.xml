@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:padding="1dp"
-             android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="1dp">
 
     <ImageView
         android:id="@+id/ImageSelectorActivity_mIvImage"
         android:layout_width="match_parent"
-        android:tint="#20000000"
-        android:tintMode="src_atop"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:layout_height="match_parent"/>
+        android:tint="#20000000"
+        android:tintMode="src_atop" />
 
     <CheckBox
         android:id="@+id/ImageSelectorActivity_mCbSelected"
         android:layout_width="wrap_content"
-        android:layout_gravity="end|top"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top" />
 
 </FrameLayout>
