@@ -20,13 +20,8 @@ import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.network.framework.RequestType;
 import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.VoiceCodec;
-import com.yzx.chat.widget.view.Camera2PreviewView;
-import com.yzx.chat.widget.view.Camera2RecodeView;
 import com.yzx.chat.widget.view.MediaControllerView;
-import com.yzx.chat.widget.view.RecorderButton;
 
-import java.io.File;
 
 
 public class TestActivity extends BaseCompatActivity {

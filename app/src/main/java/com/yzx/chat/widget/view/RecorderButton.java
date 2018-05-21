@@ -29,7 +29,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
     private Context mContext;
 
     private OnRecorderTouchListener mOnRecorderTouchListener;
-    private OnRecorderAnimationListener mOnRecorderAnimationListener;
     private boolean isCancel;
     private boolean isTouchOutOfBounds;
 
@@ -38,11 +37,9 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
     private float mArcWidth;
     private int mProgressArcInsideColor;
     private int mProgressArcOutsideColor;
-    private float mPrepareAnimationScale;
 
     private float mCurrentProgress;
     private ValueAnimator mProgressValueAnimator;
-    private ViewPropertyAnimator mPrepareAnimator;
 
     public RecorderButton(Context context) {
         this(context, null);
@@ -68,7 +65,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
 
         mProgressValueAnimator = ValueAnimator.ofFloat(0f, 1f);
         mProgressValueAnimator.addUpdateListener(mValueAnimatorUpdateListener);
-        mProgressValueAnimator.addListener(mProgressAnimatorListener);
         mProgressValueAnimator.setInterpolator(new LinearInterpolator());
 
         setDefault();
@@ -77,7 +73,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
     private void setDefault() {
         mArcWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 8, mContext.getResources().getDisplayMetrics());
         mProgressArcInsideColor = Color.WHITE;
-        mPrepareAnimationScale = 1.3f;
         TypedValue value = new TypedValue();
         mContext.getTheme().resolveAttribute(R.attr.colorAccent, value, true);
         mProgressArcOutsideColor = value.data;
@@ -152,17 +147,18 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
         mArcPaint.setColor(mProgressArcInsideColor);
         canvas.drawCircle(cx, cy, radius, mArcPaint);
         mArcPaint.setColor(mProgressArcOutsideColor);
-        canvas.drawArc(mArcRectF, 90, mCurrentProgress * 360, false, mArcPaint);
+        canvas.drawArc(mArcRectF, 270, mCurrentProgress * 360, false, mArcPaint);
     }
 
-    public void startRecorderAnimation(int prepareDuration, int progressDuration) {
-        reset();
-        mProgressValueAnimator.setDuration(progressDuration);
+    public void startRecorderAnimation(int duration, Animator.AnimatorListener listener) {
+        if (mProgressValueAnimator.isStarted() || mProgressValueAnimator.isRunning()) {
+            mProgressValueAnimator.cancel();
+        }
+        if (listener != null) {
+            mProgressValueAnimator.addListener(listener);
+        }
+        mProgressValueAnimator.setDuration(duration);
         mProgressValueAnimator.start();
-
-        mPrepareAnimator = animate().scaleX(mPrepareAnimationScale).scaleY(mPrepareAnimationScale).setDuration(prepareDuration);
-        mPrepareAnimator.setListener(mPrepareAnimatorListener);
-        mPrepareAnimator.start();
     }
 
 
@@ -170,13 +166,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
         isCancel = true;
         mCurrentProgress = 0;
         mProgressValueAnimator.cancel();
-        if (mPrepareAnimator != null) {
-            mPrepareAnimator.cancel();
-            mPrepareAnimator.setListener(null);
-            mPrepareAnimator = null;
-        }
-        setScaleX(1);
-        setScaleY(1);
         invalidate();
     }
 
@@ -193,14 +182,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
         mProgressArcOutsideColor = progressArcOutsideColor;
     }
 
-    public void setPrepareAnimationScale(float prepareAnimationScale) {
-        mPrepareAnimationScale = prepareAnimationScale;
-    }
-
-    public void setOnRecorderAnimationListener(OnRecorderAnimationListener onRecorderAnimationListener) {
-        mOnRecorderAnimationListener = onRecorderAnimationListener;
-    }
-
     public void setOnRecorderTouchListener(OnRecorderTouchListener listener) {
         mOnRecorderTouchListener = listener;
     }
@@ -213,58 +194,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
         }
     };
 
-    private final Animator.AnimatorListener mPrepareAnimatorListener = new Animator.AnimatorListener() {
-        @Override
-        public void onAnimationStart(Animator animation) {
-            if (mOnRecorderAnimationListener != null) {
-                mOnRecorderAnimationListener.onPrepareAnimationStart();
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            if (mOnRecorderAnimationListener != null) {
-                mOnRecorderAnimationListener.onPrepareAnimationEnd();
-            }
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-
-        }
-    };
-
-    private final Animator.AnimatorListener mProgressAnimatorListener = new Animator.AnimatorListener() {
-        @Override
-        public void onAnimationStart(Animator animation) {
-            if (mOnRecorderAnimationListener != null) {
-                mOnRecorderAnimationListener.onProgressAnimationStart();
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            if (mOnRecorderAnimationListener != null) {
-                mOnRecorderAnimationListener.onProgressAnimationEnd();
-            }
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-
-        }
-    };
-
-
     public interface OnRecorderTouchListener {
         void onDown();
 
@@ -273,16 +202,6 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
         void onOutOfBoundsChange(boolean isOutOfBounds);
 
         void onCancel();
-    }
-
-    public interface OnRecorderAnimationListener {
-        void onPrepareAnimationStart();
-
-        void onPrepareAnimationEnd();
-
-        void onProgressAnimationStart();
-
-        void onProgressAnimationEnd();
     }
 
     private static class CircleOutlineProvider extends ViewOutlineProvider {

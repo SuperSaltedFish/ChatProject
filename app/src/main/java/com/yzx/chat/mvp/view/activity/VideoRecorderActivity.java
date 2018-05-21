@@ -1,17 +1,20 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.animation.Animator;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.VideoView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.MD5Util;
+import com.yzx.chat.util.VideoDecoder;
 import com.yzx.chat.widget.view.Camera2RecodeView;
 import com.yzx.chat.widget.view.RecorderButton;
 
@@ -31,14 +34,17 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
     private static final int MAX_RECORDER_DURATION = 12 * 1000;
     private static final int MIN_TRIGGER_RECORDER_TIME = 300;
+
     private ImageView mIvClose;
     private ImageView mIvFlash;
     private ImageView mIvSwitchCamera;
     private ImageView mIvRestart;
     private ImageView mIvConfirm;
     private Camera2RecodeView mCamera2RecodeView;
+    private TextureView mVideoTextureView;
     private RecorderButton mRecorderButton;
-    private VideoView mVideoView;
+    private Handler mHandler;
+    private VideoDecoder mVideoDecoder;
 
     private String mCurrentVideoPath;
 
@@ -56,7 +62,8 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         mIvConfirm = findViewById(R.id.VideoRecorderActivity_mIvConfirm);
         mCamera2RecodeView = findViewById(R.id.VideoRecorderActivity_mCamera2RecodeView);
         mRecorderButton = findViewById(R.id.VideoRecorderActivity_mRecorderButton);
-        mVideoView = findViewById(R.id.VideoRecorderActivity_mVideoView);
+        mVideoTextureView = findViewById(R.id.VideoRecorderActivity_mVideoTextureView);
+        mHandler = new Handler();
     }
 
     @Override
@@ -67,36 +74,44 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         mIvRestart.setOnClickListener(mOnViewClick);
         mIvSwitchCamera.setOnClickListener(mOnViewClick);
         mRecorderButton.setOnRecorderTouchListener(mOnRecorderTouchListener);
-        mRecorderButton.setOnRecorderAnimationListener(mRecorderAnimationListener);
-        mVideoView.setOnPreparedListener(mOnVideoPreparedListener);
-        mVideoView.setOnErrorListener(mOnPlayVideoErrorListener);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mCamera2RecodeView.onResume();
-        mVideoView.resume();
+        //  mVideoView.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mCamera2RecodeView.onPause();
-        mVideoView.pause();
-        reset();
+        //    mVideoView.pause();
+        resetAndTryPlayRecorderContent();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
         mCamera2RecodeView.closeCamera();
     }
 
-    private void reset() {
+    private void resetAndTryPlayRecorderContent() {
+        mHandler.removeCallbacksAndMessages(null);
         mRecorderButton.reset();
+        mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
         if (mCamera2RecodeView.isRecording()) {
             mCamera2RecodeView.stopRecorder();
+            mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
+            if (mVideoDecoder != null && mVideoDecoder.start()) {
+                setCurrentState(CURRENT_STATE_PLAY);
+            } else {
+                showLongToast(getString(R.string.VideoRecorderActivity_PlayVideoError));
+                restartPreview();
+            }
+        } else {
             setCurrentState(CURRENT_STATE_PREVIEW);
         }
     }
@@ -108,7 +123,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                 mIvFlash.setVisibility(View.VISIBLE);
                 mIvConfirm.setVisibility(View.INVISIBLE);
                 mIvRestart.setVisibility(View.INVISIBLE);
-                mVideoView.setVisibility(View.INVISIBLE);
+                //       mVideoView.setVisibility(View.INVISIBLE);
                 mIvSwitchCamera.setVisibility(View.VISIBLE);
                 mRecorderButton.setVisibility(View.VISIBLE);
                 mCamera2RecodeView.setVisibility(View.VISIBLE);
@@ -118,7 +133,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                 mIvFlash.setVisibility(View.VISIBLE);
                 mIvConfirm.setVisibility(View.INVISIBLE);
                 mIvRestart.setVisibility(View.INVISIBLE);
-                mVideoView.setVisibility(View.INVISIBLE);
+                //             mVideoView.setVisibility(View.INVISIBLE);
                 mIvSwitchCamera.setVisibility(View.INVISIBLE);
                 mRecorderButton.setVisibility(View.VISIBLE);
                 mCamera2RecodeView.setVisibility(View.VISIBLE);
@@ -128,7 +143,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                 mIvFlash.setVisibility(View.INVISIBLE);
                 mIvConfirm.setVisibility(View.VISIBLE);
                 mIvRestart.setVisibility(View.VISIBLE);
-                mVideoView.setVisibility(View.VISIBLE);
+                //        mVideoView.setVisibility(View.VISIBLE);
                 mIvSwitchCamera.setVisibility(View.INVISIBLE);
                 mRecorderButton.setVisibility(View.INVISIBLE);
                 mCamera2RecodeView.setVisibility(View.INVISIBLE);
@@ -136,20 +151,15 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         }
     }
 
-    private void playVideo() {
-        setCurrentState(CURRENT_STATE_PLAY);
-        mVideoView.setVideoPath(mCurrentVideoPath);
-        mVideoView.start();
-    }
 
     private void restartPreview() {
-        mVideoView.stopPlayback();
+        mCamera2RecodeView.restartPreview();
         setCurrentState(CURRENT_STATE_PREVIEW);
         mCurrentVideoPath = null;
     }
 
     private void confirmVideo() {
-        if(!TextUtils.isEmpty(mCurrentVideoPath)){
+        if (!TextUtils.isEmpty(mCurrentVideoPath)) {
             Intent intent = new Intent();
             intent.putExtra(INTENT_EXTRA_SAVE_PATH, mCurrentVideoPath);
             setResult(RESULT_CODE, intent);
@@ -177,6 +187,9 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                     }
                     break;
                 case R.id.VideoRecorderActivity_mIvRestart:
+                    if (mVideoDecoder != null) {
+                        mVideoDecoder.release();
+                    }
                     restartPreview();
                     break;
                 case R.id.VideoRecorderActivity_mIvConfirm:
@@ -187,15 +200,52 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     };
 
     private final RecorderButton.OnRecorderTouchListener mOnRecorderTouchListener = new RecorderButton.OnRecorderTouchListener() {
+
         @Override
         public void onDown() {
-            mRecorderButton.startRecorderAnimation(MIN_TRIGGER_RECORDER_TIME, MAX_RECORDER_DURATION);
+            mRecorderButton
+                    .animate()
+                    .scaleX(1.3f)
+                    .scaleY(1.3f)
+                    .setDuration(MIN_TRIGGER_RECORDER_TIME)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mCurrentVideoPath = DirectoryManager.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
+                            if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
+                                showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
+                                mRecorderButton.reset();
+                            } else {
+                                mRecorderButton.startRecorderAnimation(MAX_RECORDER_DURATION, null);
+                                mHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        resetAndTryPlayRecorderContent();
+                                    }
+                                }, MAX_RECORDER_DURATION);
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            resetAndTryPlayRecorderContent();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    }).start();
         }
 
         @Override
         public void onUp() {
-            reset();
-            playVideo();
+            resetAndTryPlayRecorderContent();
         }
 
         @Override
@@ -205,50 +255,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
         @Override
         public void onCancel() {
-            reset();
-        }
-    };
-
-    private final RecorderButton.OnRecorderAnimationListener mRecorderAnimationListener = new RecorderButton.OnRecorderAnimationListener() {
-        @Override
-        public void onPrepareAnimationStart() {
-            setCurrentState(CURRENT_STATE_RECORDER);
-        }
-
-        @Override
-        public void onPrepareAnimationEnd() {
-
-        }
-
-        @Override
-        public void onProgressAnimationStart() {
-            mCurrentVideoPath = DirectoryManager.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
-            if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
-                showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
-                mRecorderButton.reset();
-            }
-        }
-
-        @Override
-        public void onProgressAnimationEnd() {
-            reset();
-            playVideo();
-        }
-    };
-
-    private final MediaPlayer.OnPreparedListener mOnVideoPreparedListener = new MediaPlayer.OnPreparedListener() {
-        @Override
-        public void onPrepared(MediaPlayer mp) {
-            mp.setLooping(true);
-        }
-    };
-
-    private final MediaPlayer.OnErrorListener mOnPlayVideoErrorListener = new MediaPlayer.OnErrorListener() {
-        @Override
-        public boolean onError(MediaPlayer mp, int what, int extra) {
-            setCurrentState(CURRENT_STATE_PREVIEW);
-            showToast(getString(R.string.VideoRecorderActivity_PlayVideoError));
-            return false;
+            resetAndTryPlayRecorderContent();
         }
     };
 }

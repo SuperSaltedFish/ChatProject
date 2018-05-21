@@ -3,7 +3,6 @@ package com.yzx.chat.widget.view;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.media.MediaCodec;
@@ -14,7 +13,7 @@ import android.view.Surface;
 
 import com.yzx.chat.util.Camera2Helper;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.VoiceCodec;
+import com.yzx.chat.util.VideoEncoder;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class Camera2RecodeView extends Camera2PreviewView {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_270, 0);
     }
 
-    VoiceCodec mVoiceCodec;
+    VideoEncoder mVideoEncoder;
     private Surface mVideoSurface;
     private boolean isRecording;
 
@@ -72,13 +71,13 @@ public class Camera2RecodeView extends Camera2PreviewView {
     @Override
     public void switchCamera(int cameraType) {
         super.switchCamera(cameraType);
-        stopRecorder(false);
+        stopRecorder();
     }
 
     @Override
     public void closeCamera() {
         super.closeCamera();
-        stopRecorder(false);
+        stopRecorder();
     }
 
     @Override
@@ -99,7 +98,7 @@ public class Camera2RecodeView extends Camera2PreviewView {
                 default:
                     videoRotation = 0;
             }
-            mVoiceCodec = VoiceCodec.createEncoder(videoOptimalSize.getWidth(), videoOptimalSize.getHeight(), videoRotation);
+            mVideoEncoder = VideoEncoder.createVideoEncoder(videoOptimalSize.getWidth(), videoOptimalSize.getHeight(), videoRotation);
         }
         super.onSurfaceTextureAvailable(surface, width, height);
     }
@@ -107,15 +106,17 @@ public class Camera2RecodeView extends Camera2PreviewView {
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         super.onSurfaceTextureDestroyed(surface);
-        mVoiceCodec.release();
+        if (mVideoEncoder != null) {
+            mVideoEncoder.release();
+        }
         return true;
     }
 
     @Override
     protected List<Surface> getAvailableSurfaces() {
         List<Surface> surfaces = super.getAvailableSurfaces();
-        if (surfaces != null && mVoiceCodec != null) {
-            mVideoSurface = mVoiceCodec.getInputSurface();
+        if (surfaces != null && mVideoEncoder != null) {
+            mVideoSurface = mVideoEncoder.getInputSurface();
             if (mVideoSurface != null) {
                 surfaces.add(mVideoSurface);
             }
@@ -146,7 +147,7 @@ public class Camera2RecodeView extends Camera2PreviewView {
         if (isRecording) {
             throw new IllegalStateException("The Camera2RecodeView is already recoding");
         }
-        if (mVoiceCodec == null) {
+        if (mVideoEncoder == null) {
             LogUtil.e("startRecorder fail : The VoiceCodec is not initialized");
             return false;
         }
@@ -154,7 +155,7 @@ public class Camera2RecodeView extends Camera2PreviewView {
             LogUtil.e("startRecorder fail : The Camera is not open");
             return false;
         }
-        boolean isSuccess = mVoiceCodec.start(savePath);
+        boolean isSuccess = mVideoEncoder.start(savePath);
         if (isSuccess) {
             isRecording = true;
             refreshPreview();
@@ -163,22 +164,16 @@ public class Camera2RecodeView extends Camera2PreviewView {
     }
 
     public void stopRecorder() {
-        stopRecorder(true);
-    }
-
-    private void stopRecorder(boolean isRestartPreview) {
         if (!isRecording) {
             return;
         }
-        long s = System.currentTimeMillis();
-        if (mVoiceCodec.isRunning()) {
-            mVoiceCodec.stop();
-        }
-        LogUtil.e(""+(System.currentTimeMillis()-s));
+        super.onPause();
+        mVideoEncoder.stop();
         isRecording = false;
-        if (isRestartPreview) {
-            recreateCaptureSession();
-        }
+    }
+
+    public void restartPreview() {
+        recreateCaptureSession();
     }
 
     public boolean isRecording() {
