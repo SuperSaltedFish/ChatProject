@@ -8,8 +8,10 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.Surface;
 
 import java.io.IOException;
@@ -48,6 +50,8 @@ public class VideoDecoder {
     private int mAudioTrackIndex;
     private boolean isStartingEncoded;
     private boolean isPause;
+    private boolean isVideoEndOfStream;
+    private boolean isAudioEndOfStream;
 
     private VideoDecoder(String videoPath, Surface outputSurface) throws IOException {
         mVideoPath = videoPath;
@@ -122,9 +126,11 @@ public class VideoDecoder {
             if (mVideoCodec == null || mAudioCodec == null) {
                 throw new RuntimeException("The VoiceCodec is already release");
             }
+            isVideoEndOfStream = false;
+            isAudioEndOfStream = false;
             mAudioTrack.play();
             mVideoCodec.start();
-            //     mAudioCodec.start();
+            mAudioCodec.start();
             isStartingEncoded = true;
         }
         return true;
@@ -160,12 +166,15 @@ public class VideoDecoder {
         }
     }
 
-    private void decodeComplete() {
-        mAudioCodec.flush();
+    private void resetVideoProgress() {
         mVideoCodec.flush();
+        mVideoExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+    }
+
+    private void resetAudioProgress() {
+        mAudioCodec.flush();
         mAudioTrack.pause();
         mAudioTrack.flush();
-        mVideoExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
         mAudioExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
     }
 
@@ -218,7 +227,11 @@ public class VideoDecoder {
 
         @Override
         protected void playFrame(MediaCodec codec, int index, int dataSize) {
-            codec.releaseOutputBuffer(index, true);
+            if (isVideoEndOfStream && !mDecodeHandler.hasMessages(0, codec)) {
+                resetVideoProgress();
+            } else {
+                codec.releaseOutputBuffer(index, true);
+            }
         }
 
         @Override
@@ -235,17 +248,33 @@ public class VideoDecoder {
                 }
             }
         }
+
+        @Override
+        public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
+            if (info.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
+                isVideoEndOfStream = true;
+                if (!mDecodeHandler.hasMessages(0, codec)) {
+                    resetVideoProgress();
+                }
+                return;
+            }
+            super.onOutputBufferAvailable(codec, index, info);
+        }
     }
 
     private class AudioDecodeCallback extends DelayCodecCallback {
 
         @Override
         protected void playFrame(MediaCodec codec, int index, int dataSize) {
-            ByteBuffer outputBuffer = codec.getOutputBuffer(index);
-            if (outputBuffer != null && dataSize > 0) {
-                mAudioTrack.write(outputBuffer, dataSize, AudioTrack.WRITE_NON_BLOCKING);
+            if (isAudioEndOfStream && !mDecodeHandler.hasMessages(0, codec)) {
+                resetAudioProgress();
+            } else {
+                ByteBuffer outputBuffer = codec.getOutputBuffer(index);
+                if (outputBuffer != null && dataSize > 0) {
+                    mAudioTrack.write(outputBuffer, dataSize, AudioTrack.WRITE_NON_BLOCKING);
+                }
+                codec.releaseOutputBuffer(index, false);
             }
-            codec.releaseOutputBuffer(index, false);
         }
 
         @Override
@@ -256,17 +285,29 @@ public class VideoDecoder {
                 int readLength = mAudioExtractor.readSampleData(inputBuffer, 0);
                 if (readLength > 0) {
                     codec.queueInputBuffer(index, 0, readLength, mAudioExtractor.getSampleTime(), 0);
-                    mVideoExtractor.advance();
+                    mAudioExtractor.advance();
                 } else {
                     codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                 }
             }
         }
+
+        @Override
+        public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo info) {
+            if (info.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
+                isAudioEndOfStream = true;
+                if (!mDecodeHandler.hasMessages(0, codec)) {
+                    resetAudioProgress();
+                }
+                return;
+            }
+            super.onOutputBufferAvailable(codec, index, info);
+        }
     }
 
 
     private abstract class DelayCodecCallback extends MediaCodec.Callback {
-        private long mStartTimeUs = -1;
+        private long mStartTimeUs;
 
         protected abstract void playFrame(MediaCodec codec, int index, int dataSize);
 
@@ -277,24 +318,20 @@ public class VideoDecoder {
 
         @Override
         public void onOutputBufferAvailable(@NonNull final MediaCodec codec, final int index, @NonNull MediaCodec.BufferInfo info) {
-            if (info.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
-                decodeComplete();
-                return;
+            if (mStartTimeUs == 0) {
+                mStartTimeUs = SystemClock.uptimeMillis() * 1000;
             }
-            if (mStartTimeUs == -1) {
-                mStartTimeUs = SystemClock.elapsedRealtimeNanos() / 1000;
-            }
-            long nextFramePlayTime = (SystemClock.elapsedRealtimeNanos() / 1000 - mStartTimeUs - info.presentationTimeUs) / 1000;
+            long nextFramePlayTime = (info.presentationTimeUs + mStartTimeUs) / 1000;
             final int dataSize = info.size;
-            if (nextFramePlayTime <= 0 || dataSize == 0) {
+            if (SystemClock.uptimeMillis() - nextFramePlayTime >= 0 || dataSize == 0) {
                 playFrame(codec, index, dataSize);
             } else {
-                mDecodeHandler.postDelayed(new Runnable() {
+                mDecodeHandler.postAtTime(new Runnable() {
                     @Override
                     public void run() {
                         playFrame(codec, index, dataSize);
                     }
-                }, nextFramePlayTime);
+                }, codec, nextFramePlayTime);
             }
         }
 

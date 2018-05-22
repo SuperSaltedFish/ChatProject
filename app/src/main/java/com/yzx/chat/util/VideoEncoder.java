@@ -46,8 +46,10 @@ public class VideoEncoder {
         format.setInteger(MediaFormat.KEY_BIT_RATE, videoWidth * videoHeight * 2);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
-        format.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileHigh);
         format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000 / VIDEO_FRAME_RATE);
+        format.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileHigh);
+        format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
+
         return format;
     }
 

@@ -6,15 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".mvp.view.activity.VideoRecorderActivity">
 
+    <TextureView
+        android:id="@+id/VideoRecorderActivity_mVideoTextureView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <com.yzx.chat.widget.view.Camera2RecodeView
         android:id="@+id/VideoRecorderActivity_mCamera2RecodeView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextureView
-        android:id="@+id/VideoRecorderActivity_mVideoTextureView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <android.support.constraint.Guideline
         android:id="@+id/VideoRecorderActivity_mGuideline1"

@@ -123,7 +123,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                 mIvFlash.setVisibility(View.VISIBLE);
                 mIvConfirm.setVisibility(View.INVISIBLE);
                 mIvRestart.setVisibility(View.INVISIBLE);
-                //       mVideoView.setVisibility(View.INVISIBLE);
+                mVideoTextureView.setVisibility(View.INVISIBLE);
                 mIvSwitchCamera.setVisibility(View.VISIBLE);
                 mRecorderButton.setVisibility(View.VISIBLE);
                 mCamera2RecodeView.setVisibility(View.VISIBLE);
@@ -133,7 +133,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                 mIvFlash.setVisibility(View.VISIBLE);
                 mIvConfirm.setVisibility(View.INVISIBLE);
                 mIvRestart.setVisibility(View.INVISIBLE);
-                //             mVideoView.setVisibility(View.INVISIBLE);
+                mVideoTextureView.setVisibility(View.INVISIBLE);
                 mIvSwitchCamera.setVisibility(View.INVISIBLE);
                 mRecorderButton.setVisibility(View.VISIBLE);
                 mCamera2RecodeView.setVisibility(View.VISIBLE);
@@ -143,7 +143,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                 mIvFlash.setVisibility(View.INVISIBLE);
                 mIvConfirm.setVisibility(View.VISIBLE);
                 mIvRestart.setVisibility(View.VISIBLE);
-                //        mVideoView.setVisibility(View.VISIBLE);
+                mVideoTextureView.setVisibility(View.VISIBLE);
                 mIvSwitchCamera.setVisibility(View.INVISIBLE);
                 mRecorderButton.setVisibility(View.INVISIBLE);
                 mCamera2RecodeView.setVisibility(View.INVISIBLE);
