@@ -242,7 +242,7 @@ public class Camera2Helper {
     public void startPreview(@NonNull CaptureRequest.Builder captureRequestBuilder) {
         checkCameraState();
         mCurrentCaptureRequestBuilder = captureRequestBuilder;
-        startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
+        setupRequestBuilder(true);
     }
 
     public void stopPreview() {
@@ -255,7 +255,7 @@ public class Camera2Helper {
     public void recoverPreview() {
         checkCameraState();
         if (!isPreviewing) {
-            startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
+            setupRequestBuilder(true);
         }
     }
 
@@ -265,8 +265,7 @@ public class Camera2Helper {
         }
         isEnableFlash = isEnable;
         if (isPreviewing) {
-            mCurrentCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, isEnableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
-            startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
+            setupRequestBuilder(true);
         }
     }
 
@@ -284,6 +283,15 @@ public class Camera2Helper {
     public float getMaxZoomValue() {
         Float maxZoom = mCameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
         return maxZoom == null ? 1 : maxZoom;
+    }
+
+    private void setupRequestBuilder(boolean startAfterSetup) {
+        if (mCurrentCaptureRequestBuilder != null) {
+            mCurrentCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, isEnableFlash ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+            if (startAfterSetup) {
+                startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
+            }
+        }
     }
 
     private void startRepeatingRequest(final CaptureRequest captureRequest, final boolean lockFocus) {

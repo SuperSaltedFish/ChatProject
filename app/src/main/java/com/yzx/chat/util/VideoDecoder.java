@@ -8,11 +8,11 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.util.Size;
 import android.view.Surface;
+import android.widget.MediaController;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,7 +22,7 @@ import java.util.concurrent.CountDownLatch;
  * Created by YZX on 2018年05月20日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
-public class VideoDecoder {
+public class VideoDecoder implements MediaController.MediaPlayerControl {
 
     private static final String TAG = VideoDecoder.class.getSimpleName();
 
@@ -46,10 +46,14 @@ public class VideoDecoder {
     private Surface mOutputSurface;
 
     private String mVideoPath;
-    private int mVideoTrackIndex;
-    private int mAudioTrackIndex;
-    private boolean isStartingEncoded;
-    private boolean isPause;
+    private Size mVideoResolutionRatio;
+    private long mVideoDurationMs;
+    private long mStartTimeUsVideo;
+    private long mStartTimeUsAudio;
+    private long mLastPlayFramePresentationTimeUsVideo;
+    private long mLastPlayFramePresentationTimeUsAudio;
+    private boolean isPauseVideo;
+    private boolean isPauseAudio;
     private boolean isVideoEndOfStream;
     private boolean isAudioEndOfStream;
 
@@ -89,17 +93,18 @@ public class VideoDecoder {
             e.printStackTrace();
             return false;
         }
-        mVideoTrackIndex = getMediaTrackIndexByMimeType(mVideoExtractor, "video/");
-        mAudioTrackIndex = getMediaTrackIndexByMimeType(mAudioExtractor, "audio/");
-        if (mVideoTrackIndex == -1 || mAudioTrackIndex == -1) {
+        int videoTrackIndex = getMediaTrackIndexByMimeType(mVideoExtractor, "video/");
+        int audioTrackIndex = getMediaTrackIndexByMimeType(mAudioExtractor, "audio/");
+        if (videoTrackIndex == -1 || audioTrackIndex == -1) {
             return false;
         }
-        mVideoExtractor.selectTrack(mVideoTrackIndex);
-        mAudioExtractor.selectTrack(mAudioTrackIndex);
-        MediaFormat videoFormat = mVideoExtractor.getTrackFormat(mVideoTrackIndex);
-        MediaFormat audioFormat = mVideoExtractor.getTrackFormat(mAudioTrackIndex);
+        mVideoExtractor.selectTrack(videoTrackIndex);
+        mAudioExtractor.selectTrack(audioTrackIndex);
+        MediaFormat videoFormat = mVideoExtractor.getTrackFormat(videoTrackIndex);
+        MediaFormat audioFormat = mVideoExtractor.getTrackFormat(audioTrackIndex);
         try {
-            long videoDuration = videoFormat.getLong(MediaFormat.KEY_DURATION);
+            mVideoDurationMs = videoFormat.getLong(MediaFormat.KEY_DURATION) / 1000;
+            mVideoResolutionRatio = new Size(videoFormat.getInteger(MediaFormat.KEY_WIDTH), videoFormat.getInteger(MediaFormat.KEY_HEIGHT));
             mVideoCodec = MediaCodec.createDecoderByType(videoFormat.getString(MediaFormat.KEY_MIME));
             mVideoCodec.configure(videoFormat, mOutputSurface, null, 0);
             mVideoCodec.setCallback(new VideoDecodeCallback());
@@ -111,6 +116,8 @@ public class VideoDecoder {
             mAudioCodec.configure(audioFormat, null, null, 0);
             mAudioCodec.setCallback(new AudioDecodeCallback());
             mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSampleRate, (audioChannels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO), AUDIO_BIT_PER_SAMPLE, audioMaxInputSize, AudioTrack.MODE_STREAM);
+            isPauseVideo = true;
+            isPauseAudio = true;
             return true;
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
@@ -118,97 +125,225 @@ public class VideoDecoder {
         return false;
     }
 
-    public boolean start() {
+    @Override
+    public void start() {
         synchronized (this) {
-            if (isStartingEncoded) {
-                throw new RuntimeException("The VoiceCodec is already Starting");
-            }
             if (mVideoCodec == null || mAudioCodec == null) {
                 throw new RuntimeException("The VoiceCodec is already release");
             }
-            isVideoEndOfStream = false;
-            isAudioEndOfStream = false;
-            mAudioTrack.play();
-            mVideoCodec.start();
-            mAudioCodec.start();
-            isStartingEncoded = true;
+            if (isPauseVideo || isPauseAudio) {
+                final CountDownLatch latch = new CountDownLatch(1);
+                mDecodeHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isPauseVideo) {
+                            resumeVideo();
+                        }
+                        if (isPauseAudio) {
+                            resumeAudio();
+                        }
+                        latch.countDown();
+                    }
+                });
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+    }
+
+    @Override
+    public void pause() {
+        synchronized (this) {
+            if (mVideoCodec == null || mAudioCodec == null) {
+                throw new RuntimeException("The VoiceCodec is already release");
+            }
+            if (!isPauseVideo || !isPauseAudio) {
+                final CountDownLatch latch = new CountDownLatch(1);
+                mDecodeHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isPauseVideo) {
+                            pauseVideo(false);
+                        }
+                        if (!isPauseAudio) {
+                            pauseAudio(false);
+                        }
+                        latch.countDown();
+                    }
+                });
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public int getDuration() {
+        return (int) mVideoDurationMs;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return (int) (mLastPlayFramePresentationTimeUsVideo / 1000);
+    }
+
+    @Override
+    public void seekTo(final int timeMs) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        mDecodeHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mVideoExtractor.seekTo(timeMs * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+                mAudioExtractor.seekTo(timeMs * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+                mLastPlayFramePresentationTimeUsVideo = mVideoExtractor.getSampleTime();
+                mLastPlayFramePresentationTimeUsAudio = mAudioExtractor.getSampleTime();
+                mStartTimeUsVideo = SystemClock.uptimeMillis() * 1000 - mLastPlayFramePresentationTimeUsVideo;
+                mStartTimeUsAudio = SystemClock.uptimeMillis() * 1000 - mLastPlayFramePresentationTimeUsAudio;
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return !isPauseAudio && !isPauseVideo;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
         return true;
     }
 
-    public void resume() {
-        synchronized (this) {
-            if (!isPause) {
-                return;
-            }
-            if (mVideoCodec == null || mAudioCodec == null) {
-                throw new RuntimeException("The VoiceCodec is already release");
-            }
-            mAudioTrack.play();
-            mVideoCodec.start();
-            mAudioCodec.start();
-        }
-        isPause = false;
+    @Override
+    public boolean canSeekBackward() {
+        return false;
     }
 
-    public void pause() {
-        synchronized (this) {
-            if (isPause) {
-                return;
-            }
-            if (mVideoCodec == null || mAudioCodec == null) {
-                throw new RuntimeException("The VoiceCodec is already release");
-            }
-            isPause = true;
-            mAudioCodec.flush();
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return mAudioTrack.getAudioSessionId();
+    }
+
+    public Size getVideoResolutionRatio() {
+        return mVideoResolutionRatio;
+    }
+
+    private void resumeVideo() {
+        mVideoCodec.start();
+        isPauseVideo = false;
+        if (mLastPlayFramePresentationTimeUsVideo != 0) {
+            mVideoExtractor.seekTo(mLastPlayFramePresentationTimeUsVideo, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            mStartTimeUsVideo = SystemClock.uptimeMillis() * 1000 - mVideoExtractor.getSampleTime();
+        }
+    }
+
+    private void resumeAudio() {
+        mAudioTrack.play();
+        mAudioCodec.start();
+        isPauseAudio = false;
+        if (mLastPlayFramePresentationTimeUsAudio != 0) {
+            mAudioExtractor.seekTo(mLastPlayFramePresentationTimeUsAudio, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            mStartTimeUsAudio = SystemClock.uptimeMillis() * 1000 - mAudioExtractor.getSampleTime();
+        }
+    }
+
+    private void pauseVideo(boolean isResetProgress) {
+        if (!isPauseVideo) {
             mVideoCodec.flush();
-            mAudioTrack.pause();
         }
+        mDecodeHandler.removeCallbacksAndMessages(mVideoCodec);
+        if (isResetProgress) {
+            mVideoExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            isVideoEndOfStream = false;
+            mStartTimeUsVideo = 0;
+            mLastPlayFramePresentationTimeUsVideo = 0;
+        }
+        isPauseVideo = true;
     }
 
-    private void resetVideoProgress() {
-        mVideoCodec.flush();
-        mVideoExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-    }
-
-    private void resetAudioProgress() {
-        mAudioCodec.flush();
-        mAudioTrack.pause();
-        mAudioTrack.flush();
-        mAudioExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+    private void pauseAudio(boolean isResetProgress) {
+        if (!isPauseAudio) {
+            mAudioCodec.flush();
+            mAudioTrack.pause();
+            mAudioTrack.flush();
+        }
+        mDecodeHandler.removeCallbacksAndMessages(mAudioCodec);
+        if (isResetProgress) {
+            mAudioExtractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            isAudioEndOfStream = false;
+            mStartTimeUsAudio = 0;
+            mLastPlayFramePresentationTimeUsAudio = 0;
+        }
+        isPauseAudio = true;
     }
 
     public void release() {
         synchronized (this) {
-            if (mVideoCodec != null) {
-                mVideoCodec.release();
-                mVideoCodec = null;
-            }
-            if (mAudioCodec != null) {
-                mAudioCodec.release();
-                mAudioCodec = null;
-            }
-            if (mDecodeHandler != null) {
-                mDecodeHandler.getLooper().quitSafely();
-                mDecodeHandler = null;
-            }
-            if (mAudioTrack != null) {
-                mAudioTrack.release();
-                mAudioTrack = null;
-            }
-            if (mVideoExtractor != null) {
-                mVideoExtractor.release();
-            }
-            if (mAudioExtractor != null) {
-                mAudioExtractor.release();
+            if (mVideoCodec != null || mAudioCodec != null) {
+                final CountDownLatch latch = new CountDownLatch(1);
+                mDecodeHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        isVideoEndOfStream = true;
+                        isAudioEndOfStream = true;
+                        if (mVideoCodec != null) {
+                            mVideoCodec.release();
+                            mVideoCodec = null;
+                        }
+                        if (mAudioCodec != null) {
+                            mAudioCodec.release();
+                            mAudioCodec = null;
+                        }
+                        if (mDecodeHandler != null) {
+                            mDecodeHandler.removeCallbacksAndMessages(null);
+                            mDecodeHandler.getLooper().quit();
+                            mDecodeHandler = null;
+                        }
+                        if (mAudioTrack != null) {
+                            mAudioTrack.release();
+                            mAudioTrack = null;
+                        }
+                        if (mVideoExtractor != null) {
+                            mVideoExtractor.release();
+                            mVideoExtractor = null;
+                        }
+                        if (mAudioExtractor != null) {
+                            mAudioExtractor.release();
+                            mAudioExtractor = null;
+                        }
+                        latch.countDown();
+                    }
+                });
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-    }
 
-    public boolean isRunning() {
-        synchronized (this) {
-            return isStartingEncoded;
-        }
     }
 
     private static int getMediaTrackIndexByMimeType(MediaExtractor mediaExtractor, String mimeType) {
@@ -226,25 +361,36 @@ public class VideoDecoder {
     private class VideoDecodeCallback extends DelayCodecCallback {
 
         @Override
-        protected void playFrame(MediaCodec codec, int index, int dataSize) {
+        protected void playFrame(MediaCodec codec, int index, int dataSize, long presentationTimeUs) {
             if (isVideoEndOfStream && !mDecodeHandler.hasMessages(0, codec)) {
-                resetVideoProgress();
+                pauseVideo(true);
             } else {
+                mLastPlayFramePresentationTimeUsVideo = presentationTimeUs;
                 codec.releaseOutputBuffer(index, true);
             }
         }
 
         @Override
+        protected long getNextFramePlayTimeMs(long presentationTimeUs) {
+            if (mStartTimeUsVideo == 0) {
+                mStartTimeUsVideo = SystemClock.uptimeMillis() * 1000;
+            }
+            return (presentationTimeUs + mStartTimeUsVideo) / 1000;
+        }
+
+        @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
-            ByteBuffer inputBuffer = codec.getInputBuffer(index);
-            if (inputBuffer != null) {
-                inputBuffer.clear();
-                int readLength = mVideoExtractor.readSampleData(inputBuffer, 0);
-                if (readLength > 0) {
-                    codec.queueInputBuffer(index, 0, readLength, mVideoExtractor.getSampleTime(), 0);
-                    mVideoExtractor.advance();
-                } else {
-                    codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+            if (!isPauseVideo) {
+                ByteBuffer inputBuffer = codec.getInputBuffer(index);
+                if (inputBuffer != null) {
+                    inputBuffer.clear();
+                    int readLength = mVideoExtractor.readSampleData(inputBuffer, 0);
+                    if (readLength > 0) {
+                        codec.queueInputBuffer(index, 0, readLength, mVideoExtractor.getSampleTime(), 0);
+                        mVideoExtractor.advance();
+                    } else {
+                        codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                    }
                 }
             }
         }
@@ -254,21 +400,24 @@ public class VideoDecoder {
             if (info.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
                 isVideoEndOfStream = true;
                 if (!mDecodeHandler.hasMessages(0, codec)) {
-                    resetVideoProgress();
+                    pauseVideo(true);
                 }
                 return;
             }
-            super.onOutputBufferAvailable(codec, index, info);
+            if (!isPauseVideo) {
+                super.onOutputBufferAvailable(codec, index, info);
+            }
         }
     }
 
     private class AudioDecodeCallback extends DelayCodecCallback {
 
         @Override
-        protected void playFrame(MediaCodec codec, int index, int dataSize) {
+        protected void playFrame(MediaCodec codec, int index, int dataSize, long presentationTimeUs) {
             if (isAudioEndOfStream && !mDecodeHandler.hasMessages(0, codec)) {
-                resetAudioProgress();
+                pauseAudio(true);
             } else {
+                mLastPlayFramePresentationTimeUsAudio = presentationTimeUs;
                 ByteBuffer outputBuffer = codec.getOutputBuffer(index);
                 if (outputBuffer != null && dataSize > 0) {
                     mAudioTrack.write(outputBuffer, dataSize, AudioTrack.WRITE_NON_BLOCKING);
@@ -278,16 +427,26 @@ public class VideoDecoder {
         }
 
         @Override
+        protected long getNextFramePlayTimeMs(long presentationTimeUs) {
+            if (mStartTimeUsAudio == 0) {
+                mStartTimeUsAudio = SystemClock.uptimeMillis() * 1000;
+            }
+            return (presentationTimeUs + mStartTimeUsAudio) / 1000;
+        }
+
+        @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
-            ByteBuffer inputBuffer = codec.getInputBuffer(index);
-            if (inputBuffer != null) {
-                inputBuffer.clear();
-                int readLength = mAudioExtractor.readSampleData(inputBuffer, 0);
-                if (readLength > 0) {
-                    codec.queueInputBuffer(index, 0, readLength, mAudioExtractor.getSampleTime(), 0);
-                    mAudioExtractor.advance();
-                } else {
-                    codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+            if (!isPauseAudio) {
+                ByteBuffer inputBuffer = codec.getInputBuffer(index);
+                if (inputBuffer != null) {
+                    inputBuffer.clear();
+                    int readLength = mAudioExtractor.readSampleData(inputBuffer, 0);
+                    if (readLength > 0) {
+                        codec.queueInputBuffer(index, 0, readLength, mAudioExtractor.getSampleTime(), 0);
+                        mAudioExtractor.advance();
+                    } else {
+                        codec.queueInputBuffer(index, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                    }
                 }
             }
         }
@@ -297,19 +456,22 @@ public class VideoDecoder {
             if (info.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
                 isAudioEndOfStream = true;
                 if (!mDecodeHandler.hasMessages(0, codec)) {
-                    resetAudioProgress();
+                    pauseAudio(true);
                 }
                 return;
             }
-            super.onOutputBufferAvailable(codec, index, info);
+            if (!isPauseAudio) {
+                super.onOutputBufferAvailable(codec, index, info);
+            }
         }
     }
 
 
     private abstract class DelayCodecCallback extends MediaCodec.Callback {
-        private long mStartTimeUs;
 
-        protected abstract void playFrame(MediaCodec codec, int index, int dataSize);
+        protected abstract void playFrame(MediaCodec codec, int index, int dataSize, long presentationTimeUs);
+
+        protected abstract long getNextFramePlayTimeMs(long presentationTimeUs);
 
         @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
@@ -317,21 +479,18 @@ public class VideoDecoder {
         }
 
         @Override
-        public void onOutputBufferAvailable(@NonNull final MediaCodec codec, final int index, @NonNull MediaCodec.BufferInfo info) {
-            if (mStartTimeUs == 0) {
-                mStartTimeUs = SystemClock.uptimeMillis() * 1000;
-            }
-            long nextFramePlayTime = (info.presentationTimeUs + mStartTimeUs) / 1000;
+        public void onOutputBufferAvailable(@NonNull final MediaCodec codec, final int index, @NonNull final MediaCodec.BufferInfo info) {
+            long nextFramePlayTimeMs = getNextFramePlayTimeMs(info.presentationTimeUs);
             final int dataSize = info.size;
-            if (SystemClock.uptimeMillis() - nextFramePlayTime >= 0 || dataSize == 0) {
-                playFrame(codec, index, dataSize);
+            if (SystemClock.uptimeMillis() - nextFramePlayTimeMs >= 0 || dataSize == 0) {
+                playFrame(codec, index, dataSize, info.presentationTimeUs);
             } else {
                 mDecodeHandler.postAtTime(new Runnable() {
                     @Override
                     public void run() {
-                        playFrame(codec, index, dataSize);
+                        playFrame(codec, index, dataSize, info.presentationTimeUs);
                     }
-                }, codec, nextFramePlayTime);
+                }, codec, nextFramePlayTimeMs);
             }
         }
 

@@ -215,5 +215,6 @@
     <string name="VideoRecorderActivity_PlayVideoError">无法播放录制内容，请稍后再试！</string>
     <string name="shoot">拍摄</string>
     <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
+    <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
 
 </resources>

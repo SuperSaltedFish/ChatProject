@@ -32,7 +32,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     private static final int CURRENT_STATE_RECORDER = 2;
     private static final int CURRENT_STATE_PLAY = 3;
 
-    private static final int MAX_RECORDER_DURATION = 12 * 1000;
+    private static final int MAX_RECORDER_DURATION = 10 * 1000 + 300;
     private static final int MIN_TRIGGER_RECORDER_TIME = 300;
 
     private ImageView mIvClose;
@@ -96,6 +96,9 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
         mCamera2RecodeView.closeCamera();
+        if (mVideoDecoder != null) {
+            mVideoDecoder.release();
+        }
     }
 
     private void resetAndTryPlayRecorderContent() {
@@ -104,8 +107,12 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
         if (mCamera2RecodeView.isRecording()) {
             mCamera2RecodeView.stopRecorder();
+            if (mVideoDecoder != null) {
+                mVideoDecoder.release();
+            }
             mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
-            if (mVideoDecoder != null && mVideoDecoder.start()) {
+            if (mVideoDecoder != null) {
+                mVideoDecoder.start();
                 setCurrentState(CURRENT_STATE_PLAY);
             } else {
                 showLongToast(getString(R.string.VideoRecorderActivity_PlayVideoError));
@@ -199,6 +206,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         }
     };
 
+
     private final RecorderButton.OnRecorderTouchListener mOnRecorderTouchListener = new RecorderButton.OnRecorderTouchListener() {
 
         @Override
@@ -222,6 +230,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                                 mRecorderButton.reset();
                             } else {
                                 mRecorderButton.startRecorderAnimation(MAX_RECORDER_DURATION, null);
+                                setCurrentState(CURRENT_STATE_RECORDER);
                                 mHandler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {

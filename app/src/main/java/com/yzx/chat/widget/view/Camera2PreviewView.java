@@ -32,7 +32,7 @@ import java.util.List;
  * Created by YZX on 2018年05月03日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
-public class Camera2PreviewView extends TextureView implements TextureView.SurfaceTextureListener, Camera2Helper.OnCameraStateListener {
+public class Camera2PreviewView extends AutoFitTextureView implements TextureView.SurfaceTextureListener, Camera2Helper.OnCameraStateListener {
 
     public static final int CAMERA_TYPE_FRONT = CameraCharacteristics.LENS_FACING_FRONT;
     public static final int CAMERA_TYPE_BACK = CameraCharacteristics.LENS_FACING_BACK;
@@ -46,7 +46,6 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     protected static final int MAX_PREVIEW_HEIGHT = 1080;
     protected static final int ZOOM_MAX_TRIGGER_DISTANCE = 800;
     protected static final float ZOOM_MIN_LEVEL = 1f;
-    private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
     private Context mContext;
     private OnPreviewStateListener mOnPreviewStateListener;
@@ -63,7 +62,6 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     private float mCameraMaxZoomLevel = ZOOM_MIN_LEVEL;
     private float mCurrentZoom = ZOOM_MIN_LEVEL;
     private Size mPreviewSize;
-    private Size mAspectRatioSize;
 
     public Camera2PreviewView(Context context) {
         this(context, null);
@@ -76,33 +74,9 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
     public Camera2PreviewView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        mAspectRatioSize = DEFAULT_ASPECT_RATIO;
         setSurfaceTextureListener(this);
         setOnTouchListener(mOnGestureTouchListener);
         switchCamera(CAMERA_TYPE_BACK);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        int ratioW;
-        int ratioH;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ratioW = mAspectRatioSize.getWidth();
-            ratioH = mAspectRatioSize.getHeight();
-        } else {
-            ratioW = mAspectRatioSize.getHeight();
-            ratioH = mAspectRatioSize.getWidth();
-        }
-        if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
-            height = width * ratioH / ratioW;
-        } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-            width = height * ratioW / ratioH;
-        }
-        setMeasuredDimension(width, height);
     }
 
     public void onResume() {
@@ -162,17 +136,6 @@ public class Camera2PreviewView extends TextureView implements TextureView.Surfa
         if (mCamera2Helper != null) {
             mCamera2Helper.setEnableFlash(isEnable);
         }
-    }
-
-    public void setAspectRatioSize(Size aspectRatioSize) {
-        if (aspectRatioSize.equals(mAspectRatioSize)) {
-            return;
-        }
-        mAspectRatioSize = aspectRatioSize;
-    }
-
-    public Size getAspectRatioSize() {
-        return mAspectRatioSize;
     }
 
     public void setOnPreviewStateListener(OnPreviewStateListener onPreviewStateListener) {

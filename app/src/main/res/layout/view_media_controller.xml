@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     android:id="@+id/MediaController_mLlRootView"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@drawable/bg_gradual_mask_top_to_bottom">
+        android:background="@drawable/bg_gradual_mask_top_to_bottom"
+        android:paddingTop="8dp">
 
         <ImageView
             android:id="@+id/MediaController_mIvClose"
@@ -24,8 +25,16 @@
 
     <Space
         android:layout_width="0dp"
+        android:layout_height="48dp" />
+
+    <Space
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="48dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,15 +43,16 @@
         android:background="@drawable/bg_gradual_mask_bottom_to_top"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingBottom="4dp"
         android:paddingEnd="12dp"
         android:paddingStart="12dp"
         android:paddingTop="16dp">
 
         <ImageView
             android:id="@+id/MediaController_mIvPlayControl"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:padding="3dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="4dp"
             android:src="@drawable/selector_src_play_state" />
 
         <TextView

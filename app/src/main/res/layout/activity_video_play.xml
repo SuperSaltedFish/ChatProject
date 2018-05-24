@@ -5,21 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".mvp.view.activity.VideoPlayActivity">
 
-
-    <VideoView
-        android:id="@+id/VideoPlayActivity_mVideoView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:visibility="invisible" />
-
     <ImageView
         android:id="@+id/VideoPlayActivity_mIvThumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:scaleType="centerCrop"
-        android:visibility="visible" />
+        android:scaleType="centerCrop" />
 
+    <com.yzx.chat.widget.view.AutoFitTextureView
+        android:id="@+id/VideoPlayActivity_mTextureView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
 </merge>

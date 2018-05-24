@@ -593,7 +593,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         private static String videoTimeFormat(long millisecond) {
-            int second = (int) Math.ceil(millisecond / 1000.0);
+            int second = (int) (millisecond / 1000);
             return String.format(Locale.getDefault(), "%d:%02d", second / 60, second % 60);
         }
     }
