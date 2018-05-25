@@ -1,9 +1,9 @@
 package com.yzx.chat.mvp.contract;
 
-import android.net.Uri;
-
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+
+import io.rong.imlib.model.Message;
 
 /**
  * Created by YZX on 2018年05月17日.
@@ -23,6 +23,6 @@ public class VideoPlayContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void downloadVideo(Uri videoUri);
+        void downloadVideo(Message message);
     }
 }

@@ -379,7 +379,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         void performClickVideoContent() {
             VideoMessage videoMessage = (VideoMessage) mMessage.getContent();
             Uri videoUri = videoMessage.getLocalPath();
-            if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
+            String localPath = videoUri != null ? videoUri.getPath() : null;
+            if (TextUtils.isEmpty(localPath) || !new File(localPath).exists()) {
+                localPath = null;
                 videoUri = videoMessage.getMediaUrl();
                 if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
                     AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_VideoAlreadyOverdue));
@@ -390,16 +392,15 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
             if (stackTopActivity instanceof ChatActivity) {
                 Intent intent = new Intent(stackTopActivity, VideoPlayActivity.class);
-                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_VIDEO_URI, videoUri);
+                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_VIDEO_PATH, localPath);
                 intent.putExtra(VideoPlayActivity.INTENT_EXTRA_THUMBNAIL_URI, thumbUri);
+                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE, mMessage);
                 View transition = ((VideoViewHolder) mViewHolder).mIvVideoThumbnail;
                 ViewCompat.setTransitionName(transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
-                ActivityCompat.startActivity(stackTopActivity, intent, options.toBundle());
+                ActivityCompat.startActivityForResult(stackTopActivity, intent, 0, options.toBundle());
             }
         }
-
-
     }
 
     abstract static class ItemViewHolder {

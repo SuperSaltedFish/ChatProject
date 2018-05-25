@@ -6,6 +6,8 @@ import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.mvp.contract.VideoPlayContract;
+import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.DownloadCallback;
 import com.yzx.chat.network.framework.DownloadUtil;
@@ -18,13 +20,15 @@ import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
 
+import io.rong.imlib.model.Message;
+
 /**
  * Created by YZX on 2018年05月17日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     private VideoPlayContract.View mVideoPlayView;
-    private Call<Void> mDownloadVideoCall;
+    private Message mCurrentDownloadMessage;
 
     @Override
     public void attachView(VideoPlayContract.View view) {
@@ -34,74 +38,55 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     @Override
     public void detachView() {
         mVideoPlayView = null;
-        AsyncUtil.cancelCall(mDownloadVideoCall);
+        if (mCurrentDownloadMessage != null) {
+            IMClient.getInstance().chatManager().cancelDownloadMediaContent(mCurrentDownloadMessage);
+        }
     }
 
     @Override
-    public void downloadVideo(Uri videoUri) {
-        if (videoUri == null || TextUtils.isEmpty(videoUri.toString())) {
-            mVideoPlayView.showError(AndroidUtil.getString(R.string.ChatActivity_VideoAlreadyOverdue));
-            return;
-        }
-        String videoPath = null;
-        String savePath = DirectoryManager.getUserVideoPath();
-        if ("file".equals(videoUri.getScheme())) {
-            videoPath = videoUri.getPath();
-        } else {
-            String videoName = getFileNameFromUri(videoUri);
-            if (!TextUtils.isEmpty(videoName)) {
-                videoPath = savePath + videoName;
-            }
-        }
-        if (!TextUtils.isEmpty(videoPath)) {
-            if (new File(videoPath).exists()) {
-                mVideoPlayView.playVideo(videoPath);
-                return;
-            }
-        }
-        AsyncUtil.cancelCall(mDownloadVideoCall);
-        mDownloadVideoCall = DownloadUtil.createDownloadCall(videoUri.toString(), savePath, RequestType.GET_DOWNLOAD);
-        mDownloadVideoCall.setDownloadCallback(new DownloadCallback() {
+    public void downloadVideo(Message message) {
+        mCurrentDownloadMessage = message;
+        IMClient.getInstance().chatManager().downloadMediaContent(message, new com.yzx.chat.network.chat.DownloadCallback() {
             @Override
-            public void onProcess(int percent) {
-                mVideoPlayView.setEnableProgressDialog(true);
-                mVideoPlayView.showProcess(percent);
-            }
-
-            @Override
-            public void onFinish(HttpResponse<String> httpResponse) {
+            public void onSuccess(Message message, Uri localUri) {
+                mCurrentDownloadMessage = null;
                 mVideoPlayView.setEnableProgressDialog(false);
-                if (httpResponse.getResponseCode() == 200 || !TextUtils.isEmpty(httpResponse.getResponse())) {
-                    mVideoPlayView.playVideo(httpResponse.getResponse());
+                if (localUri != null && !TextUtils.isEmpty(localUri.getPath())) {
+                    mVideoPlayView.playVideo(localUri.getPath());
                 } else {
                     mVideoPlayView.showError(AndroidUtil.getString(R.string.VideoPlayActivity_DownloadVideoFail));
                 }
             }
 
             @Override
-            public void onDownloadError(@NonNull Throwable e) {
-                LogUtil.e(e.toString());
+            public void onProgress(Message message, int percentage) {
+                mVideoPlayView.setEnableProgressDialog(true);
+                mVideoPlayView.showProcess(percentage);
+            }
+
+            @Override
+            public void onError(Message message, String error) {
+                LogUtil.e(error);
                 mVideoPlayView.setEnableProgressDialog(false);
                 mVideoPlayView.showError(AndroidUtil.getString(R.string.VideoPlayActivity_DownloadVideoFail));
             }
 
             @Override
-            public boolean isExecuteNextTask() {
-                return false;
+            public void onCanceled(Message message) {
+                mCurrentDownloadMessage = null;
             }
         });
-        sHttpExecutor.submit(mDownloadVideoCall);
     }
 
-    private static String getFileNameFromUri(Uri videoUri) {
-        String url = videoUri.toString();
-        if (TextUtils.isEmpty(url)) {
-            return null;
-        }
-        String fileName = null;
-        if (url.lastIndexOf('/') + 1 < url.length()) {
-            fileName = url.substring(url.lastIndexOf('/') + 1);
-        }
-        return fileName;
-    }
+//    private static String getFileNameFromUri(Uri videoUri) {
+//        String url = videoUri.toString();
+//        if (TextUtils.isEmpty(url)) {
+//            return null;
+//        }
+//        String fileName = null;
+//        if (url.lastIndexOf('/') + 1 < url.length()) {
+//            fileName = url.substring(url.lastIndexOf('/') + 1);
+//        }
+//        return fileName;
+//    }
 }

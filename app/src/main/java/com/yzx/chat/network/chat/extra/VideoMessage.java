@@ -46,6 +46,10 @@ public class VideoMessage extends MediaMessageContent {
 
             jsonObj.put("size", mSize);
 
+            if (mThumbUri != null) {
+                jsonObj.put("thumbUri", mThumbUri.toString());
+            }
+
             if (getLocalPath() != null) {
                 jsonObj.put("localPath", getLocalPath().toString());
             }
@@ -86,6 +90,9 @@ public class VideoMessage extends MediaMessageContent {
                 setSize(jsonObj.getLong("size"));
             if (jsonObj.has("content")) {
                 setBase64(jsonObj.optString("content"));
+            }
+            if (jsonObj.has("thumbUri")) {
+                setThumbUri(Uri.parse(jsonObj.optString("thumbUri")));
             }
             if (jsonObj.has("localPath"))
                 setLocalPath(Uri.parse(jsonObj.optString("localPath")));

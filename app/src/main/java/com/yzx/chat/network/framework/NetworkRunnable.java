@@ -201,14 +201,14 @@ public class NetworkRunnable implements Runnable {
     }
 
     private static class DownloadProcessListenerImpl implements Http.DownloadProcessListener {
-        private static final int CALLBACK_FREQUENCY = 5000;
+        private static final int CALLBACK_FREQUENCY = 500;
         private DownloadCallback mDownloadCallback;
         private Handler mHandler;
         private boolean isStarted;
         private long mLastCallbackTime;
         private long mAlreadyDownloadSize;
         private long mTotalSize;
-        private int mCurrentPercent;
+        private int mCurrentPercent=-1;
 
         private DownloadProcessListenerImpl(DownloadCallback downloadCallback, Handler handler) {
             mDownloadCallback = downloadCallback;

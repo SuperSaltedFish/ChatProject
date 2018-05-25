@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,8 +11,6 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.MediaController;
-import android.widget.VideoView;
 
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -20,7 +19,6 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.VideoPlayContract;
 import com.yzx.chat.mvp.presenter.VideoPlayPresenter;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VideoDecoder;
 import com.yzx.chat.widget.view.AutoFitTextureView;
 import com.yzx.chat.widget.view.MediaControllerPopupWindow;
@@ -28,10 +26,15 @@ import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.Locale;
 
+import io.rong.imlib.model.Message;
+
 public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Presenter> implements VideoPlayContract.View {
 
-    public static final String INTENT_EXTRA_VIDEO_URI = "VideoUri";
+    public static final int RESULT_CODE = VideoPlayActivity.class.hashCode();
+
+    public static final String INTENT_EXTRA_VIDEO_PATH = "localVideoPath";
     public static final String INTENT_EXTRA_THUMBNAIL_URI = "ThumbnailUri";
+    public static final String INTENT_EXTRA_MESSAGE = "Message";
 
     public static final String TRANSITION_NAME_IMAGE = "Thumbnail";
 
@@ -42,6 +45,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     private VideoDecoder mVideoDecoder;
 
     private String mVideoPath;
+    private Message mMessage;
     private boolean isWaitPlay;
 
     @Override
@@ -59,13 +63,8 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        Uri videoUri = getIntent().getParcelableExtra(INTENT_EXTRA_VIDEO_URI);
-        if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
-            finish();
-            return;
-        }
-        ViewCompat.setTransitionName(mIvThumbnail, TRANSITION_NAME_IMAGE);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
+        ViewCompat.setTransitionName(mIvThumbnail, TRANSITION_NAME_IMAGE);
         if (thumbnailUri != null && !TextUtils.isEmpty(thumbnailUri.getPath())) {
             GlideApp.with(this)
                     .load(thumbnailUri)
@@ -79,7 +78,18 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
         mMediaControllerPopupWindow.setOnCloseClickListener(mOnCloseClickListener);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
 
-        mPresenter.downloadVideo(videoUri);
+        mVideoPath = getIntent().getStringExtra(INTENT_EXTRA_VIDEO_PATH);
+        mMessage = getIntent().getParcelableExtra(INTENT_EXTRA_MESSAGE);
+        if (TextUtils.isEmpty(mVideoPath)) {
+            mMessage = getIntent().getParcelableExtra(INTENT_EXTRA_MESSAGE);
+            if (mMessage == null) {
+                finish();
+            } else {
+                mPresenter.downloadVideo(mMessage);
+            }
+        } else {
+            playVideo(mVideoPath);
+        }
     }
 
 
@@ -96,6 +106,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mMediaControllerPopupWindow.dismiss();
         if (mVideoDecoder != null) {
             mVideoDecoder.release();
         }
@@ -103,8 +114,15 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
     @Override
     public void onBackPressed() {
-        ViewCompat.setTransitionName(mIvThumbnail, null);
-        ViewCompat.setTransitionName(mTextureView, TRANSITION_NAME_IMAGE);
+        if (!TextUtils.isEmpty(mVideoPath)) {
+            ViewCompat.setTransitionName(mIvThumbnail, null);
+            ViewCompat.setTransitionName(mTextureView, TRANSITION_NAME_IMAGE);
+        }
+        if (mMessage != null) {
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_EXTRA_MESSAGE, mMessage);
+            setResult(RESULT_CODE, intent);
+        }
         super.onBackPressed();
     }
 
@@ -118,6 +136,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
             mVideoDecoder = VideoDecoder.createEncoder(videoPath, new Surface(texture));
             if (mVideoDecoder == null) {
                 showToast(getString(R.string.VideoPlayActivity_PlayVideoFail));
+                mVideoPath = null;
             } else {
                 mMediaControllerPopupWindow.setMediaPlayer(mVideoDecoder);
                 Size resolutionRatio = mVideoDecoder.getVideoResolutionRatio();
@@ -144,7 +163,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
         if (isEnable) {
             mProgressDialog.show();
         } else {
-            mProgressDialog.hide();
+            mProgressDialog.dismiss();
         }
     }
 

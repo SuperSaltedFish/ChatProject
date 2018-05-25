@@ -1,5 +1,6 @@
 package com.yzx.chat.network.chat;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.yzx.chat.network.chat.extra.VideoMessage;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
@@ -20,6 +22,7 @@ import io.rong.imlib.model.MessageContent;
 import io.rong.message.FileMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
+import io.rong.message.MediaMessageContent;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -70,6 +73,81 @@ public class ChatManager {
         } else if (content instanceof LocationMessage) {
             mRongIMClient.sendLocationMessage(message, null, null, mSendMessageCallbackWrapper);
         }
+    }
+
+    @Nullable
+    public Message getMessage(int messageID) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final Message[] messageContainer = {null};
+        mRongIMClient.getMessage(messageID, new RongIMClient.ResultCallback<Message>() {
+            @Override
+            public void onSuccess(Message message) {
+                messageContainer[0] = message;
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return messageContainer[0];
+    }
+
+    public void downloadMediaContent(Message message, final DownloadCallback callback) {
+        mRongIMClient.downloadMediaMessage(message, new IRongCallback.IDownloadMediaMessageCallback() {
+            @Override
+            public void onSuccess(Message message) {
+                if (callback != null) {
+                    if (message.getContent() instanceof MediaMessageContent) {
+                        MediaMessageContent content = (MediaMessageContent) message.getContent();
+                        callback.onSuccess(message, content.getLocalPath());
+                    } else {
+                        callback.onSuccess(message, null);
+                    }
+                }
+            }
+
+            @Override
+            public void onProgress(Message message, int i) {
+                if (callback != null) {
+                    callback.onProgress(message, i);
+                }
+            }
+
+            @Override
+            public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+                if (callback != null) {
+                    callback.onError(message, errorCode.getMessage());
+                }
+            }
+
+            @Override
+            public void onCanceled(Message message) {
+                if (callback != null) {
+                    callback.onCanceled(message);
+                }
+            }
+        });
+    }
+
+    public void cancelDownloadMediaContent(Message message) {
+        mRongIMClient.cancelDownloadMediaMessage(message, new RongIMClient.OperationCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtil.e(errorCode.getMessage());
+            }
+        });
     }
 
     public void setVoiceMessageAsListened(Message message) {

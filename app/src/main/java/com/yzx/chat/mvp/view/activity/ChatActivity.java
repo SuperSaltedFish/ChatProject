@@ -199,6 +199,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             if (!TextUtils.isEmpty(videoPath)) {
                 mPresenter.sendVideoMessage(videoPath);
             }
+        }else if (resultCode == VideoPlayActivity.RESULT_CODE) {
+          Message message = data.getParcelableExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE);
+          if(message!=null){
+              updateMessage(message);
+          }
         }
     }
 
