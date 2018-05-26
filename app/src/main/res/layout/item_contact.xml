@@ -1,27 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="60dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:gravity="center_vertical"
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
     <com.yzx.chat.widget.view.CircleImageView
         android:id="@+id/ContactAdapter_mIvAvatar"
         android:layout_width="44dp"
-        android:layout_height="44dp" />
+        android:layout_height="44dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ContactAdapter_mTvName"
         android:layout_width="wrap_content"
-        android:singleLine="true"
-        android:ellipsize="end"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/text_primary_color_black"
-        android:textSize="16sp" />
+        android:singleLine="true"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/ContactAdapter_mTvSignature"
+        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mIvAvatar"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/ContactAdapter_mTvSignature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="每个不曾起舞的日子，都是对生命的辜负！"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mIvAvatar"
+        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvAvatar"
+        app:layout_constraintTop_toBottomOf="@id/ContactAdapter_mTvName" />
+
+    <ImageView
+        android:id="@+id/ContactAdapter_mIvSex"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:padding="2dp"
+        android:layout_marginStart="4dp"
+        android:src="@drawable/selector_src_sex"
+        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mTvName"
+        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mTvName"
+        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mTvName" />
+
+    <TextView
+        android:id="@+id/ContactAdapter_mTvAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:textSize="13sp"
+        android:text="23岁"
+        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mTvName"
+        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvSex"
+        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mTvName" />
+
+
+</android.support.constraint.ConstraintLayout>

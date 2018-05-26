@@ -6,7 +6,7 @@
         android:dashWidth="4dp"
         android:dashGap="2dp"
         android:width="0.5dp"
-        android:color="@color/text_secondary_color_black"/>
+        android:color="@color/textSecondaryColorBlack"/>
     <corners
         android:radius="100dp"/>
 </shape>

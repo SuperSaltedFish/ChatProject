@@ -84,6 +84,6 @@
         android:layout_height="1dp"
         android:layout_gravity="bottom"
         android:layout_marginBottom="48dp"
-        android:background="@color/divider_color_white" />
+        android:background="@color/dividerColorWhite" />
 
 </merge>

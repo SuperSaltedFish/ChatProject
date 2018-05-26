@@ -102,9 +102,9 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mFlowLayout.setLineSpace((int) AndroidUtil.dip2px(4));
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
-        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(this, R.color.divider_color_black));
+        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(this, R.color.dividerColorBlack));
         mLetterSegmentationItemDecoration.setLineWidth(1);
-        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(this, R.color.divider_color_black));
+        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(this, R.color.dividerColorBlack));
         mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -115,7 +115,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mRecyclerView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
-        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.text_secondary_color_black));
+        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.textSecondaryColorBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
 

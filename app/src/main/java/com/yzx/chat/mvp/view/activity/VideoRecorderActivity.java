@@ -49,6 +49,11 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     private String mCurrentVideoPath;
 
     @Override
+    protected int getSystemUiMode() {
+        return SYSTEM_UI_MODE_FULLSCREEN;
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.activity_video_recorder;
     }

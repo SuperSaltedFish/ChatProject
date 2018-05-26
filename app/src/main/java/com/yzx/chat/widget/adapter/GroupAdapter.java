@@ -36,7 +36,7 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
     @Override
     public void bindDataToViewHolder(GroupHolder holder, int position) {
         GroupBean group = mGroupList.get(position);
-        holder.mTvGroupName.setText(group.getName());
+        holder.mTvGroupName.setText(group.getNameAndMemberNumber());
         String avatarUrl = group.getAvatarUrlFromMember();
         Object[] avatarList;
         if (TextUtils.isEmpty(avatarUrl)) {

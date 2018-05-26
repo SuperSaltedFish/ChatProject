@@ -55,7 +55,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
             return;
         }
 
-        mCropView.setMaskColor(ContextCompat.getColor(this, R.color.mask_color_black));
+        mCropView.setMaskColor(ContextCompat.getColor(this, R.color.maskColorBlack));
         GlideUtil.loadFromUrl(this, mPhotoView, String.format("file://%s", imagePath));
     }
 

@@ -18,6 +18,11 @@
         <item name="moments">女</item>
     </string-array>
 
+    <string-array name="NotificationMessageActivity_Subtitle">
+        <item name="information">好友通知</item>
+        <item name="moments">系统信息</item>
+    </string-array>
+
     <string name="DateFormat_yyyyMMdd">yyyy年MM月dd日</string>
 
     <string name="PermissionMiss">缺少相关权限，无法使用该功能</string>
@@ -109,7 +114,7 @@
     <string name="RemarkInfoActivity_Title">备注信息</string>
     <string name="ContactMenu_DeleteContact">删除好友</string>
     <string name="FindNewContactActivity_Title">添加好友</string>
-    <string name="ContactOperationActivity_Title">新的朋友</string>
+    <string name="NotificationMessageActivity_Title">通知信息</string>
     <string name="ImageSelectorActivity_Title">选择图片</string>
     <string name="ContactMessageAdapter_Added">已添加</string>
     <string name="ContactMessageAdapter_Disagree">对方拒绝添加</string>

@@ -20,7 +20,7 @@
         android:gravity="center_vertical"
         android:minHeight="56dp"
         android:padding="16dp"
-        android:textColor="@color/text_primary_color_black"
+        android:textColor="@color/textPrimaryColorBlack"
         android:textSize="16sp" />
 
 </LinearLayout>

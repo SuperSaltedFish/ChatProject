@@ -8,27 +8,25 @@
     <LinearLayout
         android:id="@+id/ContactFragmentList_mLlContactOperation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:paddingEnd="16dp"
         android:paddingStart="16dp">
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_add_friend"
-            android:tint="@color/colorAccent" />
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_contact_notification" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:text="新的朋友"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="16sp" />
+            android:text="@string/NotificationMessageActivity_Title"
+            android:textColor="@color/textPrimaryColorBlack"
+            android:textSize="14sp" />
 
         <com.yzx.chat.widget.view.BadgeView
             android:id="@+id/ContactFragmentList_mBadgeView"
@@ -39,51 +37,80 @@
 
     </LinearLayout>
 
+
     <LinearLayout
         android:id="@+id/ContactFragmentList_mLlGroup"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:paddingEnd="16dp"
         android:paddingStart="16dp">
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_friend"
-            android:tint="@color/colorAccent" />
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_contact_group" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="群聊"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="16sp" />
+            android:layout_marginStart="10dp"
+            android:text="我的群聊"
+            android:textColor="@color/textPrimaryColorBlack"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:paddingEnd="16dp"
         android:paddingStart="16dp">
 
         <com.yzx.chat.widget.view.CircleImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_label"
-            android:tint="@color/colorAccent" />
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_contact_label" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="标签(0)"
-            android:textColor="@color/text_primary_color_black"
-            android:textSize="16sp" />
+            android:layout_marginStart="10dp"
+            android:text="我的标签(0)"
+            android:textColor="@color/textPrimaryColorBlack"
+            android:textSize="14sp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/backgroundColorGrey"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="1px"
+            android:background="@color/textSecondaryColorBlack" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:gravity="center"
+            android:text="好友列表"
+            android:textSize="12sp" />
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="1px"
+            android:background="@color/textSecondaryColorBlack" />
+
+    </LinearLayout>
+
 
 </LinearLayout>

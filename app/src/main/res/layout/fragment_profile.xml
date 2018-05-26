@@ -59,7 +59,7 @@
         android:layout_marginStart="8dp"
         android:gravity="center_vertical"
         android:text="_________夜之星"
-        android:textColor="@color/text_main_color_white"
+        android:textColor="@color/textColorWhite"
         android:textSize="17sp"
         app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline2"
         app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mIvAvatar" />
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ProfileModifyActivity_Title"
-            android:textColor="@color/text_main_color_white"
+            android:textColor="@color/textColorWhite"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
             app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mTvNickname"
@@ -104,7 +104,7 @@
         android:layout_marginEnd="32dp"
         android:gravity="center_vertical"
         android:text="真想击倒你的不是敌人，而是你自甘落伍的内心。"
-        android:textColor="@color/text_main_color_white_alpha"
+        android:textColor="@color/textColorWhiteAlpha"
         android:textSize="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/ProfileFragment_mTvNickname"
@@ -168,7 +168,7 @@
                     android:paddingEnd="16dp"
                     android:paddingStart="20dp"
                     android:text="添加新的相册"
-                    android:textColor="@color/text_secondary_color_black"
+                    android:textColor="@color/textSecondaryColorBlack"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -199,7 +199,7 @@
                     android:paddingEnd="16dp"
                     android:paddingStart="20dp"
                     android:text="添加新的相册"
-                    android:textColor="@color/text_secondary_color_black"
+                    android:textColor="@color/textSecondaryColorBlack"
                     android:textSize="16sp" />
 
                 <com.yzx.chat.widget.view.CircleImageView

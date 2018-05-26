@@ -35,7 +35,7 @@
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/text_primary_color_black"
+        android:textColor="@color/textPrimaryColorBlack"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

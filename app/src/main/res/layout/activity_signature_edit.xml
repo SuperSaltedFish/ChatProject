@@ -45,7 +45,7 @@
             android:gravity="start|top"
             android:minHeight="128dp"
             android:hint="@string/SignatureEditActivity_SignatureContentHint"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textSize="16sp" />
 
         <TextView

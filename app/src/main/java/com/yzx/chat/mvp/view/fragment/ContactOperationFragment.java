@@ -1,21 +1,17 @@
-package com.yzx.chat.mvp.view.activity;
+package com.yzx.chat.mvp.view.fragment;
 
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.mvp.contract.ContactOperationContract;
@@ -38,7 +34,7 @@ import java.util.List;
  */
 
 
-public class ContactOperationActivity extends BaseCompatActivity<ContactOperationContract.Presenter> implements ContactOperationContract.View {
+public class ContactOperationFragment extends BaseFragment<ContactOperationContract.Presenter> implements ContactOperationContract.View {
 
 
     private RecyclerView mRecyclerView;
@@ -51,34 +47,30 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_contact_message;
+        return R.layout.fragment_contact_operation;
     }
 
-
-    protected void init(Bundle savedInstanceState) {
-        mRecyclerView = findViewById(R.id.ContactOperationActivity_mRecyclerView);
-        mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
+    @Override
+    protected void init(View parentView) {
+        mRecyclerView = parentView.findViewById(R.id.ContactOperationFragment_mRecyclerView);
+        mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Add));
-        mContactOperationMenu = new OverflowPopupMenu(this);
+        mProgressDialog = new ProgressDialog(mContext, getString(R.string.ProgressHint_Add));
+        mContactOperationMenu = new OverflowPopupMenu(mContext);
         mContactOperationList = new ArrayList<>(32);
         mAdapter = new ContactOperationAdapter(mContactOperationList);
     }
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+    protected void setup() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack)));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
-        ((DefaultItemAnimator)(mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
+        ((DefaultItemAnimator) (mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
 
         mAdapter.setOnAcceptContactRequestListener(mOnAcceptContactRequestListener);
 
@@ -89,9 +81,10 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         setData();
     }
 
+
     private void setOverflowMenu() {
         mContactOperationMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mContactOperationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.theme_background_color_white)));
+        mContactOperationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.backgroundColorWhite)));
         mContactOperationMenu.setElevation(AndroidUtil.dip2px(2));
         mContactOperationMenu.inflate(R.menu.menu_contact_message_overflow);
         mContactOperationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
@@ -115,23 +108,6 @@ public class ContactOperationActivity extends BaseCompatActivity<ContactOperatio
         } else {
             mAdapter.setFooterView(null);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_contact_operation, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.ContactOperationMenu_JumpToFindFriendPage) {
-            startActivity(new Intent(this, FindNewContactActivity.class));
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
     }
 
 

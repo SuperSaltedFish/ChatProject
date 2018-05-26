@@ -33,6 +33,11 @@ public class ImageOriginalActivity extends BaseCompatActivity {
     private PhotoView mPhotoView;
 
     @Override
+    protected int getSystemUiMode() {
+        return SYSTEM_UI_MODE_FULLSCREEN;
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.activity_image_original;
     }

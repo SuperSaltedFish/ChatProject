@@ -62,7 +62,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:minWidth="81dp"
-            android:textColor="@color/text_main_color_white"
+            android:textColor="@color/textColorWhite"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

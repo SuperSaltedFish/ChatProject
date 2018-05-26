@@ -22,7 +22,7 @@
         android:id="@+id/QrCodeScanActivity_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/mask_color_black"
+        android:background="@color/maskColorBlack"
         android:minHeight="48dp" />
 
     <ImageView

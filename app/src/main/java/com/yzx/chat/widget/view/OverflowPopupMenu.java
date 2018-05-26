@@ -60,7 +60,7 @@ public class OverflowPopupMenu extends PopupWindow {
         }
         mItemPadding = (int) AndroidUtil.dip2px(12);
         mItemHeight = (int) AndroidUtil.dip2px(48);
-        mTextColor = AndroidUtil.getColor(R.color.text_primary_color_black);
+        mTextColor = AndroidUtil.getColor(R.color.textPrimaryColorBlack);
     }
 
 

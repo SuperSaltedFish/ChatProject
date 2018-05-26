@@ -5,5 +5,5 @@
 
     <stroke
         android:width="0.8dp"
-        android:color="@color/divider_color_black" />
+        android:color="@color/dividerColorBlack" />
 </shape>

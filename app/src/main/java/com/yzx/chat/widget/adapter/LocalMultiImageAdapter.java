@@ -95,7 +95,7 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
             mIvImage = itemView.findViewById(R.id.ImageSelectorActivity_mIvImage);
             mCbSelected = itemView.findViewById(R.id.ImageSelectorActivity_mCbSelected);
 
-            mSelectColorTint = ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.mask_color_black));
+            mSelectColorTint = ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.maskColorBlack));
             mUnselectedColorTint = ColorStateList.valueOf(Color.parseColor("#20000000"));
         }
 

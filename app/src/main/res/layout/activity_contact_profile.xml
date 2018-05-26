@@ -74,7 +74,7 @@
                     android:layout_width="0dp"
                     android:layout_height="26dp"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/text_main_color_white"
+                    android:textColor="@color/textColorWhite"
                     android:textSize="22sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +87,7 @@
                     android:gravity="center"
                     android:paddingEnd="80dp"
                     android:paddingStart="80dp"
-                    android:textColor="@color/text_main_color_white"
+                    android:textColor="@color/textColorWhite"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,7 @@
                 app:tabIndicatorColor="@android:color/white"
                 app:tabIndicatorHeight="3dp"
                 app:tabSelectedTextColor="@android:color/white"
-                app:tabTextColor="@color/text_main_color_white_alpha" />
+                app:tabTextColor="@color/textColorWhiteAlpha" />
 
         </android.support.design.widget.AppBarLayout>
 

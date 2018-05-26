@@ -58,7 +58,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         mRvGroup.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvGroup.setAdapter(mGroupAdapter);
         mRvGroup.setHasFixedSize(true);
-        mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.divider_color_black)));
+        mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack)));
         mRvGroup.addOnItemTouchListener(mOnRvGroupItemClickListener);
 
         mPresenter.loadAllGroup();

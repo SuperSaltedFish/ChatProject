@@ -506,8 +506,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
             mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_send);
             mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_sent_play3);
-            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.text_main_color_white));
-            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.text_main_color_white));
+            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.textColorWhite));
+            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.textColorWhite));
         }
 
         public void setEnablePlayAnimation(boolean isEnable) {

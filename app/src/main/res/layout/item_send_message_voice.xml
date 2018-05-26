@@ -27,7 +27,7 @@
             android:layout_gravity="start|center_vertical"
             android:gravity="center_vertical"
             android:paddingStart="8dp"
-            android:textColor="@color/text_main_color_white_alpha" />
+            android:textColor="@color/textColorWhiteAlpha" />
 
         <ImageView
             android:id="@+id/ChatMessageAdapter_mIvPlayIcon"

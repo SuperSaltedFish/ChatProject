@@ -79,7 +79,7 @@
                 android:layout_marginStart="8dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_microphone"
-                android:tint="@color/text_secondary_color_black_light" />
+                android:tint="@color/textSecondaryColorBlackLight" />
 
             <android.support.text.emoji.widget.EmojiEditText
                 android:id="@+id/ChatActivity_mEtContent"
@@ -95,7 +95,7 @@
                 android:paddingStart="4dp"
                 android:paddingTop="2dp"
                 android:textColor="#9e000000"
-                android:textColorHint="@color/text_secondary_color_black_light"
+                android:textColorHint="@color/textSecondaryColorBlackLight"
                 android:textSize="16sp" />
 
 
@@ -113,7 +113,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/text_secondary_color_black_light" />
+            android:background="@color/textSecondaryColorBlackLight" />
 
         <LinearLayout
             android:id="@+id/ChatActivity_mLlRecorderLayout"

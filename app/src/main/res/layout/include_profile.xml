@@ -17,7 +17,7 @@
             android:id="@+id/Profile_mIvIconNickname"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_sex_man"
+            android:src="@drawable/ic_people"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +29,7 @@
             android:layout_marginStart="20dp"
             android:maxLines="1"
             android:text="@string/Profile_LabelNickname"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/Profile_mTvContentNickname"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="1px"
             android:layout_marginStart="20dp"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconNickname" />
 
@@ -84,7 +84,7 @@
             android:layout_marginStart="20dp"
             android:maxLines="1"
             android:text="@string/Profile_LabelLocation"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/Profile_mTvContentLocation"
             app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +108,7 @@
             android:layout_width="0dp"
             android:layout_height="1px"
             android:layout_marginStart="20dp"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconLocation" />
     </android.support.constraint.ConstraintLayout>
@@ -139,7 +139,7 @@
             android:layout_marginStart="20dp"
             android:maxLines="1"
             android:text="@string/Profile_LabelBirthday"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/Profile_mTvContentBirthday"
             app:layout_constraintEnd_toEndOf="parent"
@@ -163,7 +163,7 @@
             android:layout_width="0dp"
             android:layout_height="1px"
             android:layout_marginStart="20dp"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/Profile_mIvIconDateOfBirth" />
     </android.support.constraint.ConstraintLayout>

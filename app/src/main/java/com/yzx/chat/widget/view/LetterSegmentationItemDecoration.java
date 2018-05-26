@@ -41,7 +41,7 @@ public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoratio
 
     private void init() {
         isUninitialized = false;
-        mSpace = (int) (mTextSize * 1.6);
+        mSpace = (int) (mTextSize * 1.4);
 
         mLinePaint = new Paint();
         mLinePaint.setColor(mLineColor);
@@ -61,7 +61,7 @@ public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoratio
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         if (isUninitialized) {
-            mStartDrawX = parent.getPaddingLeft() + AndroidUtil.dip2px(24);
+            mStartDrawX = parent.getPaddingLeft() + AndroidUtil.dip2px(16);
             mWidth = parent.getWidth() - mStartDrawX - parent.getPaddingRight();
             init();
         }
@@ -81,6 +81,9 @@ public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoratio
             view = parent.getChildAt(i);
             letter = (String) view.getTag();
             if (letter != null) {
+                if("~".equals(letter)){
+                    letter = "#";
+                }
                 top = view.getTop() - mSpace;
                 textWidth = mTextPaint.measureText(letter);
                 c.drawLine(mStartDrawX + textWidth , top + mSpace / 2f, mStartDrawX+mWidth, top + mSpace / 2f, mLinePaint);

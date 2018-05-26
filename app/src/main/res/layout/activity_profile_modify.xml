@@ -44,7 +44,7 @@
                     android:layout_gravity="start|center_vertical"
                     android:gravity="center"
                     android:text="@string/ProfileModifyActivity_AvatarLabel"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textSize="17sp" />
 
                 <ImageView
@@ -62,7 +62,7 @@
                 android:layout_height="1px"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/divider_color_black" />
+                android:background="@color/dividerColorBlack" />
 
             <LinearLayout
                 android:id="@+id/ProfileModifyActivity_mLlNickname"
@@ -79,7 +79,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/ProfileModifyActivity_NicknameLabel"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textSize="16sp" />
 
                 <EditText
@@ -91,7 +91,7 @@
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:gravity="center_vertical|end"
-                    android:textColor="@color/text_secondary_color_black"
+                    android:textColor="@color/textSecondaryColorBlack"
                     android:textSize="14sp" />
 
 
@@ -102,7 +102,7 @@
                 android:layout_height="1px"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/divider_color_black" />
+                android:background="@color/dividerColorBlack" />
 
             <LinearLayout
                 android:id="@+id/ProfileModifyActivity_mLlSexSelected"
@@ -117,7 +117,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/ProfileModifyActivity_SexLabel"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textSize="16sp" />
 
                 <TextView
@@ -135,7 +135,7 @@
                 android:layout_height="1px"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/divider_color_black" />
+                android:background="@color/dividerColorBlack" />
 
             <LinearLayout
                 android:id="@+id/ProfileModifyActivity_mLlBirthday"
@@ -150,7 +150,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/ProfileModifyActivity_BirthdayLabel"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textSize="16sp" />
 
                 <TextView
@@ -168,7 +168,7 @@
                 android:layout_height="1px"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/divider_color_black" />
+                android:background="@color/dividerColorBlack" />
 
             <LinearLayout
                 android:id="@+id/ProfileModifyActivity_mLlLocation"
@@ -183,7 +183,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/ProfileModifyActivity_LocationLabel"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textSize="16sp" />
 
                 <TextView
@@ -202,7 +202,7 @@
                 android:layout_height="1px"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/divider_color_black" />
+                android:background="@color/dividerColorBlack" />
 
             <LinearLayout
                 android:id="@+id/ProfileModifyActivity_mLlSignature"
@@ -221,7 +221,7 @@
                     android:layout_height="32dp"
                     android:gravity="center"
                     android:text="@string/ProfileModifyActivity_SignatureLabel"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textSize="16sp" />
 
                 <TextView

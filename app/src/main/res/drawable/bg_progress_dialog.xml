@@ -3,6 +3,6 @@
 
     <corners android:radius="4dp" />
 
-    <solid android:color="@color/progress_dialog_background" />
+    <solid android:color="@color/backgroundColorProgressDialog" />
 
 </shape>

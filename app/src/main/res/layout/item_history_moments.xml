@@ -29,7 +29,7 @@
         android:layout_below="@+id/Month"
         android:gravity="center"
         android:text="16"
-        android:textColor="@color/text_primary_color_black"
+        android:textColor="@color/textPrimaryColorBlack"
         android:textSize="27sp" />
 
     <View
@@ -57,7 +57,7 @@
         android:gravity="center_vertical"
         android:maxLines="3"
         android:text="其实我只不过是一个文字罢了，无非就是想测试一下文字而已！现有一共有3行文字,文字太多就会显示省略号，看吧看看"
-        android:textColor="@color/text_primary_color_black"
+        android:textColor="@color/textPrimaryColorBlack"
         android:textSize="13sp" />
 
     <com.yzx.chat.widget.view.NineGridImageView

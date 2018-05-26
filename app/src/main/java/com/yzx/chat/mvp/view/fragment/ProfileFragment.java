@@ -108,7 +108,7 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
         public View makeView() {
             TextView textView = new TextView(mContext);
             textView.setTextSize(16);
-            textView.setTextColor(ContextCompat.getColor(mContext, R.color.text_primary_color_black));
+            textView.setTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
             textView.setGravity(Gravity.CENTER_VERTICAL);
             textView.setSingleLine();
             textView.setEllipsize(TextUtils.TruncateAt.END);

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="16dp">
+
+    <TextView
+        android:id="@+id/SystemMessageAdapter_mTvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:singleLine="true"
+        android:text="系统通知"
+        android:textColor="@color/textPrimaryColorBlack"
+        app:layout_constraintBottom_toTopOf="@id/SystemMessageAdapter_mTvDescribe"
+        app:layout_constraintEnd_toStartOf="@id/SystemMessageAdapter_mIvArrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/SystemMessageAdapter_mTvDescribe"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:maxLines="2"
+        android:text="B站今天发布了上市之后第一份财报，不出意外，依旧是亏损的。财报中bilibili再次重申了自己的新定位——国内领先的年轻人文化社区。然而在一些不了解它的人眼中，B站还是那个视频网站。更加诡异的是，B站的主要收入来源是游戏"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/SystemMessageAdapter_mIvArrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/SystemMessageAdapter_mTvTitle" />
+
+    <ImageView
+        android:id="@+id/SystemMessageAdapter_mIvArrow"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

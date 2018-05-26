@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
         android:gravity="center_vertical"
-        android:textColor="@color/text_primary_color_black"
+        android:textColor="@color/textPrimaryColorBlack"
         android:textSize="16sp" />
 
 

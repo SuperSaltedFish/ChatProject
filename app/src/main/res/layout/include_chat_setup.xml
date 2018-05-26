@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="@string/ChatSetup_LabelSetTop"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentTop"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1px"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="@string/ChatSetup_LabelRemind"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentRemind"
             app:layout_constraintEnd_toEndOf="parent"
@@ -98,7 +98,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1px"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="@string/ChatSetup_LabelClearMessage"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentClearMessage"
             app:layout_constraintEnd_toEndOf="parent"
@@ -152,7 +152,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1px"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -176,7 +176,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="查找聊天记录"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentSearchMessage"
             app:layout_constraintEnd_toEndOf="parent"
@@ -198,7 +198,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1px"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -220,7 +220,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="举报"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/ChatSetup_mTvContentReport"
             app:layout_constraintEnd_toEndOf="parent"
@@ -242,7 +242,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1px"
-            android:background="@color/divider_color_black"
+            android:background="@color/dividerColorBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

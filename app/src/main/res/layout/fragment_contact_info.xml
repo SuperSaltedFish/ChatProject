@@ -69,7 +69,7 @@
                 android:layout_marginStart="20dp"
                 android:maxLines="1"
                 android:text="@string/RemarkInfoActivity_TagLabel"
-                android:textColor="@color/text_primary_color_black"
+                android:textColor="@color/textPrimaryColorBlack"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mIvLabelGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +90,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1px"
                 android:layout_marginStart="20dp"
-                android:background="@color/divider_color_black"
+                android:background="@color/dividerColorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel" />
         </android.support.constraint.ConstraintLayout>
@@ -130,7 +130,7 @@
                 android:layout_marginStart="20dp"
                 android:maxLines="1"
                 android:text="@string/RemarkInfoActivity_TelephoneLabel"
-                android:textColor="@color/text_primary_color_black"
+                android:textColor="@color/textPrimaryColorBlack"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mIvTelephoneGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -152,7 +152,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1px"
                 android:layout_marginStart="20dp"
-                android:background="@color/divider_color_black"
+                android:background="@color/dividerColorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconTelephone" />
         </android.support.constraint.ConstraintLayout>
@@ -192,7 +192,7 @@
                 android:layout_marginStart="20dp"
                 android:maxLines="1"
                 android:text="@string/RemarkInfoActivity_DescriptionLabel"
-                android:textColor="@color/text_primary_color_black"
+                android:textColor="@color/textPrimaryColorBlack"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/FriendProfileActivity_mIvDescriptionGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -212,7 +212,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1px"
                 android:layout_marginStart="20dp"
-                android:background="@color/divider_color_black"
+                android:background="@color/dividerColorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription" />
         </android.support.constraint.ConstraintLayout>

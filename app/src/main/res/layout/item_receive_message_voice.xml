@@ -33,7 +33,7 @@
             android:layout_gravity="end|center_vertical"
             android:gravity="center_vertical"
             android:paddingEnd="8dp"
-            android:textColor="@color/text_primary_color_black" />
+            android:textColor="@color/textPrimaryColorBlack" />
 
     </FrameLayout>
 

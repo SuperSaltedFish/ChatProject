@@ -10,12 +10,8 @@ import android.view.View;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.HistoryMomentsAdapter;
 import com.yzx.chat.widget.view.TimeLineItemDecoration;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Created by YZX on 2018年01月06日.
@@ -54,7 +50,7 @@ public class ContactMomentsFragment extends BaseFragment {
         mRecyclerView.addItemDecoration(
                 new TimeLineItemDecoration()
                         .setTimeLineWidth((int) AndroidUtil.dip2px(32))
-                        .setTimeLineColor(ContextCompat.getColor(mContext, R.color.divider_color_black))
+                        .setTimeLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack))
                         .setLineWidth(1)
                         .setTimePointDrawable(AndroidUtil.getDrawable(R.drawable.temp3))
                         .setTimePointOffsetY((int) AndroidUtil.dip2px(16))

@@ -132,14 +132,14 @@ public class PinYinUtil {
             if (bytes.length >= 2 && RegexUtil.isChinese(key)) {
                 value = convert(key);
                 if (value == null || value.length() == 0) {
-                    value = "#";
+                    value = "~";
                 } else {
                     value = value.substring(0, 1);
                 }
-            } else if (RegexUtil.isCharacter(key)||RegexUtil.isNumber(key)) {
+            } else if (RegexUtil.isCharacter(key)) {
                 value = key;
             } else {
-                value = "#";
+                value = "~";
             }
             buffer.append(value);
         }

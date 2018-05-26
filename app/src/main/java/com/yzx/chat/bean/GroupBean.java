@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.yzx.chat.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by YZX on 2018年03月08日.
@@ -26,6 +27,10 @@ public class GroupBean implements Parcelable {
     private ArrayList<GroupMemberBean> members;
 
     private String avatarUrlFromMember;
+
+    public String getNameAndMemberNumber(){
+        return String.format(Locale.getDefault(),"%s(%d)",name,members==null?0:members.size());
+    }
 
     public String getAvatarUrlFromMember() {
         if (TextUtils.isEmpty(avatarUrlFromMember)) {

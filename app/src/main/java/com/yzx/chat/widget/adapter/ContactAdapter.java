@@ -49,7 +49,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         }
         ContactBean contactBean = mContactList.get(position);
         holder.mTvName.setText(contactBean.getName());
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar,  contactBean.getUserProfile().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactBean.getUserProfile().getAvatar());
     }
 
     @Override
@@ -66,6 +66,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
     }
 
     private void resetLetter() {
+        mIdentitySparseArray.clear();
         if (mContactList != null && mContactList.size() != 0) {
             String identity;
             String abbreviation;

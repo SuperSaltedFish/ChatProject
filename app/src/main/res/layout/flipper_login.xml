@@ -42,7 +42,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/divider_color_white" />
+        android:background="@color/dividerColorWhite" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -71,14 +71,14 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/divider_color_white" />
+        android:background="@color/dividerColorWhite" />
 
     <TextView
         android:id="@+id/FlipperLogin_mTvLoginHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="@color/text_main_color_white" />
+        android:textColor="@color/textColorWhite" />
 
     <FrameLayout
         android:layout_width="match_parent"

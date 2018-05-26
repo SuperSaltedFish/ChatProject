@@ -72,6 +72,11 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private ArrayList<GroupMemberBean> mGroupMemberList;
 
     @Override
+    protected int getSystemUiMode() {
+        return SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS;
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.activity_group_profile;
     }

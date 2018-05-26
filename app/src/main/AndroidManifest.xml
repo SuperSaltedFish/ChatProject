@@ -56,121 +56,78 @@
         <activity
             android:name=".mvp.view.activity.LoginActivity"
             android:launchMode="singleTask"
-            android:theme="@style/LoginTheme">
-
-        </activity>
+            android:theme="@style/LoginTheme"></activity>
         <activity
             android:name=".mvp.view.activity.HomeActivity"
-            android:windowSoftInputMode="adjustPan">
-
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".mvp.view.activity.ChatActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity
             android:name=".mvp.view.activity.QrCodeScanActivity"
-            android:theme="@style/NoBackgroundDarkTheme">
-
-        </activity>
+            android:theme="@style/NoBackgroundDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageMultiSelectorActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
+            android:theme="@style/DefaultDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageViewPagerActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.ContactProfileActivity">
-
-        </activity>
+            android:theme="@style/DefaultDarkTheme"></activity>
+        <activity android:name=".mvp.view.activity.ContactProfileActivity"></activity>
         <activity
             android:name=".mvp.view.activity.FindNewContactActivity"
-            android:theme="@style/TransparentStatusBarLightTheme"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.RemarkInfoActivity">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.ContactOperationActivity">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.ModifyContactLabelActivity">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.StrangerProfileActivity">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.ProfileModifyActivity">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.SignatureEditActivity">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing"></activity>
+        <activity android:name=".mvp.view.activity.RemarkInfoActivity"></activity>
+        <activity android:name=".mvp.view.activity.ModifyContactLabelActivity"></activity>
+        <activity android:name=".mvp.view.activity.StrangerProfileActivity"></activity>
+        <activity android:name=".mvp.view.activity.ProfileModifyActivity"></activity>
+        <activity android:name=".mvp.view.activity.SignatureEditActivity"></activity>
         <activity
             android:name=".mvp.view.activity.ImageSingleSelectorActivity"
-            android:theme="@style/BaseDarkTheme">
-
-        </activity>
+            android:theme="@style/DefaultDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageOriginalActivity"
-            android:theme="@style/FullScreenDarkTheme">
-
-        </activity>
+            android:theme="@style/DefaultDarkTheme"></activity>
         <activity
-            android:name=".mvp.view.activity.GroupProfileActivity"
-            android:theme="@style/TransparentStatusBarLightTheme">
-
-        </activity>
+            android:name=".mvp.view.activity.GroupProfileActivity"></activity>
         <activity
             android:name=".mvp.view.activity.CreateGroupActivity"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing"></activity>
         <activity
             android:name=".mvp.view.activity.MyQRCodeActivity"
-            android:theme="@style/NoBackgroundLightTheme">
-
-        </activity>
-        <activity android:name=".mvp.view.activity.LocationMapActivity">
-
-        </activity>
+            android:theme="@style/NoBackgroundLightTheme"></activity>
+        <activity android:name=".mvp.view.activity.LocationMapActivity"></activity>
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
-            android:theme="@style/FullScreenLightNoBackgroundTheme">
-
-        </activity>
-
+            android:theme="@style/NoBackgroundLightTheme"></activity>
         <activity android:name=".mvp.view.activity.GroupListActivity" />
         <activity
             android:name=".mvp.view.activity.CropImageActivity"
-            android:theme="@style/BaseDarkTheme">
+            android:theme="@style/DefaultDarkTheme"></activity>
+        <activity
+            android:name=".mvp.view.activity.VideoPlayActivity"
+            android:theme="@style/DefaultDarkTheme"></activity>
 
-        </activity>
-        <activity android:name=".mvp.view.activity.VideoPlayActivity"
-            android:theme="@style/FullScreenDarkTheme">
+        <activity android:name=".mvp.view.activity.NotificationMessageActivity">
 
         </activity>
 
         <receiver android:name=".broadcast.UninstallReceive">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
         <activity
             android:name=".mvp.view.activity.TestActivity"
-            android:theme="@style/FullScreenDarkTheme">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            android:theme="@style/DefaultDarkTheme">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
     </application>

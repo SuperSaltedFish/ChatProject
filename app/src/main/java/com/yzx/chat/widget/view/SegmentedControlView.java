@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.support.annotation.Px;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -13,7 +14,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
 
 
 public class SegmentedControlView extends RadioGroup {
@@ -140,7 +140,7 @@ public class SegmentedControlView extends RadioGroup {
             rb.setGravity(Gravity.CENTER);
             rb.setTypeface(null, Typeface.BOLD);
             rb.setText(itemText);
-            rb.setTextSize(TypedValue.COMPLEX_UNIT_PX,mTextSize);
+            rb.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
             rb.setId(i);
             rb.setPadding(mItemPaddingLeft, mItemPaddingTop, mItemPaddingRight, mItemPaddingBottom);
             this.addViewInLayout(rb, -1, params);
@@ -183,7 +183,7 @@ public class SegmentedControlView extends RadioGroup {
         return setColors(primaryColor, secondaryColor, secondaryColor, primaryColor);
     }
 
-    public SegmentedControlView setColors(int selectedColor, int selectedTextColor, int unselectedColor, int unselectedTextColor) {
+    public SegmentedControlView setColors(int selectedColor, int unselectedColor, int selectedTextColor, int unselectedTextColor) {
         this.mSelectedColor = selectedColor;
         this.mSelectedTextColor = selectedTextColor;
         this.mUnselectedColor = unselectedColor;
@@ -224,7 +224,7 @@ public class SegmentedControlView extends RadioGroup {
         return this;
     }
 
-    public SegmentedControlView setTextSize(float textSize) {
+    public SegmentedControlView setTextSize(@Px float textSize) {
         this.mTextSize = textSize;
         return this;
     }

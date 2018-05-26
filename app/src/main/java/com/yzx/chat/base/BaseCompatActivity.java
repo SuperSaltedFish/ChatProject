@@ -5,18 +5,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BaseTransientBottomBar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 
 import com.yzx.chat.R;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -36,6 +40,20 @@ import java.util.List;
 
 
 public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCompatActivity {
+
+    protected static final int SYSTEM_UI_MODE_NONE = 0;
+    protected static final int SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS = 1;
+    protected static final int SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION = 2;
+    protected static final int SYSTEM_UI_MODE_FULLSCREEN = 3;
+
+    @IntDef({SYSTEM_UI_MODE_NONE
+            , SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS
+            , SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION
+            , SYSTEM_UI_MODE_FULLSCREEN})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface SystemUiMode {
+    }
+
 
     protected P mPresenter;
     protected InputMethodManager mInputManager;
@@ -52,6 +70,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setSystemUiMode(getSystemUiMode());
         int layoutID = getLayoutID();
         if (layoutID != 0) {
             setContentView(layoutID);
@@ -64,6 +83,43 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         }
         init(savedInstanceState);
         setup(savedInstanceState);
+    }
+
+    @SystemUiMode
+    protected int getSystemUiMode() {
+        return SYSTEM_UI_MODE_NONE;
+    }
+
+    private void setSystemUiMode(int mode) {
+        if (mode == SYSTEM_UI_MODE_NONE) {
+            return;
+        }
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        switch (mode) {
+            case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(Color.TRANSPARENT);
+                break;
+            case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setNavigationBarColor(Color.TRANSPARENT);
+                window.setStatusBarColor(Color.TRANSPARENT);
+                break;
+            case SYSTEM_UI_MODE_FULLSCREEN:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                break;
+        }
     }
 
     @Override
@@ -204,11 +260,11 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (this instanceof BaseView) {
             BaseView view = (BaseView) this;
             mPresenter = (P) view.getPresenter();
-            if(mPresenter==null){
+            if (mPresenter == null) {
                 return;
             }
             Class aClass = this.getClass();
-            while(aClass!=null){
+            while (aClass != null) {
                 Type type = aClass.getGenericSuperclass();
                 if (type instanceof ParameterizedType) {
                     ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -220,7 +276,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
                             return;
                         }
                     }
-                }else {
+                } else {
                     aClass = aClass.getSuperclass();
                 }
             }

@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="@string/GroupProfileActivity_GroupNameDialogTitle"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentGroupName"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -129,7 +129,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1px"
-                    android:background="@color/divider_color_black"
+                    android:background="@color/dividerColorBlack"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="@string/GroupProfileActivity_MyGroupNicknameDialogTitle"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentNicknameInGroup"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -180,7 +180,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1px"
-                    android:background="@color/divider_color_black"
+                    android:background="@color/dividerColorBlack"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -209,7 +209,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="@string/GroupProfileActivity_GroupQRCodeTitle"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentQRCode"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -231,7 +231,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1px"
-                    android:background="@color/divider_color_black"
+                    android:background="@color/dividerColorBlack"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -252,7 +252,7 @@
                     android:layout_marginTop="12dp"
                     android:maxLines="1"
                     android:text="@string/GroupProfileActivity_NoticeDialogTitle"
-                    android:textColor="@color/text_primary_color_black"
+                    android:textColor="@color/textPrimaryColorBlack"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/GroupProfileActivity_mTvContentGroupNotice"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -288,7 +288,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1px"
-                    android:background="@color/divider_color_black"
+                    android:background="@color/dividerColorBlack"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />

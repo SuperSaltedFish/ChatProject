@@ -3,7 +3,7 @@
 
     <stroke
         android:width="1px"
-        android:color="@color/text_secondary_color_black" />
+        android:color="@color/textSecondaryColorBlack" />
 
     <corners android:radius="2dp"/>
 </shape>

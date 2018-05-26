@@ -49,6 +49,11 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     private boolean isWaitPlay;
 
     @Override
+    protected int getSystemUiMode() {
+        return SYSTEM_UI_MODE_FULLSCREEN;
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.activity_video_play;
     }

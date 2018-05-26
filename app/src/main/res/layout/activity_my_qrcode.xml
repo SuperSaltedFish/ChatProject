@@ -51,7 +51,7 @@
             android:ellipsize="end"
             android:gravity="start"
             android:singleLine="true"
-            android:textColor="@color/text_primary_color_black"
+            android:textColor="@color/textPrimaryColorBlack"
             android:textSize="17sp"
             app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvLocation"
             app:layout_constraintEnd_toEndOf="parent"
@@ -109,7 +109,7 @@
         android:id="@+id/MyQRCodeActivity_mClMore"
         android:layout_width="0dp"
         android:layout_height="88dp"
-        android:background="@color/colorAccent_light"
+        android:background="@color/colorAccentLight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -134,7 +134,7 @@
                 android:drawablePadding="4dp"
                 android:drawableTop="@drawable/ic_scan"
                 android:text="@string/Scan"
-                android:textColor="@color/text_main_color_white"
+                android:textColor="@color/textColorWhite"
                 android:textSize="14sp" />
 
         </FrameLayout>
@@ -170,7 +170,7 @@
                 android:drawablePadding="4dp"
                 android:drawableTop="@drawable/ic_reset"
                 android:text="@string/MyQRCodeActivity_ResetQRCode"
-                android:textColor="@color/text_main_color_white"
+                android:textColor="@color/textColorWhite"
                 android:textSize="14sp" />
 
         </FrameLayout>
@@ -207,7 +207,7 @@
                 android:drawablePadding="4dp"
                 android:drawableTop="@drawable/ic_save"
                 android:text="@string/MyQRCodeActivity_SaveQRCode"
-                android:textColor="@color/text_main_color_white"
+                android:textColor="@color/textColorWhite"
                 android:textSize="14sp" />
         </FrameLayout>
 

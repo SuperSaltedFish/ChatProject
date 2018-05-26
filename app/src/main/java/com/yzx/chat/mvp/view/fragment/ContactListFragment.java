@@ -29,9 +29,9 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.mvp.contract.ContactListContract;
 import com.yzx.chat.mvp.presenter.ContactListPresenter;
+import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AnimationUtil;
-import com.yzx.chat.mvp.view.activity.ContactOperationActivity;
 import com.yzx.chat.mvp.view.activity.ContactProfileActivity;
 import com.yzx.chat.mvp.view.activity.FindNewContactActivity;
 import com.yzx.chat.mvp.view.activity.GroupListActivity;
@@ -117,10 +117,10 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         setSearchBar();
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
-        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.divider_color_black));
+        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack));
         mLetterSegmentationItemDecoration.setLineWidth(1);
-        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.divider_color_black));
-        mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(16));
+        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlackLight));
+        mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(15));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
         mRvContact.setLayoutManager(mLinearLayoutManager);
@@ -136,13 +136,13 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvSearchContact.setAdapter(mSearchAdapter);
         mRvSearchContact.addOnScrollListener(new AutoCloseKeyboardScrollListener(getActivity()));
 
-        mLlContactOperation.setOnClickListener(mOnContactOperationClick);
-        mLlGroup.setOnClickListener(mOnGroupClick);
+        mLlContactOperation.setOnClickListener(mOnViewClickListener);
+        mLlGroup.setOnClickListener(mOnViewClickListener);
 
-        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.text_secondary_color_black));
+        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
-        mFBtnAdd.setOnClickListener(mOnAddNewContactClick);
+        mFBtnAdd.setOnClickListener(mOnViewClickListener);
 
         mContactAdapter.setHeaderView(mHeaderView);
         setOverflowMenu();
@@ -215,7 +215,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
     private void setOverflowMenu() {
         mContactMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mContactMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.theme_background_color_white)));
+        mContactMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.backgroundColorWhite)));
         mContactMenu.setElevation(AndroidUtil.dip2px(2));
         mContactMenu.inflate(R.menu.menu_contact_overflow);
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
@@ -255,6 +255,23 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mSearchHandler.removeCallbacksAndMessages(null);
     }
 
+    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.ContactFragmentList_mLlContactOperation:
+                    startActivity(new Intent(mContext, NotificationMessageActivity.class));
+                    break;
+                case R.id.ContactFragmentList_mLlGroup:
+                    startActivity(new Intent(mContext, GroupListActivity.class));
+                    break;
+                case R.id.ContactFragmentList_mFBtnAdd:
+                    startActivity(new Intent(mContext, FindNewContactActivity.class));
+                    break;
+            }
+        }
+    };
+
     private final BackPressedReceive.BackPressedListener mBackPressedListener = new BackPressedReceive.BackPressedListener() {
 
         @Override
@@ -266,27 +283,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                 }
             }
             return false;
-        }
-    };
-
-    private final View.OnClickListener mOnContactOperationClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(mContext, ContactOperationActivity.class));
-        }
-    };
-
-    private final View.OnClickListener mOnGroupClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(mContext, GroupListActivity.class));
-        }
-    };
-
-    private final View.OnClickListener mOnAddNewContactClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(mContext, FindNewContactActivity.class));
         }
     };
 

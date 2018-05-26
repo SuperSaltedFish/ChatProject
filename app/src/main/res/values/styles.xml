@@ -7,45 +7,29 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!--&lt;!&ndash;<item name="colorControlNormal">@android:color/white</item>&ndash;&gt;-->
-        <item name="android:textColorTertiary">@color/text_secondary_color_black</item>
-        <!--<item name="android:textColorSecondary">@color/text_secondary_color_black</item>-->
-        <!--<item name="android:textColorPrimary">@color/text_primary_color_black</item>-->
-        <item name="android:windowBackground">@color/theme_background_color_white</item>
+        <item name="android:textColorTertiary">@color/textSecondaryColorBlack</item>
+        <item name="android:windowBackground">@color/backgroundColorWhite</item>
         <item name="android:windowAnimationStyle">@style/ActivitySlideAnimStyle</item>
 
     </style>
 
 
-    <style name="BaseDarkTheme" parent="Theme.AppCompat.NoActionBar">
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+    <style name="DefaultDarkTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/theme_background_color_dark</item>
+        <item name="android:windowBackground">@color/backgroundColorDark</item>
         <item name="android:windowAnimationStyle">@style/ActivitySlideAnimStyle</item>
     </style>
 
-    <style name="TransparentStatusBarLightTheme" parent="DefaultLightTheme">
-        <item name="android:windowTranslucentStatus">true</item>
 
-    </style>
 
     <style name="NoBackgroundLightTheme" parent="DefaultLightTheme">
         <item name="android:windowBackground">@null</item>
     </style>
 
-    <style name="NoBackgroundDarkTheme" parent="BaseDarkTheme">
+    <style name="NoBackgroundDarkTheme" parent="DefaultDarkTheme">
         <item name="android:windowBackground">@null</item>
     </style>
 
-    <style name="FullScreenDarkTheme" parent="BaseDarkTheme">
-        <item name="android:windowFullscreen">true</item>
-    </style>
-
-    <style name="FullScreenLightNoBackgroundTheme" parent="DefaultLightTheme">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@null</item>
-    </style>
 
     <style name="LoginTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@null</item>

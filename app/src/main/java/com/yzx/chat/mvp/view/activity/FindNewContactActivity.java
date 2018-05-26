@@ -41,6 +41,11 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private MaybeKnowAdapter mAdapter;
 
     @Override
+    protected int getSystemUiMode() {
+        return SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS;
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.activity_find_new_contact;
     }

@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textColor="@color/text_primary_color_black"
+                android:textColor="@color/textPrimaryColorBlack"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@id/LocationMapActivity_mTvShareLocationContent"
                 app:layout_constraintEnd_toStartOf="@id/LocationMapActivity_mIBtnShareNavigation"
