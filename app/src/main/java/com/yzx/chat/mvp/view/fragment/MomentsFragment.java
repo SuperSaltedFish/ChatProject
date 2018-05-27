@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.yzx.chat.R;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.HistoryMomentsAdapter;
 import com.yzx.chat.base.BaseFragment;
 
@@ -30,7 +31,7 @@ public class MomentsFragment extends BaseFragment {
 
     @Override
     protected void init(View parentView) {
-        mRecyclerView = (RecyclerView) parentView.findViewById(R.id.MomentsFragment_mRecyclerView);
+        mRecyclerView = parentView.findViewById(R.id.MomentsFragment_mRecyclerView);
         mAdapter = new HistoryMomentsAdapter();
     }
 
@@ -41,6 +42,21 @@ public class MomentsFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
+    }
+
+    @Override
+    protected void onFirstVisible() {
+
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        LogUtil.e("MomentsFragment:"+hidden);
+        if(mParentView!=null){
+//            mParentView.setFitsSystemWindows(!hidden);
+//            mParentView.requestApplyInsets();
+        }
+        super.onHiddenChanged(hidden);
     }
 
 }

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ import com.yzx.chat.mvp.view.activity.FindNewContactActivity;
 import com.yzx.chat.mvp.view.activity.GroupListActivity;
 import com.yzx.chat.mvp.view.activity.HomeActivity;
 import com.yzx.chat.mvp.view.activity.RemarkInfoActivity;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
@@ -70,6 +72,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private TextView mTvIndexBarHint;
     private Toolbar mToolbar;
     private PopupWindow mSearchPopupWindow;
+    private FrameLayout mFlToolbarLayout;
     private SearchView mSearchView;
     private SmartRefreshLayout mSmartRefreshLayout;
     private View mLlContactOperation;
@@ -98,6 +101,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mTvIndexBarHint = parentView.findViewById(R.id.ContactFragmentList_mTvIndexBarHint);
         mFBtnAdd = parentView.findViewById(R.id.ContactFragmentList_mFBtnAdd);
         mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragmentList_mSmartRefreshLayout);
+        mFlToolbarLayout = parentView.findViewById(R.id.ContactFragmentList_mFlToolbarLayout);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
         mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
         mLlGroup = mHeaderView.findViewById(R.id.ContactFragmentList_mLlGroup);
@@ -240,6 +244,15 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     protected void onFirstVisible() {
         mPresenter.loadUnreadCount();
         mPresenter.loadAllContact();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (mParentView != null) {
+            mFlToolbarLayout.setFitsSystemWindows(!hidden);
+            mFlToolbarLayout.requestApplyInsets();
+        }
+        super.onHiddenChanged(hidden);
     }
 
     @Override

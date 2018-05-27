@@ -72,11 +72,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private ArrayList<GroupMemberBean> mGroupMemberList;
 
     @Override
-    protected int getSystemUiMode() {
-        return SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS;
-    }
-
-    @Override
     protected int getLayoutID() {
         return R.layout.activity_group_profile;
     }
@@ -104,6 +99,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

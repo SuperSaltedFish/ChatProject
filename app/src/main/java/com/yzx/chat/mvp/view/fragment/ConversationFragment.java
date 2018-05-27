@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import com.yzx.chat.mvp.contract.ConversationContract;
 import com.yzx.chat.mvp.presenter.ConversationPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.mvp.view.activity.ChatActivity;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
@@ -48,6 +50,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private SmartRefreshLayout mSmartRefreshLayout;
     private ImageView mIvEmptyHintImage;
     private TextView mITvEmptyHintText;
+    private FrameLayout mFlToolbarLayout;
     private ConversationAdapter mAdapter;
     private Toolbar mToolbar;
     private View mHeaderView;
@@ -67,6 +70,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mSmartRefreshLayout = parentView.findViewById(R.id.FindNewContactActivity_mSmartRefreshLayout);
         mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
         mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
+        mFlToolbarLayout = parentView.findViewById(R.id.ConversationFragment_mFlToolbarLayout);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_conversation_header, (ViewGroup) parentView, false);
         mConversationMenu = new OverflowPopupMenu(mContext);
         mConversationList = new ArrayList<>(128);
@@ -85,10 +89,10 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack)));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
-        ((DefaultItemAnimator)(mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
+        ((DefaultItemAnimator) (mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
 
         setOverflowMenu();
         setEnableDisconnectionHint(!mPresenter.isConnectedToServer());
@@ -122,6 +126,15 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     protected void onFirstVisible() {
         mPresenter.refreshAllConversations();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (mParentView != null) {
+            mFlToolbarLayout.setFitsSystemWindows(!hidden);
+            mFlToolbarLayout.requestApplyInsets();
+        }
+        super.onHiddenChanged(hidden);
     }
 
     private void enableEmptyListHint(boolean isEnable) {
@@ -198,7 +211,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void setEnableDisconnectionHint(boolean isEnable) {
-        if(mAdapter==null){
+        if (mAdapter == null) {
             return;
         }
         if (isEnable) {

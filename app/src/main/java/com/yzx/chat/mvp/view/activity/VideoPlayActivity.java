@@ -49,11 +49,6 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     private boolean isWaitPlay;
 
     @Override
-    protected int getSystemUiMode() {
-        return SYSTEM_UI_MODE_FULLSCREEN;
-    }
-
-    @Override
     protected int getLayoutID() {
         return R.layout.activity_video_play;
     }
@@ -68,6 +63,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
         ViewCompat.setTransitionName(mIvThumbnail, TRANSITION_NAME_IMAGE);
         if (thumbnailUri != null && !TextUtils.isEmpty(thumbnailUri.getPath())) {

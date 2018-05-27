@@ -41,11 +41,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private MaybeKnowAdapter mAdapter;
 
     @Override
-    protected int getSystemUiMode() {
-        return SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS;
-    }
-
-    @Override
     protected int getLayoutID() {
         return R.layout.activity_find_new_contact;
     }
@@ -65,6 +60,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

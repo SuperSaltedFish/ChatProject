@@ -10,6 +10,7 @@ import android.view.View;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.HistoryMomentsAdapter;
 import com.yzx.chat.widget.view.TimeLineItemDecoration;
 
@@ -39,6 +40,8 @@ public class ContactMomentsFragment extends BaseFragment {
 
     @Override
     protected void setup() {
+
+
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 

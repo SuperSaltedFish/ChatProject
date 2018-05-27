@@ -4,11 +4,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IntDef;
 import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.yzx.chat.util.LogUtil;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by YZX on 2018年01月18日.
@@ -18,13 +22,42 @@ import com.yzx.chat.util.LogUtil;
 
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
+
+    public static final int ORIENTATION_HORIZONTAL = 0;
+    public static final int ORIENTATION_VERTICAL = 1;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ORIENTATION_HORIZONTAL, ORIENTATION_VERTICAL})
+    public @interface OrientationMode {
+    }
+
+    public static DividerItemDecoration createHorizontalDividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor, int paddingLeft, int paddingRight) {
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(dividerWidth, dividerColor, ORIENTATION_HORIZONTAL);
+        itemDecoration.setHorizontalPadding(paddingLeft, paddingRight);
+        return itemDecoration;
+    }
+
+    public static DividerItemDecoration createVerticalDividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor, int paddingTop, int paddingBottom) {
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(dividerWidth, dividerColor, ORIENTATION_VERTICAL);
+        itemDecoration.setVerticalPadding(paddingTop, paddingBottom);
+        return itemDecoration;
+    }
+
     private int mDividerWidth;
     private int mDividerColor;
+    private int mOrientationtMode;
+    private int mPaddingLeft;
+    private int mPaddingTop;
+    private int mPaddingRight;
+    private int mPaddingBottom;
     private Paint mPaint;
 
-    public DividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor) {
+    private RecyclerView mRecyclerView;
+
+    public DividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor, @OrientationMode int orientationMode) {
         mDividerWidth = dividerWidth;
         mDividerColor = dividerColor;
+        mOrientationtMode = orientationMode;
         mPaint = new Paint();
         mPaint.setStrokeWidth(mDividerWidth);
         mPaint.setColor(mDividerColor);
@@ -32,7 +65,15 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            outRect.bottom = mDividerWidth;
+        mRecyclerView = parent;
+        switch (mOrientationtMode) {
+            case ORIENTATION_HORIZONTAL:
+                outRect.bottom = mDividerWidth;
+                break;
+            case ORIENTATION_VERTICAL:
+                outRect.right = mDividerWidth;
+                break;
+        }
     }
 
     @Override
@@ -40,14 +81,58 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         super.onDraw(c, parent, state);
         View view;
         int childCount = parent.getChildCount();
-        float[] lines = new float[childCount*4];
-        for (int i = 0,j=0; i < childCount; i++,j+=4) {
-            view = parent.getChildAt(i);
-            lines[j] = 0;
-            lines[j+1] = view.getBottom() ;
-            lines[j+2] = parent.getWidth();
-            lines[j+3] = lines[j+1];
+        float[] lines = new float[childCount * 4];
+        switch (mOrientationtMode) {
+            case ORIENTATION_HORIZONTAL:
+                for (int i = 0, j = 0; i < childCount; i++, j += 4) {
+                    view = parent.getChildAt(i);
+                    lines[j] = mPaddingLeft;
+                    lines[j + 1] = view.getBottom();
+                    lines[j + 2] = parent.getWidth()  - mPaddingRight;
+                    lines[j + 3] = lines[j + 1];
+                }
+                break;
+            case ORIENTATION_VERTICAL:
+                for (int i = 0, j = 0; i < childCount; i++, j += 4) {
+                    view = parent.getChildAt(i);
+                    lines[j] = view.getRight();
+                    lines[j + 1] = mPaddingTop;
+                    lines[j + 2] = lines[j];
+                    lines[j + 3] = parent.getHeight()  - mPaddingBottom;
+                }
+                break;
         }
         c.drawLines(lines, mPaint);
+    }
+
+    public void setDividerWidth(int dividerWidth) {
+        mDividerWidth = dividerWidth;
+        invalidate();
+    }
+
+    public void setDividerColor(int dividerColor) {
+        mDividerColor = dividerColor;
+        invalidate();
+    }
+
+    public void setHorizontalPadding(int paddingLeft, int paddingRight) {
+        mPaddingLeft = paddingLeft;
+        mPaddingRight = paddingRight;
+        if (mRecyclerView != null) {
+            mRecyclerView.invalidate();
+        }
+        invalidate();
+    }
+
+    public void setVerticalPadding(int paddingTop, int paddingBottom) {
+        mPaddingTop = paddingTop;
+        mPaddingBottom = paddingBottom;
+        invalidate();
+    }
+
+    private void invalidate() {
+        if (mRecyclerView != null) {
+            mRecyclerView.invalidate();
+        }
     }
 }

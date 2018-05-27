@@ -30,7 +30,6 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     private Fragment[] mFragments;
     private NavigationController mNavigationController;
 
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_home;
@@ -56,6 +55,8 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
+
         mNavigationController.addTabItemSelectedListener(mOnTabSelectedListener);
 
         mFragmentManager.beginTransaction()

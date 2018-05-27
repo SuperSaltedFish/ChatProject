@@ -142,7 +142,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvCurrentLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvCurrentLocation.setAdapter(mCurrentLocationAdapter);
         mRvCurrentLocation.setHasFixedSize(true);
-        mRvCurrentLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack)));
+        mRvCurrentLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRvCurrentLocation.addOnItemTouchListener(mOnRvCurrentLocationItemClickListener);
         mCurrentLocationAdapter.setScrollToBottomListener(mOnCurrentLocationScrollToBottomListener);
 
@@ -150,7 +150,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvSearchLocation.setAdapter(mSearchLocationAdapter);
         mRvSearchLocation.setRecycledViewPool(mRvCurrentLocation.getRecycledViewPool());
         mRvSearchLocation.setHasFixedSize(true);
-        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack)));
+        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRvSearchLocation.addOnItemTouchListener(mOnRvSearchLocationItemClickListener);
         mSearchLocationAdapter.setScrollToBottomListener(mOnSearchLocationScrollToBottomListener);
 

@@ -34,7 +34,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     protected P mPresenter;
 
     public Context mContext;
-    private View mParentView;
+    protected View mParentView;
     private boolean isOnceVisible;
 
 
@@ -104,10 +104,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
 
     protected void onFirstVisible() {
-    }
-
-    public View getParentView() {
-        return mParentView;
     }
 
     protected void showToast(String content) {

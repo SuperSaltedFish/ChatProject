@@ -49,11 +49,6 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     private String mCurrentVideoPath;
 
     @Override
-    protected int getSystemUiMode() {
-        return SYSTEM_UI_MODE_FULLSCREEN;
-    }
-
-    @Override
     protected int getLayoutID() {
         return R.layout.activity_video_recorder;
     }
@@ -73,6 +68,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         mIvFlash.setOnClickListener(mOnViewClick);
         mIvClose.setOnClickListener(mOnViewClick);
         mIvConfirm.setOnClickListener(mOnViewClick);

@@ -33,11 +33,6 @@ public class ImageOriginalActivity extends BaseCompatActivity {
     private PhotoView mPhotoView;
 
     @Override
-    protected int getSystemUiMode() {
-        return SYSTEM_UI_MODE_FULLSCREEN;
-    }
-
-    @Override
     protected int getLayoutID() {
         return R.layout.activity_image_original;
     }
@@ -50,6 +45,7 @@ public class ImageOriginalActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
         Uri imageUri = getIntent().getParcelableExtra(INTENT_EXTRA_IMAGE_URI);
         if (imageUri == null && thumbnailUri == null) {
