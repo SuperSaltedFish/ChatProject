@@ -120,8 +120,8 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == ModifyContactLabelActivity.RESULT_CODE && data != null) {
-            setTags(data.getStringArrayListExtra(ModifyContactLabelActivity.INTENT_EXTRA_LABEL));
+        if (resultCode == EditContactLabelActivity.RESULT_CODE && data != null) {
+            setTags(data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL));
         }
     }
 
@@ -141,10 +141,10 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     private final View.OnClickListener mOnLabelFlowLayoutClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(RemarkInfoActivity.this, ModifyContactLabelActivity.class);
+            Intent intent = new Intent(RemarkInfoActivity.this, EditContactLabelActivity.class);
             ArrayList<String> tags = mContactBean.getRemark().getTags();
             if (tags != null && tags.size() != 0) {
-                intent.putStringArrayListExtra(ModifyContactLabelActivity.INTENT_EXTRA_LABEL, tags);
+                intent.putStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, tags);
             }
             startActivityForResult(intent, 0);
 

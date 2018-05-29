@@ -1,6 +1,7 @@
 package com.yzx.chat.util;
 
 import android.content.Context;
+import android.support.annotation.IntRange;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
@@ -9,7 +10,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
-import com.yzx.chat.widget.view.GlideRoundTransform;
+import com.yzx.chat.widget.view.GlideBlurTransform;
 
 /**
  * Created by YZX on 2017年05月23日.
@@ -47,16 +48,16 @@ public class GlideUtil {
                 .into(view);
     }
 
-    public static void loadRoundFromUrl(Context context, ImageView view, Object url) {
+    public static void loadBlurFromUrl(Context context, ImageView view, Object url, @IntRange(from = 1, to = 25) int radius) {
         if (url == null || view == null) {
             return;
         }
         GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .format(DecodeFormat.PREFER_RGB_565)
-                .transform(new GlideRoundTransform())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .dontAnimate()
+                .transform(new GlideBlurTransform(context, radius))
                 .into(view);
     }
 

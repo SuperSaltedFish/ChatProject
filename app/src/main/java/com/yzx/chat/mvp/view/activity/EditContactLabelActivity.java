@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 
 
-public class ModifyContactLabelActivity extends BaseCompatActivity {
+public class EditContactLabelActivity extends BaseCompatActivity {
 
     public static final String INTENT_EXTRA_LABEL = "Label";
     public static final int RESULT_CODE = 1;
@@ -42,7 +42,7 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_modify_contact_label;
+        return R.layout.activity_edit_contact_label;
     }
 
     @Override
@@ -53,9 +53,9 @@ public class ModifyContactLabelActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mFlowLayout = findViewById(R.id.ModifyContactLabelActivity_mFlowLayout);
-        mEtInput = findViewById(R.id.ModifyContactLabelActivity_mEtInput);
-        mBtnConfirm = findViewById(R.id.ModifyContactLabelActivity_mBtnConfirm);
+        mFlowLayout = findViewById(R.id.EditContactLabelActivity_mFlowLayout);
+        mEtInput = findViewById(R.id.EditContactLabelActivity_mEtInput);
+        mBtnConfirm = findViewById(R.id.EditContactLabelActivity_mBtnConfirm);
         mCloseDrawable = getDrawable(R.drawable.ic_close);
     }
 

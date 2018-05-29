@@ -301,7 +301,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                 Intent intent;
                 String userID = mGroupMemberList.get(position).getUserProfile().getUserID();
                 if (mPresenter.isMySelf(userID)) {
-                    intent = new Intent(GroupProfileActivity.this, ProfileModifyActivity.class);
+                    intent = new Intent(GroupProfileActivity.this, EditProfileActivity.class);
                 } else {
                     intent = new Intent(GroupProfileActivity.this, ContactProfileActivity.class);
                     intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, userID);

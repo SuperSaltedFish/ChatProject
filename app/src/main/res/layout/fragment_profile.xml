@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.yzx.chat.widget.view.CircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ProfileFragment_mIvAvatar"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -87,7 +87,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ProfileModifyActivity_Title"
+            android:text="@string/EditProfileActivity_Title"
             android:textColor="@color/textColorWhite"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
@@ -202,7 +202,7 @@
                     android:textColor="@color/textSecondaryColorBlack"
                     android:textSize="16sp" />
 
-                <com.yzx.chat.widget.view.CircleImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:clickable="true"

@@ -87,20 +87,22 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
                 for (int i = 0, j = 0; i < childCount; i++, j += 4) {
                     view = parent.getChildAt(i);
                     lines[j] = mPaddingLeft;
-                    lines[j + 1] = view.getBottom();
-                    lines[j + 2] = parent.getWidth()  - mPaddingRight;
+                    lines[j + 1] = view.getBottom() + mDividerWidth/2;
+                    lines[j + 2] = parent.getWidth() - mPaddingRight;
                     lines[j + 3] = lines[j + 1];
                 }
                 break;
             case ORIENTATION_VERTICAL:
                 for (int i = 0, j = 0; i < childCount; i++, j += 4) {
                     view = parent.getChildAt(i);
-                    lines[j] = view.getRight();
+                    lines[j] = view.getRight() + mDividerWidth/2;
                     lines[j + 1] = mPaddingTop;
                     lines[j + 2] = lines[j];
-                    lines[j + 3] = parent.getHeight()  - mPaddingBottom;
+                    lines[j + 3] = parent.getHeight() - mPaddingBottom;
                 }
                 break;
+            default:
+                return;
         }
         c.drawLines(lines, mPaint);
     }

@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll">
 
-                <com.yzx.chat.widget.view.CircleImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ContactProfileActivity_mIvAvatar"
                     android:layout_width="88dp"
                     android:layout_height="88dp"
@@ -42,7 +42,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.yzx.chat.widget.view.CircleImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@color/green"
@@ -55,7 +55,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/ContactProfileActivity_mIvAvatar" />
 
-                <com.yzx.chat.widget.view.CircleImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ContactProfileActivity_mIvStartChat"
                     android:layout_width="48dp"
                     android:layout_height="48dp"

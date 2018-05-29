@@ -12,11 +12,11 @@
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
-        app:title="@string/ModifyContactLabelActivity_Title"
+        app:title="@string/EditContactLabelActivity_Title"
         app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
         <Button
-            android:id="@+id/ModifyContactLabelActivity_mBtnConfirm"
+            android:id="@+id/EditContactLabelActivity_mBtnConfirm"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|end"
@@ -31,7 +31,7 @@
     </android.support.v7.widget.Toolbar>
 
     <com.yzx.chat.widget.view.FlowLayout
-        android:id="@+id/ModifyContactLabelActivity_mFlowLayout"
+        android:id="@+id/EditContactLabelActivity_mFlowLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -39,12 +39,12 @@
         android:paddingStart="12dp">
 
         <com.yzx.chat.widget.view.LabelEditText
-            android:id="@+id/ModifyContactLabelActivity_mEtInput"
+            android:id="@+id/EditContactLabelActivity_mEtInput"
             android:layout_width="wrap_content"
             android:layout_height="26dp"
             android:background="@drawable/bg_label_edit"
             android:gravity="center_vertical"
-            android:hint="@string/ModifyContactLabelActivity_Title"
+            android:hint="@string/EditContactLabelActivity_Title"
             android:imeOptions="actionDone"
             android:paddingEnd="12dp"
             android:paddingStart="12dp"

@@ -7,17 +7,11 @@
     android:gravity="bottom"
     android:orientation="vertical">
 
-    <!--<VideoView-->
-        <!--android:layout_gravity="bottom"-->
-        <!--android:id="@+id/vvv"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="300dp" />-->
+    <ImageView
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick" />
-
+        android:onClick="onClick"
+        android:layout_width="200dp"
+        android:layout_height="200dp" />
 
 
 </FrameLayout>

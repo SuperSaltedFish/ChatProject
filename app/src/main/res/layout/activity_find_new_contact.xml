@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColorWhiteLight"
     tools:context=".mvp.view.activity.FindNewContactActivity">
 
     <android.support.constraint.Guideline
@@ -19,7 +20,7 @@
         android:layout_height="0dp"
         android:scaleType="centerCrop"
         android:src="@drawable/temp_share_image"
-        android:tint="@color/colorAccentAlpha"
+        android:tint="#805c95fe"
         app:layout_constraintBottom_toTopOf="@id/FindNewContactActivity_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -312,20 +313,22 @@
 
         </android.support.constraint.ConstraintLayout>
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="24dp"
             android:background="@android:color/white"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingEnd="8dp"
             android:paddingStart="16dp">
 
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="start|center_vertical"
+                android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="可能认识的人"
                 android:textColor="@color/textPrimaryColorBlack"
@@ -336,12 +339,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="end|center_vertical"
-                android:drawableEnd="@drawable/ic_arrow_right"
                 android:gravity="center_vertical"
                 android:text="查看更多"
                 android:textSize="13sp" />
 
-        </FrameLayout>
+            <ImageView
+                android:padding="1dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_arrow_right" />
+
+        </LinearLayout>
 
 
         <View
@@ -357,12 +365,6 @@
             android:overScrollMode="never"
             android:paddingBottom="8dp"
             android:paddingTop="8dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#fff123" />
-
 
     </LinearLayout>
 

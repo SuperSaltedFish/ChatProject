@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -199,11 +200,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             if (!TextUtils.isEmpty(videoPath)) {
                 mPresenter.sendVideoMessage(videoPath);
             }
-        }else if (resultCode == VideoPlayActivity.RESULT_CODE) {
-          Message message = data.getParcelableExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE);
-          if(message!=null){
-              updateMessage(message);
-          }
+        } else if (resultCode == VideoPlayActivity.RESULT_CODE) {
+            Message message = data.getParcelableExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE);
+            if (message != null) {
+                updateMessage(message);
+            }
         }
     }
 
@@ -297,7 +298,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setLayoutManager(layoutManager);
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
-        ((DefaultItemAnimator)(mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
+        ((DefaultItemAnimator) (mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
         mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this) {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -458,13 +459,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA);
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA);
             }
         });
     }
 
     private void setKeyBoardSwitcherListener() {
-        mLlInputLayout.setOnKeyBoardSwitchListener(new KeyboardPanelSwitcher.onSoftKeyBoardSwitchListener() {
+        mLlInputLayout.setOnKeyBoardSwitchListener(new KeyboardPanelSwitcher.OnSoftKeyBoardSwitchListener() {
             @Override
             public void onSoftKeyBoardOpened(int keyBoardHeight) {
                 if (mKeyBoardHeight != keyBoardHeight) {
@@ -477,6 +478,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 }
                 isOpenedKeyBoard = true;
                 mRvChatView.scrollToPosition(0);
+
             }
 
             @Override

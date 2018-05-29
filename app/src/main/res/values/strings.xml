@@ -13,7 +13,7 @@
         <item name="moments">动态</item>
     </string-array>
 
-    <string-array name="ProfileModifyActivity_SexList">
+    <string-array name="EditProfileActivity_SexList">
         <item name="information">男</item>
         <item name="moments">女</item>
     </string-array>
@@ -122,7 +122,7 @@
     <string name="ContactMessageAdapter_Requesting">添加</string>
     <string name="ContactMessageAdapter_Verifying">等待验证</string>
     <string name="ContactMessageMenu_Delete">删除</string>
-    <string name="ModifyContactLabelActivity_Title">添加标签</string>
+    <string name="EditContactLabelActivity_Title">添加标签</string>
     <string name="RemarkInfoActivity_RemarkNameLabel">备注名称</string>
     <string name="RemarkInfoActivity_TelephoneLabel">电话号码</string>
     <string name="RemarkInfoActivity_TelephoneHint">添加电话号码</string>
@@ -144,32 +144,32 @@
     <string name="StrangerProfile_SetPermissionTitle">设置朋友圈权限</string>
     <string name="StrangerProfile_SetPermissionContent">不让他(她)看我的朋友圈</string>
     <string name="StrangerProfile_VerifyTitle">验证信息</string>
-    <string name="ProfileModifyActivity_Title">编辑资料</string>
-    <string name="ProfileModifyActivity_BirthdayDialogTitle">请选择生日日期</string>
-    <string name="ProfileModifyActivity_SexLabel">性别</string>
-    <string name="ProfileModifyActivity_BirthdayLabel">生日</string>
-    <string name="ProfileModifyActivity_SexDialogTitle">性别</string>
-    <string name="ProfileModifyActivity_NoSet">未设置</string>
-    <string name="ProfileModifyActivity_DateFormat">%d年%02d月%02d日</string>
-    <string name="ProfileModifyActivity_LocationLabel">所在地区</string>
+    <string name="EditProfileActivity_Title">编辑资料</string>
+    <string name="EditProfileActivity_BirthdayDialogTitle">请选择生日日期</string>
+    <string name="EditProfileActivity_SexLabel">性别</string>
+    <string name="EditProfileActivity_BirthdayLabel">生日</string>
+    <string name="EditProfileActivity_SexDialogTitle">性别</string>
+    <string name="EditProfileActivity_NoSet">未设置</string>
+    <string name="EditProfileActivity_DateFormat">%d年%02d月%02d日</string>
+    <string name="EditProfileActivity_LocationLabel">所在地区</string>
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
     <string name="None">无</string>
     <string name="SignatureEditActivity_Title">修改签名</string>
     <string name="SignatureEditActivity_SignatureContentHint">一句话介绍自己</string>
-    <string name="ProfileModifyActivity_SignatureLabel">个人签名</string>
-    <string name="ProfileModifyActivity_NicknameLabel">昵称</string>
+    <string name="EditProfileActivity_SignatureLabel">个人签名</string>
+    <string name="EditProfileActivity_NicknameLabel">昵称</string>
     <string name="ImageSingleSelectorActivity_Title">选择头像</string>
-    <string name="ProfileModifyActivity_Man">男</string>
-    <string name="ProfileModifyActivity_Woman">女</string>
-    <string name="ProfileModifyActivity_AvatarLabel">头像</string>
-    <string name="ProfileModifyActivity_NoneNickname">昵称不能为空</string>
+    <string name="EditProfileActivity_Man">男</string>
+    <string name="EditProfileActivity_Woman">女</string>
+    <string name="EditProfileActivity_AvatarLabel">头像</string>
+    <string name="EditProfileActivity_NoneNickname">昵称不能为空</string>
     <string name="ChatActivity_ImageAlreadyOverdue">图片已经过期，无法查看</string>
     <string name="ChatActivity_VideoAlreadyOverdue">视频已经过期，无法播放</string>
     <string name="Profile_LabelNickname">昵称</string>
     <string name="Profile_LabelLocation">所在地区</string>
     <string name="Profile_LabelBirthday">出生日期</string>
-    <string name="ProfileModifyActivity_ReadCityInfoError">读取城市信息失败</string>
+    <string name="EditProfileActivity_ReadCityInfoError">读取城市信息失败</string>
     <string name="ChatSetup_LabelSetTop">置顶</string>
     <string name="ChatSetup_HintSetTop">消息将始终显示在会话列表顶部</string>
     <string name="ChatSetup_LabelRemind">消息免打扰</string>
@@ -178,7 +178,7 @@
     <string name="ChatSetup_HintClearMessage">清空本地聊天记录（不可恢复）</string>
     <string name="ChatSetup_Title">聊天信息</string>
     <string name="GroupMembersAdapter_Add">添加</string>
-    <string name="ProfileModifyActivity_LocationDialogTitle">请选择省市</string>
+    <string name="EditProfileActivity_LocationDialogTitle">请选择省市</string>
     <string name="Cancel">取消</string>
     <string name="GroupProfileActivity_MyGroupNicknameDialogTitle">我在本群的昵称</string>
     <string name="GroupProfileActivity_MyGroupNicknameDialogHint">设置你在群里的昵称，这个昵称只会在这个群内显示。</string>

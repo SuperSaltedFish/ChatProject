@@ -18,16 +18,16 @@ import java.util.List;
  */
 
 
-public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMomentsAdapter.ItemView> {
+public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemView> {
 
-    public HistoryMomentsAdapter() {
+    public MomentsAdapter() {
 
     }
 
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_history_moments, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_moments, parent, false);
         return new ItemView(view);
     }
 
@@ -65,7 +65,7 @@ public class HistoryMomentsAdapter extends BaseRecyclerViewAdapter<HistoryMoment
         }
 
         private void initView() {
-            mNineGridImageView = (NineGridImageView) itemView.findViewById(R.id.HistoryMomentsAdapter_mNineGridImageView);
+            mNineGridImageView = (NineGridImageView) itemView.findViewById(R.id.MomentsAdapter_mNineGridImageContent);
         }
 
     }

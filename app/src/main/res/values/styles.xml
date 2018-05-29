@@ -31,15 +31,6 @@
     </style>
 
 
-    <style name="LoginTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@null</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="colorPrimary">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/colorAccent</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_splash</item>
         <item name="android:windowTranslucentStatus">false</item>
@@ -51,7 +42,7 @@
     </style>
 
     <style name="ToolbarTitleTheme.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">17sp</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
 

@@ -138,6 +138,7 @@ public class VideoEncoder {
             mAudioCodec.setCallback(new AudioEncodeCallback());
         } catch (RuntimeException e) {
             e.printStackTrace();
+            release();
         }
     }
 

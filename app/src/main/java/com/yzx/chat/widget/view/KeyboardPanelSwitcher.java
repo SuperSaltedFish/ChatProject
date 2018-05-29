@@ -1,12 +1,12 @@
 package com.yzx.chat.widget.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import com.yzx.chat.util.LogUtil;
 
 /**
  * Created by YZX on 2017年11月30日.
@@ -21,8 +21,9 @@ public class KeyboardPanelSwitcher extends LinearLayout {
 
     private boolean isInitComplete;
 
-    private onSoftKeyBoardSwitchListener mOnKeyBoardSwitchListener;
+    private OnSoftKeyBoardSwitchListener mOnKeyBoardSwitchListener;
 
+    private Window mWindow;
 
     public KeyboardPanelSwitcher(Context context) {
         this(context, null);
@@ -34,13 +35,22 @@ public class KeyboardPanelSwitcher extends LinearLayout {
 
     public KeyboardPanelSwitcher(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        if (context instanceof Activity) {
+            mWindow = ((Activity) context).getWindow();
+        }
     }
 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (mWindow != null) {
+            if (mWindow.getAttributes().softInputMode == WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE) {
+
+            } else {
+
+            }
+        }
         int measureHeight = MeasureSpec.getSize(heightMeasureSpec);
         if (!isInitComplete) {
             mInitMeasureHeight = measureHeight;
@@ -51,9 +61,9 @@ public class KeyboardPanelSwitcher extends LinearLayout {
             return;
         }
         if (mOnKeyBoardSwitchListener != null) {
-            if(mInitMeasureHeight != measureHeight){
+            if (mInitMeasureHeight > measureHeight) {
                 mOnKeyBoardSwitchListener.onSoftKeyBoardOpened(mInitMeasureHeight - measureHeight);
-            }else {
+            } else {
                 mOnKeyBoardSwitchListener.onSoftKeyBoardClosed();
             }
         }
@@ -67,11 +77,11 @@ public class KeyboardPanelSwitcher extends LinearLayout {
         isInitComplete = true;
     }
 
-    public void setOnKeyBoardSwitchListener(onSoftKeyBoardSwitchListener onKeyBoardSwitchListener) {
+    public void setOnKeyBoardSwitchListener(OnSoftKeyBoardSwitchListener onKeyBoardSwitchListener) {
         mOnKeyBoardSwitchListener = onKeyBoardSwitchListener;
     }
 
-    public interface onSoftKeyBoardSwitchListener {
+    public interface OnSoftKeyBoardSwitchListener {
         void onSoftKeyBoardOpened(int keyBoardHeight);
 
         void onSoftKeyBoardClosed();

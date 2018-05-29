@@ -6,7 +6,7 @@
     android:layout_marginStart="8dp"
     android:gravity="center_vertical|start">
 
-    <com.yzx.chat.widget.view.CircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp" />
@@ -37,7 +37,7 @@
 
     </FrameLayout>
 
-    <com.yzx.chat.widget.view.CircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ChatAdapter_mIvListenedState"
         android:layout_width="8dp"
         android:layout_height="8dp"

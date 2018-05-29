@@ -1,14 +1,18 @@
 package com.yzx.chat.mvp.view.fragment;
 
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.yzx.chat.R;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.widget.adapter.HistoryMomentsAdapter;
+import com.yzx.chat.widget.adapter.MomentsAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.widget.view.DividerItemDecoration;
+import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 
 /**
@@ -22,7 +26,7 @@ public class MomentsFragment extends BaseFragment {
     public static final String TAG = MomentsFragment.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
-    private HistoryMomentsAdapter mAdapter;
+    private MomentsAdapter mAdapter;
 
     @Override
     protected int getLayoutID() {
@@ -32,7 +36,7 @@ public class MomentsFragment extends BaseFragment {
     @Override
     protected void init(View parentView) {
         mRecyclerView = parentView.findViewById(R.id.MomentsFragment_mRecyclerView);
-        mAdapter = new HistoryMomentsAdapter();
+        mAdapter = new MomentsAdapter();
     }
 
     @Override
@@ -42,6 +46,7 @@ public class MomentsFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int)AndroidUtil.dip2px(12),SpacesItemDecoration.VERTICAL,true,true));
     }
 
     @Override
@@ -49,14 +54,5 @@ public class MomentsFragment extends BaseFragment {
 
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        LogUtil.e("MomentsFragment:"+hidden);
-        if(mParentView!=null){
-//            mParentView.setFitsSystemWindows(!hidden);
-//            mParentView.requestApplyInsets();
-        }
-        super.onHiddenChanged(hidden);
-    }
 
 }

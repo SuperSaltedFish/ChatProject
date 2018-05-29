@@ -81,15 +81,20 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     protected void onResume() {
         super.onResume();
         mCamera2RecodeView.onResume();
-        //  mVideoView.resume();
+        if (mVideoDecoder!=null&&!mVideoDecoder.isPlaying()) {
+            mVideoDecoder.start();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mCamera2RecodeView.onPause();
-        //    mVideoView.pause();
-        resetAndTryPlayRecorderContent();
+        if (mVideoDecoder!=null&&mVideoDecoder.isPlaying()) {
+            mVideoDecoder.pause();
+        } else {
+            resetAndTryPlayRecorderContent();
+        }
     }
 
     @Override
@@ -102,19 +107,19 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         }
     }
 
-    private void resetAndTryPlayRecorderContent() {
-        mHandler.removeCallbacksAndMessages(null);
-        mRecorderButton.reset();
-        mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
-        if (mCamera2RecodeView.isRecording()) {
-            mCamera2RecodeView.stopRecorder();
-            if (mVideoDecoder != null) {
-                mVideoDecoder.release();
-            }
-            mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
-            if (mVideoDecoder != null) {
-                mVideoDecoder.start();
-                setCurrentState(CURRENT_STATE_PLAY);
+                private void resetAndTryPlayRecorderContent() {
+                    mHandler.removeCallbacksAndMessages(null);
+                    mRecorderButton.reset();
+                    mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
+                    if (mCamera2RecodeView.isRecording()) {
+                        mCamera2RecodeView.stopRecorder();
+                        if (mVideoDecoder != null) {
+                            mVideoDecoder.release();
+                        }
+                        mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
+                        if (mVideoDecoder != null) {
+                            mVideoDecoder.start();
+                            setCurrentState(CURRENT_STATE_PLAY);
             } else {
                 showLongToast(getString(R.string.VideoRecorderActivity_PlayVideoError));
                 restartPreview();
@@ -228,7 +233,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
                             mCurrentVideoPath = DirectoryManager.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
                             if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
                                 showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
-                                mRecorderButton.reset();
+                                resetAndTryPlayRecorderContent();
                             } else {
                                 mRecorderButton.startRecorderAnimation(MAX_RECORDER_DURATION, null);
                                 setCurrentState(CURRENT_STATE_RECORDER);

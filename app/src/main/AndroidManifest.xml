@@ -56,9 +56,10 @@
         <activity
             android:name=".mvp.view.activity.LoginActivity"
             android:launchMode="singleTask"
-            android:theme="@style/LoginTheme"></activity>
+            android:theme="@style/DefaultDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.HomeActivity"
+            android:theme="@style/NoBackgroundLightTheme"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name=".mvp.view.activity.ChatActivity"
@@ -76,11 +77,12 @@
         <activity android:name=".mvp.view.activity.ContactProfileActivity"></activity>
         <activity
             android:name=".mvp.view.activity.FindNewContactActivity"
+            android:theme="@style/NoBackgroundLightTheme"
             android:windowSoftInputMode="adjustNothing"></activity>
         <activity android:name=".mvp.view.activity.RemarkInfoActivity"></activity>
-        <activity android:name=".mvp.view.activity.ModifyContactLabelActivity"></activity>
+        <activity android:name=".mvp.view.activity.EditContactLabelActivity"></activity>
         <activity android:name=".mvp.view.activity.StrangerProfileActivity"></activity>
-        <activity android:name=".mvp.view.activity.ProfileModifyActivity"></activity>
+        <activity android:name=".mvp.view.activity.EditProfileActivity"></activity>
         <activity android:name=".mvp.view.activity.SignatureEditActivity"></activity>
         <activity
             android:name=".mvp.view.activity.ImageSingleSelectorActivity"
@@ -88,8 +90,7 @@
         <activity
             android:name=".mvp.view.activity.ImageOriginalActivity"
             android:theme="@style/DefaultDarkTheme"></activity>
-        <activity
-            android:name=".mvp.view.activity.GroupProfileActivity"></activity>
+        <activity android:name=".mvp.view.activity.GroupProfileActivity"></activity>
         <activity
             android:name=".mvp.view.activity.CreateGroupActivity"
             android:windowSoftInputMode="adjustNothing"></activity>
@@ -123,11 +124,10 @@
         <activity
             android:name=".mvp.view.activity.TestActivity"
             android:theme="@style/DefaultDarkTheme">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
     </application>

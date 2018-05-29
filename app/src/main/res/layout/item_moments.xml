@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/MomentsAdapter_mGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="40dp" />
+
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/backgroundColorWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mGuideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/MomentsAdapter_mIvAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:elevation="4dp"
+        android:src="@drawable/temp_head_image"
+        app:layout_constraintEnd_toEndOf="@id/MomentsAdapter_mGuideline"
+        app:layout_constraintStart_toStartOf="@id/MomentsAdapter_mGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/MomentsAdapter_mTvName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="start|center_vertical"
+        android:singleLine="true"
+        android:text="叶智星"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvAvatar"
+        app:layout_constraintEnd_toStartOf="@id/MomentsAdapter_mTvTime"
+        app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvAvatar" />
+
+    <TextView
+        android:id="@+id/MomentsAdapter_mTvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="16:58"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvAvatar" />
+
+    <TextView
+        android:id="@+id/MomentsAdapter_mTvTextContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="start|center_vertical"
+        android:text="每个不曾起舞的日子，都是对生命的辜负!"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/MomentsAdapter_mTvTime"
+        app:layout_constraintStart_toStartOf="@id/MomentsAdapter_mTvName"
+        app:layout_constraintTop_toBottomOf="@id/MomentsAdapter_mTvName" />
+
+    <com.yzx.chat.widget.view.NineGridImageView
+        android:id="@+id/MomentsAdapter_mNineGridImageContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@id/MomentsAdapter_mTvTextContent"
+        app:layout_constraintStart_toStartOf="@id/MomentsAdapter_mTvTextContent"
+        app:layout_constraintTop_toBottomOf="@id/MomentsAdapter_mTvTextContent" />
+
+
+    <ImageView
+        android:id="@+id/MomentsAdapter_mIvLikeIcon"
+        android:layout_width="20dp"
+        android:layout_height="18dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_like"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/MomentsAdapter_mTvTextContent"
+        app:layout_constraintTop_toBottomOf="@id/MomentsAdapter_mNineGridImageContent" />
+
+    <TextView
+        android:id="@+id/MomentsAdapter_mIvLikeNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="12"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvLikeIcon"
+        app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mIvLikeIcon"
+        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvLikeIcon" />
+
+    <ImageView
+        android:id="@+id/MomentsAdapter_mIvCommentIcon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/ic_comment"
+        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvLikeIcon"
+        app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mIvLikeNumber"
+        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvLikeIcon" />
+
+    <TextView
+        android:id="@+id/MomentsAdapter_mIvCommentNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="36"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvLikeIcon"
+        app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mIvCommentIcon"
+        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvLikeIcon" />
+
+</android.support.constraint.ConstraintLayout>
+
+
+

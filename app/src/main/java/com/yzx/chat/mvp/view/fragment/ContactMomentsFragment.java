@@ -10,8 +10,7 @@ import android.view.View;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.widget.adapter.HistoryMomentsAdapter;
+import com.yzx.chat.widget.adapter.MomentsAdapter;
 import com.yzx.chat.widget.view.TimeLineItemDecoration;
 
 /**
@@ -24,7 +23,7 @@ public class ContactMomentsFragment extends BaseFragment {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-    private HistoryMomentsAdapter mAdapter;
+    private MomentsAdapter mAdapter;
 
     @Override
     protected int getLayoutID() {
@@ -35,7 +34,7 @@ public class ContactMomentsFragment extends BaseFragment {
     protected void init(View parentView) {
         mRecyclerView = parentView.findViewById(R.id.ContactMomentsFragment_mRecyclerView);
         mSwipeRefreshLayout = parentView.findViewById(R.id.ContactMomentsFragment_mSwipeRefreshLayout);
-        mAdapter = new HistoryMomentsAdapter();
+        mAdapter = new MomentsAdapter();
     }
 
     @Override

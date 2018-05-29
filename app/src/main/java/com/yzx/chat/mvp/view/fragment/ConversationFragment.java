@@ -23,7 +23,6 @@ import com.yzx.chat.mvp.contract.ConversationContract;
 import com.yzx.chat.mvp.presenter.ConversationPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.mvp.view.activity.ChatActivity;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;

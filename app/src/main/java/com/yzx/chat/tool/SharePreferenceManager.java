@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.yzx.chat.configure.AppApplication;
+import com.yzx.chat.util.AndroidUtil;
 
 /**
  * Created by YZX on 2017年11月24日.
@@ -111,7 +112,7 @@ public class SharePreferenceManager {
         }
 
         public int getKeyBoardHeight() {
-            return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT, 0);
+            return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT,0);
         }
 
     }

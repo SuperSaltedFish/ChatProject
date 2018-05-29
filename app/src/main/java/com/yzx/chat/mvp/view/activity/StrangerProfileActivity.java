@@ -75,7 +75,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         mTvExplain.setText(mUserBean.getSignature());
         mTvContentNickname.setText(mUserBean.getNickname());
         if (TextUtils.isEmpty(mUserBean.getLocation())) {
-            mTvContentLocation.setText(R.string.ProfileModifyActivity_NoSet);
+            mTvContentLocation.setText(R.string.EditProfileActivity_NoSet);
         } else {
             mTvContentLocation.setText(mUserBean.getLocation());
         }
@@ -85,10 +85,10 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
             if (!TextUtils.isEmpty(birthday)) {
                 mTvContentBirthday.setText(birthday);
             } else {
-                mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+                mTvContentBirthday.setText(R.string.EditProfileActivity_NoSet);
             }
         } else {
-            mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+            mTvContentBirthday.setText(R.string.EditProfileActivity_NoSet);
         }
         GlideUtil.loadAvatarFromUrl(this,mIvAvatar,mUserBean.getAvatar());
     }

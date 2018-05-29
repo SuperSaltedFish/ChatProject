@@ -105,7 +105,7 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
         UserBean user = contact.getUserProfile();
         mTvContentNickname.setText(user.getNickname());
         if (TextUtils.isEmpty(user.getLocation())) {
-            mTvContentLocation.setText(R.string.ProfileModifyActivity_NoSet);
+            mTvContentLocation.setText(R.string.EditProfileActivity_NoSet);
         } else {
             mTvContentLocation.setText(user.getLocation());
         }
@@ -115,10 +115,10 @@ public class ContactInfoFragment extends BaseFragment<ContactInfoContract.Presen
             if (!TextUtils.isEmpty(birthday)) {
                 mTvContentBirthday.setText(birthday);
             } else {
-                mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+                mTvContentBirthday.setText(R.string.EditProfileActivity_NoSet);
             }
         } else {
-            mTvContentBirthday.setText(R.string.ProfileModifyActivity_NoSet);
+            mTvContentBirthday.setText(R.string.EditProfileActivity_NoSet);
         }
 
         ContactRemarkBean contactRemark = contact.getRemark();

@@ -34,7 +34,7 @@
                 app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
 
-            <com.yzx.chat.widget.view.CircleImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/StrangerProfileActivity_mIvAvatar"
                 android:layout_width="88dp"
                 android:layout_height="88dp"

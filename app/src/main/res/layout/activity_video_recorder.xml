@@ -66,7 +66,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
 
-    <com.yzx.chat.widget.view.CircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/VideoRecorderActivity_mIvConfirm"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -80,7 +80,7 @@
         app:layout_constraintStart_toEndOf="@id/VideoRecorderActivity_mRecorderButton"
         app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
 
-    <com.yzx.chat.widget.view.CircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/VideoRecorderActivity_mIvRestart"
         android:layout_width="64dp"
         android:layout_height="64dp"

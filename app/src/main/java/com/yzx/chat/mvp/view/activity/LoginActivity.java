@@ -107,6 +107,8 @@ public class LoginActivity extends BaseCompatActivity<LoginContract.Presenter> i
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
+
         mBtnLogin.setOnClickListener(mOnViewClickListener);
         mBtnRegister.setOnClickListener(mOnViewClickListener);
         mBtnVerify.setOnClickListener(mOnViewClickListener);

@@ -25,7 +25,6 @@ import com.yzx.chat.mvp.presenter.CreateGroupPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
-import com.yzx.chat.widget.view.CircleImageView;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
@@ -34,6 +33,7 @@ import com.yzx.chat.widget.view.ProgressDialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.rong.imlib.model.Conversation;
 
 /**

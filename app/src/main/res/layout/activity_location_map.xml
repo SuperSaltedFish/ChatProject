@@ -107,7 +107,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/LocationMapActivity_mTvShareLocationTitle" />
 
-            <com.yzx.chat.widget.view.CircleImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/LocationMapActivity_mIBtnShareNavigation"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
