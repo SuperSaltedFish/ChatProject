@@ -59,7 +59,7 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_profile_edit;
+        return R.layout.activity_edit_profile;
     }
 
     @Override

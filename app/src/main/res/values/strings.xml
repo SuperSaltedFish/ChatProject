@@ -140,7 +140,7 @@
     <string name="FindNewContactActivity_SearchHint">手机号/群号/昵称</string>
     <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
     <string name="FindNewContactActivity_SearchFail">搜索失败，请稍后再试</string>
-    <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过</string>
+    <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过！</string>
     <string name="StrangerProfile_SetPermissionTitle">设置朋友圈权限</string>
     <string name="StrangerProfile_SetPermissionContent">不让他(她)看我的朋友圈</string>
     <string name="StrangerProfile_VerifyTitle">验证信息</string>

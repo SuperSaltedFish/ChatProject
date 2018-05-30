@@ -12,6 +12,7 @@
     <color name="textPrimaryColorBlack">#353535</color>
     <color name="textSecondaryColorBlack">#888888</color>
     <color name="textSecondaryColorBlackLight">#cbcfd2</color>
+    <color name="textHintColorGrey">#e8e8e8</color>
 
 
     <color name="backgroundColorWhite">#ffffff</color>

@@ -25,13 +25,9 @@ public class GlideRoundTransform extends BitmapTransformation {
 
     private float mRadius;
 
-    public GlideRoundTransform() {
-        this(40);
-    }
-
-    public GlideRoundTransform(float dp) {
+    public GlideRoundTransform(float px) {
         super();
-        mRadius = AndroidUtil.dip2px(dp);
+        mRadius = px;
     }
 
     @Override
