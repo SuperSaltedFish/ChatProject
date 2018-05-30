@@ -10,9 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -29,6 +27,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.GsonUtil;
+import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.RoundImageView;
 
@@ -49,16 +48,12 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
     private ProgressDialog mProgressDialog;
     private ImageView mIvAvatarBackground;
     private RoundImageView mIvChangeAvatar;
-    private LinearLayout mLlBirthday;
+    private ClearEditText mEtNickname;
     private TextView mTvBirthday;
-    private LinearLayout mLlSexSelected;
-    private TextView mTvSexSelected;
-    private LinearLayout mLlLocation;
     private TextView mTvLocation;
-    private LinearLayout mLlSignature;
-    private TextView mTvSignature;
-    private EditText mEtNickname;
-    private FrameLayout mFlAvatar;
+    private TextView mTvSex;
+    private EditText mEtSignature;
+    private ClearEditText mEtEmail;
     private UserBean mUserBean;
     private UserBean mOldUserBean;
 
@@ -71,15 +66,12 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
     protected void init(Bundle savedInstanceState) {
         mIvAvatarBackground = findViewById(R.id.EditProfileActivity_mIvAvatarBackground);
         mIvChangeAvatar = findViewById(R.id.EditProfileActivity_mIvChangeAvatar);
-        mLlBirthday = findViewById(R.id.EditProfileActivity_mLlBirthday);
         mTvBirthday = findViewById(R.id.EditProfileActivity_mTvBirthday);
-        mLlSexSelected = findViewById(R.id.EditProfileActivity_mLlSexSelected);
-        mTvSexSelected = findViewById(R.id.EditProfileActivity_mTvSexSelected);
-        mLlLocation = findViewById(R.id.EditProfileActivity_mLlLocation);
         mTvLocation = findViewById(R.id.EditProfileActivity_mTvLocation);
-        mLlSignature = findViewById(R.id.EditProfileActivity_mLlSignature);
-        mTvSignature = findViewById(R.id.EditProfileActivity_mTvSignature);
         mEtNickname = findViewById(R.id.EditProfileActivity_mEtNickname);
+        mTvSex = findViewById(R.id.EditProfileActivity_mTvSex);
+        mEtSignature = findViewById(R.id.EditProfileActivity_mEtSignature);
+        mEtEmail = findViewById(R.id.EditProfileActivity_mEtEmail);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Save));
     }
 
@@ -91,10 +83,13 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
         }
 
         mIvChangeAvatar.setOnClickListener(mOnAvatarClickListener);
-        mLlSexSelected.setOnClickListener(mOnSexSelectedClickListener);
-        mLlBirthday.setOnClickListener(mOnBirthdayClickListener);
-        mLlLocation.setOnClickListener(mOnLocationClickListener);
-        mLlSignature.setOnClickListener(mOnSignatureClickListener);
+        mTvSex.setOnClickListener(mOnSexSelectedClickListener);
+        mTvBirthday.setOnClickListener(mOnBirthdayClickListener);
+        mTvLocation.setOnClickListener(mOnLocationClickListener);
+
+
+        mEtNickname.setAutoShow(false);
+        mEtEmail.setAutoShow(false);
 
         mIvChangeAvatar.setRoundRadius(AndroidUtil.dip2px(16));
         GlideUtil.loadBlurFromUrl(this, mIvAvatarBackground, R.drawable.temp_head_image, 4);
@@ -118,20 +113,20 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
         }
 
         if (TextUtils.isEmpty(mUserBean.getSignature())) {
-            mTvSignature.setText(R.string.EditProfileActivity_NoSet);
+            mEtSignature.setText(null);
         } else {
-            mTvSignature.setText(mUserBean.getSignature());
+            mEtSignature.setText(mUserBean.getSignature());
         }
 
         switch (mUserBean.getSex()) {
             case 1:
-                mTvSexSelected.setText(R.string.EditProfileActivity_Man);
+                mTvSex.setText(R.string.EditProfileActivity_Man);
                 break;
             case 2:
-                mTvSexSelected.setText(R.string.EditProfileActivity_Woman);
+                mTvSex.setText(R.string.EditProfileActivity_Woman);
                 break;
             default:
-                mTvSexSelected.setText(R.string.EditProfileActivity_NoSet);
+                mTvSex.setText(R.string.EditProfileActivity_NoSet);
         }
 
         String birthday = mUserBean.getBirthday();
@@ -201,15 +196,7 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
         if (data == null) {
             return;
         }
-        if (resultCode == SignatureEditActivity.RESULT_CODE) {
-            String newSignature = data.getStringExtra(SignatureEditActivity.INTENT_EXTRA_SIGNATURE_CONTENT);
-            if (TextUtils.isEmpty(newSignature)) {
-                mTvSignature.setText(R.string.EditProfileActivity_NoSet);
-            } else {
-                mTvSignature.setText(newSignature);
-            }
-            mUserBean.setSignature(newSignature);
-        } else if (resultCode == ImageSingleSelectorActivity.RESULT_CODE) {
+        if (resultCode == ImageSingleSelectorActivity.RESULT_CODE) {
             String imagePath = data.getStringExtra(ImageSingleSelectorActivity.INTENT_EXTRA_IMAGE_PATH);
             if (!TextUtils.isEmpty(imagePath)) {
                 Intent intent = new Intent(this, CropImageActivity.class);
@@ -237,7 +224,7 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
                         @Override
                         public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                             if (!TextUtils.isEmpty(text)) {
-                                mTvSexSelected.setText(text);
+                                mTvSex.setText(text);
                                 mUserBean.setSex(which + 1);
                                 return true;
                             }
@@ -386,15 +373,6 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
             }
 
             mLocationSelectorDialog.show();
-        }
-    };
-
-    private final View.OnClickListener mOnSignatureClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(EditProfileActivity.this, SignatureEditActivity.class);
-            intent.putExtra(SignatureEditActivity.INTENT_EXTRA_SIGNATURE_CONTENT, mUserBean.getSignature());
-            startActivityForResult(intent, 0);
         }
     };
 

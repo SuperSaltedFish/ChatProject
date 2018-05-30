@@ -83,7 +83,6 @@
         <activity android:name=".mvp.view.activity.EditContactLabelActivity"></activity>
         <activity android:name=".mvp.view.activity.StrangerProfileActivity"></activity>
         <activity android:name=".mvp.view.activity.EditProfileActivity"></activity>
-        <activity android:name=".mvp.view.activity.SignatureEditActivity"></activity>
         <activity
             android:name=".mvp.view.activity.ImageSingleSelectorActivity"
             android:theme="@style/DefaultDarkTheme"></activity>

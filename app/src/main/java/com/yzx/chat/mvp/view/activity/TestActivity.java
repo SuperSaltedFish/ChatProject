@@ -30,7 +30,6 @@ public class TestActivity extends BaseCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-
     public void onClick(View v) {
 
     }

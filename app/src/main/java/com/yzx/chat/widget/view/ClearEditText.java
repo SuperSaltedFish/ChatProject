@@ -3,6 +3,9 @@ package com.yzx.chat.widget.view;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Px;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -25,6 +28,7 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
     private Drawable mClearDrawable;
     private boolean isShowClearDrawable;
     private boolean isEditState;
+    private boolean isAutoShow;
 
     public ClearEditText(Context context) {
         this(context, null);
@@ -36,26 +40,40 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
 
     public ClearEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        isAutoShow = true;
         setFocusable(true);
         setFocusableInTouchMode(true);
-        mClearDrawable = context.getDrawable(R.drawable.ic_close);
-        if (mClearDrawable != null) {
-            mClearDrawable.setBounds(0, 0, mClearDrawable.getIntrinsicWidth(), mClearDrawable.getIntrinsicHeight());
-        }
+        mClearDrawable = context.getDrawable(R.drawable.ic_close).mutate();
+        setCloseDrawableSizeFromTextSize();
+        setClearIconVisible(true);
         addTextChangedListener(mTextWatcher);
 
         setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                isEditState=hasFocus;
+                isEditState = hasFocus;
                 if (!TextUtils.isEmpty(getText()) && isEditState) {
                     setClearIconVisible(true);
                 } else {
-                    setClearIconVisible(false);
+                    if(isAutoShow){
+                        setClearIconVisible(false);
+                    }
                 }
             }
         });
     }
+
+    @Override
+    public void setTextSize(int unit, float size) {
+        super.setTextSize(unit, size);
+        setCloseDrawableSizeFromTextSize();
+    }
+
+    private void setCloseDrawableSizeFromTextSize(){
+        int drawableSize = (int) (getTextSize()*0.8);
+        mClearDrawable.setBounds(0, 0, drawableSize, drawableSize);
+    }
+
 
     @Override
     public boolean performClick() {
@@ -68,7 +86,7 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             performClick();
         }
-        if (mClearDrawable != null && event.getAction() == MotionEvent.ACTION_UP && isShowClearDrawable) {
+        if (event.getAction() == MotionEvent.ACTION_UP && isShowClearDrawable) {
             int x = (int) event.getX();
             // 判断触摸点是否在水平范围内
             boolean isInnerWidth = (x > (getWidth() - getTotalPaddingRight()))
@@ -88,6 +106,18 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
             }
         }
         return super.onTouchEvent(event);
+    }
+
+    public void setAutoShow(boolean autoShow) {
+        isAutoShow = autoShow;
+    }
+
+    public void setCloseDrawableTint(@ColorInt int color){
+        mClearDrawable.setTint(color);
+    }
+
+    public void setCloseDrawableSize(int width,int height){
+        mClearDrawable.setBounds(0,0,width,height);
     }
 
 

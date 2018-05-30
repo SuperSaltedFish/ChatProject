@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            android:foreground="@drawable/fg_gradual_mask"
+            android:foreground="@drawable/fg_video_gradual_mask"
             android:maxHeight="160dp"
             android:maxWidth="160dp"
             android:minHeight="120dp"
