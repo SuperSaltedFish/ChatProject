@@ -1,20 +1,27 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.StrangerProfileContract;
 import com.yzx.chat.mvp.presenter.StrangerProfilePresenter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.view.GlideSemicircleTransform;
 import com.yzx.chat.widget.view.ProgressDialog;
 
 /**
@@ -27,15 +34,15 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     public static final String INTENT_EXTRA_USER = "User";
 
-    private EditText mEtVerifyContent;
+    private EditText mEtReason;
     private UserBean mUserBean;
     private ProgressDialog mProgressDialog;
-    private ImageView mIvAvatar;
     private TextView mTvNickname;
-    private TextView mTvExplain;
-    private TextView mTvContentNickname;
-    private TextView mTvContentLocation;
-    private TextView mTvContentBirthday;
+    private TextView mTvSignature;
+    private TextView mTvUserInfo;
+    private ImageView mIvSexIcon;
+    private ImageView mIvPicture;
+    private Button mBtnConfirm;
 
     @Override
     protected int getLayoutID() {
@@ -44,23 +51,25 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mEtVerifyContent = findViewById(R.id.StrangerProfileActivity_mEtVerifyContent);
-        mTvContentNickname = findViewById(R.id.Profile_mTvContentNickname);
-        mTvContentLocation = findViewById(R.id.Profile_mTvContentLocation);
-        mTvContentBirthday = findViewById(R.id.Profile_mTvContentBirthday);
-        mIvAvatar = findViewById(R.id.StrangerProfileActivity_mIvAvatar);
+        mEtReason = findViewById(R.id.StrangerProfileActivity_mEtReason);
         mTvNickname = findViewById(R.id.StrangerProfileActivity_mTvNickname);
-        mTvExplain = findViewById(R.id.StrangerProfileActivity_mTvExplain);
+        mTvSignature = findViewById(R.id.StrangerProfileActivity_mTvSignature);
+        mTvUserInfo = findViewById(R.id.StrangerProfileActivity_mTvUserInfo);
+        mIvSexIcon = findViewById(R.id.StrangerProfileActivity_mIvSexIcon);
+        mIvPicture = findViewById(R.id.StrangerProfileActivity_mIvPicture);
+        mBtnConfirm = findViewById(R.id.StrangerProfileActivity_mBtnConfirm);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Send));
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             setTitle(null);
         }
 
+        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
 
         setData();
     }
@@ -72,46 +81,41 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
             return;
         }
         mTvNickname.setText(mUserBean.getNickname());
-        mTvExplain.setText(mUserBean.getSignature());
-        mTvContentNickname.setText(mUserBean.getNickname());
-        if (TextUtils.isEmpty(mUserBean.getLocation())) {
-            mTvContentLocation.setText(R.string.EditProfileActivity_NoSet);
+        mTvSignature.setText(mUserBean.getSignature());
+        int sexBgID;
+        if (mUserBean.getSex() == 2) {
+            mIvSexIcon.setSelected(true);
+            mTvUserInfo.setText(R.string.EditProfileActivity_Woman);
+            sexBgID = R.drawable.src_sex_woman;
         } else {
-            mTvContentLocation.setText(mUserBean.getLocation());
+            mIvSexIcon.setSelected(false);
+            mTvUserInfo.setText(R.string.EditProfileActivity_Man);
+            sexBgID = R.drawable.src_sex_man;
         }
-        String birthday = mUserBean.getBirthday();
-        if (!TextUtils.isEmpty(mUserBean.getBirthday())) {
-            birthday = DateUtil.isoFormatTo(getString(R.string.DateFormat_yyyyMMdd), birthday);
-            if (!TextUtils.isEmpty(birthday)) {
-                mTvContentBirthday.setText(birthday);
-            } else {
-                mTvContentBirthday.setText(R.string.EditProfileActivity_NoSet);
-            }
-        } else {
-            mTvContentBirthday.setText(R.string.EditProfileActivity_NoSet);
+
+        GlideApp.with(this)
+                .load(sexBgID)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .transforms(new GlideSemicircleTransform(AndroidUtil.dip2px(40), Color.WHITE))
+                .into(mIvPicture);
+
+        if (mUserBean.getAge() > 0) {
+            mTvUserInfo.setText(mTvUserInfo.getText() + " · " + mUserBean.getAge() + getString(R.string.unit_age));
         }
-        GlideUtil.loadAvatarFromUrl(this,mIvAvatar,mUserBean.getAvatar());
+        if (!TextUtils.isEmpty(mUserBean.getLocation())) {
+            mTvUserInfo.setText(mTvUserInfo.getText() + " · " + mUserBean.getLocation());
+        }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_stranger_profile, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.StrangerProfileMenu_Request){
+    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
             if (!mProgressDialog.isShowing()) {
                 mProgressDialog.show();
             }
-            mPresenter.requestContact(mUserBean, mEtVerifyContent.getText().toString());
-        }else {
-            return super.onOptionsItemSelected(item);
+            mPresenter.requestContact(mUserBean, mEtReason.getText().toString());
         }
-        return true;
-    }
+    };
 
     @Override
     public StrangerProfileContract.Presenter getPresenter() {

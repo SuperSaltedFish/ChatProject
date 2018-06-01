@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Base64;
 
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.MD5Util;
 
@@ -32,7 +32,7 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
     private static final int THUMB_COMPRESSED_WIDTH_SIZE = 158;
     private static final int THUMB_COMPRESSED_HEIGHT_SIZE = 280;
     private static final int THUMB_COMPRESSED_QUALITY = 50;
-    private static final String VIDEO_THUMBNAIL_PATH = DirectoryManager.getPublicThumbnailPath();
+    private static final String VIDEO_THUMBNAIL_PATH = DirectoryHelper.getPublicThumbnailPath();
 
     public VideoMessageHandler(Context context) {
         super(context);

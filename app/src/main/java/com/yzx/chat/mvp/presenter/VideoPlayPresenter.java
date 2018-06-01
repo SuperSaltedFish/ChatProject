@@ -1,24 +1,13 @@
 package com.yzx.chat.mvp.presenter;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.mvp.contract.VideoPlayContract;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.extra.VideoMessage;
-import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.DownloadCallback;
-import com.yzx.chat.network.framework.DownloadUtil;
-import com.yzx.chat.network.framework.HttpResponse;
-import com.yzx.chat.network.framework.RequestType;
-import com.yzx.chat.tool.DirectoryManager;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
-
-import java.io.File;
 
 import io.rong.imlib.model.Message;
 

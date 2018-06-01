@@ -9,7 +9,7 @@ import com.yzx.chat.mvp.contract.CropImageContract;
 import com.yzx.chat.network.api.user.UploadAvatarBean;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
@@ -87,7 +87,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
         @Override
         protected String doInBackground(Bitmap... params) {
             Bitmap bitmap = params[0];
-            String savePath = BitmapUtil.saveBitmapToPNG(bitmap, DirectoryManager.getUserImagePath(), UUID.randomUUID().toString());
+            String savePath = BitmapUtil.saveBitmapToPNG(bitmap, DirectoryHelper.getUserImagePath(), UUID.randomUUID().toString());
             bitmap.recycle();
             return savePath;
         }

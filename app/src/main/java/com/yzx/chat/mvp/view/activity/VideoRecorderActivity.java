@@ -12,7 +12,7 @@ import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.MD5Util;
 import com.yzx.chat.util.VideoDecoder;
 import com.yzx.chat.widget.view.Camera2RecodeView;
@@ -230,7 +230,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            mCurrentVideoPath = DirectoryManager.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
+                            mCurrentVideoPath = DirectoryHelper.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
                             if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
                                 showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
                                 resetAndTryPlayRecorderContent();

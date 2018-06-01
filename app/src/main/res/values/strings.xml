@@ -221,5 +221,8 @@
     <string name="shoot">拍摄</string>
     <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
     <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
+    <string name="unit_age">岁</string>
+    <string name="StrangerProfileActivity_AllowViewMoment">允许查看我的动态</string>
+    <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
 
 </resources>

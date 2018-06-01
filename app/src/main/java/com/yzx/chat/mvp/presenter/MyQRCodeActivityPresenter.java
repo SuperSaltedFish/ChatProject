@@ -16,7 +16,7 @@ import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
@@ -91,7 +91,7 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
 
     @Override
     public void saveQRCodeToLocal(Bitmap bitmap,String id) {
-        String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryManager.getUserImagePath(), MD5Util.encrypt16(id));
+        String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryHelper.getUserImagePath(), MD5Util.encrypt16(id));
         if (TextUtils.isEmpty(savePath)) {
             mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeFail));
         } else {

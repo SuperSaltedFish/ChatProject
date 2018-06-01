@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.tool.DirectoryManager;
 
 /**
  * Created by YZX on 2017年11月04日.

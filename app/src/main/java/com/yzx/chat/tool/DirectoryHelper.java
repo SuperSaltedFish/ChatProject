@@ -14,7 +14,7 @@ import java.io.File;
  */
 
 
-public class DirectoryManager {
+public class DirectoryHelper {
 
     public static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath() + "/Chat";
 

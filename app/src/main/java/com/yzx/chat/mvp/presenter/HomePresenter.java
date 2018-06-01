@@ -2,10 +2,17 @@ package com.yzx.chat.mvp.presenter;
 
 import android.os.Handler;
 
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.mvp.contract.HomeContract;
+import com.yzx.chat.mvp.view.activity.ChatActivity;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.tool.IMMessageHelper;
+import com.yzx.chat.tool.NotificationHelper;
+import com.yzx.chat.util.AndroidUtil;
+
+import io.rong.imlib.model.Message;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -24,6 +31,7 @@ public class HomePresenter implements HomeContract.Presenter {
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mIMClient.chatManager().addChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
+        mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mIMClient.contactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
     }
 
@@ -65,6 +73,24 @@ public class HomePresenter implements HomeContract.Presenter {
                 @Override
                 public void run() {
                     mHomeView.updateContactUnreadBadge(count);
+                }
+            });
+        }
+    };
+
+    private final ChatManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatManager.OnChatMessageReceiveListener() {
+        @Override
+        public void onChatMessageReceived(final Message message, int untreatedCount) {
+            if (AndroidUtil.getStackTopActivityClass() == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID)) {
+                return;
+            }
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ContactBean contact = IMClient.getInstance().contactManager().getContact(message.getTargetId());
+                    if (contact != null) {
+                        NotificationHelper.getInstance().showPrivateMessageNotification(message, contact);
+                    }
                 }
             });
         }

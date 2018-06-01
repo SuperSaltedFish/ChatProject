@@ -24,6 +24,10 @@ public class UserDao extends AbstractDao<UserBean> {
     private static final String COLUMN_NAME_Location = "Location";
     private static final String COLUMN_NAME_Birthday = "Birthday";
     private static final String COLUMN_NAME_Sex = "Sex";
+    private static final String COLUMN_NAME_Email = "Email";
+    private static final String COLUMN_NAME_Profession = "Profession";
+    private static final String COLUMN_NAME_School = "School";
+    private static final String COLUMN_NAME_Age = "Age";
 
 
     private static final int COLUMN_INDEX_UserID = 0;
@@ -34,6 +38,10 @@ public class UserDao extends AbstractDao<UserBean> {
     private static final int COLUMN_INDEX_Location = 5;
     private static final int COLUMN_INDEX_Birthday = 6;
     private static final int COLUMN_INDEX_Sex = 7;
+    private static final int COLUMN_INDEX_Email = 8;
+    private static final int COLUMN_INDEX_Profession = 9;
+    private static final int COLUMN_INDEX_School = 10;
+    private static final int COLUMN_INDEX_Age = 11;
 
 
     public static final String CREATE_TABLE_SQL =
@@ -46,6 +54,10 @@ public class UserDao extends AbstractDao<UserBean> {
                     + COLUMN_NAME_Location + " TEXT,"
                     + COLUMN_NAME_Birthday + " TEXT,"
                     + COLUMN_NAME_Sex + " INTEGER,"
+                    + COLUMN_NAME_Email + " TEXT,"
+                    + COLUMN_NAME_Profession + " TEXT,"
+                    + COLUMN_NAME_School + " TEXT,"
+                    + COLUMN_NAME_Age + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_UserID + ")"
                     + ")";
 
@@ -79,6 +91,10 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Location, entity.getLocation());
         values.put(COLUMN_NAME_Birthday, entity.getBirthday());
         values.put(COLUMN_NAME_Sex, entity.getSex());
+        values.put(COLUMN_NAME_Email, entity.getEmail());
+        values.put(COLUMN_NAME_Profession, entity.getProfession());
+        values.put(COLUMN_NAME_School, entity.getSchool());
+        values.put(COLUMN_NAME_Age, entity.getAge());
     }
 
     @Override
@@ -92,6 +108,10 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setLocation(cursor.getString(COLUMN_INDEX_Location));
         bean.setBirthday(cursor.getString(COLUMN_INDEX_Birthday));
         bean.setSex(cursor.getInt(COLUMN_INDEX_Sex));
+        bean.setEmail(cursor.getString(COLUMN_INDEX_Email));
+        bean.setProfession(cursor.getString(COLUMN_INDEX_Profession));
+        bean.setSchool(cursor.getString(COLUMN_INDEX_School));
+        bean.setAge(cursor.getInt(COLUMN_INDEX_Age));
         return bean;
     }
 
@@ -105,11 +125,15 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setLocation(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Location)));
         bean.setBirthday(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Birthday)));
         bean.setSex(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_Sex)));
+        bean.setEmail(cursor.getString(COLUMN_INDEX_Email));
+        bean.setProfession(cursor.getString(COLUMN_INDEX_Profession));
+        bean.setSchool(cursor.getString(COLUMN_INDEX_School));
+        bean.setAge(cursor.getInt(COLUMN_INDEX_Age));
         return bean;
     }
 
     static boolean replaceUser(SQLiteDatabase Write, UserBean entity, ContentValues values) {
-        if(entity==null){
+        if (entity == null) {
             return false;
         }
         values.clear();
@@ -121,6 +145,10 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Location, entity.getLocation());
         values.put(COLUMN_NAME_Birthday, entity.getBirthday());
         values.put(COLUMN_NAME_Sex, entity.getSex());
+        values.put(COLUMN_NAME_Email, entity.getEmail());
+        values.put(COLUMN_NAME_Profession, entity.getProfession());
+        values.put(COLUMN_NAME_School, entity.getSchool());
+        values.put(COLUMN_NAME_Age, entity.getAge());
         return Write.replace(TABLE_NAME, null, values) > 0;
     }
 }

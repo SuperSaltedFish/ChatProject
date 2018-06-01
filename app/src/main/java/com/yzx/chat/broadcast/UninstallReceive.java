@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 
 import java.io.File;
 
@@ -18,7 +18,7 @@ public class UninstallReceive extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
             Toast.makeText(context, "有应用被替换", Toast.LENGTH_LONG).show();
-            deleteDirWithFile(new File(DirectoryManager.PUBLIC_DATA_BASE_PATH));
+            deleteDirWithFile(new File(DirectoryHelper.PUBLIC_DATA_BASE_PATH));
 
         }
     }

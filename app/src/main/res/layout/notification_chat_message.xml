@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ChatMessageNotification_mIvAvatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/temp_head_image" />
+
+    <ImageView
+        android:id="@+id/ChatMessageNotification_mIvAppIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_conversation" />
+
+    <TextView
+        android:id="@+id/ChatMessageNotification_mTvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/ChatMessageNotification_mIvAppIcon"
+        android:text="@string/app_name"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/ChatMessageNotification_mTvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ChatMessageNotification_mIvAppIcon"
+        android:layout_alignParentTop="true"
+        android:layout_alignTop="@id/ChatMessageNotification_mIvAppIcon"
+        android:layout_toEndOf="@id/ChatMessageNotification_mTvAppName"
+        android:text="12:36"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/ChatMessageNotification_mIvAppIcon"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/ChatMessageNotification_mTvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:text="叶智星"
+            android:textColor="@color/textPrimaryColorBlack" />
+
+        <TextView
+            android:id="@+id/ChatMessageNotification_mTvContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:text="我就是一条信息来的"
+            android:textColor="@color/textPrimaryColorBlack" />
+    </LinearLayout>
+
+
+</RelativeLayout>

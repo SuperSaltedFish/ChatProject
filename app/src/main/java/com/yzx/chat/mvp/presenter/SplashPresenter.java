@@ -14,7 +14,7 @@ import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.network.chat.UserManager;
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
@@ -88,6 +88,6 @@ public class SplashPresenter implements SplashContract.Presenter {
 
 
     private void initDirectory() {
-        DirectoryManager.initUserDirectory(IMClient.getInstance().userManager().getUserID());
+        DirectoryHelper.initUserDirectory(IMClient.getInstance().userManager().getUserID());
     }
 }

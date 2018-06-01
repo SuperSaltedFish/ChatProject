@@ -1,151 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:overScrollMode="never"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".mvp.view.activity.StrangerProfileActivity">
 
-    <LinearLayout
+
+    <EditText
+        android:id="@+id/StrangerProfileActivity_mEtReason"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/bg_edit_dashed_round"
+        android:gravity="start|top"
+        android:hint="@string/StrangerProfileActivity_VerifyContentHint"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/StrangerProfileActivity_mDivider_1"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@color/dividerColorBlack"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mEtReason"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/StrangerProfileActivity_mDivider_2"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginBottom="36dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@color/dividerColorBlack"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/StrangerProfileActivity_mIvSexIcon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/selector_src_sex"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
+
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvUserInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
+        app:layout_constraintStart_toEndOf="@id/StrangerProfileActivity_mIvSexIcon"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
+
+    <CheckBox
+        android:id="@+id/StrangerProfileActivity_mCbAllowViewMoment"
+        android:layout_width="28dp"
+        android:layout_height="24dp"
+        android:checked="true"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
+        app:layout_constraintEnd_toStartOf="@id/StrangerProfileActivity_mTvAllowViewMomentHint"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
+
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvAllowViewMomentHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:includeFontPadding="false"
+        android:text="@string/StrangerProfileActivity_AllowViewMoment"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
+
+    <Button
+        android:id="@+id/StrangerProfileActivity_mBtnConfirm"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/radius_btn_20dp"
+        android:text="@string/StrangerProfileActivity_RequestAddContact"
+        android:textColor="@android:color/white"
+        android:textSize="13dp"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <View
+        android:id="@+id/StrangerProfileActivity_mDivider_3"
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@color/dividerColorBlack"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mBtnConfirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvSignature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical">
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:maxLines="2"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="20dp"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mTvSignature"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <android.support.constraint.ConstraintLayout
+    <ImageView
+        android:id="@+id/StrangerProfileActivity_mIvPicture"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mTvNickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/Default_mToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@color/colorPrimary"
-            android:paddingBottom="16dp">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/Default_mToolbar"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:popupTheme="@style/ToolbarPopupTheme"
-                app:theme="@style/ToolbarTheme"
-                app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+            android:layout_height="48dp"
+            android:elevation="0dp"
+            app:theme="@style/ToolbarTheme"
+            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+    </FrameLayout>
 
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/StrangerProfileActivity_mIvAvatar"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:background="@android:color/white"
-                android:elevation="3dp"
-                android:padding="2dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
-
-            <TextView
-                android:id="@+id/StrangerProfileActivity_mTvNickname"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:textColor="@color/textColorWhite"
-                android:textSize="22sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mIvAvatar" />
-
-            <TextView
-                android:id="@+id/StrangerProfileActivity_mTvExplain"
-                android:layout_width="0dp"
-                android:layout_height="16dp"
-                android:gravity="center"
-                android:paddingEnd="80dp"
-                android:paddingStart="80dp"
-                android:textColor="@color/textColorWhite"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvNickname" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <include layout="@layout/include_profile" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center_vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:text="@string/StrangerProfile_VerifyTitle"
-            android:textSize="12sp" />
-
-        <EditText
-            android:id="@+id/StrangerProfileActivity_mEtVerifyContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
-            android:background="#f0f0f0"
-            android:gravity="start|top"
-            android:hint="@string/StrangerProfileActivity_VerifyContentHint"
-            android:minHeight="80dp"
-            android:padding="8dp"
-            android:textSize="15sp" />
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
-
-            <TextView
-                android:id="@+id/StrangerProfileActivity_mTvLabelRemind"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/StrangerProfile_SetPermissionTitle"
-                android:textColor="@color/textPrimaryColorBlack"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mTvContentRemind"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed" />
-
-            <TextView
-                android:id="@+id/StrangerProfileActivity_mTvContentRemind"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/StrangerProfile_SetPermissionContent"
-                android:textSize="13sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvLabelRemind" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1px"
-                android:background="@color/dividerColorBlack"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Switch
-                android:id="@+id/StrangerProfileActivity_mSwitchRemind"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
-    </LinearLayout>
-
-</ScrollView>
+</android.support.constraint.ConstraintLayout>
 

@@ -25,12 +25,12 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        ImageView imageView = findViewById(R.id.sss);
-        GlideApp.with(this)
-                .load(R.drawable.src_sex_woman)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transforms(new GlideSemicircleTransform(AndroidUtil.dip2px(40), Color.WHITE))
-                .into(imageView);
+//        ImageView imageView = findViewById(R.id.StrangerProfileActivity_mIvPicture);
+//        GlideApp.with(this)
+//                .load(R.drawable.src_sex_man)
+//                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .transforms(new GlideSemicircleTransform(AndroidUtil.dip2px(40), Color.WHITE))
+//                .into(imageView);
     }
 
     @Override

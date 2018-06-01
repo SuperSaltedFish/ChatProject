@@ -1,17 +1,14 @@
 package com.yzx.chat.mvp.view.fragment;
 
 
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.yzx.chat.R;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.MomentsAdapter;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 
@@ -46,7 +43,7 @@ public class MomentsFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int)AndroidUtil.dip2px(12),SpacesItemDecoration.VERTICAL,true,true));
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12), SpacesItemDecoration.VERTICAL, true, true));
     }
 
     @Override

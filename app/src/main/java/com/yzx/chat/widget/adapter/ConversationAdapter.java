@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.DateUtil;
-import com.yzx.chat.util.IMMessageUtil;
+import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.widget.view.BadgeImageView;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
     public void bindDataToViewHolder(ConversationHolder holder, int position) {
         Conversation conversation = mConversationList.get(position);
         holder.mTvName.setText(conversation.getConversationTitle());
-        holder.mTvLastRecord.setText(IMMessageUtil.getMessageDigest(conversation));
+        holder.mTvLastRecord.setText(IMMessageHelper.getMessageDigest(conversation));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
 
         String avatarUri = conversation.getPortraitUrl();

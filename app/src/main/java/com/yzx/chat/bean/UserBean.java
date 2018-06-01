@@ -18,7 +18,11 @@ public class UserBean implements Parcelable, Cloneable {
     private String signature;
     private String location;
     private String birthday;
+    private String email;
+    private String profession;
+    private String school;
     private int sex;
+    private int age;
 
     public boolean isEmpty() {
         return (TextUtils.isEmpty(userID) || TextUtils.isEmpty(telephone) || TextUtils.isEmpty(nickname));
@@ -102,12 +106,44 @@ public class UserBean implements Parcelable, Cloneable {
         this.birthday = birthday;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
     public int getSex() {
         return sex;
     }
 
     public void setSex(int sex) {
         this.sex = sex;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
 
@@ -125,7 +161,11 @@ public class UserBean implements Parcelable, Cloneable {
         dest.writeString(this.signature);
         dest.writeString(this.location);
         dest.writeString(this.birthday);
+        dest.writeString(this.email);
+        dest.writeString(this.profession);
+        dest.writeString(this.school);
         dest.writeInt(this.sex);
+        dest.writeInt(this.age);
     }
 
     public UserBean() {
@@ -139,7 +179,11 @@ public class UserBean implements Parcelable, Cloneable {
         this.signature = in.readString();
         this.location = in.readString();
         this.birthday = in.readString();
+        this.email = in.readString();
+        this.profession = in.readString();
+        this.school = in.readString();
         this.sex = in.readInt();
+        this.age = in.readInt();
     }
 
     public static final Creator<UserBean> CREATOR = new Creator<UserBean>() {

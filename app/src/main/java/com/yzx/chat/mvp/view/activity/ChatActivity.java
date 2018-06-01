@@ -18,7 +18,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -37,7 +36,7 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.ChatContract;
 import com.yzx.chat.mvp.presenter.ChatPresenter;
-import com.yzx.chat.tool.DirectoryManager;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.EmojiUtil;
@@ -124,13 +123,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     protected void onResume() {
         super.onResume();
-        mEtContent.clearFocus();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         VoicePlayer.getInstance(this).stop();
+        mEtContent.clearFocus();
+        hideSoftKeyboard();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void onBackPressed() {
         if (isShowMoreInput()) {
-            hintMoreInput();
+            hideMoreInput();
             return;
         }
         mPresenter.saveMessageDraft(mEtContent.getText().toString());
@@ -305,7 +305,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                     if (isShowMoreInput()) {
-                        hintMoreInput();
+                        hideMoreInput();
                     }
                 }
             }
@@ -474,7 +474,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     SharePreferenceManager.getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
                 }
                 if (isShowMoreInput()) {
-                    hintMoreInput();
+                    hideMoreInput();
                 }
                 isOpenedKeyBoard = true;
                 mRvChatView.scrollToPosition(0);
@@ -487,7 +487,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     showMoreInput(isShowMoreTypeAfterCloseKeyBoard);
                     isShowMoreTypeAfterCloseKeyBoard = MORE_INPUT_TYPE_NONE;
                 } else {
-                    hintMoreInput();
+                    hideMoreInput();
                 }
                 isOpenedKeyBoard = false;
             }
@@ -564,7 +564,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (mVoiceRecorder.getAmplitudeChangeHandler() == null) {
                     mVoiceRecorder.setAmplitudeChangeHandler(new Handler(mAmplitudeView.getLooper()));
                 }
-                mVoiceRecorder.setSavePath(DirectoryManager.getPrivateUserVoiceRecorderPath() + "a.amr");
+                mVoiceRecorder.setSavePath(DirectoryHelper.getPrivateUserVoiceRecorderPath() + "a.amr");
                 mVoiceRecorder.prepare();
                 mVoiceRecorder.start();
                 mVoiceRecorderDownTimer.start();
@@ -626,13 +626,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
         if (isShowMoreInput()) {
             if (mEmotionPanelLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_EMOTICONS) {
-                hintMoreInput();
+                hideMoreInput();
             } else if (mLlRecorderLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_MICROPHONE) {
                 showSoftKeyboard(mEtContent);
             } else if (mClOtherPanelLayout.getVisibility() == View.VISIBLE && mode == MORE_INPUT_TYPE_OTHER) {
-                hintMoreInput();
+                hideMoreInput();
             } else {
-                hintMoreInput();
+                hideMoreInput();
                 showMoreInput(mode);
             }
         } else if (isOpenedKeyBoard) {
@@ -649,7 +649,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 mClOtherPanelLayout.getVisibility() == View.VISIBLE;
     }
 
-    private void hintMoreInput() {
+    private void hideMoreInput() {
         mEmotionPanelLayout.setVisibility(View.GONE);
         mLlRecorderLayout.setVisibility(View.GONE);
         mClOtherPanelLayout.setVisibility(View.GONE);
