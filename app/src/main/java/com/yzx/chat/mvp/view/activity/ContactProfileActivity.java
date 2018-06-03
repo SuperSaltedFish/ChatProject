@@ -113,11 +113,8 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
-            Conversation conversation = new Conversation();
-            conversation.setConversationType(Conversation.ConversationType.PRIVATE);
-            conversation.setTargetId(mContactID);
-            conversation.setConversationTitle(mPresenter.getContact().getName());
-            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, mContactID);
+            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.PRIVATE.getValue());
             startActivity(intent);
             finish();
         }

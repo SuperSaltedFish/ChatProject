@@ -123,7 +123,7 @@ public class AndroidUtil {
         return (T) sActivityInstanceMap.get(activityClass);
     }
 
-    public static void finishActivityInStackAbove(Class<? extends Activity> activityClass) {
+    public static void finishActivitiesInStackAbove(Class<? extends Activity> activityClass) {
         int index = sActivityStack.indexOf(activityClass);
         if (index < 0) {
             return;

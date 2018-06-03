@@ -59,48 +59,67 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void detachView() {
+        reset();
+        mChatView = null;
+        mHandler = null;
+    }
+
+    @Override
+    public Conversation init(int ConversationTypeCode, String conversationID) {
+        reset();
+        Conversation.ConversationType type = Conversation.ConversationType.setValue(ConversationTypeCode);
+        Conversation conversation = mIMClient.conversationManager().getConversation(type, conversationID);
+        if (conversation == null) {
+            conversation = new Conversation();
+        }
+        switch (type) {
+            case PRIVATE:
+                ContactBean contact = mIMClient.contactManager().getContact(conversationID);
+                if (contact != null) {
+                    conversation.setConversationTitle(contact.getName());
+                }
+                break;
+            case GROUP:
+                GroupBean group = mIMClient.groupManager().getGroup(conversationID);
+                if (group != null) {
+                    conversation.setConversationTitle(group.getNameAndMemberNumber());
+                }
+                break;
+            default:
+                conversation = null;
+
+        }
+        if (conversation != null) {
+            conversation.setTargetId(conversationID);
+            conversation.setConversationType(type);
+
+            mConversation = conversation;
+            sConversationID = mConversation.getTargetId();
+            mChatView.clearMessage();
+            mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
+            mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
+            if (mConversation.getUnreadMessageCount() != 0) {
+                mIMClient.conversationManager().clearConversationUnreadStatus(mConversation);
+            }
+            List<Message> messageList = mIMClient.chatManager().getHistoryMessages(mConversation, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
+            mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
+            mChatView.enableLoadMoreHint(mHasMoreMessage);
+            mChatView.addNewMessage(messageList);
+        }
+
+        return conversation;
+    }
+
+    private void reset() {
         mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mIMClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
-        mChatView = null;
-        mHandler = null;
-        sConversationID = null;
         mConversation = null;
-    }
-
-    @Override
-    public void init(Conversation conversation) {
-        mHandler.removeCallbacksAndMessages(null);
-        mConversation = conversation;
-        sConversationID = mConversation.getTargetId();
+        sConversationID = null;
         mHasMoreMessage = true;
         mIsConversationStateChange = false;
         mIsLoadingMore = false;
-
-        mChatView.clearMessage();
-        mChatView.enableLoadMoreHint(false);
-
-        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.chatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
-        mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
-        mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
-
-
-        if (mConversation.getUnreadMessageCount() != 0) {
-            mIMClient.conversationManager().clearConversationUnreadStatus(mConversation);
-        }
-        List<Message> messageList = mIMClient.chatManager().getHistoryMessages(mConversation, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
-        if (messageList == null || messageList.size() == 0) {
-            mHasMoreMessage = false;
-            return;
-        }
-
-        if (messageList.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
-            mHasMoreMessage = false;
-        }
-        mChatView.enableLoadMoreHint(mHasMoreMessage);
-        mChatView.addNewMessage(messageList);
     }
 
     @Override
@@ -215,7 +234,6 @@ public class ChatPresenter implements ChatContract.Presenter {
     private void sendMessage(Message message) {
         mIMClient.chatManager().sendMessage(message);
     }
-
 
     private void loadNewComplete(final Message message) {
         mHandler.post(new Runnable() {

@@ -18,7 +18,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
@@ -32,8 +31,11 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
+import com.yzx.chat.mvp.view.activity.ChatActivity;
+import com.yzx.chat.mvp.view.activity.HomeActivity;
 import com.yzx.chat.util.AndroidUtil;
 
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
 
@@ -104,7 +106,7 @@ public class NotificationHelper {
         appContext.registerReceiver(mEnterDetailsReceiver, new IntentFilter(ACTION_ENTER_DETAILS));
     }
 
-    public void showPrivateMessageNotification(Message message, ContactBean contact) {
+    public void showPrivateMessageNotification(final Message message, ContactBean contact) {
         final String conversationID = contact.getUserProfile().getUserID();
         final String title = contact.getName();
         final String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -114,13 +116,13 @@ public class NotificationHelper {
         final long time = message.getSentTime();
         int bitmapSize = (int) AndroidUtil.dip2px(56);
 
-        SimpleTarget<Bitmap> bitmapTarget = new SimpleTarget<Bitmap>(bitmapSize,bitmapSize) {
+        SimpleTarget<Bitmap> bitmapTarget = new SimpleTarget<Bitmap>(bitmapSize, bitmapSize) {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 Intent recycleIntent = new Intent(ACTION_RECYCLE);
                 recycleIntent.putExtra(ACTION_RECYCLE, notificationID);
                 Intent enterDetailsIntent = new Intent(ACTION_ENTER_DETAILS);
-                enterDetailsIntent.putExtra(ACTION_ENTER_DETAILS, conversationID);
+                enterDetailsIntent.putExtra(ACTION_ENTER_DETAILS, message);
                 mChatMessageTypeBuilder
                         .setContentTitle(title)
                         .setContentText(content)
@@ -170,6 +172,21 @@ public class NotificationHelper {
     private final BroadcastReceiver mEnterDetailsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Message message = intent.getParcelableExtra(ACTION_RECYCLE);
+            if (message != null) {
+                String conversationID = message.getTargetId();
+                Conversation.ConversationType type = message.getConversationType();
+                HomeActivity homeActivity = AndroidUtil.getLaunchActivity(HomeActivity.class);
+                if (!TextUtils.isEmpty(conversationID) && homeActivity != null) {
+                    if (AndroidUtil.getStackTopActivityClass() != ChatActivity.class) {
+                        AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
+                    }
+                    Intent startActivityIntent = new Intent(homeActivity, ChatActivity.class);
+                    startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
+                    startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, type.getValue());
+                    homeActivity.startActivity(startActivityIntent);
+                }
+            }
 
         }
     };

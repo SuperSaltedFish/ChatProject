@@ -80,7 +80,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 3;
     private static final int REQUEST_PERMISSION_CAMERA = 4;
 
-    public static final String INTENT_EXTRA_CONVERSATION = "Conversation";
+    public static final String INTENT_EXTRA_CONVERSATION_ID = "ConversationID";
+    public static final String INTENT_EXTRA_CONVERSATION_TYPE_CODE = "ConversationTypeCode";
 
     private RecyclerView mRvChatView;
     private ImageSwitcher mIsvSendMessage;
@@ -272,22 +273,23 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setData(Intent intent) {
-        Conversation conversation = intent.getParcelableExtra(INTENT_EXTRA_CONVERSATION);
+        String conversationID = intent.getStringExtra(INTENT_EXTRA_CONVERSATION_ID);
+        int conversationTypeCode = intent.getIntExtra(INTENT_EXTRA_CONVERSATION_TYPE_CODE,-1);
+        if (TextUtils.isEmpty(conversationID)||conversationTypeCode<0) {
+            finish();
+            return;
+        }
+        if (mConversation != null && mConversation.getTargetId().equals(conversationID)) {
+            return;
+        }
+        Conversation conversation = mPresenter.init(conversationTypeCode,conversationID);
         if (conversation == null) {
             finish();
             return;
         }
-        if (mConversation != null && mConversation.getTargetId().equals(conversation.getTargetId())) {
-            return;
-        }
         mConversation = conversation;
         setTitle(mConversation.getConversationTitle());
-        mPresenter.init(mConversation);
-        String draft = mConversation.getDraft();
-        if (!TextUtils.isEmpty(draft)) {
-            mEtContent.setText(draft);
-        }
-
+        mEtContent.setText( mConversation.getDraft());
     }
 
     private void setChatRecyclerViewAndAdapter() {

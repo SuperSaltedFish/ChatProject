@@ -153,11 +153,15 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                 @Override
                 public void run() {
                     Intent intent = new Intent(mContext, ChatActivity.class);
+                    Conversation conversation;
                     if (!mAdapter.isHasHeaderView()) {
-                        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position));
+                        conversation = mConversationList.get(position);
+                        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, mConversationList.get(position));
                     } else if (position != 0) {
-                        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, mConversationList.get(position - 1));
+                        conversation = mConversationList.get(position-1);
                     } else return;
+                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID,conversation.getTargetId());
+                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE,conversation.getConversationType().getValue());
                     startActivity(intent);
                 }
             });

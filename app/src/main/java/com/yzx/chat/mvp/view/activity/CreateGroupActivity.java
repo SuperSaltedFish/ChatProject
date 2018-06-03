@@ -280,13 +280,10 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     public void launchChatActivity(GroupBean group) {
         mProgressDialog.dismiss();
         Intent intent = new Intent(this, ChatActivity.class);
-        Conversation conversation = new Conversation();
-        conversation.setConversationType(Conversation.ConversationType.GROUP);
-        conversation.setTargetId(group.getGroupID());
-        conversation.setConversationTitle(group.getName());
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.GROUP.getValue());
         startActivity(intent);
-        AndroidUtil.finishActivityInStackAbove(HomeActivity.class);
+        AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
 
     }
 

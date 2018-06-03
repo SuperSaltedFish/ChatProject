@@ -37,7 +37,7 @@ public class ChatContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void init(Conversation conversation);
+        Conversation init(int ConversationTypeCode, String conversationID);
 
         void resendMessage(Message message);
 

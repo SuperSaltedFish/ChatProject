@@ -164,12 +164,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(GroupProfileActivity.this, ChatActivity.class);
-            Conversation conversation = new Conversation();
-            conversation.setConversationType(Conversation.ConversationType.GROUP);
             GroupBean group = mPresenter.getGroup();
-            conversation.setTargetId(group.getGroupID());
-            conversation.setConversationTitle(group.getName());
-            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION, conversation);
+            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
+            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.GROUP.getValue());
             startActivity(intent);
             finish();
         }
@@ -277,9 +274,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private final View.OnClickListener mOnQRCodeClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(GroupProfileActivity.this,MyQRCodeActivity.class);
-            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_QR_TYPE,MyQRCodeActivity.QR_CODE_TYPE_GROUP);
-            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_GROUP_ID,mGroupID);
+            Intent intent = new Intent(GroupProfileActivity.this, MyQRCodeActivity.class);
+            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_QR_TYPE, MyQRCodeActivity.QR_CODE_TYPE_GROUP);
+            intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_GROUP_ID, mGroupID);
             startActivity(intent);
         }
     };
