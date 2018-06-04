@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -16,6 +17,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.mvp.contract.ContactProfileContract;
 import com.yzx.chat.mvp.presenter.ContactProfilePresenter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactProfilePagerAdapter;
@@ -92,9 +94,6 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
                 startActivityForResult(intent, 0);
                 break;
             case R.id.ContactMenu_DeleteContact:
-                if (!mProgressDialog.isShowing()) {
-                    mProgressDialog.show();
-                }
                 mPresenter.deleteContact();
                 break;
             default:
@@ -105,7 +104,6 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
     @Override
     protected void onDestroy() {
-        mProgressDialog.dismiss();
         super.onDestroy();
     }
 
@@ -134,13 +132,29 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     @Override
+    public void finishChatActivity() {
+        Activity activity = AndroidUtil.getLaunchActivity(ChatActivity.class);
+        if (activity != null) {
+            activity.finish();
+        }
+    }
+
+    @Override
     public void showError(String error) {
-        mProgressDialog.dismiss();
         showToast(error);
     }
 
     @Override
     public void goBack() {
         finish();
+    }
+
+    @Override
+    public void enableProgressDialog(boolean isEnable) {
+        if (isEnable) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
     }
 }

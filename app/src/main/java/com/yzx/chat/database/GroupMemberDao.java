@@ -19,12 +19,6 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
     private static final String COLUMN_NAME_GroupID = "GroupID";
     private static final String COLUMN_NAME_Alias = "Alias";
 
-
-    private static final int COLUMN_INDEX_UserID = 0;
-    private static final int COLUMN_INDEX_GroupID = 1;
-    private static final int COLUMN_INDEX_Alias = 2;
-
-
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                     + COLUMN_NAME_UserID + " TEXT NOT NULL , "

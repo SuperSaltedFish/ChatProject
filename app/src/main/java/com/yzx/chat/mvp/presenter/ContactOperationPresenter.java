@@ -8,7 +8,7 @@ import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.mvp.contract.ContactOperationContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.util.AsyncResult;
+import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.NetworkAsyncTask;
@@ -27,7 +27,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     private ContactOperationContract.View mContactOperationContractView;
     private LoadAllContactOperationTask mLoadAllContactOperationTask;
     private List<ContactOperationBean> mContactOperationList;
-    private AcceptContactResult mAcceptContactResult;
     private IMClient mIMClient;
     private Handler mHandler;
 
@@ -43,7 +42,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @Override
     public void detachView() {
         AsyncUtil.cancelTask(mLoadAllContactOperationTask);
-        AsyncUtil.cancelResult(mAcceptContactResult);
         mIMClient.contactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
@@ -59,10 +57,19 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void acceptContactRequest(final ContactOperationBean contactOperation) {
-        AsyncUtil.cancelResult(mAcceptContactResult);
         mContactOperationContractView.enableProgressDialog(true);
-        mAcceptContactResult = new AcceptContactResult(this);
-        mIMClient.contactManager().acceptContact(contactOperation, mAcceptContactResult);
+        mIMClient.contactManager().acceptContact(contactOperation, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                mContactOperationContractView.enableProgressDialog(false);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                mContactOperationContractView.showError(error);
+                mContactOperationContractView.enableProgressDialog(false);
+            }
+        });
     }
 
     @Override
@@ -120,7 +127,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         }
 
         @Override
-        public void onContactOperationDelete(final ContactOperationBean message) {
+        public void onContactOperationRemove(final ContactOperationBean message) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -132,15 +139,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
             });
         }
     };
-
-    public void acceptContactRequestSuccess() {
-        mContactOperationContractView.enableProgressDialog(false);
-    }
-
-    public void acceptContactRequestFailure(String error) {
-        mContactOperationContractView.showError(error);
-        mContactOperationContractView.enableProgressDialog(false);
-    }
 
 
     private static class LoadAllContactOperationTask extends NetworkAsyncTask<ContactOperationPresenter, List<ContactOperationBean>, DiffUtil.DiffResult> {
@@ -177,22 +175,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     }
 
-    private static class AcceptContactResult extends AsyncResult<ContactOperationPresenter, Boolean> {
-
-        public AcceptContactResult(ContactOperationPresenter dependent) {
-            super(dependent);
-        }
-
-        @Override
-        protected void onSuccessResult(ContactOperationPresenter dependent, Boolean result) {
-            dependent.acceptContactRequestSuccess();
-        }
-
-        @Override
-        protected void onFailureResult(ContactOperationPresenter dependent, String error) {
-            dependent.acceptContactRequestFailure(error);
-        }
-    }
 
 
 }

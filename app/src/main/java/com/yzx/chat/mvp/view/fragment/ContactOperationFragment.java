@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.fragment;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
@@ -16,6 +17,7 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.mvp.contract.ContactOperationContract;
 import com.yzx.chat.mvp.presenter.ContactOperationPresenter;
+import com.yzx.chat.mvp.view.activity.StrangerProfileActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactOperationAdapter;
@@ -66,7 +68,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
@@ -128,6 +130,13 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         @Override
         public void onAcceptContactRequest(int position) {
             mPresenter.acceptContactRequest(mContactOperationList.get(position));
+        }
+
+        @Override
+        public void enterDetails(int position) {
+            Intent intent = new Intent(mContext, StrangerProfileActivity.class);
+            intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, mContactOperationList.get(position));
+            startActivity(intent);
         }
     };
 

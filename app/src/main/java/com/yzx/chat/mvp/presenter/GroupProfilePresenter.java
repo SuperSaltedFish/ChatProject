@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.yzx.chat.R;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.mvp.contract.GroupProfileContract;
@@ -11,6 +12,7 @@ import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 
 import io.rong.imlib.model.Conversation;
@@ -85,9 +87,15 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         return mGroupManager.getGroup(mConversation.getTargetId());
     }
 
+    @Override
+    public String getCurrentUserID() {
+        return IMClient.getInstance().userManager().getUserID();
+    }
+
 
     @Override
     public void updateGroupName(final String newName) {
+        mGroupProfileView.enableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
         mGroupManager.renameGroup(mConversation.getTargetId(), newName, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
@@ -95,6 +103,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                     @Override
                     public void run() {
                         mGroupProfileView.showNewGroupName(newName);
+                        mGroupProfileView.enableProgressDialog(false, null);
                     }
                 });
             }
@@ -104,6 +113,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mGroupProfileView.enableProgressDialog(false, null);
                         mGroupProfileView.showError(error);
                     }
                 });
@@ -113,12 +123,14 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void updateGroupNotice(final String newNotice) {
+        mGroupProfileView.enableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
         mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mGroupProfileView.enableProgressDialog(false, null);
                         mGroupProfileView.showNewGroupNotice(newNotice);
                     }
                 });
@@ -130,6 +142,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mGroupProfileView.enableProgressDialog(false, null);
                         mGroupProfileView.showError(error);
                     }
                 });
@@ -139,12 +152,14 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void updateMyGroupAlias(final String newAlias) {
+        mGroupProfileView.enableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
         mGroupManager.updateMemberAlias(mConversation.getTargetId(), IMClient.getInstance().userManager().getUserID(), newAlias, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mGroupProfileView.enableProgressDialog(false, null);
                         mGroupProfileView.showNewMyAlias(newAlias);
                     }
                 });
@@ -156,6 +171,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mGroupProfileView.enableProgressDialog(false, null);
                         mGroupProfileView.showError(error);
                     }
                 });
@@ -165,14 +181,20 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void quitGroup() {
+        mGroupProfileView.enableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Quit));
         mGroupManager.quitGroup(mConversation.getTargetId(), new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
+                if (mConversation.getTargetId().equals(ChatPresenter.sConversationID)) {
+                    mGroupProfileView.finishChatActivity();
+                }
+                mGroupProfileView.enableProgressDialog(false, null);
                 mGroupProfileView.goBack();
             }
 
             @Override
             public void onFailure(String error) {
+                mGroupProfileView.enableProgressDialog(false, null);
                 mGroupProfileView.showError(error);
             }
         });

@@ -1,8 +1,10 @@
 package com.yzx.chat.mvp.presenter;
 
+import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.StrangerProfileContract;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.util.AsyncResult;
 import com.yzx.chat.util.AsyncUtil;
 
@@ -15,7 +17,6 @@ import com.yzx.chat.util.AsyncUtil;
 public class StrangerProfilePresenter implements StrangerProfileContract.Presenter {
 
     private StrangerProfileContract.View mStrangerProfileView;
-    private RequestContactResult mRequestContactResult;
 
     @Override
     public void attachView(StrangerProfileContract.View view) {
@@ -25,39 +26,33 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void detachView() {
-        AsyncUtil.cancelResult(mRequestContactResult);
         mStrangerProfileView = null;
     }
 
     @Override
     public void requestContact(final UserBean user, final String verifyContent) {
-        AsyncUtil.cancelResult(mRequestContactResult);
-        mRequestContactResult = new RequestContactResult(this);
-        IMClient.getInstance().contactManager().requestContact(user, verifyContent, mRequestContactResult);
+        IMClient.getInstance().contactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
     }
 
-    private void requestComplete() {
-        mStrangerProfileView.goBack();
+    @Override
+    public void acceptContactRequest(ContactOperationBean contactOperation) {
+        mStrangerProfileView.enableProgressDialog(true);
+        IMClient.getInstance().contactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
     }
 
-    private void requestFailure(String error) {
-        mStrangerProfileView.showError(error);
-    }
+    private final ResultCallback mAcceptOrRequestCallback = new ResultCallback<Boolean>() {
 
-    private static class RequestContactResult extends AsyncResult<StrangerProfilePresenter, Boolean> {
-
-        RequestContactResult(StrangerProfilePresenter dependent) {
-            super(dependent);
+        @Override
+        public void onSuccess(Boolean result) {
+            mStrangerProfileView.enableProgressDialog(false);
+            mStrangerProfileView.goBack();
         }
 
         @Override
-        protected void onSuccessResult(StrangerProfilePresenter dependent, Boolean result) {
-            dependent.requestComplete();
+        public void onFailure(String error) {
+            mStrangerProfileView.showError(error);
+            mStrangerProfileView.enableProgressDialog(false);
         }
+    };
 
-        @Override
-        protected void onFailureResult(StrangerProfilePresenter dependent, String error) {
-            dependent.requestFailure(error);
-        }
-    }
 }

@@ -154,7 +154,6 @@
     <string name="EditProfileActivity_LocationLabel">所在地区</string>
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
-    <string name="None">无</string>
     <string name="SignatureEditActivity_Title">修改签名</string>
     <string name="SignatureEditActivity_SignatureContentHint">一句话介绍自己</string>
     <string name="EditProfileActivity_SignatureLabel">个人签名</string>
@@ -224,5 +223,7 @@
     <string name="unit_age">岁</string>
     <string name="StrangerProfileActivity_AllowViewMoment">允许查看我的动态</string>
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
+    <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>
+    <string name="None">无</string>
 
 </resources>

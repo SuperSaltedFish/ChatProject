@@ -52,7 +52,7 @@ public class ContactManager {
     public static final String CONTACT_OPERATION_ACCEPT_ACTIVE = "ActiveAccept";//主动同意添加
     public static final String CONTACT_OPERATION_REFUSED_ACTIVE = "ActiveRefused";//主动拒绝添加
 
-    private static final Set<String> CONTACT_OPERATION_SET =  new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
+    private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
 
     private Map<String, ContactBean> mContactsMap;
     private IMClient.SubManagerCallback mSubManagerCallback;
@@ -105,7 +105,7 @@ public class ContactManager {
         }
         List<ContactBean> contacts = new ArrayList<>(mContactsMap.size() + 4);
         Parcel parcel;
-        for(ContactBean contact:mContactsMap.values()){
+        for (ContactBean contact : mContactsMap.values()) {
             parcel = Parcel.obtain();
             contact.writeToParcel(parcel, 0);
             parcel.setDataPosition(0);
@@ -258,6 +258,7 @@ public class ContactManager {
                 if (resultCallback != null) {
                     resultCallback.onSuccess(success);
                 }
+                mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE, contact.getUserProfile().getUserID());
             }
 
             @Override
@@ -351,7 +352,7 @@ public class ContactManager {
             public void run() {
                 if (mContactOperationDao.delete(contactMessage)) {
                     for (OnContactOperationListener contactListener : mContactOperationListeners) {
-                        contactListener.onContactOperationDelete(contactMessage);
+                        contactListener.onContactOperationRemove(contactMessage);
                     }
                     updateContactUnreadCount();
                 } else {
@@ -436,7 +437,6 @@ public class ContactManager {
 
     void onReceiveContactNotificationMessage(Message message) {
         ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
-        ContactOperationBean contactOperation = new ContactOperationBean();
         String operation = contactMessage.getOperation();
         if (!CONTACT_OPERATION_SET.contains(operation)) {
             LogUtil.e("unknown contact operation:" + operation);
@@ -466,7 +466,7 @@ public class ContactManager {
             LogUtil.e(" ContactOperation : userProfile is empty");
             return;
         }
-
+        ContactOperationBean contactOperation = new ContactOperationBean();
         contactOperation.setUser(extra.userProfile);
         contactOperation.setUserID(contactMessage.getSourceUserId());
         contactOperation.setReason(contactMessage.getMessage());
@@ -494,12 +494,12 @@ public class ContactManager {
     }
 
 
-     static boolean update(ArrayList<ContactBean> contacts, AbstractDao.ReadWriteHelper readWriteHelper){
+    static boolean update(ArrayList<ContactBean> contacts, AbstractDao.ReadWriteHelper readWriteHelper) {
         ContactDao contactDao = new ContactDao(readWriteHelper);
         contactDao.cleanTable();
         if (contactDao.insertAllContacts(contacts)) {
             return true;
-        }else {
+        } else {
             LogUtil.e("updateAllContacts fail");
             return false;
         }
@@ -511,7 +511,7 @@ public class ContactManager {
 
         void onContactOperationUpdate(ContactOperationBean message);
 
-        void onContactOperationDelete(ContactOperationBean message);
+        void onContactOperationRemove(ContactOperationBean message);
     }
 
     public interface OnContactOperationUnreadCountChangeListener {

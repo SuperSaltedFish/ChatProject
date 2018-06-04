@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.StrangerProfileContract;
@@ -33,9 +34,9 @@ import com.yzx.chat.widget.view.ProgressDialog;
 public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileContract.Presenter> implements StrangerProfileContract.View {
 
     public static final String INTENT_EXTRA_USER = "User";
+    public static final String INTENT_EXTRA_CONTENT_OPERATION = "ContactOperation";
 
     private EditText mEtReason;
-    private UserBean mUserBean;
     private ProgressDialog mProgressDialog;
     private TextView mTvNickname;
     private TextView mTvSignature;
@@ -43,6 +44,9 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private ImageView mIvSexIcon;
     private ImageView mIvPicture;
     private Button mBtnConfirm;
+
+    private UserBean mUserBean;
+    private ContactOperationBean mContactOperationBean;
 
     @Override
     protected int getLayoutID() {
@@ -76,7 +80,20 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     private void setData() {
         mUserBean = getIntent().getParcelableExtra(INTENT_EXTRA_USER);
-        if (mUserBean == null) {
+        mContactOperationBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTENT_OPERATION);
+        if (mUserBean != null && mContactOperationBean == null) {
+            mEtReason.setEnabled(true);
+            mBtnConfirm.setText(R.string.StrangerProfileActivity_RequestAddContact);
+        } else if (mUserBean == null && mContactOperationBean != null) {
+            mUserBean = mContactOperationBean.getUser();
+            if(TextUtils.isEmpty(mContactOperationBean.getReason())){
+                mEtReason.setText(R.string.None);
+            }else {
+                mEtReason.setText(mContactOperationBean.getReason());
+            }
+            mEtReason.setEnabled(false);
+            mBtnConfirm.setText(R.string.StrangerProfileActivity_AcceptAdd);
+        } else {
             finish();
             return;
         }
@@ -110,10 +127,11 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (!mProgressDialog.isShowing()) {
-                mProgressDialog.show();
+            if (mContactOperationBean != null) {
+                mPresenter.acceptContactRequest(mContactOperationBean);
+            } else if (mUserBean != null) {
+                mPresenter.requestContact(mUserBean, mEtReason.getText().toString());
             }
-            mPresenter.requestContact(mUserBean, mEtReason.getText().toString());
         }
     };
 
@@ -124,13 +142,20 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     @Override
     public void goBack() {
-        mProgressDialog.dismiss();
         finish();
     }
 
     @Override
     public void showError(String error) {
-        mProgressDialog.dismiss();
         showToast(error);
+    }
+
+    @Override
+    public void enableProgressDialog(boolean isEnable) {
+        if (isEnable) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
     }
 }

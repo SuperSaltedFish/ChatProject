@@ -2,6 +2,7 @@ package com.yzx.chat.mvp.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.UserBean;
 
 /**
@@ -15,11 +16,14 @@ public class StrangerProfileContract {
     public interface View extends BaseView<Presenter> {
         void goBack();
         void showError(String error);
+        void enableProgressDialog(boolean isEnable);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
 
         void requestContact(UserBean user, String verifyContent);
+
+        void acceptContactRequest(ContactOperationBean contactOperation);
     }
 }

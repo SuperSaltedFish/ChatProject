@@ -27,6 +27,10 @@ public class GroupProfileContract {
 
         void switchRemindState(boolean isOpen);
 
+        void finishChatActivity();
+
+        void enableProgressDialog(boolean isEnable,String hint);
+
         void goBack();
     }
 
@@ -35,6 +39,8 @@ public class GroupProfileContract {
         void init(String groupID);
 
         GroupBean getGroup();
+
+        String getCurrentUserID();
 
         void updateGroupName(String newName);
 

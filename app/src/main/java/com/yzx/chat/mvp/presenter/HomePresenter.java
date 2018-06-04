@@ -3,6 +3,8 @@ package com.yzx.chat.mvp.presenter;
 import android.os.Handler;
 
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.HomeContract;
 import com.yzx.chat.mvp.view.activity.ChatActivity;
 import com.yzx.chat.network.chat.ChatManager;
@@ -33,12 +35,15 @@ public class HomePresenter implements HomeContract.Presenter {
         mIMClient.chatManager().addChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
         mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mIMClient.contactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mIMClient.contactManager().addContactOperationListener(mOnContactOperationListener);
     }
 
     @Override
     public void detachView() {
         mIMClient.chatManager().removeChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
+        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mIMClient.contactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
         mIMClient = null;
@@ -87,10 +92,47 @@ public class HomePresenter implements HomeContract.Presenter {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    ContactBean contact = IMClient.getInstance().contactManager().getContact(message.getTargetId());
-                    if (contact != null) {
-                        NotificationHelper.getInstance().showPrivateMessageNotification(message, contact);
+                    switch (message.getConversationType()) {
+                        case PRIVATE:
+                            ContactBean contact = IMClient.getInstance().contactManager().getContact(message.getTargetId());
+                            if (contact != null) {
+                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact);
+                            }
+                            break;
+                        case GROUP:
+                            GroupBean group = IMClient.getInstance().groupManager().getGroup(message.getTargetId());
+                            if (group != null) {
+                                NotificationHelper.getInstance().showGroupMessageNotification(message, group);
+                            }
+                            break;
                     }
+                }
+            });
+        }
+    };
+
+    private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
+        @Override
+        public void onContactOperationReceive(final ContactOperationBean contactOperation) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationHelper.getInstance().showContactOperationNotification(contactOperation);
+                }
+            });
+        }
+
+        @Override
+        public void onContactOperationUpdate(ContactOperationBean contactOperation) {
+
+        }
+
+        @Override
+        public void onContactOperationRemove(final ContactOperationBean contactOperation) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationHelper.getInstance().cancelNotification(contactOperation.getUserID().hashCode());
                 }
             });
         }

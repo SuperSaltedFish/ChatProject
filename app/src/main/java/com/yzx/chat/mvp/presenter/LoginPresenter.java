@@ -22,6 +22,7 @@ import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpRequest;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
@@ -59,6 +60,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         mGson = ApiHelper.getDefaultGsonInstance();
         mHandler = new Handler(Looper.myLooper());
 
+        NotificationHelper.getInstance().cancelAllNotification();
         IMClient.getInstance().logout();
         sHttpExecutor.cleanAllTask();
         NetworkAsyncTask.cleanAllTask();

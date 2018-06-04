@@ -5,6 +5,7 @@ import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.mvp.contract.GroupListContract;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;
@@ -35,14 +36,14 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         mGroupListView = view;
         mGroupList = new ArrayList<>(24);
         mHandler = new Handler();
-        IMClient.getInstance().groupManager().addGroupChangeListener(mOnGroupChangeListener);
+        IMClient.getInstance().groupManager().addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
         AsyncUtil.cancelTask(mLoadAllGroupTask);
-        IMClient.getInstance().groupManager().removeGroupChangeListener(mOnGroupChangeListener);
+        IMClient.getInstance().groupManager().removeGroupChangeListener(mOnGroupOperationListener);
         mGroupList.clear();
         mGroupList = null;
         mGroupListView = null;
@@ -62,9 +63,9 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         mGroupListView.showGroupList(diffResult, mGroupList);
     }
 
-    private final GroupManager.OnGroupChangeListener mOnGroupChangeListener = new GroupManager.OnGroupChangeListener() {
+    private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
-        public void onGroupCreated(GroupBean group) {
+        public void onCreatedGroup(GroupBean group) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -74,7 +75,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onGroupQuit(final GroupBean group) {
+        public void onQuitGroup(final GroupBean group) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -85,7 +86,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onGroupUpdated(final GroupBean group) {
+        public void onGroupInfoUpdated(final GroupBean group) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -103,6 +104,21 @@ public class GroupListPresenter implements GroupListContract.Presenter {
                     }
                 }
             });
+        }
+
+        @Override
+        public void onMemberAdded(GroupBean group, List<GroupMemberBean> groupMemberList) {
+            onGroupInfoUpdated(group);
+        }
+
+        @Override
+        public void onMemberInfoUpdated(GroupBean group, GroupMemberBean groupMember) {
+
+        }
+
+        @Override
+        public void onMemberQuit(GroupBean group, List<GroupMemberBean> groupMemberList) {
+            onGroupInfoUpdated(group);
         }
     };
 

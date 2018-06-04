@@ -16,7 +16,7 @@
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
-        android:background="@drawable/bg_edit_dashed_round"
+        android:background="@drawable/selector_bg_edit_dashed_round"
         android:gravity="start|top"
         android:hint="@string/StrangerProfileActivity_VerifyContentHint"
         android:paddingBottom="8dp"

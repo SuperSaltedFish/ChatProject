@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.Constants;
@@ -394,34 +395,47 @@ public class IMClient {
 
     private final SubManagerCallback mSubManagerCallback = new SubManagerCallback() {
         @Override
-        public void chatManagerCallback(int callbackCode, Object arg) {
+        public void callChatManager(int callbackCode, Object arg) {
 
         }
 
         @Override
-        public void conversationManagerCallback(int callbackCode, Object arg) {
-            switch (callbackCode) {
+        public void callConversationManager(int code, Object arg) {
+            switch (code) {
                 case ConversationManager.CALLBACK_CODE_UPDATE_UNREAD:
                     mChatManager.updateChatUnreadCount();
                     break;
-            }
-        }
-
-        @Override
-        public void contactManagerCallback(int callbackCode, Object arg) {
-
-        }
-
-        @Override
-        public void groupManagerCallback(int callbackCode, Object arg) {
-            switch (callbackCode) {
-                case GroupManager.CALLBACK_CODE_DELETE_CONVERSATION:
-                    Conversation conversation = mConversationManager.getConversation(Conversation.ConversationType.GROUP, (String) arg);
-                    if (conversation != null) {
-                        mConversationManager.removeConversation(conversation);
+                case ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE:
+                    String contactID = (String) arg;
+                    if (!TextUtils.isEmpty(contactID)) {
+                        Conversation conversation = mConversationManager.getConversation(Conversation.ConversationType.PRIVATE, contactID);
+                        if (conversation != null) {
+                            mConversationManager.removeConversation(conversation, false);
+                            mConversationManager.clearAllConversationMessages(conversation);
+                        }
+                    }
+                    break;
+                case ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_GROUP:
+                    String groupID = (String) arg;
+                    if (!TextUtils.isEmpty(groupID)) {
+                        Conversation conversation = mConversationManager.getConversation(Conversation.ConversationType.GROUP, groupID);
+                        if (conversation != null) {
+                            mConversationManager.removeConversation(conversation, false);
+                            mConversationManager.clearAllConversationMessages(conversation);
+                        }
                     }
                     break;
             }
+        }
+
+        @Override
+        public void callContactManager(int code, Object arg) {
+
+        }
+
+        @Override
+        public void callGroupManager(int code, Object arg) {
+
         }
 
         @Override
@@ -470,6 +484,9 @@ public class IMClient {
                 case "RC:ContactNtf":
                     mContactManager.onReceiveContactNotificationMessage(message);
                     break;
+                case "RC:GrpNtf":
+                    mGroupManager.onReceiveGroupNotificationMessage(message);
+                    break;
             }
             if (i == 0) {
                 mChatManager.updateChatUnreadCount();
@@ -489,13 +506,13 @@ public class IMClient {
 
     interface SubManagerCallback {
 
-        void chatManagerCallback(int callbackCode, Object arg);
+        void callChatManager(int callbackCode, Object arg);
 
-        void conversationManagerCallback(int callbackCode, Object arg);
+        void callConversationManager(int callbackCode, Object arg);
 
-        void contactManagerCallback(int callbackCode, Object arg);
+        void callContactManager(int callbackCode, Object arg);
 
-        void groupManagerCallback(int callbackCode, Object arg);
+        void callGroupManager(int callbackCode, Object arg);
 
         AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper();
 

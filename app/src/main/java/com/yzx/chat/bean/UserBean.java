@@ -30,7 +30,7 @@ public class UserBean implements Parcelable, Cloneable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof UserBean)) {
+        if (!(obj instanceof UserBean)) {
             return false;
         }
         if (this == obj) {
@@ -38,6 +38,14 @@ public class UserBean implements Parcelable, Cloneable {
         }
         UserBean user = (UserBean) obj;
         return userID != null && userID.equals(user.getUserID());
+    }
+
+    @Override
+    public int hashCode() {
+        if (!TextUtils.isEmpty(userID)) {
+            return userID.hashCode()+1;//+1是为了将和字符串的userID的hashCode区分
+        }
+        return super.hashCode();
     }
 
     @Override

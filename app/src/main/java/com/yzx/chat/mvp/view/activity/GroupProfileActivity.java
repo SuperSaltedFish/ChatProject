@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -148,7 +149,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                mProgressDialog.show(getString(R.string.ProgressHint_Quit));
                                 mPresenter.quitGroup();
                             }
                         })
@@ -194,7 +194,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     if (!input.toString().equals(mTvContentGroupName.getText())) {
-                                        mProgressDialog.show(getString(R.string.ProgressHint_Modify));
                                         mPresenter.updateGroupName(input.toString());
                                     }
                                 }
@@ -224,7 +223,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     if (!input.toString().equals(mTvContentNicknameInGroup.getText())) {
-                                        mProgressDialog.show(getString(R.string.ProgressHint_Modify));
                                         mPresenter.updateMyGroupAlias(input.toString());
                                     }
                                 }
@@ -262,7 +260,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                                         input = "";
                                     }
                                     if (!input.toString().equals(finalCurrentNotice)) {
-                                        mProgressDialog.show(getString(R.string.ProgressHint_Modify));
                                         mPresenter.updateGroupNotice(input.toString());
                                     }
                                 }
@@ -363,7 +360,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         List<GroupMemberBean> members = group.getMembers();
         if (members != null) {
             mGroupMemberList.addAll(members);
-
         }
         mAdapter.notifyDataSetChanged();
 
@@ -376,7 +372,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     @Override
     public void showNewGroupName(String newGroupName) {
         mTvContentGroupName.setText(newGroupName);
-        mProgressDialog.dismiss();
+        mCollapsingToolbarLayout.setTitle(newGroupName);
     }
 
     @Override
@@ -386,19 +382,25 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         } else {
             mTvContentGroupNotice.setText(newGroupNotice);
         }
-        mProgressDialog.dismiss();
     }
 
     @Override
     public void showNewMyAlias(String newAlias) {
         mTvContentNicknameInGroup.setText(newAlias);
-        mProgressDialog.dismiss();
+        GroupMemberBean groupMember;
+        for (int i = 0, size = mGroupMemberList.size(); i < size; i++) {
+            groupMember = mGroupMemberList.get(i);
+            if (groupMember.getUserProfile().getUserID().equals(mPresenter.getCurrentUserID())) {
+                groupMember.setAlias(newAlias);
+                mAdapter.notifyItemChangedEx(i);
+                return;
+            }
+        }
     }
 
 
     @Override
     public void showError(String error) {
-        mProgressDialog.dismiss();
         showToast(error);
     }
 
@@ -417,8 +419,24 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     }
 
     @Override
+    public void finishChatActivity() {
+        Activity activity = AndroidUtil.getLaunchActivity(ChatActivity.class);
+        if (activity != null) {
+            activity.finish();
+        }
+    }
+
+    @Override
+    public void enableProgressDialog(boolean isEnable, String hint) {
+        if (isEnable) {
+            mProgressDialog.show(hint);
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
     public void goBack() {
-        mProgressDialog.dismiss();
         finish();
     }
 }

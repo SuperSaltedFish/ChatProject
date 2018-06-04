@@ -104,9 +104,10 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
 
         private void setup() {
             mBtnState.setOnClickListener(mOnAcceptClickListener);
+            itemView.setOnClickListener(mOnDetailsClickListener);
         }
 
-        public void setAcceptContactRequestListener(OnAcceptContactRequestListener acceptContactRequestListener) {
+        void setAcceptContactRequestListener(OnAcceptContactRequestListener acceptContactRequestListener) {
             mAcceptContactRequestListener = acceptContactRequestListener;
         }
 
@@ -118,9 +119,20 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 }
             }
         };
+
+        private final View.OnClickListener mOnDetailsClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mAcceptContactRequestListener != null) {
+                    mAcceptContactRequestListener.enterDetails(getAdapterPosition());
+                }
+            }
+        };
     }
 
     public interface OnAcceptContactRequestListener {
         void onAcceptContactRequest(int position);
+
+        void enterDetails(int position);
     }
 }

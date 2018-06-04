@@ -17,7 +17,9 @@ import io.rong.imlib.model.Conversation;
 
 public class ConversationManager {
 
-    static final int CALLBACK_CODE_UPDATE_UNREAD = 0;
+    static final int CALLBACK_CODE_UPDATE_UNREAD = 1;
+    static final int CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE = 2;
+    static final int CALLBACK_CODE_ClEAR_AND_REMOVE_GROUP = 3;
 
     public static final int UPDATE_TYPE_SET_TOP = 1;
     public static final int UPDATE_TYPE_CLEAR_UNREAD_STATUS = 2;
@@ -75,7 +77,7 @@ public class ConversationManager {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
                     callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_UNREAD_STATUS);
                 } else {
                     LogUtil.e("clearMessagesUnreadStatus error");
@@ -103,7 +105,7 @@ public class ConversationManager {
                         callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
                     }
                     if (isUpdateUnreadState) {
-                        mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                        mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
                     }
                 } else {
                     LogUtil.e("removeConversation fail");
@@ -143,7 +145,7 @@ public class ConversationManager {
                 LogUtil.e("clearAllConversationMessages " + aBoolean.toString());
                 callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
                 if (isUpdateUnreadState) {
-                    mSubManagerCallback.conversationManagerCallback(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
                 }
             }
 

@@ -23,6 +23,29 @@ public class GroupMemberBean implements Parcelable {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof GroupMemberBean)) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        GroupMemberBean groupMember = (GroupMemberBean) obj;
+        return groupID != null &&
+                userProfile != null &&
+                groupID.equals(groupMember.getGroupID()) &&
+                userProfile.getUserID().equals(groupMember.getUserProfile().getUserID());
+    }
+
+    @Override
+    public int hashCode() {
+        if (!TextUtils.isEmpty(groupID) && userProfile != null && !TextUtils.isEmpty(userProfile.getUserID())) {
+            return String.format("%s%s", groupID, userProfile.getUserID()).hashCode();
+        }
+        return super.hashCode();
+    }
+
     public String getGroupID() {
         return groupID;
     }

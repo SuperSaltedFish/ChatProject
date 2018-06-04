@@ -10,6 +10,7 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.ConversationContract;
 import com.yzx.chat.network.chat.ChatManager;
+import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AsyncUtil;
@@ -143,7 +144,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
-
     private static class RefreshAllConversationTask extends NetworkAsyncTask<ConversationPresenter, List<Conversation>, DiffUtil.DiffResult> {
 
         RefreshAllConversationTask(ConversationPresenter lifeCycleDependence) {
@@ -219,7 +219,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     }
                 }, true);
                 oldConversationList.clear();
-                if(newConversationList!=null&&newConversationList.size()>0){
+                if (newConversationList != null && newConversationList.size() > 0) {
                     oldConversationList.addAll(newConversationList);
                 }
                 return diffResult;

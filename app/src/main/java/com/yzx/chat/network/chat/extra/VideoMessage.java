@@ -22,7 +22,7 @@ import io.rong.message.MediaMessageContent;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 
-@MessageTag(value = "Test:VideoMsg", flag = MessageTag.ISCOUNTED | MessageTag.ISPERSISTED, messageHandler = VideoMessageHandler.class)
+@MessageTag(value = "Custom:VideoMsg", flag = MessageTag.ISCOUNTED | MessageTag.ISPERSISTED, messageHandler = VideoMessageHandler.class)
 public class VideoMessage extends MediaMessageContent {
     private Uri mThumbUri;//缩略图的url
     private String mBase64;//经过base64编码的消息体发送时携带的缩略图

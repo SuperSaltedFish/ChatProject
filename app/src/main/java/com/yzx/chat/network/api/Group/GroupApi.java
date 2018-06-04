@@ -36,7 +36,7 @@ public interface GroupApi {
     Call<JsonResponse<CreateGroupBean>> add(@HttpParam("groupID") String groupName, @HttpParam("members") List<CreateGroupMemberBean> memberList);
 
     @HttpApi(RequestType = RequestType.POST, url = "group/quit")
-    Call<JsonResponse<Void>> quit(@HttpParam("groupID") String groupID);
+        Call<JsonResponse<Void>> quit(@HttpParam("groupID") String groupID);
 
     @HttpApi(RequestType = RequestType.POST, url = "group/getTempGroupID")
     Call<JsonResponse<GetTempGroupID>> getTempGroupID(@HttpParam("groupID") String groupID);

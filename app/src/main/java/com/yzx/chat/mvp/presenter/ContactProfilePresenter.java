@@ -6,6 +6,7 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.mvp.contract.ContactProfileContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.util.AsyncResult;
 import com.yzx.chat.util.AsyncUtil;
 
@@ -20,7 +21,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     private ContactProfileContract.View mContactProfileView;
     private ContactBean mContactBean;
     private Handler mHandler;
-    private DeleteContactResult mDeleteContactResult;
     private IMClient mIMClient;
 
     @Override
@@ -33,7 +33,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void detachView() {
-        AsyncUtil.cancelResult(mDeleteContactResult);
         mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mContactProfileView = null;
@@ -42,11 +41,10 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void init(String contactID) {
-
         mContactBean = mIMClient.contactManager().getContact(contactID);
         if (mContactBean == null) {
             mContactProfileView.goBack();
-        }else {
+        } else {
             mContactProfileView.updateContactInfo(mContactBean);
         }
     }
@@ -58,17 +56,23 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void deleteContact() {
-        AsyncUtil.cancelResult(mDeleteContactResult);
-        mDeleteContactResult = new DeleteContactResult(this);
-        mIMClient.contactManager().deleteContact(mContactBean, mDeleteContactResult);
-    }
+        mContactProfileView.enableProgressDialog(true);
+        mIMClient.contactManager().deleteContact(mContactBean, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                if (mContactBean.getUserProfile().getUserID().equals(ChatPresenter.sConversationID)) {
+                    mContactProfileView.finishChatActivity();
+                }
+                mContactProfileView.enableProgressDialog(false);
+                mContactProfileView.goBack();
+            }
 
-    void deleteContactSuccess() {
-        mContactProfileView.goBack();
-    }
-
-    void deleteContactFailure(String error) {
-        mContactProfileView.showError(error);
+            @Override
+            public void onFailure(String error) {
+                mContactProfileView.enableProgressDialog(false);
+                mContactProfileView.showError(error);
+            }
+        });
     }
 
 
@@ -96,20 +100,4 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         }
     };
 
-    private static class DeleteContactResult extends AsyncResult<ContactProfilePresenter, Boolean> {
-
-        DeleteContactResult(ContactProfilePresenter dependent) {
-            super(dependent);
-        }
-
-        @Override
-        protected void onSuccessResult(ContactProfilePresenter dependent, Boolean result) {
-            dependent.deleteContactSuccess();
-        }
-
-        @Override
-        protected void onFailureResult(ContactProfilePresenter dependent, String error) {
-            dependent.deleteContactFailure(error);
-        }
-    }
 }
