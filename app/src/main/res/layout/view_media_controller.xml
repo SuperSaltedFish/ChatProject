@@ -17,7 +17,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_gravity="start|center_vertical"
-            android:padding="8dp"
+            android:padding="16dp"
             android:src="@drawable/ic_close"
             android:tint="@android:color/white" />
 

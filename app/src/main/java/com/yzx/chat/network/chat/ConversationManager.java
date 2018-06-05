@@ -142,7 +142,6 @@ public class ConversationManager {
         mRongIMClient.deleteMessages(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                LogUtil.e("clearAllConversationMessages " + aBoolean.toString());
                 callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
                 if (isUpdateUnreadState) {
                     mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);

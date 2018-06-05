@@ -1,22 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="56dp"
-    android:layout_marginEnd="56dp"
-    android:layout_marginStart="8dp"
-    android:gravity="center_vertical|start">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/ChatMessageAdapter_mTvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_chat_time_round"
+        android:gravity="center"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="40dp"
-        android:layout_height="40dp" />
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+
+    <TextView
+        android:id="@+id/ChatMessageAdapter_mTvNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvAvatar" />
 
     <FrameLayout
         android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginStart="2dp"
         android:background="@drawable/bg_chat_item_recv"
-        android:minWidth="80dp">
+        android:minWidth="80dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvNickname">
 
         <ImageView
             android:id="@+id/ChatMessageAdapter_mIvPlayIcon"
@@ -24,7 +59,9 @@
             android:layout_height="32dp"
             android:layout_gravity="start|center_vertical"
             android:layout_marginStart="2dp"
-            android:padding="3dp" />
+            android:padding="3dp"
+            android:rotation="180"
+            android:tint="@color/textPrimaryColorBlack" />
 
         <TextView
             android:id="@+id/ChatAdapter_mTvVoiceDuration"
@@ -41,7 +78,12 @@
         android:id="@+id/ChatAdapter_mIvListenedState"
         android:layout_width="8dp"
         android:layout_height="8dp"
-        android:background="@color/red" />
+        android:elevation="1dp"
+        android:src="@color/red"
+        app:civ_border_width="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mContentLayout"
+        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mContentLayout"
+        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mContentLayout" />
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

@@ -48,13 +48,11 @@ public class ChatPresenter implements ChatContract.Presenter {
     private boolean mIsLoadingMore;
     private boolean mIsConversationStateChange;
 
-
     @Override
     public void attachView(ChatContract.View view) {
         mChatView = view;
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
-        mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
     }
 
     @Override
@@ -92,12 +90,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (conversation != null) {
             conversation.setTargetId(conversationID);
             conversation.setConversationType(type);
-
             mConversation = conversation;
             sConversationID = mConversation.getTargetId();
             mChatView.clearMessage();
-            mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
-            mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
             if (mConversation.getUnreadMessageCount() != 0) {
                 mIMClient.conversationManager().clearConversationUnreadStatus(mConversation);
             }
@@ -105,8 +100,11 @@ public class ChatPresenter implements ChatContract.Presenter {
             mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
             mChatView.enableLoadMoreHint(mHasMoreMessage);
             mChatView.addNewMessage(messageList);
-        }
 
+            mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
+            mIMClient.chatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
+            mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        }
         return conversation;
     }
 

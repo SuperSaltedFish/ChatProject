@@ -374,25 +374,18 @@ public class GroupManager {
                     LogUtil.e("fromJson GroupMessageExtra_Add.class fail,json content:" + groupNotification.getExtra());
                     return;
                 }
-                if (extra_Add.members == null || TextUtils.isEmpty(extra_Add.groupID)) {
+                if (extra_Add.members == null || extra_Add.members.size() == 0 || TextUtils.isEmpty(extra_Add.groupID)) {
                     LogUtil.e(" GroupOperation : groupMembers or groupID is empty");
                     return;
                 }
-                 group = getGroup(extra_Add.groupID);
+                group = getGroup(extra_Add.groupID);
                 if (group == null) {
                     LogUtil.e(" GroupOperation : getGroup is empty");
                     return;
                 }
-                List<GroupMemberBean> groupMembers = group.getMembers();
-                Iterator<GroupMemberBean> it = extra_Add.members.iterator();
-                while (it.hasNext()) {
-                    if (groupMembers.contains(it.next())) {
-                        it.remove();
-                    }
-                }
-                groupMembers.addAll(extra_Add.members);
-                if (!mGroupDao.replaceGroupAndMember(group)) {
-                    LogUtil.e(" GroupOperation : replaceGroupAndMember fail");
+                group.getMembers().addAll(extra_Add.members);
+                if (!mGroupMemberDao.replaceAll(group.getMembers())) {
+                    LogUtil.e(" GroupOperation : replaceAll fail");
                     return;
                 }
                 for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
@@ -412,7 +405,7 @@ public class GroupManager {
                     LogUtil.e(" GroupOperation : memberID or groupID is empty");
                     return;
                 }
-                 group = getGroup(extra_Quit.groupID);
+                group = getGroup(extra_Quit.groupID);
                 if (group == null) {
                     LogUtil.e(" GroupOperation : getGroup is empty");
                     return;
@@ -421,8 +414,12 @@ public class GroupManager {
                     LogUtil.e(" GroupOperation : deleteByKey fail");
                     return;
                 }
-                for (GroupMemberBean groupMember : group.getMembers()) {
+                List<GroupMemberBean> groupMemberList = group.getMembers();
+                GroupMemberBean groupMember;
+                for (int i = 0, size = groupMemberList.size(); i < size; i++) {
+                    groupMember = groupMemberList.get(i);
                     if (extra_Quit.memberID.equals(groupMember.getUserProfile().getUserID())) {
+                        groupMemberList.remove(i);
                         for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
                             listener.onMemberQuit(group, Collections.singletonList(groupMember));
                         }

@@ -28,7 +28,7 @@
         android:id="@+id/VideoRecorderActivity_mIvClose"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:padding="8dp"
+        android:padding="16dp"
         android:src="@drawable/ic_close"
         android:tint="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,11 +66,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/VideoRecorderActivity_mIvConfirm"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:background="@android:color/white"
+        android:background="@drawable/bg_circle_color_white"
         android:padding="16dp"
         android:src="@drawable/ic_confirm"
         android:tint="?attr/colorAccent"
@@ -80,11 +80,11 @@
         app:layout_constraintStart_toEndOf="@id/VideoRecorderActivity_mRecorderButton"
         app:layout_constraintTop_toTopOf="@id/VideoRecorderActivity_mGuideline2" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/VideoRecorderActivity_mIvRestart"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:background="@android:color/white"
+        android:background="@drawable/bg_circle_color_white"
         android:padding="16dp"
         android:src="@drawable/ic_return"
         android:tint="?attr/colorAccent"

@@ -712,31 +712,23 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void addNewMessage(Message message) {
         mMessageList.add(0, message);
-        if (mMessageList.size() == 0) {
-            mAdapter.notifyDataSetChanged();
-        } else {
             mAdapter.notifyItemRangeInsertedEx(0, 1);
-        }
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void addNewMessage(List<Message> messageList) {
-        if (mMessageList.size() == 0) {
-            mAdapter.notifyDataSetChanged();
-        } else {
-            mAdapter.notifyItemRangeInsertedEx(0, messageList.size());
-        }
         mMessageList.addAll(0, messageList);
+        mAdapter.notifyItemRangeInsertedEx(0, messageList.size());
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
     public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
+            mMessageList.addAll(messageList);
             mAdapter.notifyItemRangeInsertedEx(mMessageList.size(), messageList.size());
             mRvChatView.scrollToPosition(mMessageList.size() - 1);
-            mMessageList.addAll(messageList);
             mAdapter.notifyItemChangedEx(mMessageList.size());
         }
         if (!isHasMoreMessage) {
@@ -750,8 +742,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public void updateMessage(Message message) {
         int position = mMessageList.indexOf(message);
         if (position >= 0) {
-            mAdapter.notifyItemChangedEx(position);
             mMessageList.set(position, message);
+            mAdapter.notifyItemChangedEx(position);
         } else {
             LogUtil.e("update message fail in UI");
         }

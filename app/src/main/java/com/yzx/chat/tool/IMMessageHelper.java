@@ -11,6 +11,11 @@ import com.yzx.chat.R;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.AndroidUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
@@ -60,5 +65,40 @@ public class IMMessageHelper {
             return AndroidUtil.getString(R.string.EMMessageUtil_VideoInfo);
         }
         return "";
+    }
+
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("M月d日 %sHH:mm", Locale.getDefault());
+
+    public static String messageTimeToString(long timeMillis) {
+        if (isToday(timeMillis)) {
+            return TIME_FORMAT.format(new Date(timeMillis));
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timeMillis);
+            String am_pm = "";
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            if (hour >= 0 && hour < 6) {
+                am_pm = "凌晨";
+            } else if (hour >= 6 && hour < 12) {
+                am_pm = "早上";
+            } else if (hour == 12) {
+                am_pm = "中午";
+            } else if (hour > 12 && hour < 18) {
+                am_pm = "下午";
+            } else if (hour >= 18) {
+                am_pm = "晚上";
+            }
+            return String.format(DATE_FORMAT.format(new Date(timeMillis)),am_pm);
+        }
+    }
+
+    private static boolean isToday(long timeMillis) {
+        Calendar todayCalendar = Calendar.getInstance();
+        todayCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        todayCalendar.set(Calendar.MINUTE, 0);
+        todayCalendar.set(Calendar.SECOND, 0);
+        todayCalendar.set(Calendar.MILLISECOND, 0);
+        return timeMillis >= todayCalendar.getTimeInMillis();
     }
 }

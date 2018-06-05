@@ -80,7 +80,7 @@ public class MediaControllerPopupWindow extends PopupWindow {
         setWidth(WindowManager.LayoutParams.MATCH_PARENT);
         setHeight(WindowManager.LayoutParams.MATCH_PARENT);
         setBackgroundDrawable(null);
-        //setFocusable(true);
+        setClippingEnabled(false);//允许弹出窗口超出屏幕范围
     }
 
     private void reset() {

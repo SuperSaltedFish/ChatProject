@@ -42,6 +42,27 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
     }
 
     @Override
+    public boolean replaceAll(Iterable<GroupMemberBean> entityIterable) {
+        if (entityIterable == null) {
+            return false;
+        }
+        boolean result;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            ContentValues values = new ContentValues();
+            result = replaceAllGroupMember(database,entityIterable,values);
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    @Override
     protected String getTableName() {
         return TABLE_NAME;
     }

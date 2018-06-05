@@ -109,13 +109,13 @@ public class VideoDecoder implements MediaController.MediaPlayerControl {
             mVideoCodec.configure(videoFormat, mOutputSurface, null, 0);
             mVideoCodec.setCallback(new VideoDecodeCallback());
 
-            int audioChannels = audioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+            int audioChannels = audioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)==1? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
             int audioSampleRate = audioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-            int audioMaxInputSize = audioFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+            int audioMaxInputSize = Math.max(audioFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE),  AudioTrack.getMinBufferSize(audioSampleRate, audioChannels, AUDIO_BIT_PER_SAMPLE));
             mAudioCodec = MediaCodec.createDecoderByType(audioFormat.getString(MediaFormat.KEY_MIME));
             mAudioCodec.configure(audioFormat, null, null, 0);
             mAudioCodec.setCallback(new AudioDecodeCallback());
-            mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSampleRate, (audioChannels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO), AUDIO_BIT_PER_SAMPLE, audioMaxInputSize, AudioTrack.MODE_STREAM);
+            mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSampleRate,audioChannels, AUDIO_BIT_PER_SAMPLE, audioMaxInputSize, AudioTrack.MODE_STREAM);
             isPauseVideo = true;
             isPauseAudio = true;
             return true;
