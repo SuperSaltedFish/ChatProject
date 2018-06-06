@@ -53,7 +53,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
     @SuppressWarnings("unchecked")
     @Override
     public void loadAllGroup() {
-        LogUtil.d("loadAllGroup");
+        LogUtil.e("loadAllGroup");
         AsyncUtil.cancelTask(mLoadAllGroupTask);
         mLoadAllGroupTask = new LoadAllGroupTask(this);
         mLoadAllGroupTask.execute(mGroupList);

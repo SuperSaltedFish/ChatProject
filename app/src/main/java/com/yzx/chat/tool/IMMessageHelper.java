@@ -68,7 +68,7 @@ public class IMMessageHelper {
     }
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("M月d日 %sHH:mm", Locale.getDefault());
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("M月d日 %'s'HH:mm", Locale.getDefault());
 
     public static String messageTimeToString(long timeMillis) {
         if (isToday(timeMillis)) {

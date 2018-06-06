@@ -313,7 +313,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
         });
 
-
         mAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
             @Override
             public void OnScrollToBottom() {
@@ -419,7 +418,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
         });
     }
-
 
     private void setEmotionPanel() {
         mEmotionPanelLayout.setTabDividerDrawable(ContextCompat.getDrawable(this, R.drawable.divider_vertical_black_light));
@@ -726,9 +724,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
+            int oldSize = mMessageList.size();
             mMessageList.addAll(messageList);
-            mAdapter.notifyItemRangeInsertedEx(mMessageList.size(), messageList.size());
-            mRvChatView.scrollToPosition(mMessageList.size() - 1);
+            mAdapter.notifyItemRangeInsertedEx(oldSize, messageList.size());
+            mRvChatView.scrollToPosition(oldSize - 1);
             mAdapter.notifyItemChangedEx(mMessageList.size());
         }
         if (!isHasMoreMessage) {

@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -88,6 +89,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutAnimation(   AnimationUtils.loadLayoutAnimation(mContext,R.anim.layout_alpha));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);

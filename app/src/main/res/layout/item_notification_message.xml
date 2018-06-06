@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
+
+    <TextView
+        android:id="@+id/ChatMessageAdapter_mTvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_chat_time_round"
+        android:gravity="center"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/ChatMessageAdapter_mTvNotificationMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_chat_time_round"
+        android:gravity="center"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+
+</LinearLayout>

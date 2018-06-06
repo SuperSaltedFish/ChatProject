@@ -47,6 +47,7 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import io.rong.imlib.model.Message;
+import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
 import io.rong.message.TextMessage;
@@ -61,7 +62,7 @@ import io.rong.message.VoiceMessage;
 
 public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageHolder> {
 
-    private static final long TIME_HINT_INTERVAL = 1 * 60 * 1000;
+    private static final long TIME_HINT_INTERVAL = 3 * 60 * 1000;
 
     private static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
@@ -73,6 +74,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION = 8;
     private static final int HOLDER_TYPE_SEND_MESSAGE_VIDEO = 9;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO = 10;
+    private static final int HOLDER_TYPE_NOTIFICATION_MESSAGE = 11;
 
     private List<Message> mMessageList;
     private SparseLongArray mTimeSparseLongArray;
@@ -107,6 +109,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_video, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                 return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_video, parent, false), viewType);
+            case HOLDER_TYPE_NOTIFICATION_MESSAGE:
+                return new NotificationMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_notification_message, parent, false), viewType);
             default:
                 throw new NoSuchElementException("unknown type code:" + viewType);
         }
@@ -138,6 +142,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_LOCATION : HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION;
             case "Custom:VideoMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
+            case "RC:GrpNtf":
+                return HOLDER_TYPE_NOTIFICATION_MESSAGE;
             default:
                 throw new NoSuchElementException("unknown type:" + message.getObjectName());
         }
@@ -152,55 +158,66 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 sendMessageHolder.mProgressDrawable.stop();
             }
         }
-        MessageHolder messageHolder = (MessageHolder) holder;
-        switch (messageHolder.mHolderType) {
-            case HOLDER_TYPE_SEND_MESSAGE_VOICE:
-            case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                VoiceViewHolder voiceViewHolder = (VoiceViewHolder) messageHolder.mViewHolder;
-                voiceViewHolder.setEnablePlayAnimation(false);
-                break;
-            case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
-            case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                ImageViewHolder imageViewHolder = (ImageViewHolder) messageHolder.mViewHolder;
-                GlideUtil.clear(mContext, imageViewHolder.mIvImageContent);
-                imageViewHolder.mIvImageContent.setImageBitmap(null);
-                break;
+        if (holder instanceof MessageHolder) {
+            MessageHolder messageHolder = (MessageHolder) holder;
+            switch (messageHolder.mHolderType) {
+                case HOLDER_TYPE_SEND_MESSAGE_VOICE:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
+                    VoiceViewHolder voiceViewHolder = (VoiceViewHolder) messageHolder.mViewHolder;
+                    voiceViewHolder.setEnablePlayAnimation(false);
+                    break;
+                case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
+                    ImageViewHolder imageViewHolder = (ImageViewHolder) messageHolder.mViewHolder;
+                    GlideUtil.clear(mContext, imageViewHolder.mIvImageContent);
+                    imageViewHolder.mIvImageContent.setImageBitmap(null);
+                    break;
+            }
         }
     }
 
     private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
+            if (mMessageList == null || mMessageList.size() < positionStart + itemCount) {
+                return;
+            }
             if (positionStart == 0) {
-                long time;
+                long newestTime;
                 if (mTimeSparseLongArray.size() > 0) {
-                    time = mTimeSparseLongArray.get(mTimeSparseLongArray.keyAt(mTimeSparseLongArray.size() - 1), 0);
+                    newestTime = mTimeSparseLongArray.get(mTimeSparseLongArray.keyAt(mTimeSparseLongArray.size() - 1), 0);
                 } else {
-                    time = 0;
+                    newestTime = 0;
                 }
                 Message message;
                 for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
                     message = mMessageList.get(i);
                     long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
-                    if (messageTime - time >= TIME_HINT_INTERVAL) {
+                    if (messageTime - newestTime >= TIME_HINT_INTERVAL) {
                         mTimeSparseLongArray.append(message.getMessageId(), messageTime);
-                        time = messageTime;
+                        newestTime = messageTime;
                     }
                 }
             } else {
-                long time;
+                long oldestTime;
                 if (mTimeSparseLongArray.size() > 0) {
-                    time = mTimeSparseLongArray.get(mTimeSparseLongArray.keyAt(0), 0);
+                    oldestTime = mTimeSparseLongArray.get(mTimeSparseLongArray.keyAt(0), 0);
                 } else {
-                    time = 0;
+                    oldestTime = 0;
                 }
+                long temp = oldestTime;
                 Message message;
                 for (int i = positionStart, count = positionStart + itemCount; i < count; i++) {
                     message = mMessageList.get(i);
                     long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
-                    if (time - messageTime >= TIME_HINT_INTERVAL) {
+                    if (oldestTime - messageTime >= TIME_HINT_INTERVAL) {
                         mTimeSparseLongArray.put(message.getMessageId(), messageTime);
-                        time = messageTime;
+                        oldestTime = messageTime;
+                    } else if (i == count - 1) {
+                        if (oldestTime != temp) {
+                            mTimeSparseLongArray.delete(mTimeSparseLongArray.keyAt(0));
+                        }
+                        mTimeSparseLongArray.put(message.getMessageId(), messageTime);
                     }
                 }
             }
@@ -224,6 +241,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         mMessageCallback = messageCallback;
     }
 
+    static final class NotificationMessageHolder extends MessageHolder {
+
+        NotificationMessageHolder(View itemView, int type) {
+            super(itemView, type);
+        }
+
+    }
 
     static final class ReceiveMessageHolder extends MessageHolder {
         ImageView mIvAvatar;
@@ -322,8 +346,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                     mViewHolder = new VideoViewHolder(itemView);
                     break;
-                default:
-                    throw new RuntimeException("Unknown holder type code:" + mHolderType);
+                case HOLDER_TYPE_NOTIFICATION_MESSAGE:
+                    mViewHolder = new NotificationViewHolder(itemView);
             }
             mViewHolder.mContentLayout.setOnClickListener(mOnContentClickListener);
         }
@@ -481,6 +505,22 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         public abstract void parseMessageContent(Message message);
     }
 
+    static final class NotificationViewHolder extends ItemViewHolder {
+        TextView mTvNotificationMessage;
+
+        NotificationViewHolder(View itemView) {
+            super(itemView);
+            mTvNotificationMessage = itemView.findViewById(R.id.ChatMessageAdapter_mTvNotificationMessage);
+            mContentLayout = mTvNotificationMessage;
+        }
+
+        @Override
+        public void parseMessageContent(Message message) {
+            GroupNotificationMessage groupNotification = (GroupNotificationMessage) message.getContent();
+            mTvNotificationMessage.setText(groupNotification.getOperation());
+        }
+    }
+
     static final class TextViewHolder extends ItemViewHolder {
         TextView mTvTextContent;
 
@@ -593,7 +633,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 mIvListenedState.setVisibility(isEnable ? View.INVISIBLE : View.VISIBLE);
             }
         }
-
 
         @Override
         public void parseMessageContent(Message message) {

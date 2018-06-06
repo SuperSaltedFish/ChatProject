@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.presenter;
 
+import android.app.Activity;
 import android.os.Handler;
 
 import com.yzx.chat.bean.ContactBean;
@@ -7,6 +8,8 @@ import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.HomeContract;
 import com.yzx.chat.mvp.view.activity.ChatActivity;
+import com.yzx.chat.mvp.view.activity.HomeActivity;
+import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
@@ -86,7 +89,8 @@ public class HomePresenter implements HomeContract.Presenter {
     private final ChatManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatManager.OnChatMessageReceiveListener() {
         @Override
         public void onChatMessageReceived(final Message message, int untreatedCount) {
-            if (AndroidUtil.getStackTopActivityClass() == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID)) {
+            Class activityClass = AndroidUtil.getStackTopActivityClass();
+            if (activityClass == HomeActivity.class || (activityClass == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID))) {
                 return;
             }
             mHandler.post(new Runnable() {
@@ -114,6 +118,10 @@ public class HomePresenter implements HomeContract.Presenter {
     private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
         @Override
         public void onContactOperationReceive(final ContactOperationBean contactOperation) {
+            Class activityClass = AndroidUtil.getStackTopActivityClass();
+            if (activityClass == HomeActivity.class || activityClass == NotificationMessageActivity.class) {
+                return;
+            }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -38,7 +39,6 @@ import com.yzx.chat.mvp.view.activity.FindNewContactActivity;
 import com.yzx.chat.mvp.view.activity.GroupListActivity;
 import com.yzx.chat.mvp.view.activity.HomeActivity;
 import com.yzx.chat.mvp.view.activity.RemarkInfoActivity;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
@@ -134,12 +134,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvContact.addOnScrollListener(mAutoEnableOverScrollListener);
         mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
-        mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-        mRvSearchContact.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
-        mRvSearchContact.setAdapter(mSearchAdapter);
-        mRvSearchContact.addOnScrollListener(new AutoCloseKeyboardScrollListener(getActivity()));
-
         mLlContactOperation.setOnClickListener(mOnViewClickListener);
         mLlGroup.setOnClickListener(mOnViewClickListener);
 
@@ -156,6 +150,30 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
 
     private void setSearchBar() {
+
+        mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        mRvSearchContact.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
+        mRvSearchContact.setAdapter(mSearchAdapter);
+        mRvSearchContact.addOnScrollListener(new AutoCloseKeyboardScrollListener((Activity) mContext));
+        mRvSearchContact.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
+            @Override
+            public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(mContext, ContactProfileActivity.class);
+                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactSearchList.get(position).getUserProfile().getUserID());
+                        startActivity(intent);
+                        mSearchView.setQuery(null, false);
+                        mSearchView.setIconified(true);
+                        mSearchPopupWindow.dismiss();
+                    }
+                });
+            }
+        });
+
+
         final int searchPopupWindowWidth = (int) (AndroidUtil.getScreenWidth() - AndroidUtil.dip2px(32));
         mSearchPopupWindow = new PopupWindow(mContext);
         mSearchPopupWindow.setAnimationStyle(-1);
@@ -167,21 +185,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mSearchPopupWindow.setOutsideTouchable(true);
         mSearchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
         mSearchPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-
-//        mSearchPopupWindow.setAdapter(mSearchAdapter);
-//
-//        mSearchPopupWindow.setWidth(500);
-//        mSearchPopupWindow.setHeight(500);
-//        mSearchPopupWindow.setModal(false);
-//        mSearchPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                mOnRecyclerViewItemClickListener.onItemClick(position + 1, null);
-//                // mSearchView.setText(null);
-//            }
-//        });
-
 
         mToolbar.inflateMenu(R.menu.menu_contact_list);
         MenuItem searchItem = mToolbar.getMenu().findItem(R.id.ContactList_Search);
@@ -300,7 +303,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     };
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
-
         @Override
         public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
             if (position == 0 && mContactAdapter.isHasHeaderView()) {
@@ -314,7 +316,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                     startActivity(intent);
                 }
             });
-
         }
 
         @Override
@@ -345,6 +346,8 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                         }
                     }
                 });
+            }else if(position==0){
+                mRvContact.scrollToPosition(0);
             }
             if (mFBtnAdd.getTag() == null) {
                 AnimationUtil.scaleAnim(mFBtnAdd, 0, 0, 300);
