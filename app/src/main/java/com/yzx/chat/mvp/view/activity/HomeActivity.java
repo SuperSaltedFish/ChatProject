@@ -49,7 +49,6 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this, R.color.colorAccent))
                 .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this, R.color.colorAccent))
                 .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this, R.color.colorAccent))
-                .setMode(MaterialMode.HIDE_TEXT)
                 .build();
     }
 

@@ -19,7 +19,6 @@
         android:layout_height="match_parent" />
 
     <Toolbar
-        android:id="@+id/QrCodeScanActivity_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/maskColorBlack"

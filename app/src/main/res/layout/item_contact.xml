@@ -57,7 +57,6 @@
         app:layout_constraintTop_toTopOf="@id/ContactAdapter_mTvName" />
 
     <TextView
-        android:id="@+id/ContactAdapter_mTvAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"

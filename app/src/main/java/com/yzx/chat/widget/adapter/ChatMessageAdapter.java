@@ -15,8 +15,6 @@ import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Size;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.util.SparseLongArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -612,7 +610,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
             mIvListenedState = itemView.findViewById(R.id.ChatAdapter_mIvListenedState);
             mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
-            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice_send);
+            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice);
             mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_sent_play3);
             mPlayAnimation.setTint(AndroidUtil.getColor(R.color.textColorWhite));
             mDefaultIcon.setTint(AndroidUtil.getColor(R.color.textColorWhite));

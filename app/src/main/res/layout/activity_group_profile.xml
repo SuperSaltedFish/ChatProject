@@ -135,7 +135,6 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
-                    android:id="@+id/GroupProfileActivity_mSwitchGroupName"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:padding="18dp"

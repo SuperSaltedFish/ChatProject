@@ -2,12 +2,6 @@
     <string name="app_name">尬聊</string>
 
 
-    <string-array name="HomePagerTitle">
-        <item name="Chats">Chats</item>
-        <item name="Friends">Friends</item>
-        <item name="Setting">Setting</item>
-    </string-array>
-
     <string-array name="ContactProfilePagerTitle">
         <item name="information">信息</item>
         <item name="moments">动态</item>
@@ -37,11 +31,9 @@
     <string name="HomeBottomNavigationTitle_Moments">动态</string>
     <string name="HomeBottomNavigationTitle_Profile">设置</string>
 
-    <string name="FriendProfileActivity_Title">详细资料</string>
     <string name="LoginActivity_Error_NoneInput">账号或密码不能为空</string>
     <string name="LoginActivity_Error_PhoneNumber">手机号码格式不正确</string>
     <string name="LoginActivity_Error_PasswordLength">密码的长度不能小于</string>
-    <string name="LoginActivity_Error_NoneVerifyCode">验证码不能为空</string>
     <string name="LoginActivity_Error_IllegalPassword">密码不合法,请保证密码只含数字和字母,且长度为8至16位</string>
     <string name="LoginActivity_Error_IllegalNickname">昵称非法,昵称只能由长度1至16的汉字、字幕、数字、下划线组成</string>
     <string name="LoginActivity_Error_NoneVerify">验证码不能为空</string>
@@ -65,13 +57,8 @@
     <string name="LoadMoreHint_Default">我是有底线的</string>
     <string name="LoadMoreHint_None">没有找到任何的信息</string>
     <string name="LoadMoreHint_NoMore">没有更多的信息</string>
-    <string name="LoadMoreHint_Loading">正在加载信息</string>
     <string name="LoadMoreHint_LoadingMore">正在加载更多信息</string>
     <string name="LoadMoreHint_LoadFail">加载更多消息失败</string>
-
-    <string name="ContactFragment_SearchContact">搜索好友</string>
-
-    <string name="FindNewContactPresenter_AddFriendFail">添加好友失败，请稍后再试</string>
 
     <string name="ChatActivity_SlideCancelSend">上滑取消发送</string>
     <string name="ChatActivity_UpCancelSend">松手取消发送</string>
@@ -102,7 +89,6 @@
     <string name="AlertDialogChat_Resend">重新发送</string>
 
     <string name="SplashPresenter_TokenIncorrect">签名过期，请尝试重新登录！</string>
-    <string name="SplashPresenter_LoginFailInIMSDK">登录聊天服务器失败，请尝试重新登录！</string>
     <string name="ConversationFragment_EmptyListHint">暂无聊天信息</string>
     <string name="EMMessageUtil_Draft">[草稿]</string>
     <string name="ConversationMenu_Top">置顶聊天</string>
@@ -141,27 +127,16 @@
     <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
     <string name="FindNewContactActivity_SearchFail">搜索失败，请稍后再试</string>
     <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过！</string>
-    <string name="StrangerProfile_SetPermissionTitle">设置朋友圈权限</string>
-    <string name="StrangerProfile_SetPermissionContent">不让他(她)看我的朋友圈</string>
-    <string name="StrangerProfile_VerifyTitle">验证信息</string>
     <string name="EditProfileActivity_Title">编辑资料</string>
     <string name="EditProfileActivity_BirthdayDialogTitle">请选择生日日期</string>
-    <string name="EditProfileActivity_SexLabel">性别</string>
-    <string name="EditProfileActivity_BirthdayLabel">生日</string>
     <string name="EditProfileActivity_SexDialogTitle">性别</string>
     <string name="EditProfileActivity_NoSet">未设置</string>
     <string name="EditProfileActivity_DateFormat">%d年%02d月%02d日</string>
-    <string name="EditProfileActivity_LocationLabel">所在地区</string>
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
-    <string name="SignatureEditActivity_Title">修改签名</string>
-    <string name="SignatureEditActivity_SignatureContentHint">一句话介绍自己</string>
-    <string name="EditProfileActivity_SignatureLabel">个人签名</string>
-    <string name="EditProfileActivity_NicknameLabel">昵称</string>
     <string name="ImageSingleSelectorActivity_Title">选择头像</string>
     <string name="EditProfileActivity_Man">男</string>
     <string name="EditProfileActivity_Woman">女</string>
-    <string name="EditProfileActivity_AvatarLabel">头像</string>
     <string name="EditProfileActivity_NoneNickname">昵称不能为空</string>
     <string name="ChatActivity_ImageAlreadyOverdue">图片已经过期，无法查看</string>
     <string name="ChatActivity_VideoAlreadyOverdue">视频已经过期，无法播放</string>
@@ -190,10 +165,8 @@
     <string name="MyQRCodeActivity_ResetQRCode">刷新二维码</string>
     <string name="MyQRCodeActivity_SaveQRCode">保存到手机</string>
     <string name="LocationMapActivity_Title">发送位置</string>
-    <string name="StrangerProfileActivity_RequestAdd">请求添加</string>
     <string name="Send">发送</string>
     <string name="Search">搜索</string>
-    <string name="ContactOperationActivity_FindFriend">添加好友</string>
     <string name="LocationMapActivity_SearchHint">请输入搜索内容...</string>
     <string name="NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="GroupListActivity_Title">群聊</string>
@@ -225,5 +198,13 @@
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
     <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>
     <string name="None">无</string>
+    <string name="EditProfileActivity_SignatureHint">一句话介绍自己，个性签名会显示在个人主页上！</string>
+    <string name="EditProfileActivity_SignatureLabel">个性签名</string>
+    <string name="EditProfileActivity_EmailHint">请输入邮箱地址</string>
+    <string name="EditProfileActivity_EmailLabbel">邮箱地址</string>
+    <string name="EditProfileActivity_SexLabel">性别</string>
+    <string name="EditProfileActivity_BirthdayLabel">出生日期</string>
+    <string name="EditProfileActivity_LocationLabel">所在地区</string>
+    <string name="EditProfileActivity_NicknameLabel">昵称</string>
 
 </resources>

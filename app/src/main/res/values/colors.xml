@@ -2,7 +2,6 @@
 <resources>
 
     <color name="colorAccent">#5C95FE</color>
-    <color name="colorAccentAlpha">#f05c95fe</color>
     <color name="colorAccentLight">#79A9FE</color>
     <color name="colorAccentDisable">#a85c95fe</color>
     <color name="colorPrimary">#5C95FE</color>
@@ -30,8 +29,6 @@
 
 
     <color name="maskColorBlack">#9c000000</color>
-
-    <color name="chat_receive_background">#637589</color>
 
     <color name="backgroundColorProgressDialog">#80000000</color>
 

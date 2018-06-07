@@ -63,7 +63,6 @@
                 app:layout_constraintGuide_begin="32dp" />
 
             <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -124,7 +123,6 @@
                 app:layout_constraintGuide_begin="32dp" />
 
             <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelTelephone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -186,7 +184,6 @@
                 app:layout_constraintGuide_begin="32dp" />
 
             <TextView
-                android:id="@+id/FriendProfileActivity_mTvLabelDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
