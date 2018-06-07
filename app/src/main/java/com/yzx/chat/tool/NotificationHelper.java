@@ -93,7 +93,7 @@ public class NotificationHelper {
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setSmallIcon(R.drawable.ic_conversation)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setColor(ContextCompat.getColor(context, R.color.colorAccent));
         return builder;
     }

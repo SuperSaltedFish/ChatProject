@@ -16,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -97,7 +99,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private TextView mTvLoadMoreHint;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
-    private ImageView mIvProfile;
     private ImageView mIvSendImage;
     private ImageView mIvSendLocation;
     private ImageView mIvSendVideo;
@@ -139,6 +140,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         super.onDestroy();
         mAlerterIconAnimation.cancel();
         mMessageList = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.ChatMenu_Profile) {
+            enterProfile();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
 
@@ -233,7 +250,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mBtnRecorder = findViewById(R.id.ChatActivity_mBtnRecorder);
         mTvRecorderHint = findViewById(R.id.ChatActivity_mTvRecorderHint);
         mClOtherPanelLayout = findViewById(R.id.ChatActivity_mClOtherPanelLayout);
-        mIvProfile = findViewById(R.id.ChatActivity_mIvProfile);
         mIvSendImage = findViewById(R.id.ChatActivity_mIvSendImage);
         mIvSendLocation = findViewById(R.id.ChatActivity_mIvSendLocation);
         mIvSendVideo = findViewById(R.id.ChatActivity_mIvSendVideo);
@@ -251,8 +267,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        mIvProfile.setOnClickListener(mOnProfileClickListener);
 
         setChatRecyclerViewAndAdapter();
 
@@ -274,22 +288,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void setData(Intent intent) {
         String conversationID = intent.getStringExtra(INTENT_EXTRA_CONVERSATION_ID);
-        int conversationTypeCode = intent.getIntExtra(INTENT_EXTRA_CONVERSATION_TYPE_CODE,-1);
-        if (TextUtils.isEmpty(conversationID)||conversationTypeCode<0) {
+        int conversationTypeCode = intent.getIntExtra(INTENT_EXTRA_CONVERSATION_TYPE_CODE, -1);
+        if (TextUtils.isEmpty(conversationID) || conversationTypeCode < 0) {
             finish();
             return;
         }
         if (mConversation != null && mConversation.getTargetId().equals(conversationID)) {
             return;
         }
-        Conversation conversation = mPresenter.init(conversationTypeCode,conversationID);
+        Conversation conversation = mPresenter.init(conversationTypeCode, conversationID);
         if (conversation == null) {
             finish();
             return;
         }
         mConversation = conversation;
         setTitle(mConversation.getConversationTitle());
-        mEtContent.setText( mConversation.getDraft());
+        mEtContent.setText(mConversation.getDraft());
     }
 
     private void setChatRecyclerViewAndAdapter() {
@@ -672,34 +686,29 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.scrollToPosition(0);
     }
 
-    private final View.OnClickListener mOnProfileClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (mConversation.getConversationType()) {
-                case PRIVATE:
-                    ContactBean contact = mPresenter.getContact();
-                    if (contact != null) {
-                        Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
-                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserProfile().getUserID());
-                        startActivity(intent);
-                    } else {
-                        LogUtil.e("contactBean == null,open ContactProfileActivity fail");
-                    }
-                    break;
-                case GROUP:
-                    GroupBean group = mPresenter.getGroup();
-                    if (group != null) {
-                        Intent intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
-                        intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, group.getGroupID());
-                        startActivity(intent);
-                    } else {
-                        LogUtil.e("GroupBean == null,open GroupProfileActivity fail");
-                    }
-                    break;
-            }
-
+    private void enterProfile() {
+        switch (mConversation.getConversationType()) {
+            case PRIVATE:
+                ContactBean contact = mPresenter.getContact();
+                if (contact != null) {
+                    Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
+                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserProfile().getUserID());
+                    startActivity(intent);
+                } else {
+                    LogUtil.e("contactBean == null,open ContactProfileActivity fail");
+                }
+                break;
+            case GROUP:
+                GroupBean group = mPresenter.getGroup();
+                if (group != null) {
+                    Intent intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
+                    intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, group.getGroupID());
+                    startActivity(intent);
+                } else {
+                    LogUtil.e("GroupBean == null,open GroupProfileActivity fail");
+                }
         }
-    };
+    }
 
 
     @Override
@@ -710,7 +719,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public void addNewMessage(Message message) {
         mMessageList.add(0, message);
-            mAdapter.notifyItemRangeInsertedEx(0, 1);
+        mAdapter.notifyItemRangeInsertedEx(0, 1);
         mRvChatView.scrollToPosition(0);
     }
 

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -189,6 +190,10 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mToolbar.inflateMenu(R.menu.menu_contact_list);
         MenuItem searchItem = mToolbar.getMenu().findItem(R.id.ContactList_Search);
         mSearchView = (SearchView) searchItem.getActionView();
+        ImageView searchButton = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_button);
+        if (searchButton != null) {
+            searchButton.setImageResource(R.drawable.ic_search_list);
+        }
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -346,7 +351,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                         }
                     }
                 });
-            }else if(position==0){
+            } else if (position == 0) {
                 mRvContact.scrollToPosition(0);
             }
             if (mFBtnAdd.getTag() == null) {

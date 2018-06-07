@@ -206,5 +206,6 @@
     <string name="EditProfileActivity_BirthdayLabel">出生日期</string>
     <string name="EditProfileActivity_LocationLabel">所在地区</string>
     <string name="EditProfileActivity_NicknameLabel">昵称</string>
+    <string name="Details">详情</string>
 
 </resources>
