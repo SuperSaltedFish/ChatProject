@@ -102,12 +102,24 @@ public class Camera2Helper {
         return builder;
     }
 
+    public static CaptureRequest.Builder getCaptureTypeCaptureRequestBuilder(CameraDevice device) throws CameraAccessException {
+        CaptureRequest.Builder builder = device.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+        builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);//3A自动
+        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);//开启自动对焦
+        builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);//开启自动曝光
+        builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);//开启自动白平衡
+        builder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON);//开启光学防抖
+        builder.set(CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_FAST);//在不降低相对于传感器输出的帧率的情况下应用降噪
+        return builder;
+    }
+
     private CameraManager mCameraManager;
     private CameraCharacteristics mCameraCharacteristics;
     private String mCameraID;
     private StreamConfigurationMap mStreamConfMap;
     private Integer mCameraSensorOrientation;
     private Semaphore mCameraOpenCloseLock;
+    private Semaphore mCaptureSessionOpenCloseLock;
 
     private HandlerThread mCameraHandlerThread;
     private Handler mCameraHandler;
@@ -130,6 +142,7 @@ public class Camera2Helper {
         mCameraSensorOrientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
         mOnCameraStateListener = new SimpleOnCameraStateListener();
         mCameraOpenCloseLock = new Semaphore(1);
+        mCaptureSessionOpenCloseLock = new Semaphore(1);
     }
 
     @SuppressLint("MissingPermission")
@@ -205,12 +218,14 @@ public class Camera2Helper {
         }
         closeCaptureSession();
         try {
+            mCaptureSessionOpenCloseLock.acquire();
             mCameraDevice.createCaptureSession(outSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     mCameraSession = session;
                     isAllowRepeatingRequest = true;
                     mOnCameraStateListener.onCaptureSessionCreated(mCameraDevice, session, true);
+                    mCaptureSessionOpenCloseLock.release();
                 }
 
                 @Override
@@ -218,6 +233,7 @@ public class Camera2Helper {
                     session.close();
                     mOnCameraStateListener.onCaptureSessionCreated(mCameraDevice, session, false);
                     mCameraSession = null;
+                    mCaptureSessionOpenCloseLock.release();
                 }
 
                 @Override
@@ -227,16 +243,25 @@ public class Camera2Helper {
             }, mCameraHandler);
         } catch (CameraAccessException e) {
             mOnCameraStateListener.onCameraOperatingError(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while trying to lock CaptureSession closing.", e);
         }
     }
 
     public void closeCaptureSession() {
-        if (mCameraSession != null) {
-            mCameraSession.close();
-            mCameraSession = null;
+        try {
+            mCaptureSessionOpenCloseLock.acquire();
+            if (mCameraSession != null) {
+                mCameraSession.close();
+                mCameraSession = null;
+            }
+            mCurrentCaptureRequest = null;
+            isAllowRepeatingRequest = false;
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
+        } finally {
+            mCaptureSessionOpenCloseLock.release();
         }
-        mCurrentCaptureRequest = null;
-        isAllowRepeatingRequest = false;
     }
 
     public void startPreview(@NonNull CaptureRequest.Builder captureRequestBuilder) {
@@ -320,7 +345,6 @@ public class Camera2Helper {
                                 //   focusSucceed();
                                 mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
                                 startRepeatingRequest(mCurrentCaptureRequestBuilder.build(), false);
-
                                 break;
                             case CameraMetadata.CONTROL_AF_STATE_INACTIVE:
                                 //   focusInactive();
@@ -358,7 +382,7 @@ public class Camera2Helper {
         }
     }
 
-    public Size chooseOptimalSize(Class outTypeClass, int previewViewWidth, int previewViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
+    public Size chooseOptimalSize(Class outTypeClass, int expectedWidth, int expectedHeight, int maxWidth, int maxHeight, Size aspectRatio) {
         Size[] choices = mStreamConfMap.getOutputSizes(outTypeClass);
         if (choices == null || choices.length == 0) {
             LogUtil.e("Couldn't find any supported size based on" + outTypeClass.getName());
@@ -371,8 +395,8 @@ public class Camera2Helper {
         for (Size option : choices) {
             if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight &&
                     option.getHeight() == option.getWidth() * h / w) {
-                if (option.getWidth() >= previewViewWidth &&
-                        option.getHeight() >= previewViewHeight) {
+                if (option.getWidth() >= expectedWidth &&
+                        option.getHeight() >= expectedHeight) {
                     bigEnough.add(option);
                 } else {
                     notBigEnough.add(option);
@@ -426,8 +450,6 @@ public class Camera2Helper {
         rect.right += cropRegion.left;
         rect.top += cropRegion.top;
         rect.bottom += cropRegion.top;
-
-        LogUtil.e(rect.toString());
 
         // mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
         mCurrentCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX - 1)});

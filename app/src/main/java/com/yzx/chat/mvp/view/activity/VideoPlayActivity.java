@@ -10,6 +10,7 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.DecodeFormat;
@@ -63,6 +64,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
         ViewCompat.setTransitionName(mIvThumbnail, TRANSITION_NAME_IMAGE);
@@ -111,6 +113,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
         if (mVideoDecoder != null) {
             mVideoDecoder.release();
         }
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override

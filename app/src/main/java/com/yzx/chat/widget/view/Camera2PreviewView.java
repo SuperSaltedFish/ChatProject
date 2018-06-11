@@ -57,11 +57,11 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
 
     private CameraDevice mCameraDevice;
     protected Camera2Helper mCamera2Helper;
+    private Size mPreviewSize;
 
     private int mCurrentCameraType = -1;
     private float mCameraMaxZoomLevel = ZOOM_MIN_LEVEL;
     private float mCurrentZoom = ZOOM_MIN_LEVEL;
-    private Size mPreviewSize;
 
     public Camera2PreviewView(Context context) {
         this(context, null);
@@ -80,16 +80,28 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
     }
 
     public void onResume() {
-        if (mCamera2Helper != null && mCamera2Helper.isAllowRepeatingRequest() && !mCamera2Helper.isPreviewing()) {
-            mCamera2Helper.recoverPreview();
-            callbackPreviewListener(true);
-        }
+        recoverPreview();
     }
 
     public void onPause() {
-        if (mCamera2Helper != null && mCamera2Helper.isPreviewing()) {
+        stopPreview();
+    }
+
+    public boolean isPreviewing() {
+        return mCamera2Helper != null && mCamera2Helper.isPreviewing();
+    }
+
+    public void stopPreview() {
+        if (isPreviewing()) {
             mCamera2Helper.stopPreview();
             callbackPreviewListener(false);
+        }
+    }
+
+    public void recoverPreview() {
+        if (isPreviewing() && mCamera2Helper.isAllowRepeatingRequest()) {
+            mCamera2Helper.recoverPreview();
+            callbackPreviewListener(true);
         }
     }
 
@@ -140,6 +152,10 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
 
     public void setOnPreviewStateListener(OnPreviewStateListener onPreviewStateListener) {
         mOnPreviewStateListener = onPreviewStateListener;
+    }
+
+    public Size getPreviewSize() {
+        return mPreviewSize;
     }
 
     protected void refreshPreview() {

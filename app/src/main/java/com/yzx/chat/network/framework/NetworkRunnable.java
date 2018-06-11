@@ -27,10 +27,18 @@ public class NetworkRunnable implements Runnable {
 
     @Override
     public void run() {
-        final Call call = mCalls[mStartIndex++];
+        Call call = mCalls[mStartIndex++];
         if (call.isCancel()) {
             return;
         }
+        if (!NetworkExecutor.getNetworkConfigure().isEnableNetworkStateCheck || NetworkUtil.isNetworkConnected(NetworkExecutor.sAppContext)) {
+            request(call);
+        } else {
+            requestError(call, new NetworkUnavailableException("Current network is unavailable."));
+        }
+    }
+
+    private void request(final Call call) {
         HttpDataFormatAdapter adapter = call.getHttpDataFormatAdapter();
         HttpRequest request = call.getHttpRequest();
         String strParams = adapter != null ? adapter.paramsToString(request) : null;
@@ -41,26 +49,30 @@ public class NetworkRunnable implements Runnable {
         if (downloadCallback != null) {
             processListener = new DownloadProcessListenerImpl(downloadCallback, call.isDownloadCallbackRunOnMainThread() ? mUIHandler : null);
         }
+
+
         Http.Result result;
         switch (requestType) {
             case GET:
-                result = Http.doGet(url, strParams,call);
+                result = Http.doGet(url, strParams, call);
                 break;
             case POST:
-                result = Http.doPost(url, strParams,call);
+                result = Http.doPost(url, strParams, call);
                 break;
             case GET_DOWNLOAD:
-                result = Http.doGetByDownload(url, strParams, request.savePath(), processListener,call);
+                result = Http.doGetByDownload(url, strParams, request.savePath(), processListener, call);
                 break;
             case POST_DOWNLOAD:
-                result = Http.doPostByDownload(url, strParams, request.savePath(), processListener,call);
+                result = Http.doPostByDownload(url, strParams, request.savePath(), processListener, call);
                 break;
             case POST_MULTI_PARAMS:
-                result = Http.doPostByMultiParams(url, adapter != null ? adapter.multiParamsFormat(request) : request.params(),call);
+                result = Http.doPostByMultiParams(url, adapter != null ? adapter.multiParamsFormat(request) : request.params(), call);
                 break;
             default:
                 throw new RuntimeException("unknown request type:" + request.requestType());
         }
+
+
         Throwable throwable = result.getThrowable();
         if (throwable != null) {
             requestError(call, throwable);
@@ -74,7 +86,7 @@ public class NetworkRunnable implements Runnable {
                     requestSuccess(call, response);
                 } else {
                     try {
-                        Object toObject = adapter.responseToObject(url, result.getResponseContent(), call.getGenericType());
+                        Object toObject = adapter != null ? adapter.responseToObject(url, result.getResponseContent(), call.getGenericType()) : null;
                         response.setResponse(toObject);
                         requestSuccess(call, response);
                     } catch (Exception e) {
@@ -208,7 +220,7 @@ public class NetworkRunnable implements Runnable {
         private long mLastCallbackTime;
         private long mAlreadyDownloadSize;
         private long mTotalSize;
-        private int mCurrentPercent=-1;
+        private int mCurrentPercent = -1;
 
         private DownloadProcessListenerImpl(DownloadCallback downloadCallback, Handler handler) {
             mDownloadCallback = downloadCallback;

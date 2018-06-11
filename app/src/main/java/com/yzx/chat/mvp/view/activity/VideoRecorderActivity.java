@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.yzx.chat.R;
@@ -68,6 +69,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         mIvFlash.setOnClickListener(mOnViewClick);
         mIvClose.setOnClickListener(mOnViewClick);
@@ -81,7 +83,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     protected void onResume() {
         super.onResume();
         mCamera2RecodeView.onResume();
-        if (mVideoDecoder!=null&&!mVideoDecoder.isPlaying()) {
+        if (mVideoDecoder != null && !mVideoDecoder.isPlaying()) {
             mVideoDecoder.start();
         }
     }
@@ -90,7 +92,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     protected void onPause() {
         super.onPause();
         mCamera2RecodeView.onPause();
-        if (mVideoDecoder!=null&&mVideoDecoder.isPlaying()) {
+        if (mVideoDecoder != null && mVideoDecoder.isPlaying()) {
             mVideoDecoder.pause();
         } else {
             resetAndTryPlayRecorderContent();
@@ -105,21 +107,22 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         if (mVideoDecoder != null) {
             mVideoDecoder.release();
         }
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-                private void resetAndTryPlayRecorderContent() {
-                    mHandler.removeCallbacksAndMessages(null);
-                    mRecorderButton.reset();
-                    mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
-                    if (mCamera2RecodeView.isRecording()) {
-                        mCamera2RecodeView.stopRecorder();
-                        if (mVideoDecoder != null) {
-                            mVideoDecoder.release();
-                        }
-                        mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
-                        if (mVideoDecoder != null) {
-                            mVideoDecoder.start();
-                            setCurrentState(CURRENT_STATE_PLAY);
+    private void resetAndTryPlayRecorderContent() {
+        mHandler.removeCallbacksAndMessages(null);
+        mRecorderButton.reset();
+        mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
+        if (mCamera2RecodeView.isRecording()) {
+            mCamera2RecodeView.stopRecorder();
+            if (mVideoDecoder != null) {
+                mVideoDecoder.release();
+            }
+            mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
+            if (mVideoDecoder != null) {
+                mVideoDecoder.start();
+                setCurrentState(CURRENT_STATE_PLAY);
             } else {
                 showLongToast(getString(R.string.VideoRecorderActivity_PlayVideoError));
                 restartPreview();

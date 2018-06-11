@@ -46,11 +46,7 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
@@ -66,7 +62,13 @@
             android:windowSoftInputMode="adjustResize"></activity>
         <activity
             android:name=".mvp.view.activity.QrCodeScanActivity"
-            android:theme="@style/NoBackgroundDarkTheme"></activity>
+            android:theme="@style/DefaultDarkTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".mvp.view.activity.ImageMultiSelectorActivity"
             android:theme="@style/DefaultDarkTheme"></activity>

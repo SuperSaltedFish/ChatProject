@@ -85,42 +85,6 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         setup(savedInstanceState);
     }
 
-
-    public void setSystemUiMode(int mode) {
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        switch (mode) {
-            case SYSTEM_UI_MODE_NONE:
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                TypedValue value = new TypedValue();
-                getTheme().resolveAttribute(R.attr.colorPrimary, value, true);
-                window.setStatusBarColor(value.data);
-                break;
-            case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS:
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(Color.TRANSPARENT);
-                break;
-            case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION:
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setNavigationBarColor(Color.TRANSPARENT);
-                window.setStatusBarColor(Color.TRANSPARENT);
-                break;
-            case SYSTEM_UI_MODE_FULLSCREEN:
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                break;
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -141,46 +105,6 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         }
         return true;
     }
-
-    protected void showToast(String content) {
-        showToast(content, Toast.LENGTH_SHORT);
-    }
-
-    protected void showLongToast(String content) {
-        showToast(content, Toast.LENGTH_LONG);
-    }
-
-    protected void showToast(String content, int duration) {
-        if (mToast == null) {
-            mToast = new Toast(this);
-            View toastView = getLayoutInflater().inflate(R.layout.view_toast_default, null);
-            mTvToast = toastView.findViewById(R.id.BaseCompatActivity_mTvToast);
-            mToast.setView(toastView);
-        }
-        mToast.setDuration(duration);
-        mTvToast.setText(content);
-        mToast.show();
-    }
-
-
-    protected void showSoftKeyboard(View focusView) {
-        if (mInputManager == null) {
-            mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        }
-        focusView.requestFocus();
-        mInputManager.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
-    }
-
-    protected void hideSoftKeyboard() {
-        if (mInputManager == null) {
-            mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        }
-        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (getCurrentFocus() != null)
-                mInputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -280,6 +204,87 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
                 }
             }
 
+        }
+    }
+
+    public void setSystemUiMode(int mode) {
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        switch (mode) {
+            case SYSTEM_UI_MODE_NONE:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                TypedValue value = new TypedValue();
+                getTheme().resolveAttribute(R.attr.colorPrimary, value, true);
+                window.setStatusBarColor(value.data);
+                break;
+            case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(Color.TRANSPARENT);
+                break;
+            case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setNavigationBarColor(Color.TRANSPARENT);
+                window.setStatusBarColor(Color.TRANSPARENT);
+                break;
+            case SYSTEM_UI_MODE_FULLSCREEN:
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                break;
+        }
+    }
+
+    public void setBrightness(float paramFloat) {
+        Window window = getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.screenBrightness = paramFloat;
+        window.setAttributes(params);
+    }
+
+    public void showToast(String content) {
+        showToast(content, Toast.LENGTH_SHORT);
+    }
+
+    public void showLongToast(String content) {
+        showToast(content, Toast.LENGTH_LONG);
+    }
+
+    public void showToast(String content, int duration) {
+        if (mToast == null) {
+            mToast = new Toast(this);
+            View toastView = getLayoutInflater().inflate(R.layout.view_toast_default, null);
+            mTvToast = toastView.findViewById(R.id.BaseCompatActivity_mTvToast);
+            mToast.setView(toastView);
+        }
+        mToast.setDuration(duration);
+        mTvToast.setText(content);
+        mToast.show();
+    }
+
+
+    public void showSoftKeyboard(View focusView) {
+        if (mInputManager == null) {
+            mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
+        focusView.requestFocus();
+        mInputManager.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    public void hideSoftKeyboard() {
+        if (mInputManager == null) {
+            mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                mInputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 }

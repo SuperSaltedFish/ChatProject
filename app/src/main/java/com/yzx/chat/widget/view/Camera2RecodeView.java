@@ -83,7 +83,7 @@ public class Camera2RecodeView extends Camera2PreviewView {
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         if (mCamera2Helper != null) {
-            Size videoOptimalSize = mCamera2Helper.chooseOptimalSize(MediaCodec.class, MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT, getAspectRatioSize());
+            Size videoOptimalSize = mCamera2Helper.chooseOptimalSize(MediaCodec.class, MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT, MAX_PREVIEW_WIDTH,MAX_PREVIEW_HEIGHT, getAspectRatioSize());
             if (videoOptimalSize == null) {
                 return;
             }

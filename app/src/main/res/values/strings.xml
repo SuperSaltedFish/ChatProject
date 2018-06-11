@@ -207,5 +207,6 @@
     <string name="EditProfileActivity_LocationLabel">所在地区</string>
     <string name="EditProfileActivity_NicknameLabel">昵称</string>
     <string name="Details">详情</string>
+    <string name="QrCodeScanActivity_Title">二维码扫描</string>
 
 </resources>

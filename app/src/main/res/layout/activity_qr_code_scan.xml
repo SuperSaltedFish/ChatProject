@@ -1,28 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     tools:context=".mvp.view.activity.QrCodeScanActivity">
 
 
-    <com.yzx.chat.widget.view.Camera2TextureView
-        android:id="@+id/QrCodeScanActivity_mCamera2TextureView"
+    <com.yzx.chat.widget.view.Camera2CaptureView
+        android:id="@+id/QrCodeScanActivity_mCamera2CaptureView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
 
 
     <com.yzx.chat.widget.view.MaskView
         android:id="@+id/QrCodeScanActivity_mMaskView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Toolbar
-        android:layout_width="match_parent"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/Default_mToolbar"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:background="@color/maskColorBlack"
-        android:minHeight="48dp" />
+        android:elevation="4dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/ToolbarTheme"
+        app:title="@string/QrCodeScanActivity_Title"
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     <ImageView
         android:id="@+id/QrCodeScanActivity_mIvToggleFlash"
@@ -30,38 +43,38 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="64dp"
-        android:src="@drawable/ic_flash_close" />
+        android:layout_marginTop="16dp"
+        android:src="@drawable/selector_src_camera_flash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
+
+    <FrameLayout
+        android:id="@+id/QrCodeScanActivity_mScanLayout"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:background="@drawable/frame_capture"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar">
+
+        <View
+            android:id="@+id/QrCodeScanActivity_mScanAnimationView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_scan" />
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="请将二维码对准框内，耐心等待"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="@id/QrCodeScanActivity_mScanLayout"
+        app:layout_constraintStart_toStartOf="@id/QrCodeScanActivity_mScanLayout"
+        app:layout_constraintTop_toBottomOf="@id/QrCodeScanActivity_mScanLayout" />
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:id="@+id/QrCodeScanActivity_mScanLayout"
-            android:layout_width="256dp"
-            android:layout_height="256dp"
-            android:background="@drawable/frame_capture">
-
-            <View
-                android:id="@+id/QrCodeScanActivity_mScanAnimationView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_scan" />
-
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="请将二维码对准框内，耐心等待"
-            android:textColor="@android:color/white" />
-
-
-    </LinearLayout>
-
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>
