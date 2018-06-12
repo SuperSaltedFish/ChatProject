@@ -78,9 +78,10 @@ public class BitmapUtil {
         BitmapFactory.decodeStream(res.openRawResource(resId), null, options);
         float inSampleSize = 1f;
         if (options.outWidth > viewWidth || options.outHeight > viewHeight) {
-            float heightScale = options.outWidth / (float) viewHeight;
-            float widthScale = options.outHeight / (float) viewHeight;
-            inSampleSize = Math.min(widthScale, heightScale);
+            float widthScale = options.outWidth / (float) viewWidth;
+            float heightScale = options.outHeight / (float) viewHeight;
+            inSampleSize = Math.max(widthScale, heightScale);
+            inSampleSize = 2 * ((int) (Math.log(inSampleSize) / Math.log(2)));
         }
         return inSampleSize;
     }
@@ -96,9 +97,9 @@ public class BitmapUtil {
 
     public static String saveBitmapToPNG(Bitmap bitmap, String path, String fileName) {
         String filePath = path + fileName + ".png";
-        File file = new File( filePath);
+        File file = new File(filePath);
         try {
-            if(!file.exists()&&!file.createNewFile()){
+            if (!file.exists() && !file.createNewFile()) {
                 LogUtil.e("createNewFile fail");
                 return null;
             }

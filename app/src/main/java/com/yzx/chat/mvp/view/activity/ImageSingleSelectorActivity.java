@@ -21,6 +21,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalSingleImageAdapter;
+import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -91,6 +92,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
         mRvImage.setHasFixedSize(true);
         mRvImage.addOnItemTouchListener(mOnImageItemClickListener);
         mRvImage.setAdapter(mLocalSingleImageAdapter);
+        mRvImage.addOnScrollListener(new ImageAutoLoadScrollListener());
 
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
         mRvImageDir.setHasFixedSize(true);

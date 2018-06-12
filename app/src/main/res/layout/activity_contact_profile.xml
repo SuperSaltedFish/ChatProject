@@ -11,7 +11,7 @@
         android:layout_height="48dp"
         android:layout_gravity="top"
         android:background="@color/colorPrimary"
-        app:popupTheme="@style/ToolbarPopupTheme"
+        app:popupTheme="@style/ToolbarPopupLightTheme"
         app:theme="@style/ToolbarTheme"
         app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 

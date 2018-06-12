@@ -21,6 +21,7 @@ import com.yzx.chat.mvp.contract.ProfileModifyContract;
 import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
 import com.yzx.chat.mvp.view.activity.LoginActivity;
 import com.yzx.chat.mvp.view.activity.EditProfileActivity;
+import com.yzx.chat.mvp.view.activity.QrCodeScanActivity;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
 
@@ -129,7 +130,7 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(mContext, EditProfileActivity.class));
+            startActivity(new Intent(mContext, QrCodeScanActivity.class));
 //
 
             ///storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg

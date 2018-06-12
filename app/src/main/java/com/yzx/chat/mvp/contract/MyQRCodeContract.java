@@ -13,7 +13,7 @@ import com.yzx.chat.bean.UserBean;
  */
 
 
-public class MyQRCodeActivityContract {
+public class MyQRCodeContract {
     public interface View extends BaseView<Presenter> {
 
         void showQRCode(String content);

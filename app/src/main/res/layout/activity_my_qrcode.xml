@@ -85,6 +85,7 @@
         <ImageView
             android:id="@+id/MyQRCodeActivity_mIvQRCode"
             android:layout_width="280dp"
+            android:padding="8dp"
             android:layout_height="280dp"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"

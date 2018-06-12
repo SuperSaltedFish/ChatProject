@@ -11,7 +11,7 @@ import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,17 +57,17 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void acceptContactRequest(final ContactOperationBean contactOperation) {
-        mContactOperationContractView.enableProgressDialog(true);
+        mContactOperationContractView.setEnableProgressDialog(true);
         mIMClient.contactManager().acceptContact(contactOperation, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                mContactOperationContractView.enableProgressDialog(false);
+                mContactOperationContractView.setEnableProgressDialog(false);
             }
 
             @Override
             public void onFailure(String error) {
                 mContactOperationContractView.showError(error);
-                mContactOperationContractView.enableProgressDialog(false);
+                mContactOperationContractView.setEnableProgressDialog(false);
             }
         });
     }
@@ -141,7 +141,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     };
 
 
-    private static class LoadAllContactOperationTask extends NetworkAsyncTask<ContactOperationPresenter, List<ContactOperationBean>, DiffUtil.DiffResult> {
+    private static class LoadAllContactOperationTask extends BackstageAsyncTask<ContactOperationPresenter, List<ContactOperationBean>, DiffUtil.DiffResult> {
 
         LoadAllContactOperationTask(ContactOperationPresenter lifeCycleDependence) {
             super(lifeCycleDependence);

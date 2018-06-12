@@ -11,7 +11,6 @@ import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.Surface;
@@ -33,13 +32,14 @@ public class Camera2CaptureView extends Camera2PreviewView {
     protected static final int DEFAULT_FORMAT = ImageFormat.YUV_420_888;
 
     private ImageReader mImageReader;
-    private OnCaptureListener mOnCaptureListener;
+    private CaptureCallback mCaptureCallback;
     private Handler mCaptureHandler;
+    private Handler mUIHandler;
     private Size mExpectedSize;
     private int mImageFormat;
     private int mCameraSensorOrientation;
 
-    private boolean isCapturePrepared = true;
+    private volatile boolean isCapturePrepared = true;
 
     public Camera2CaptureView(Context context) {
         this(context, null);
@@ -53,6 +53,7 @@ public class Camera2CaptureView extends Camera2PreviewView {
         super(context, attrs, defStyleAttr);
         mExpectedSize = new Size(MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT);
         mImageFormat = DEFAULT_FORMAT;
+        mUIHandler = new Handler();
     }
 
     public void setCaptureFormat(int format) {
@@ -73,6 +74,21 @@ public class Camera2CaptureView extends Camera2PreviewView {
         recreateCaptureSession();
     }
 
+    public void startCapture(){
+        isCapturePrepared = true;
+        if(isPreviewing()){
+            refreshPreview();
+        }
+    }
+
+    public void stopCapture(){
+        isCapturePrepared = false;
+        if(isPreviewing()){
+            refreshPreview();
+        }
+    }
+
+
     private void createImageReader(int width, int height, int format) {
         if (mImageReader != null) {
             mImageReader.close();
@@ -86,25 +102,35 @@ public class Camera2CaptureView extends Camera2PreviewView {
         }
         mImageReader = ImageReader.newInstance(width, height, format, 1);
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            private StartCapture mStartCapture = new StartCapture();
+            private StopCapture mStopCapture = new StopCapture();
+
             @Override
             public void onImageAvailable(ImageReader reader) {
-                if (mOnCaptureListener != null) {
-                    Image image = reader.acquireNextImage();
-                    if (image != null) {
-                        isCapturePrepared = false;
-                        refreshPreview();
-                        mOnCaptureListener.onCaptureSuccess(image, image.getWidth(), image.getHeight(),mCameraSensorOrientation);
+                Image image = reader.acquireNextImage();
+                if (image != null) {
+                    boolean isContinueCapture = true;
+                    try {
+                        if(!isCapturePrepared){
+                            return;
+                        }
+                        if (mCaptureCallback != null) {
+                            mUIHandler.post(mStopCapture);
+                            isContinueCapture = !mCaptureCallback.captureSuccess(image, image.getWidth(), image.getHeight(), mCameraSensorOrientation);
+                        }
+                    } finally {
                         image.close();
-                        isCapturePrepared = true;
-                        refreshPreview();
+                    }
+                    if (isContinueCapture) {
+                        mUIHandler.post(mStartCapture);
                     }
                 }
             }
         }, mCaptureHandler);
     }
 
-    public void setOnCaptureListener(OnCaptureListener onCaptureListener) {
-        mOnCaptureListener = onCaptureListener;
+    public void setCaptureCallback(CaptureCallback captureCallback) {
+        mCaptureCallback = captureCallback;
         if (isPreviewing()) {
             recreateCaptureSession();
         }
@@ -116,17 +142,20 @@ public class Camera2CaptureView extends Camera2PreviewView {
         if (mCaptureHandler != null) {
             mCaptureHandler.removeCallbacksAndMessages(null);
             mCaptureHandler.getLooper().quit();
+            mCaptureHandler = null;
         }
         if (mImageReader != null) {
             mImageReader.close();
+            mImageReader = null;
         }
+        isCapturePrepared = true;
         return true;
     }
 
     @Override
     protected List<Surface> getAvailableSurfaces() {
         List<Surface> surfaces = super.getAvailableSurfaces();
-        if (mOnCaptureListener != null && mImageReader == null) {
+        if (mCaptureCallback != null && mImageReader == null) {
             Size captureSize = mCamera2Helper.chooseOptimalSize(ImageReader.class, mExpectedSize.getWidth(), mExpectedSize.getHeight(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, getAspectRatioSize());
             if (captureSize != null) {
                 createImageReader(captureSize.getWidth(), captureSize.getHeight(), DEFAULT_FORMAT);
@@ -158,7 +187,23 @@ public class Camera2CaptureView extends Camera2PreviewView {
         return null;
     }
 
-    public interface OnCaptureListener {
-        void onCaptureSuccess(@NonNull Image image, int width, int height,int imageOrientation);
+    private class StartCapture implements Runnable {
+
+        @Override
+        public void run() {
+            startCapture();
+        }
+    }
+
+    private class StopCapture implements Runnable {
+
+        @Override
+        public void run() {
+            stopCapture();
+        }
+    }
+
+    public interface CaptureCallback {
+        boolean captureSuccess(@NonNull Image image, int width, int height, int imageOrientation);
     }
 }

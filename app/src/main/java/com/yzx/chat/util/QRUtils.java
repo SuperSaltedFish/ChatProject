@@ -1,24 +1,40 @@
 package com.yzx.chat.util;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.text.TextUtils;
+import android.util.Size;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.DecodeHintType;
 import com.google.zxing.EncodeHintType;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
  * 二维码生成工具类
  */
 
-public class QREncodingUtils {
+public class QRUtils {
 
+    private static final int MAX_DECODE_WIDTH = 1920;
+    private static final int MAX_DECODE_HEIGHT = 1920;
 
     public static Bitmap createQRCode(String content, int widthPix, int heightPix, Bitmap logoBm) {
         try {
@@ -31,7 +47,7 @@ public class QREncodingUtils {
             // 容错级别
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
             // 白边大小
-            hints.put(EncodeHintType.MARGIN,0);
+            hints.put(EncodeHintType.MARGIN, 0);
             // 图像数据转换，使用了矩阵转换
             BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, widthPix,
                     heightPix, hints);
@@ -97,5 +113,44 @@ public class QREncodingUtils {
             e.getStackTrace();
         }
         return bitmap;
+    }
+
+    public static String decodeFromLocalFile(String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            return null;
+        }
+        File file = new File(filePath);
+        if (!file.exists() || !file.isFile()) {
+            return null;
+        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+        if (options.outWidth > MAX_DECODE_WIDTH || options.outHeight > MAX_DECODE_HEIGHT) {
+            float heightScale = options.outWidth / (float) MAX_DECODE_WIDTH;
+            float widthScale = options.outHeight / (float) MAX_DECODE_HEIGHT;
+            float inSampleSize = Math.max(widthScale, heightScale);
+            inSampleSize = 2 * ((int) (Math.log(inSampleSize) / Math.log(2)));
+            options.inSampleSize = (int) inSampleSize;
+        }
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[bitmap.getByteCount()];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+        bitmap.recycle();
+        RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
+        QRCodeReader qrCodeReader = new QRCodeReader();
+        HashMap<DecodeHintType, Object> hints = new HashMap<>();
+        hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
+        hints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
+        try {
+            return qrCodeReader.decode(binaryBitmap, hints).getText();
+        } catch (NotFoundException | ChecksumException | FormatException ignored) {
+        }
+        return null;
     }
 }

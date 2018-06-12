@@ -16,7 +16,7 @@ public class StrangerProfileContract {
     public interface View extends BaseView<Presenter> {
         void goBack();
         void showError(String error);
-        void enableProgressDialog(boolean isEnable);
+        void setEnableProgressDialog(boolean isEnable);
     }
 
 

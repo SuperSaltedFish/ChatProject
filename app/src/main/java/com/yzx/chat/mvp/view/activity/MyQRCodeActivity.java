@@ -16,9 +16,9 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.mvp.contract.MyQRCodeActivityContract;
-import com.yzx.chat.mvp.presenter.MyQRCodeActivityPresenter;
-import com.yzx.chat.util.QREncodingUtils;
+import com.yzx.chat.mvp.contract.MyQRCodeContract;
+import com.yzx.chat.mvp.presenter.MyQRCodePresenter;
+import com.yzx.chat.util.QRUtils;
 import com.yzx.chat.widget.view.NineGridAvatarView;
 
 /**
@@ -27,7 +27,7 @@ import com.yzx.chat.widget.view.NineGridAvatarView;
  */
 
 
-public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContract.Presenter> implements MyQRCodeActivityContract.View {
+public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presenter> implements MyQRCodeContract.View {
 
     public static final String INTENT_EXTRA_GROUP_ID = "GroupID";
     public static final String INTENT_EXTRA_QR_TYPE = "Type";
@@ -174,15 +174,15 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeActivityContrac
     };
 
     @Override
-    public MyQRCodeActivityContract.Presenter getPresenter() {
-        return new MyQRCodeActivityPresenter();
+    public MyQRCodeContract.Presenter getPresenter() {
+        return new MyQRCodePresenter();
     }
 
     @Override
     public void showQRCode(String content) {
         mProgressBar.setVisibility(View.INVISIBLE);
         mIvQRCode.setVisibility(View.VISIBLE);
-        mIvQRCode.setImageBitmap(QREncodingUtils.createQRCode(content, 200, 200, null));
+        mIvQRCode.setImageBitmap(QRUtils.createQRCode(content, 200, 200, null));
     }
 
     @Override

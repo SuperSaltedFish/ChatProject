@@ -377,6 +377,10 @@ public class IMClient {
         return mConversationManager;
     }
 
+    public CryptoManager cryptoManager() {
+        return mCryptoManager;
+    }
+
     public void addConnectionListener(OnConnectionStateChangeListener listener) {
         if (!mOnConnectionStateChangeListenerList.contains(listener)) {
             mOnConnectionStateChangeListenerList.add(listener);

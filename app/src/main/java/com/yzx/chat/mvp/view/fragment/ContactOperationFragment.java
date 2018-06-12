@@ -184,7 +184,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     }
 
     @Override
-    public void enableProgressDialog(boolean isEnable) {
+    public void setEnableProgressDialog(boolean isEnable) {
         if (isEnable) {
             if (!mProgressDialog.isShowing()) {
                 mProgressDialog.show();

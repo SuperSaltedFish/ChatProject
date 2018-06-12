@@ -3,11 +3,13 @@ package com.yzx.chat.mvp.presenter;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.QRCodeContentBean;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.mvp.contract.MyQRCodeActivityContract;
+import com.yzx.chat.mvp.contract.MyQRCodeContract;
 import com.yzx.chat.network.api.Group.GetTempGroupID;
 import com.yzx.chat.network.api.Group.GroupApi;
 import com.yzx.chat.network.api.JsonResponse;
@@ -28,21 +30,23 @@ import com.yzx.chat.util.MD5Util;
  */
 
 
-public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Presenter {
+public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
-    private MyQRCodeActivityContract.View mMyQRCodeActivityView;
+    private MyQRCodeContract.View mMyQRCodeActivityView;
     private Call<JsonResponse<GetTempUserID>> mGetTempUserIDCall;
     private Call<JsonResponse<GetTempGroupID>> mGetTempGroupIDCall;
     private UserApi mUserApi;
     private GroupApi mGroupApi;
+    private Gson mGson;
 
     private boolean isUpdating;
 
     @Override
-    public void attachView(MyQRCodeActivityContract.View view) {
+    public void attachView(MyQRCodeContract.View view) {
         mMyQRCodeActivityView = view;
         mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
         mGroupApi = (GroupApi) ApiHelper.getProxyInstance(GroupApi.class);
+        mGson = ApiHelper.getDefaultGsonInstance();
     }
 
     @Override
@@ -77,7 +81,18 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
             @Override
             protected void onSuccess(GetTempUserID response) {
                 isUpdating = false;
-                mMyQRCodeActivityView.showQRCode(response.getTempUserID());
+                String id = response.getTempUserID();
+                if (!TextUtils.isEmpty(id)) {
+                    id = IMClient.getInstance().cryptoManager().aesEncryptToBase64(id.getBytes());
+                    if (!TextUtils.isEmpty(id)) {
+                        QRCodeContentBean qrCodeContent = new QRCodeContentBean();
+                        qrCodeContent.setId(id);
+                        qrCodeContent.setType(QRCodeContentBean.TYPE_USER);
+                        mMyQRCodeActivityView.showQRCode(mGson.toJson(qrCodeContent));
+                        return;
+                    }
+                }
+                onFailure(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
             }
 
             @Override
@@ -90,7 +105,7 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
     }
 
     @Override
-    public void saveQRCodeToLocal(Bitmap bitmap,String id) {
+    public void saveQRCodeToLocal(Bitmap bitmap, String id) {
         String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryHelper.getUserImagePath(), MD5Util.encrypt16(id));
         if (TextUtils.isEmpty(savePath)) {
             mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeFail));
@@ -111,7 +126,18 @@ public class MyQRCodeActivityPresenter implements MyQRCodeActivityContract.Prese
             @Override
             protected void onSuccess(GetTempGroupID response) {
                 isUpdating = false;
-                mMyQRCodeActivityView.showQRCode(response.getTempGroupID());
+                String id = response.getTempGroupID();
+                if (!TextUtils.isEmpty(id)) {
+                    id = IMClient.getInstance().cryptoManager().aesEncryptToBase64(id.getBytes());
+                    if (!TextUtils.isEmpty(id)) {
+                        QRCodeContentBean qrCodeContent = new QRCodeContentBean();
+                        qrCodeContent.setId(id);
+                        qrCodeContent.setType(QRCodeContentBean.TYPE_GROUP);
+                        mMyQRCodeActivityView.showQRCode(mGson.toJson(qrCodeContent));
+                        return;
+                    }
+                }
+                onFailure(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
             }
 
             @Override

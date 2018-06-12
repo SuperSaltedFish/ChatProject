@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ToolbarPopupTheme"
+                app:popupTheme="@style/ToolbarPopupLightTheme"
                 app:theme="@style/ToolbarTheme"
                 app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 

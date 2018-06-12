@@ -94,7 +94,7 @@ public class AndroidUtil {
             public void onActivityDestroyed(Activity activity) {
                 sActivityLiveCount--;
                 if (sActivityLiveCount == 0) {
-                    NetworkAsyncTask.cleanAllTask();
+                    BackstageAsyncTask.cleanAllTask();
                 }
                 sActivityStack.remove(activity.getClass());
                 sActivityInstanceMap.remove(activity.getClass());

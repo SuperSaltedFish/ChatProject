@@ -18,6 +18,7 @@ import com.yzx.chat.mvp.contract.GroupListContract;
 import com.yzx.chat.mvp.presenter.GroupListPresenter;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.GroupAdapter;
+import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 
@@ -60,6 +61,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         mRvGroup.setHasFixedSize(true);
         mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRvGroup.addOnItemTouchListener(mOnRvGroupItemClickListener);
+        mRvGroup.addOnScrollListener(new ImageAutoLoadScrollListener());
 
         mPresenter.loadAllGroup();
     }

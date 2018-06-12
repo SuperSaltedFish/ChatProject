@@ -427,7 +427,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     }
 
     @Override
-    public void enableProgressDialog(boolean isEnable, String hint) {
+    public void setEnableProgressDialog(boolean isEnable, String hint) {
         if (isEnable) {
             mProgressDialog.show(hint);
         } else {

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 
-public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
+public abstract class BackstageAsyncTask<LifeDependent, Param, Result> {
 
     protected void onPreExecute() {
     }
@@ -63,7 +63,7 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
 
     private AtomicBoolean isCancel;
 
-    public NetworkAsyncTask(LifeDependent lifeCycleDependence) {
+    public BackstageAsyncTask(LifeDependent lifeCycleDependence) {
         if (lifeCycleDependence != null) {
             mLifeDependentReference = new WeakReference<>(lifeCycleDependence);
             isLifeCycleDependent = true;
@@ -124,7 +124,7 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
     }
 
     private synchronized void postResult(Result result) {
-        Message message = mHandler.obtainMessage(MESSAGE_POST_RESULT, new TaskResult<>(NetworkAsyncTask.this, result));
+        Message message = mHandler.obtainMessage(MESSAGE_POST_RESULT, new TaskResult<>(BackstageAsyncTask.this, result));
         message.sendToTarget();
     }
 
@@ -159,7 +159,7 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
         public void handleMessage(Message msg) {
             if (msg.what == MESSAGE_POST_RESULT) {
                 TaskResult<?> result = (TaskResult<?>) msg.obj;
-                NetworkAsyncTask task = result.mTask;
+                BackstageAsyncTask task = result.mTask;
                 if (!task.isCancel() && (task.getLifeCycleObject() != null || task.isLifeCycleDependent())) {
                     task.onPostExecute(result.mData, task.getLifeCycleObject());
                 }
@@ -168,10 +168,10 @@ public abstract class NetworkAsyncTask<LifeDependent, Param, Result> {
     }
 
     private static class TaskResult<Result> {
-        final NetworkAsyncTask mTask;
+        final BackstageAsyncTask mTask;
         final Result mData;
 
-        TaskResult(NetworkAsyncTask task, Result result) {
+        TaskResult(BackstageAsyncTask task, Result result) {
             mTask = task;
             mData = result;
         }

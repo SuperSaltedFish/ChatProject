@@ -29,7 +29,7 @@ public class GroupProfileContract {
 
         void finishChatActivity();
 
-        void enableProgressDialog(boolean isEnable,String hint);
+        void setEnableProgressDialog(boolean isEnable, String hint);
 
         void goBack();
     }

@@ -99,7 +99,7 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
     }
 
     public void recoverPreview() {
-        if (isPreviewing() && mCamera2Helper.isAllowRepeatingRequest()) {
+        if (!isPreviewing() && mCamera2Helper.isAllowRepeatingRequest()) {
             mCamera2Helper.recoverPreview();
             callbackPreviewListener(true);
         }
@@ -159,15 +159,17 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
     }
 
     protected void refreshPreview() {
-        CaptureRequest.Builder builder = getCaptureRequestBuilder(mCameraDevice);
-        if (builder == null) {
-            LogUtil.e("create CaptureRequest.Builder fail");
-            return;
+        if (mCamera2Helper != null && mCameraDevice != null) {
+            CaptureRequest.Builder builder = getCaptureRequestBuilder(mCameraDevice);
+            if (builder == null) {
+                LogUtil.e("create CaptureRequest.Builder fail");
+                return;
+            }
+            for (Surface target : getOutPutSurfaces()) {
+                builder.addTarget(target);
+            }
+            mCamera2Helper.startPreview(builder);
         }
-        for (Surface target : getOutPutSurfaces()) {
-            builder.addTarget(target);
-        }
-        mCamera2Helper.startPreview(builder);
     }
 
     protected void recreateCaptureSession() {
@@ -399,6 +401,8 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         closeCamera();
+        mPreviewSurfaceTexture = null;
+        mCameraOutSurface = null;
         return true;
     }
 

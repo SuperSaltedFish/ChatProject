@@ -13,7 +13,7 @@ import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
-import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.util.UUID;
 
@@ -78,7 +78,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
         mCropImageView.showError(AndroidUtil.getString(R.string.CropImageActivity_SaveAvatarFail));
     }
 
-    private static class SaveAvatarToLocalTask extends NetworkAsyncTask<CropImagePresenter, Bitmap, String> {
+    private static class SaveAvatarToLocalTask extends BackstageAsyncTask<CropImagePresenter, Bitmap, String> {
 
         SaveAvatarToLocalTask(CropImagePresenter lifeCycleDependence) {
             super(lifeCycleDependence);

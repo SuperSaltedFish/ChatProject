@@ -21,7 +21,7 @@ public class ContactProfileContract {
 
         void goBack();
 
-        void enableProgressDialog(boolean isEnable);
+        void setEnableProgressDialog(boolean isEnable);
     }
 
 

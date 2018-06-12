@@ -46,7 +46,11 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="ToolbarPopupTheme" parent="ThemeOverlay.AppCompat.Light">
+    <style name="ToolbarPopupLightTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="overlapAnchor">false</item>
+    </style>
+
+    <style name="ToolbarPopupDarkTheme" parent="ThemeOverlay.AppCompat">
         <item name="overlapAnchor">false</item>
     </style>
 

@@ -23,6 +23,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalMultiImageAdapter;
+import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -99,6 +100,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);
         mRvImage.setAdapter(mLocalMultiImageAdapter);
+        mRvImage.addOnScrollListener(new ImageAutoLoadScrollListener());
 
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
         mRvImageDir.setHasFixedSize(true);

@@ -27,7 +27,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.RSAUtil;
 
 import java.lang.reflect.Type;
@@ -63,7 +63,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         NotificationHelper.getInstance().cancelAllNotification();
         IMClient.getInstance().logout();
         sHttpExecutor.cleanAllTask();
-        NetworkAsyncTask.cleanAllTask();
+        BackstageAsyncTask.cleanAllTask();
 
     }
 

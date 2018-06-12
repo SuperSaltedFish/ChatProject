@@ -9,7 +9,7 @@ import com.yzx.chat.mvp.contract.ContactListContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.AsyncUtil;
 
 import java.util.ArrayList;
@@ -131,7 +131,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     };
 
 
-    private static class RefreshAllContactsTask extends NetworkAsyncTask<ContactListPresenter, List<ContactBean>, DiffUtil.DiffResult> {
+    private static class RefreshAllContactsTask extends BackstageAsyncTask<ContactListPresenter, List<ContactBean>, DiffUtil.DiffResult> {
 
         RefreshAllContactsTask(ContactListPresenter lifeCycleDependence) {
             super(lifeCycleDependence);

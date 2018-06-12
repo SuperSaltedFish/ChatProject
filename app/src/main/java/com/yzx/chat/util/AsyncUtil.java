@@ -10,7 +10,7 @@ import com.yzx.chat.network.framework.Call;
 
 public class AsyncUtil {
 
-    public static void cancelTask(NetworkAsyncTask task){
+    public static void cancelTask(BackstageAsyncTask task){
         if(task!=null){
             task.cancel();
         }

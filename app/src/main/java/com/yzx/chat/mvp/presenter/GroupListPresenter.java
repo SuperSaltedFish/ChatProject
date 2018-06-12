@@ -11,7 +11,7 @@ import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.PinYinUtil;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
     };
 
-    private static class LoadAllGroupTask extends NetworkAsyncTask<GroupListPresenter, List<GroupBean>, DiffUtil.DiffResult> {
+    private static class LoadAllGroupTask extends BackstageAsyncTask<GroupListPresenter, List<GroupBean>, DiffUtil.DiffResult> {
 
         LoadAllGroupTask(GroupListPresenter lifeCycleDependence) {
             super(lifeCycleDependence);

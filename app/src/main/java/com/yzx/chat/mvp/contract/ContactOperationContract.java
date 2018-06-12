@@ -26,7 +26,7 @@ public class ContactOperationContract {
 
         void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationBean> newDataList);
 
-        void enableProgressDialog(boolean isEnable);
+        void setEnableProgressDialog(boolean isEnable);
 
         void showError(String error);
 

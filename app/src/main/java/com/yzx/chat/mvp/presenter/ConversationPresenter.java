@@ -10,12 +10,11 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.ConversationContract;
 import com.yzx.chat.network.chat.ChatManager;
-import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.NetworkAsyncTask;
+import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -144,7 +143,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
-    private static class RefreshAllConversationTask extends NetworkAsyncTask<ConversationPresenter, List<Conversation>, DiffUtil.DiffResult> {
+    private static class RefreshAllConversationTask extends BackstageAsyncTask<ConversationPresenter, List<Conversation>, DiffUtil.DiffResult> {
 
         RefreshAllConversationTask(ConversationPresenter lifeCycleDependence) {
             super(lifeCycleDependence);

@@ -150,7 +150,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     @Override
-    public void enableProgressDialog(boolean isEnable) {
+    public void setEnableProgressDialog(boolean isEnable) {
         if (isEnable) {
             mProgressDialog.show();
         } else {

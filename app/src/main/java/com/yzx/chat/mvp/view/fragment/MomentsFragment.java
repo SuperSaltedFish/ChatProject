@@ -9,6 +9,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.MomentsAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 
@@ -44,6 +45,7 @@ public class MomentsFragment extends BaseFragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12), SpacesItemDecoration.VERTICAL, true, true));
+        mRecyclerView.addOnScrollListener(new ImageAutoLoadScrollListener());
     }
 
     @Override

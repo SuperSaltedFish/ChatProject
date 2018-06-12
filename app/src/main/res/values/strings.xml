@@ -75,6 +75,7 @@
     <string name="ProgressHint_Modify">正在修改...</string>
     <string name="ProgressHint_Quit">正在退出...</string>
     <string name="ProgressHint_Upload">正在上传...</string>
+    <string name="ProgressHint_Decode">正在解析...</string>
     <string name="ProgressHint_DownloadVideo">正在下载视频\n(%d%%)</string>
 
     <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
@@ -208,5 +209,8 @@
     <string name="EditProfileActivity_NicknameLabel">昵称</string>
     <string name="Details">详情</string>
     <string name="QrCodeScanActivity_Title">二维码扫描</string>
+    <string name="MyQRCodePresenter_GenerateQRCodeFail">生成二维码失败，请稍后再试</string>
+    <string name="QrCodePresenter_Unrecognized">无法识别该二维码</string>
+    <string name="QrCodePresenter_UnableFind">没有在照片中找到二维码</string>
 
 </resources>

@@ -1,21 +1,14 @@
 package com.yzx.chat.mvp.view.activity;
 
-import android.app.ActionBar;
 import android.app.Service;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.ImageFormat;
 import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.media.Image;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +19,8 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
@@ -38,15 +33,20 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.mvp.contract.QrCodeScanContract;
+import com.yzx.chat.mvp.presenter.QrCodeScanPresenter;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.QRUtils;
 import com.yzx.chat.widget.view.Camera2CaptureView;
 import com.yzx.chat.widget.view.MaskView;
+import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 
-public class QrCodeScanActivity extends BaseCompatActivity {
+public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Presenter> implements QrCodeScanContract.View {
 
     private Camera2CaptureView mCamera2CaptureView;
     private View mScanAnimationView;
@@ -55,6 +55,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     private ImageView mIvToggleFlash;
     private ScaleAnimation mScaleAnimation;
     private Vibrator mVibrator;
+    private ProgressDialog mProgressDialog;
 
     private Rect mClipRect;
 
@@ -72,6 +73,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
         mIvToggleFlash = findViewById(R.id.QrCodeScanActivity_mIvToggleFlash);
         mScaleAnimation = new ScaleAnimation(1f, 1f, 0.0f, 1.0f);
         mVibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Decode));
     }
 
     @Override
@@ -81,7 +83,7 @@ public class QrCodeScanActivity extends BaseCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mCamera2CaptureView.setOnCaptureListener(mOnCaptureListener);
+        mCamera2CaptureView.setCaptureCallback(mCaptureCallback);
 
         mMaskView.setMaskColor(Color.argb(64, 0, 0, 0));
 
@@ -124,6 +126,8 @@ public class QrCodeScanActivity extends BaseCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.QCodeeScanMenu_albums:
+                mCamera2CaptureView.stopCapture();
+                startActivityForResult(new Intent(this, ImageSingleSelectorActivity.class), 1);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -131,7 +135,18 @@ public class QrCodeScanActivity extends BaseCompatActivity {
         return true;
     }
 
-    private final Camera2CaptureView.OnCaptureListener mOnCaptureListener = new Camera2CaptureView.OnCaptureListener() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            String imagePath = data.getStringExtra(ImageSingleSelectorActivity.INTENT_EXTRA_IMAGE_PATH);
+            if (!TextUtils.isEmpty(imagePath)) {
+                mPresenter.decodeQRCodeContentFromFile(imagePath);
+            }
+        }
+    }
+
+    private final Camera2CaptureView.CaptureCallback mCaptureCallback = new Camera2CaptureView.CaptureCallback() {
         private QRCodeReader mQRCodeReader;
         private Hashtable<DecodeHintType, Object> mHints;
         private byte[] mDataBuff;
@@ -139,29 +154,30 @@ public class QrCodeScanActivity extends BaseCompatActivity {
         private int mCurrentOrientation;
 
         @Override
-        public void onCaptureSuccess(@NonNull Image image, final int width, final int height, int imageOrientation) {
-            Size preview = mCamera2CaptureView.getPreviewSize();
-            if (preview == null || mClipRect == null) {
-                return;
+        public boolean captureSuccess(@NonNull Image image, final int width, final int height, int imageOrientation) {
+            int previewWidth = mCamera2CaptureView.getHeight();
+            int previewHeight = mCamera2CaptureView.getWidth();
+            if (previewWidth == 0 || previewHeight == 0 || mClipRect == null) {
+                return false;
             }
             if (mCurrentOrientation != imageOrientation) {
-                float scaleX = (float) width / preview.getWidth();
-                float scaleY = (float) height / preview.getHeight();
+                float scaleX = (float) width / previewWidth;
+                float scaleY = (float) height / previewHeight;
                 switch (imageOrientation) {
                     case 90:
                         mRect.left = mClipRect.top;
-                        mRect.top = preview.getHeight() - mClipRect.right;
+                        mRect.top = previewHeight - mClipRect.right;
                         mRect.right = mRect.left + mClipRect.height();
                         mRect.bottom = mRect.top + mClipRect.width();
                         break;
                     case 180:
-                        mRect.left = preview.getWidth() - mRect.right;
-                        mRect.top = preview.getHeight() - mRect.bottom;
+                        mRect.left = previewWidth - mRect.right;
+                        mRect.top = previewHeight - mRect.bottom;
                         mRect.right = mRect.left + mClipRect.height();
                         mRect.bottom = mRect.top + mClipRect.width();
                         break;
                     case 270:
-                        mRect.left = preview.getWidth() - mClipRect.bottom;
+                        mRect.left = previewWidth - mClipRect.bottom;
                         mRect.top = mClipRect.left;
                         mRect.right = mRect.left + mClipRect.height();
                         mRect.bottom = mRect.top + mClipRect.width();
@@ -190,12 +206,20 @@ public class QrCodeScanActivity extends BaseCompatActivity {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             try {
                 Result result = mQRCodeReader.decode(bitmap, mHints);
-                String content = result.getText();
+                final String content = result.getText();
                 if (!TextUtils.isEmpty(content)) {
-                    mVibrator.vibrate(60);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mVibrator.vibrate(50);
+                            mPresenter.decodeQRCodeContent(content, false);
+                        }
+                    });
+                    return true;
                 }
             } catch (NotFoundException | ChecksumException | FormatException ignored) {
             }
+            return false;
         }
     };
 
@@ -230,4 +254,48 @@ public class QrCodeScanActivity extends BaseCompatActivity {
         }
     };
 
+    @Override
+    public void startStrangerProfileActivity(UserBean user) {
+        Intent intent = new Intent(this, StrangerProfileActivity.class);
+        intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void startContactProfileActivity(String contactID) {
+        Intent intent = new Intent(this, ContactProfileActivity.class);
+        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contactID);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void setEnableProgressDialog(boolean isEnable) {
+        if (isEnable) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void showErrorDialog(String error) {
+        new MaterialDialog.Builder(this)
+                .content(error)
+                .inputRange(0, 16)
+                .positiveText(R.string.Confirm)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mCamera2CaptureView.startCapture();
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public QrCodeScanContract.Presenter getPresenter() {
+        return new QrCodeScanPresenter();
+    }
 }

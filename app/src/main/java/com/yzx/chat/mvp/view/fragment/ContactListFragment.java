@@ -44,6 +44,7 @@ import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
+import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.BadgeView;
 import com.yzx.chat.widget.view.IndexBarView;
@@ -133,6 +134,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvContact.setHasFixedSize(true);
         mRvContact.addItemDecoration(mLetterSegmentationItemDecoration);
         mRvContact.addOnScrollListener(mAutoEnableOverScrollListener);
+        mRvContact.addOnScrollListener(new ImageAutoLoadScrollListener());
         mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
         mLlContactOperation.setOnClickListener(mOnViewClickListener);

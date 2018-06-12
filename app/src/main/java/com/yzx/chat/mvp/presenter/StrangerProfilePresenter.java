@@ -5,8 +5,6 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.StrangerProfileContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
-import com.yzx.chat.util.AsyncResult;
-import com.yzx.chat.util.AsyncUtil;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -36,7 +34,7 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void acceptContactRequest(ContactOperationBean contactOperation) {
-        mStrangerProfileView.enableProgressDialog(true);
+        mStrangerProfileView.setEnableProgressDialog(true);
         IMClient.getInstance().contactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
     }
 
@@ -44,14 +42,14 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
         @Override
         public void onSuccess(Boolean result) {
-            mStrangerProfileView.enableProgressDialog(false);
+            mStrangerProfileView.setEnableProgressDialog(false);
             mStrangerProfileView.goBack();
         }
 
         @Override
         public void onFailure(String error) {
             mStrangerProfileView.showError(error);
-            mStrangerProfileView.enableProgressDialog(false);
+            mStrangerProfileView.setEnableProgressDialog(false);
         }
     };
 

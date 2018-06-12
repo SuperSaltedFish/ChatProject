@@ -7,8 +7,6 @@ import com.yzx.chat.mvp.contract.ContactProfileContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
-import com.yzx.chat.util.AsyncResult;
-import com.yzx.chat.util.AsyncUtil;
 
 /**
  * Created by YZX on 2018年01月25日.
@@ -56,20 +54,20 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void deleteContact() {
-        mContactProfileView.enableProgressDialog(true);
+        mContactProfileView.setEnableProgressDialog(true);
         mIMClient.contactManager().deleteContact(mContactBean, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 if (mContactBean.getUserProfile().getUserID().equals(ChatPresenter.sConversationID)) {
                     mContactProfileView.finishChatActivity();
                 }
-                mContactProfileView.enableProgressDialog(false);
+                mContactProfileView.setEnableProgressDialog(false);
                 mContactProfileView.goBack();
             }
 
             @Override
             public void onFailure(String error) {
-                mContactProfileView.enableProgressDialog(false);
+                mContactProfileView.setEnableProgressDialog(false);
                 mContactProfileView.showError(error);
             }
         });
