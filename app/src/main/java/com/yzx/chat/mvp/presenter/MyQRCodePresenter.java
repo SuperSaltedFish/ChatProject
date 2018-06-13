@@ -128,12 +128,13 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                 isUpdating = false;
                 String id = response.getTempGroupID();
                 if (!TextUtils.isEmpty(id)) {
-                    id = IMClient.getInstance().cryptoManager().aesEncryptToBase64(id.getBytes());
-                    if (!TextUtils.isEmpty(id)) {
-                        QRCodeContentBean qrCodeContent = new QRCodeContentBean();
-                        qrCodeContent.setId(id);
-                        qrCodeContent.setType(QRCodeContentBean.TYPE_GROUP);
-                        mMyQRCodeActivityView.showQRCode(mGson.toJson(qrCodeContent));
+                    QRCodeContentBean qrCodeContent = new QRCodeContentBean();
+                    qrCodeContent.setId(id);
+                    qrCodeContent.setType(QRCodeContentBean.TYPE_GROUP);
+                    String content = mGson.toJson(qrCodeContent);
+                    content = IMClient.getInstance().cryptoManager().aesEncryptToBase64(content.getBytes());
+                    if (!TextUtils.isEmpty(content)) {
+                        mMyQRCodeActivityView.showQRCode(content);
                         return;
                     }
                 }

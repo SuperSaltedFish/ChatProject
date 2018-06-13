@@ -11,6 +11,9 @@ import android.text.TextUtils;
 
 
 public class UserBean implements Parcelable, Cloneable {
+    public static final int SEX_MAN = 1;
+    public static final int SEX_WOMAN = 2;
+
     private String userID;
     private String telephone;
     private String nickname;

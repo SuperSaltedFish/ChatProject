@@ -1,9 +1,12 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
@@ -37,11 +40,12 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
 
     private NineGridAvatarView mIvAvatar;
     private ImageView mIvQRCode;
+    private ImageView mIvUserInfoIcon;
     private ProgressBar mProgressBar;
     private FrameLayout mFlScan;
     private FrameLayout mFlReset;
     private FrameLayout mFlSave;
-    private TextView mTvLocation;
+    private TextView mTvUserInfo;
     private TextView mTvNickname;
     private TextView mTvHint;
 
@@ -63,34 +67,38 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
         mFlScan = findViewById(R.id.MyQRCodeActivity_mFlScan);
         mFlReset = findViewById(R.id.MyQRCodeActivity_mFlReset);
         mFlSave = findViewById(R.id.MyQRCodeActivity_mFlSave);
-        mTvLocation = findViewById(R.id.MyQRCodeActivity_mTvLocation);
+        mTvUserInfo = findViewById(R.id.MyQRCodeActivity_mTvUserInfo);
         mTvNickname = findViewById(R.id.MyQRCodeActivity_mTvNickname);
         mClQRCodeLayout = findViewById(R.id.MyQRCodeActivity_mClQRCodeLayout);
         mTvHint = findViewById(R.id.MyQRCodeActivity_mTvHint);
+        mIvUserInfoIcon = findViewById(R.id.MyQRCodeActivity_mIvUserInfoIcon);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        mCurrentQRCodeType = getIntent().getIntExtra(INTENT_EXTRA_QR_TYPE, 0);
-        if (mCurrentQRCodeType != QR_CODE_TYPE_USER && mCurrentQRCodeType != QR_CODE_TYPE_GROUP) {
-            finish();
-            return;
-        }
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
                 actionBar.setTitle(R.string.MyQRCodeActivity_Title);
-            }else {
+            } else {
                 actionBar.setTitle(R.string.MyQRCodeActivity_Title2);
             }
         }
 
-        mFlScan.setOnClickListener(mOnScanClickListener);
-        mFlReset.setOnClickListener(mOnResetClickListener);
-        mFlSave.setOnClickListener(mOnSaveClickListener);
+        mFlScan.setOnClickListener(mOnViewClickListener);
+        mFlReset.setOnClickListener(mOnViewClickListener);
+        mFlSave.setOnClickListener(mOnViewClickListener);
 
+        setData();
+    }
+
+    private void setData() {
+        mCurrentQRCodeType = getIntent().getIntExtra(INTENT_EXTRA_QR_TYPE, 0);
+        if (mCurrentQRCodeType != QR_CODE_TYPE_USER && mCurrentQRCodeType != QR_CODE_TYPE_GROUP) {
+            finish();
+            return;
+        }
         if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
             setTitle(R.string.MyQRCodeActivity_Title);
             UserBean user = mPresenter.getUserInfo();
@@ -105,10 +113,21 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
             } else {
                 avatarList = avatarUri.split(",");
             }
+            mIvUserInfoIcon.setImageResource(R.drawable.selector_src_sex);
+            if (user.getSex() == UserBean.SEX_WOMAN) {
+                mIvUserInfoIcon.setSelected(true);
+                mTvUserInfo.setText(R.string.Woman);
+            } else {
+                mIvUserInfoIcon.setSelected(false);
+                mTvUserInfo.setText(R.string.Man);
+            }
             mIvAvatar.setImageUrlList(avatarList);
-            mTvLocation.setText(user.getLocation());
             mTvNickname.setText(user.getNickname());
             mTvHint.setText(R.string.MyQRCodeActivity_QRCodeHint);
+            mTvUserInfo.setText(R.string.Woman);
+            if (!TextUtils.isEmpty(user.getLocation())) {
+                mTvUserInfo.setText(mTvUserInfo.getText() + " · " + user.getLocation());
+            }
             mPresenter.updateUserQRCode();
         } else {
             setTitle(R.string.MyQRCodeActivity_Title2);
@@ -128,50 +147,56 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
             mIvAvatar.setImageUrlList(avatarList);
             mTvNickname.setText(group.getName());
             mTvHint.setText(R.string.MyQRCodeActivity_QRCodeHint2);
-            mTvLocation.setVisibility(View.GONE);
+            mIvUserInfoIcon.setImageResource(R.drawable.ic_friend);
+            mIvUserInfoIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorAccent)));
+            mTvUserInfo.setText(group.getMembers().size() + getString(R.string.People));
             mPresenter.updateGroupQRCode(mGroupID);
         }
-
     }
 
-    private final View.OnClickListener mOnScanClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
+    private void resetQRCode() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mIvQRCode.setVisibility(View.INVISIBLE);
+        if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
+            mPresenter.updateUserQRCode();
+        } else {
+            mPresenter.updateGroupQRCode(mGroupID);
         }
-    };
+    }
 
-    private final View.OnClickListener mOnResetClickListener = new View.OnClickListener() {
+    private void saveQRCode() {
+        mClQRCodeLayout.setDrawingCacheEnabled(true);
+        Bitmap bitmap = mClQRCodeLayout.getDrawingCache();
+        float scale = 800f / bitmap.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.preScale(scale, scale);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+        if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
+            mPresenter.saveQRCodeToLocal(bitmap, mPresenter.getUserInfo().getUserID());
+        } else {
+            mPresenter.saveQRCodeToLocal(bitmap, mGroupID);
+        }
+        bitmap.recycle();
+        mClQRCodeLayout.setDrawingCacheEnabled(false);
+    }
+
+    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mProgressBar.setVisibility(View.VISIBLE);
-            mIvQRCode.setVisibility(View.INVISIBLE);
-            if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
-                mPresenter.updateUserQRCode();
-            } else {
-                mPresenter.updateGroupQRCode(mGroupID);
+            switch (v.getId()) {
+                case R.id.MyQRCodeActivity_mFlScan:
+                    startActivity(new Intent(MyQRCodeActivity.this, QrCodeScanActivity.class));
+                    break;
+                case R.id.MyQRCodeActivity_mFlReset:
+                    resetQRCode();
+                    break;
+                case R.id.MyQRCodeActivity_mFlSave:
+                    saveQRCode();
+                    break;
             }
         }
     };
 
-    private final View.OnClickListener mOnSaveClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mClQRCodeLayout.setDrawingCacheEnabled(true);
-            Bitmap bitmap = mClQRCodeLayout.getDrawingCache();
-            float scale = 800f / bitmap.getHeight();
-            Matrix matrix = new Matrix();
-            matrix.preScale(scale, scale);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
-            if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
-                mPresenter.saveQRCodeToLocal(bitmap, mPresenter.getUserInfo().getUserID());
-            } else {
-                mPresenter.saveQRCodeToLocal(bitmap, mGroupID);
-            }
-            bitmap.recycle();
-            mClQRCodeLayout.setDrawingCacheEnabled(false);
-        }
-    };
 
     @Override
     public MyQRCodeContract.Presenter getPresenter() {
@@ -182,7 +207,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
     public void showQRCode(String content) {
         mProgressBar.setVisibility(View.INVISIBLE);
         mIvQRCode.setVisibility(View.VISIBLE);
-        mIvQRCode.setImageBitmap(QRUtils.createQRCode(content, 200, 200, null));
+        mIvQRCode.setImageBitmap(QRUtils.createQRCode(content, 280, 280, null));
     }
 
     @Override

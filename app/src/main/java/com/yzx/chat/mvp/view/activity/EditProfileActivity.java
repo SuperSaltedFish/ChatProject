@@ -120,10 +120,10 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
 
         switch (mUserBean.getSex()) {
             case 1:
-                mTvSex.setText(R.string.EditProfileActivity_Man);
+                mTvSex.setText(R.string.Man);
                 break;
             case 2:
-                mTvSex.setText(R.string.EditProfileActivity_Woman);
+                mTvSex.setText(R.string.Woman);
                 break;
             default:
                 mTvSex.setText(R.string.EditProfileActivity_NoSet);

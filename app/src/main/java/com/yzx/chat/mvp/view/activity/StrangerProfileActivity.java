@@ -3,8 +3,6 @@ package com.yzx.chat.mvp.view.activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,8 +18,6 @@ import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.StrangerProfileContract;
 import com.yzx.chat.mvp.presenter.StrangerProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.DateUtil;
-import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.GlideSemicircleTransform;
 import com.yzx.chat.widget.view.ProgressDialog;
 
@@ -100,13 +96,13 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         mTvNickname.setText(mUserBean.getNickname());
         mTvSignature.setText(mUserBean.getSignature());
         int sexBgID;
-        if (mUserBean.getSex() == 2) {
+        if (mUserBean.getSex() == UserBean.SEX_WOMAN) {
             mIvSexIcon.setSelected(true);
-            mTvUserInfo.setText(R.string.EditProfileActivity_Woman);
+            mTvUserInfo.setText(R.string.Woman);
             sexBgID = R.drawable.src_sex_woman;
         } else {
             mIvSexIcon.setSelected(false);
-            mTvUserInfo.setText(R.string.EditProfileActivity_Man);
+            mTvUserInfo.setText(R.string.Man);
             sexBgID = R.drawable.src_sex_man;
         }
 

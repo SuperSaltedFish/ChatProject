@@ -75,7 +75,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
                         findUserInfo(qrCodeContent.getId());
                         break;
                     case QRCodeContentBean.TYPE_GROUP:
-                        decodeFail("草拟吗的");
+
                         break;
                     default:
                         decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));

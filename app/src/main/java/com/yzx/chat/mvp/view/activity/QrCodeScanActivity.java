@@ -255,6 +255,11 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     };
 
     @Override
+    public QrCodeScanContract.Presenter getPresenter() {
+        return new QrCodeScanPresenter();
+    }
+
+    @Override
     public void startStrangerProfileActivity(UserBean user) {
         Intent intent = new Intent(this, StrangerProfileActivity.class);
         intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
@@ -292,10 +297,5 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
                     }
                 })
                 .show();
-    }
-
-    @Override
-    public QrCodeScanContract.Presenter getPresenter() {
-        return new QrCodeScanPresenter();
     }
 }

@@ -136,8 +136,8 @@
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
     <string name="ImageSingleSelectorActivity_Title">选择头像</string>
-    <string name="EditProfileActivity_Man">男</string>
-    <string name="EditProfileActivity_Woman">女</string>
+    <string name="Man">男生</string>
+    <string name="Woman">女生</string>
     <string name="EditProfileActivity_NoneNickname">昵称不能为空</string>
     <string name="ChatActivity_ImageAlreadyOverdue">图片已经过期，无法查看</string>
     <string name="ChatActivity_VideoAlreadyOverdue">视频已经过期，无法播放</string>
@@ -212,5 +212,6 @@
     <string name="MyQRCodePresenter_GenerateQRCodeFail">生成二维码失败，请稍后再试</string>
     <string name="QrCodePresenter_Unrecognized">无法识别该二维码</string>
     <string name="QrCodePresenter_UnableFind">没有在照片中找到二维码</string>
+    <string name="People">人</string>
 
 </resources>
