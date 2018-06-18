@@ -1,117 +1,152 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".mvp.view.activity.ContactProfileActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/ContactProfileActivity_mAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="top"
-        android:background="@color/colorPrimary"
-        app:popupTheme="@style/ToolbarPopupLightTheme"
-        app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+        android:layout_height="240dp"
+        android:fitsSystemWindows="true">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="48dp"
-        tools:context=".mvp.view.activity.ContactProfileActivity">
-
-        <android.support.design.widget.AppBarLayout
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorAccent"
+            app:title="@null"
+            app:titleEnabled="false"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/colorAccent"
+            app:toolbarId="@+id/Default_mToolbar">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll">
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.5">
+
+                <ImageView
+                    android:id="@+id/ContactProfileActivity_mIvPersonalityBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:foreground="@drawable/fg_bg_gradual_mask"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/temp_share_image" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ContactProfileActivity_mIvAvatar"
                     android:layout_width="88dp"
                     android:layout_height="88dp"
-                    android:background="@android:color/white"
-                    android:elevation="3dp"
-                    android:padding="2dp"
+                    android:layout_marginTop="32dp"
+                    android:elevation="4dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/temp_head_image"
+                    app:civ_border_color="@android:color/white"
+                    app:civ_border_width="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/ContactProfileActivity_mTvNickname"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@color/green"
-                    android:elevation="2dp"
-                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_voice_call"
-                    app:layout_constraintBottom_toBottomOf="@+id/ContactProfileActivity_mIvAvatar"
-                    app:layout_constraintEnd_toStartOf="@+id/ContactProfileActivity_mIvAvatar"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/ContactProfileActivity_mIvAvatar" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ContactProfileActivity_mIvStartChat"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@color/green"
-                    android:elevation="2dp"
-                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_chat"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvAvatar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvAvatar"
-                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mIvAvatar" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvNickname"
-                    android:layout_width="0dp"
-                    android:layout_height="26dp"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/textColorWhite"
-                    android:textSize="22sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/ContactProfileActivity_mTvLocationAndAge"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mIvAvatar" />
 
+                <ImageView
+                    android:id="@+id/ContactProfileActivity_mIvSexIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/selector_src_sex"
+                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge"
+                    app:layout_constraintEnd_toStartOf="@id/ContactProfileActivity_mTvLocationAndAge"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mTvLocationAndAge" />
+
                 <TextView
-                    android:id="@+id/ContactProfileActivity_mTvExplain"
-                    android:layout_width="0dp"
+                    android:id="@+id/ContactProfileActivity_mTvLocationAndAge"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:paddingEnd="80dp"
-                    android:paddingStart="80dp"
-                    android:textColor="@color/textColorWhite"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:text="23岁 · 广东韶关"
+                    android:textColor="@android:color/white"
                     android:textSize="12sp"
+                    app:layout_constraintBottom_toTopOf="@id/ContactProfileActivity_mTvDescribe"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvSexIcon"
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
+
+
+                <TextView
+                    android:id="@+id/ContactProfileActivity_mTvDescribe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge" />
 
             </android.support.constraint.ConstraintLayout>
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/ContactProfileActivity_mTabLayout"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/Default_mToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                app:tabIndicatorColor="@android:color/white"
-                app:tabIndicatorHeight="3dp"
-                app:tabSelectedTextColor="@android:color/white"
-                app:tabTextColor="@color/textColorWhiteAlpha" />
+                android:layout_height="48dp"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ToolbarPopupLightTheme"
+                app:theme="@style/ToolbarTheme"
+                app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
 
-        </android.support.design.widget.AppBarLayout>
+                <TextView
+                    android:id="@+id/ContactProfileActivity_mTvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:textColor="@android:color/white"
+                    android:textSize="17sp" />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/ContactProfileActivity_mViewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            </android.support.v7.widget.Toolbar>
 
 
-    </android.support.design.widget.CoordinatorLayout>
-</merge>
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/ContactProfileActivity_mViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/ContactProfileActivity_mIvStartChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:layout_anchor="@id/ContactProfileActivity_mAppBarLayout"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@drawable/ic_chat"
+        app:useCompatPadding="true" />
+
+</android.support.design.widget.CoordinatorLayout>

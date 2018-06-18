@@ -26,7 +26,6 @@ public class GlideUtil {
             return;
         }
         GlideApp.with(context).clear(view);
-
         GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
