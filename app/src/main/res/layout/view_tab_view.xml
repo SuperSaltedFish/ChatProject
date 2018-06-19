@@ -37,7 +37,6 @@
         android:id="@+id/TabView_mBadgeView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/TabView_mIvIconUnselected"
         app:layout_constraintEnd_toEndOf="@id/TabView_mIvIconUnselected"
         app:layout_constraintStart_toEndOf="@id/TabView_mIvIconUnselected"

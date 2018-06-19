@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
  * Created by YZX on 2018年02月10日.
@@ -18,6 +20,9 @@ import android.view.View;
 
 
 public class BadgeView extends View {
+
+    private final static int MAX_BADGE_NUMBER = 99;
+    private static final long ANIMATOR_MAX_DURATION = 128;
 
     private Context mContext;
 
@@ -29,6 +34,8 @@ public class BadgeView extends View {
     private float mBadgeTextSize;
     private int mBadgeTextColor;
     private int mBackgroundColor;
+
+    private ValueAnimator mAnimator;
 
     public BadgeView(Context context) {
         this(context, null);
@@ -51,12 +58,27 @@ public class BadgeView extends View {
         mBadgePaint.setAntiAlias(true);
         mBackgroundPaint.setAntiAlias(true);
 
-        setDefault();
+        setWillNotDraw(false);
 
+        setDefault();
+        initAnimator();
+    }
+
+    private void initAnimator() {
+        mAnimator = new ValueAnimator();
+        mAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float) animation.getAnimatedValue();
+                setScaleX(value);
+                setScaleY(value);
+            }
+        });
     }
 
     private void setDefault() {
-        setBadgeTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, mContext.getResources().getDisplayMetrics()));
+        setBadgeTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, mContext.getResources().getDisplayMetrics()));
         setBadgeTextColor(Color.WHITE);
         setBadgeBackgroundColor(Color.RED);
         int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
@@ -77,9 +99,8 @@ public class BadgeView extends View {
             mBadgePaint.getTextBounds(strBadge, 0, strBadge.length(), mTextRect);
             height = mTextRect.height();
         }
-        int maxSize = Math.max(width, height);
-        super.onMeasure(MeasureSpec.makeMeasureSpec(maxSize, widthMode) + getPaddingLeft() + getPaddingRight(),
-                MeasureSpec.makeMeasureSpec(maxSize + getPaddingTop() + getPaddingBottom(), heightMode));
+        int maxSize = Math.max(width, height) + 2;
+        setMeasuredDimension(maxSize + getPaddingLeft() + getPaddingRight(), maxSize + getPaddingTop() + getPaddingBottom());
     }
 
     @Override
@@ -91,8 +112,17 @@ public class BadgeView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (mBadgeNumber == 0) {
+            return;
+        }
         canvas.drawRoundRect(mBadgeRectF, mBadgeRectF.width() / 2f, mBadgeRectF.height() / 2f, mBackgroundPaint);
-        canvas.drawText(String.valueOf(mBadgeNumber), mBadgeRectF.centerX(), (mBadgeRectF.top + mTextRect.height() + mBadgeRectF.bottom) / 2f, mBadgePaint);
+        String badge;
+        if (mBadgeNumber > MAX_BADGE_NUMBER) {
+            badge = String.valueOf(MAX_BADGE_NUMBER) + "+";
+        } else {
+            badge = String.valueOf(mBadgeNumber);
+        }
+        canvas.drawText(badge, mBadgeRectF.centerX(), (mBadgeRectF.top + mTextRect.height() + mBadgeRectF.bottom) / 2f, mBadgePaint);
     }
 
     public int getBadgeNumber() {
@@ -101,8 +131,21 @@ public class BadgeView extends View {
 
     public void setBadgeNumber(int badgeNumber) {
         if (mBadgeNumber != badgeNumber) {
+            if (mAnimator.isStarted()) {
+                mAnimator.cancel();
+            }
+            if ((badgeNumber >= 10 && mBadgeNumber < 10) || (mBadgeNumber >= 10 && badgeNumber < 10)) {
+                requestLayout();
+            } else {
+                invalidate();
+            }
+            if (mBadgeNumber == 0 && badgeNumber != 0) {
+                float currentScale = getScrollX();
+                mAnimator.setDuration((long) (ANIMATOR_MAX_DURATION * (1 - currentScale)));
+                mAnimator.setFloatValues(currentScale, 1);
+                mAnimator.start();
+            }
             mBadgeNumber = badgeNumber;
-            requestLayout();
         }
     }
 

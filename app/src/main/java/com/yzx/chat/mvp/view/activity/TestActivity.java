@@ -25,7 +25,7 @@ public class TestActivity extends BaseCompatActivity {
 
     private NavigationController mNavigationController;
     private ViewPager mViewPager;
-
+    BottomTabLayout bottomTabLayout;
     @Override
     protected int getLayoutID() {
         return R.layout.activity_test;
@@ -61,18 +61,18 @@ public class TestActivity extends BaseCompatActivity {
             }
         });
 
-        BottomTabLayout bottomTabLayout = findViewById(R.id.ssss);
+         bottomTabLayout = findViewById(R.id.ssss);
         bottomTabLayout.addTab(R.drawable.ic_conversation_focus,R.drawable.ic_conversation_unfocus,"朋友圈");
         bottomTabLayout.addTab(R.drawable.ic_friend,"朋友圈",ContextCompat.getColor(this,R.color.colorAccent));
         bottomTabLayout.addTab(R.drawable.ic_moments,"朋友圈",ContextCompat.getColor(this,R.color.colorAccent));
         bottomTabLayout.addTab(R.drawable.ic_setting,"朋友圈",ContextCompat.getColor(this,R.color.colorAccent));
 
-        mNavigationController = ((PageNavigationView) findViewById(R.id.aaaa)).material()
-                .addItem(R.drawable.ic_conversation, getString(R.string.HomeBottomNavigationTitle_Chat), ContextCompat.getColor(this, R.color.colorAccent))
-                .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this, R.color.colorAccent))
-                .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this, R.color.colorAccent))
-                .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this, R.color.colorAccent))
-                .build();
+//        mNavigationController = ((PageNavigationView) findViewById(R.id.aaaa)).material()
+//                .addItem(R.drawable.ic_conversation, getString(R.string.HomeBottomNavigationTitle_Chat), ContextCompat.getColor(this, R.color.colorAccent))
+//                .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this, R.color.colorAccent))
+//                .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this, R.color.colorAccent))
+//                .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this, R.color.colorAccent))
+//                .build();
 
         bottomTabLayout.setupWithViewPager(mViewPager);
     }
@@ -84,8 +84,12 @@ public class TestActivity extends BaseCompatActivity {
 
     }
 
-    private void setData() {
-
+    int i = 1;
+    public void onClick(View v) {
+        bottomTabLayout.setBadge(1,i++);
+        if(i==12){
+            i=0;
+        }
     }
 
 

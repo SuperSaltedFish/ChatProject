@@ -82,6 +82,14 @@ public class BottomTabLayout extends LinearLayout {
         }
     }
 
+    public void setBadge(int position, int number) {
+        if(position>=getChildCount()){
+            return;
+        }
+        TabView tabView = (TabView) getChildAt(position);
+        tabView.setBadge(number);
+    }
+
     private final View.OnClickListener mOnTabClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -111,19 +119,19 @@ public class BottomTabLayout extends LinearLayout {
     private final ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            if (!isClicked&&position < getChildCount()) {
+            if (!isClicked && position < getChildCount()) {
                 TabView tabView = (TabView) getChildAt(position);
                 if (tabView != null) {
                     tabView.setSelectionAnimatorProgress(1 - positionOffset);
                 }
             }
-            if (!isClicked&&position + 1 < getChildCount()) {
+            if (!isClicked && position + 1 < getChildCount()) {
                 TabView tabView = (TabView) getChildAt(position + 1);
                 if (tabView != null) {
                     tabView.setSelectionAnimatorProgress(positionOffset);
                 }
             }
-            if(isClicked&&mViewPager!=null&&position==positionOffset&&position==mViewPager.getCurrentItem()){
+            if (isClicked && mViewPager != null && position == positionOffset && position == mViewPager.getCurrentItem()) {
                 isClicked = false;
             }
             LogUtil.e("state   " + position + "   " + positionOffset);
@@ -143,7 +151,7 @@ public class BottomTabLayout extends LinearLayout {
 
     private static class TabView extends ConstraintLayout {
 
-        private static final long ANIMATOR_DURATION = 128;
+        private static final long ANIMATOR_MAX_DURATION = 128;
 
         public static TabView create(Context context, Drawable selectedIcon, Drawable unselectedIcon, String title) {
             TabView tabView = new TabView(context);
@@ -221,7 +229,7 @@ public class BottomTabLayout extends LinearLayout {
                 return;
             }
             cancelSelectionAnimator();
-            mAnimator.setDuration((long) (ANIMATOR_DURATION * (1 - mCurrentSelectionProgress)));
+            mAnimator.setDuration((long) (ANIMATOR_MAX_DURATION * (1 - mCurrentSelectionProgress)));
             mAnimator.setFloatValues(mCurrentSelectionProgress, 1);
             mAnimator.start();
         }
@@ -231,9 +239,13 @@ public class BottomTabLayout extends LinearLayout {
                 return;
             }
             cancelSelectionAnimator();
-            mAnimator.setDuration((long) (ANIMATOR_DURATION * (mCurrentSelectionProgress)));
+            mAnimator.setDuration((long) (ANIMATOR_MAX_DURATION * (mCurrentSelectionProgress)));
             mAnimator.setFloatValues(mCurrentSelectionProgress, 0);
             mAnimator.start();
+        }
+
+        void setBadge(int number){
+            mBadgeView.setBadgeNumber(number);
         }
 
         private void cancelSelectionAnimator() {
