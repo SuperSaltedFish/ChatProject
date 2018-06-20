@@ -12,12 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-
+    <View
+        android:layout_width="match_parent"
+        android:background="#ffffff"
+        android:layout_height="10dp" />
 
     <com.yzx.chat.widget.view.BottomTabLayout
         android:id="@+id/ssss"
         android:layout_width="match_parent"
+        android:elevation="8dp"
+        android:background="#ffffff"
         android:layout_height="56dp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/asd"

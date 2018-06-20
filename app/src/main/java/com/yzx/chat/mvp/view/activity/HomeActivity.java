@@ -1,10 +1,16 @@
 package com.yzx.chat.mvp.view.activity;
 
 import android.content.Intent;
+import android.graphics.Outline;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -15,11 +21,8 @@ import com.yzx.chat.mvp.view.fragment.ConversationFragment;
 import com.yzx.chat.mvp.view.fragment.ContactListFragment;
 import com.yzx.chat.mvp.view.fragment.MomentsFragment;
 import com.yzx.chat.mvp.view.fragment.ProfileFragment;
-
-import me.majiajie.pagerbottomtabstrip.MaterialMode;
-import me.majiajie.pagerbottomtabstrip.NavigationController;
-import me.majiajie.pagerbottomtabstrip.PageNavigationView;
-import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
+import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.widget.view.BottomTabLayout;
 
 
 public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View {
@@ -28,7 +31,8 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     private FragmentManager mFragmentManager;
     private Fragment[] mFragments;
-    private NavigationController mNavigationController;
+    private BottomTabLayout mBottomTabLayout;
+    private int mCurrentFragmentIndex = -1;
 
     @Override
     protected int getLayoutID() {
@@ -37,36 +41,53 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     protected void init(Bundle savedInstanceState) {
+        mBottomTabLayout = findViewById(R.id.HomeActivity_mBottomTabLayout);
+
         mFragments = new Fragment[4];
         mFragments[0] = new ConversationFragment();
         mFragments[1] = new ContactListFragment();
         mFragments[2] = new MomentsFragment();
         mFragments[3] = new ProfileFragment();
         mFragmentManager = getSupportFragmentManager();
-
-        mNavigationController = ((PageNavigationView) findViewById(R.id.HomeActivity_mBottomNavigationBar)).material()
-                .addItem(R.drawable.ic_conversation, getString(R.string.HomeBottomNavigationTitle_Chat), ContextCompat.getColor(this, R.color.colorAccent))
-                .addItem(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this, R.color.colorAccent))
-                .addItem(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this, R.color.colorAccent))
-                .addItem(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this, R.color.colorAccent))
-                .build();
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
 
-        mNavigationController.addTabItemSelectedListener(mOnTabSelectedListener);
-
         mFragmentManager.beginTransaction()
                 .add(R.id.HomeActivity_mClContent, mFragments[0], String.valueOf(0))
                 .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
                 .add(R.id.HomeActivity_mClContent, mFragments[2], String.valueOf(2))
                 .add(R.id.HomeActivity_mClContent, mFragments[3], String.valueOf(2))
+                .hide(mFragments[0])
                 .hide(mFragments[1])
                 .hide(mFragments[2])
                 .hide(mFragments[3])
                 .commit();
+
+        mBottomTabLayout
+                .addTab(R.drawable.ic_conversation_focus, R.drawable.ic_conversation_unfocus, "朋友圈")
+                .addTab(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this, R.color.colorAccent))
+                .addTab(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this, R.color.colorAccent))
+                .addTab(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this, R.color.colorAccent))
+                .addOnTabItemSelectedListener(mOnTabSelectedListener)
+                .setSelectPosition(0, false, true);
+
+        mBottomTabLayout.setOutlineProvider(new ViewOutlineProvider() {
+            private Rect mRect = new Rect();
+            @Override
+            public void getOutline(View view, Outline outline) {
+                Drawable background = view.getBackground();
+                if(background!=null){
+                    background.copyBounds(mRect);
+                }else {
+                    mRect.set(0,0,view.getWidth(),view.getHeight());
+                }
+                mRect.offset(0, (int) -AndroidUtil.dip2px(3f));
+                outline.setRect(mRect);
+            }
+        });
 
         setData();
     }
@@ -103,27 +124,31 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     public void updateMessageUnreadBadge(int count) {
-        mNavigationController.setMessageNumber(0, count);
+        mBottomTabLayout.setBadge(0, count);
 
     }
 
     @Override
     public void updateContactUnreadBadge(int count) {
-        mNavigationController.setMessageNumber(1, count);
+        mBottomTabLayout.setBadge(1, count);
     }
 
-    private final OnTabItemSelectedListener mOnTabSelectedListener = new OnTabItemSelectedListener() {
+    private final BottomTabLayout.OnTabItemSelectedListener mOnTabSelectedListener = new BottomTabLayout.OnTabItemSelectedListener() {
         @Override
-        public void onSelected(int index, int old) {
-            mFragmentManager.beginTransaction()
-                    .show(mFragments[index])
-                    .hide(mFragments[old])
-                    .commit();
+        public void onSelected(int position) {
+            FragmentTransaction transaction = mFragmentManager.beginTransaction();
+            transaction.show(mFragments[position]);
+            if (mCurrentFragmentIndex >= 0) {
+                transaction.hide(mFragments[mCurrentFragmentIndex]);
+            }
+            transaction.commit();
+            mCurrentFragmentIndex = position;
         }
 
         @Override
-        public void onRepeat(int index) {
+        public void onRepeated(int position) {
 
         }
+
     };
 }

@@ -5,21 +5,22 @@
     android:layout_height="match_parent"
     tools:context=".mvp.view.activity.HomeActivity">
 
+
     <FrameLayout
         android:id="@+id/HomeActivity_mClContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="52dp"
         android:focusable="true"
         android:focusableInTouchMode="true" />
 
-
-    <me.majiajie.pagerbottomtabstrip.PageNavigationView
-        android:id="@+id/HomeActivity_mBottomNavigationBar"
+    <com.yzx.chat.widget.view.BottomTabLayout
+        android:id="@+id/HomeActivity_mBottomTabLayout"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="52dp"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
-        android:elevation="10dp" />
+        android:elevation="4dp" />
+
 
 </merge>
