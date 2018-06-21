@@ -18,6 +18,7 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.text.emoji.EmojiCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -185,6 +186,7 @@ public class NotificationHelper {
 
 
     private void showNotification(final Notification.Builder builder, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent) {
+        final CharSequence compatStr = EmojiCompat.get().process(content);
         SimpleTarget<Bitmap> bitmapTarget = new SimpleTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -192,8 +194,8 @@ public class NotificationHelper {
                 recycleIntent.putExtra(ACTION_RECYCLE, notificationID);
                 builder.setLargeIcon(resource)
                         .setContentTitle(title)
-                        .setContentText(content)
-                        .setTicker(title + "：" + content)
+                        .setContentText(compatStr)
+                        .setTicker(title + "：" + compatStr)
                         .setWhen(timestamp)
                         .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                         .setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));

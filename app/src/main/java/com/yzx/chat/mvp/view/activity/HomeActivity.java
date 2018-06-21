@@ -67,22 +67,24 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .commit();
 
         mBottomTabLayout
-                .addTab(R.drawable.ic_conversation_focus, R.drawable.ic_conversation_unfocus, "朋友圈")
-                .addTab(R.drawable.ic_friend, getString(R.string.HomeBottomNavigationTitle_Contact), ContextCompat.getColor(this, R.color.colorAccent))
-                .addTab(R.drawable.ic_moments, getString(R.string.HomeBottomNavigationTitle_Moments), ContextCompat.getColor(this, R.color.colorAccent))
-                .addTab(R.drawable.ic_setting, getString(R.string.HomeBottomNavigationTitle_Profile), ContextCompat.getColor(this, R.color.colorAccent))
+                .addTab(R.drawable.ic_conversation_focus, R.drawable.ic_conversation_unfocus, getString(R.string.HomeBottomNavigationTitle_Chat))
+                .addTab(R.drawable.ic_contacts_focus, R.drawable.ic_contacts_unfocus, getString(R.string.HomeBottomNavigationTitle_Contact))
+                .addTab(R.drawable.ic_moments_focus,R.drawable.ic_moments_unfocus, getString(R.string.HomeBottomNavigationTitle_Moments))
+                .addTab(R.drawable.ic_personal_focus,R.drawable.ic_personal_unfocus ,getString(R.string.HomeBottomNavigationTitle_Profile))
+                .setTitleTextSize(AndroidUtil.sp2px(11))
                 .addOnTabItemSelectedListener(mOnTabSelectedListener)
                 .setSelectPosition(0, false, true);
 
         mBottomTabLayout.setOutlineProvider(new ViewOutlineProvider() {
             private Rect mRect = new Rect();
+
             @Override
             public void getOutline(View view, Outline outline) {
                 Drawable background = view.getBackground();
-                if(background!=null){
+                if (background != null) {
                     background.copyBounds(mRect);
-                }else {
-                    mRect.set(0,0,view.getWidth(),view.getHeight());
+                } else {
+                    mRect.set(0, 0, view.getWidth(), view.getHeight());
                 }
                 mRect.offset(0, (int) -AndroidUtil.dip2px(3f));
                 outline.setRect(mRect);

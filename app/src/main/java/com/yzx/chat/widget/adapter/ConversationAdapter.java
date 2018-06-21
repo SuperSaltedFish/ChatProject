@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
+import android.support.text.emoji.EmojiCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,15 +27,17 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
 
     private List<Conversation> mConversationList;
+    private EmojiCompat mEmojiCompat;
 
     public ConversationAdapter(List<Conversation> conversationList) {
         mConversationList = conversationList;
+        mEmojiCompat = EmojiCompat.get();
     }
 
 
     @Override
     public ConversationHolder getViewHolder(ViewGroup parent, int viewType) {
-        return new ConversationHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation_single, parent, false));
+        return new ConversationHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation, parent, false));
 
     }
 
@@ -42,7 +45,7 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
     public void bindDataToViewHolder(ConversationHolder holder, int position) {
         Conversation conversation = mConversationList.get(position);
         holder.mTvName.setText(conversation.getConversationTitle());
-        holder.mTvLastRecord.setText(IMMessageHelper.getMessageDigest(conversation));
+        holder.mTvLastRecord.setText(mEmojiCompat.process(IMMessageHelper.getMessageDigest(conversation)));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
 
         String avatarUri = conversation.getPortraitUrl();

@@ -23,6 +23,7 @@ public class EmojiRecyclerview extends RecyclerView {
     private int[] mEmojiUnicodeArray;
     private GridLayoutManager mGridLayoutManager;
     private EmojiAdapter mAdapter;
+    private  EmojiCompat mEmojiCompat;
     private int mEmojiSize;
 
     public EmojiRecyclerview(Context context) {
@@ -42,6 +43,7 @@ public class EmojiRecyclerview extends RecyclerView {
         super(context, attrs, defStyle);
         mContext = context;
         mAdapter = new EmojiAdapter();
+        mEmojiCompat = EmojiCompat.get();
         setAdapter(mAdapter);
     }
 
@@ -95,8 +97,7 @@ public class EmojiRecyclerview extends RecyclerView {
 
         @Override
         public void onBindViewHolder(EmojiHolder holder, int position) {
-            char[] emoji = Character.toChars(mEmojiUnicodeArray[position]);
-            holder.mTextView.setText(emoji,0,emoji.length);
+            holder.mTextView.setText(mEmojiCompat.process(new String(Character.toChars(mEmojiUnicodeArray[position]))));
             holder.mTextView.setTextSize(mEmojiSize);
         }
 
