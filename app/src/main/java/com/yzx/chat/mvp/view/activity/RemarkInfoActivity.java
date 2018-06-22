@@ -156,7 +156,9 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         public void onClick(View v) {
             ContactRemarkBean contactRemark = mContactBean.getRemark();
             contactRemark.setDescription(mEtDescription.getText().toString());
-            contactRemark.setRemarkName(mEtRemarkName.getText().toString());
+            if(!mContactBean.getName().equals(mEtRemarkName.getText().toString())){
+                contactRemark.setRemarkName(mEtRemarkName.getText().toString());
+            }
             ArrayList<String> telephones = new ArrayList<>();
             for (int i = 0, count = mLlTelephoneLayout.getChildCount(); i < count; i++) {
                 EditText editText = (EditText) mLlTelephoneLayout.getChildAt(i);

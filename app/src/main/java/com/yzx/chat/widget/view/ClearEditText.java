@@ -45,7 +45,6 @@ public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
         setFocusableInTouchMode(true);
         mClearDrawable = context.getDrawable(R.drawable.ic_close).mutate();
         setCloseDrawableSizeFromTextSize();
-        setClearIconVisible(true);
         addTextChangedListener(mTextWatcher);
 
         setOnFocusChangeListener(new OnFocusChangeListener() {

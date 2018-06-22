@@ -296,7 +296,7 @@
 
             <Space
                 android:layout_width="0dp"
-                android:layout_height="24dp" />
+                android:layout_height="8dp" />
 
             <include layout="@layout/include_chat_setup" />
 

@@ -228,9 +228,10 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     private void setOverflowMenu() {
-        mContactMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mContactMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.backgroundColorWhite)));
-        mContactMenu.setElevation(AndroidUtil.dip2px(2));
+        mContactMenu.setWidth((int) AndroidUtil.dip2px(152));
+        mContactMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        mContactMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
+        mContactMenu.setElevation(AndroidUtil.dip2px(4));
         mContactMenu.inflate(R.menu.menu_contact_overflow);
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override

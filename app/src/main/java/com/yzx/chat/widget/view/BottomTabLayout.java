@@ -317,7 +317,7 @@ public class BottomTabLayout extends LinearLayout {
         private int mBadgeTextColor;
         private int mBadgeBackgroundColor;
 
-        private float mSpacingBetweenIconAndTitle;
+        private float mPaddingBetweenIconAndTitle;
 
         private Paint mTitlePaint;
         private Paint mBadgePaint;
@@ -346,7 +346,7 @@ public class BottomTabLayout extends LinearLayout {
 
             mIconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, displayMetrics);
 
-            mSpacingBetweenIconAndTitle = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, displayMetrics);
+            mPaddingBetweenIconAndTitle = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, displayMetrics);
 
             mBadgeTextColor = Color.WHITE;
             mBadgeBackgroundColor = ContextCompat.getColor(context, android.R.color.holo_red_light);
@@ -403,7 +403,7 @@ public class BottomTabLayout extends LinearLayout {
                 }
                 float drawY = mTitleBoundsRect.height();
                 if (mSelectedIcon != null || mUnselectedIcon != null) {
-                    drawY = (height + drawY + mIconSize + mSpacingBetweenIconAndTitle) / 2f;
+                    drawY = (height + drawY + mIconSize + mPaddingBetweenIconAndTitle) / 2f;
                 } else {
                     drawY = (height + drawY) / 2f;
                 }
@@ -417,7 +417,7 @@ public class BottomTabLayout extends LinearLayout {
                     int iconLeft = (width - mIconSize) / 2;
                     int iconTop;
                     if (mTitleBoundsRect != null) {
-                        iconTop = (int) ((height - (mIconSize + mSpacingBetweenIconAndTitle + mTitleBoundsRect.height())) / 2);
+                        iconTop = (int) ((height - (mIconSize + mPaddingBetweenIconAndTitle + mTitleBoundsRect.height())) / 2);
                     } else {
                         iconTop = (height - mIconSize) / 2;
                     }

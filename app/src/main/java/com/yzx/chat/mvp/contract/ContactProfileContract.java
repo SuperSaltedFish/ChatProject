@@ -22,6 +22,11 @@ public class ContactProfileContract {
         void goBack();
 
         void setEnableProgressDialog(boolean isEnable);
+
+        void switchTopState(boolean isOpen);
+
+        void switchRemindState(boolean isOpen);
+
     }
 
 
@@ -31,5 +36,11 @@ public class ContactProfileContract {
         ContactBean getContact();
 
         void deleteContact();
+
+        void enableConversationNotification(boolean isEnable);
+
+        void setConversationToTop( boolean isTop);
+
+        void clearChatMessages();
     }
 }

@@ -2,11 +2,15 @@ package com.yzx.chat.widget.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,9 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
-import com.yzx.chat.R;
-import com.yzx.chat.util.AndroidUtil;
 
 
 /**
@@ -37,9 +38,15 @@ public class OverflowPopupMenu extends PopupWindow {
     private MenuBuilder mMenuBuilder;
     private OnMenuItemClickListener mOnMenuItemClickListener;
 
-    private int mItemPadding;
-    private int mItemHeight;
-    private int mTextColor;
+    private int mPaddingStart;
+    private int mPaddingEnd;
+    private int mPaddingBetweenIconAndTitle;
+    private int mMenuItemHeight;
+
+    private int mIconSize;
+
+    private int mTitleTextSize;
+    private int mTitleTextColor;
 
     public OverflowPopupMenu(@NonNull Context context) {
         this(context, 0);
@@ -58,9 +65,18 @@ public class OverflowPopupMenu extends PopupWindow {
         if (menuRes != 0) {
             inflate(menuRes);
         }
-        mItemPadding = (int) AndroidUtil.dip2px(12);
-        mItemHeight = (int) AndroidUtil.dip2px(48);
-        mTextColor = AndroidUtil.getColor(R.color.textPrimaryColorBlack);
+        initDefault();
+    }
+
+    private void initDefault() {
+        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+        mPaddingStart = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, displayMetrics);
+        mPaddingEnd = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, displayMetrics);
+        mPaddingBetweenIconAndTitle = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, displayMetrics);
+        mMenuItemHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, displayMetrics);
+        mIconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, displayMetrics);
+        mTitleTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, displayMetrics);
+        mTitleTextColor = Color.BLACK;
     }
 
 
@@ -69,12 +85,53 @@ public class OverflowPopupMenu extends PopupWindow {
         new SupportMenuInflater(mContext).inflate(menuRes, mMenuBuilder);
     }
 
+    private void updateItem(){
+        mMenuListView.setAdapter(null);
+        mMenuListView.setAdapter(mPopupMenuAdapter);
+        update();
+    }
+
+    public void setPaddingStart(int paddingStart) {
+        mPaddingStart = paddingStart;
+        updateItem();
+    }
+
+    public void setPaddingEnd(int paddingEnd) {
+        mPaddingEnd = paddingEnd;
+        updateItem();
+    }
+
+    public void setPaddingBetweenIconAndTitle(int paddingBetweenIconAndTitle) {
+        mPaddingBetweenIconAndTitle = paddingBetweenIconAndTitle;
+        updateItem();
+    }
+
+    public void setMenuItemHeight(int menuItemHeight) {
+        mMenuItemHeight = menuItemHeight;
+        updateItem();
+    }
+
+    public void setIconSize(int iconSize) {
+        mIconSize = iconSize;
+        updateItem();
+    }
+
+    public void setTitleTextSize(int titleTextSize) {
+        mTitleTextSize = titleTextSize;
+        updateItem();
+    }
+
+    public void setTitleTextColor(int titleTextColor) {
+        mTitleTextColor = titleTextColor;
+        updateItem();
+    }
+
     public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
         mOnMenuItemClickListener = listener;
     }
 
     public int getHeight() {
-        return mMenuBuilder == null ? 0 : mMenuBuilder.size() * mItemHeight;
+        return mMenuBuilder == null ? 0 : mMenuBuilder.size() * mMenuItemHeight;
     }
 
     public MenuItem findMenuById(@IdRes int menuId) {
@@ -87,19 +144,25 @@ public class OverflowPopupMenu extends PopupWindow {
 
     private MenuHolder createHolder() {
         LinearLayout rootLayout = new LinearLayout(mContext);
-        rootLayout.setOrientation(LinearLayout.VERTICAL);
-        rootLayout.setPadding(mItemPadding, mItemPadding, mItemPadding, mItemPadding);
-        rootLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mItemHeight));
+        rootLayout.setOrientation(LinearLayout.HORIZONTAL);
+        rootLayout.setPadding(mPaddingStart, 0, mPaddingEnd, 0);
+        rootLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mMenuItemHeight));
         rootLayout.setGravity(Gravity.CENTER_VERTICAL);
 
         ImageView itemIcon = new ImageView(mContext);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(mIconSize, mIconSize);
+        params.setMarginEnd(mPaddingBetweenIconAndTitle);
+
 
         TextView itemText = new TextView(mContext);
         itemText.setGravity(Gravity.CENTER_VERTICAL);
-        itemText.setTextColor(mTextColor);
+        itemText.setTextColor(mTitleTextColor);
+        itemText.setTextSize(TypedValue.COMPLEX_UNIT_PX,mTitleTextSize);
+        itemText.setSingleLine();
+        itemText.setEllipsize(TextUtils.TruncateAt.END);
 
-        rootLayout.addView(itemIcon);
-        rootLayout.addView(itemText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        rootLayout.addView(itemIcon, params);
+        rootLayout.addView(itemText);
 
         MenuHolder holder = new MenuHolder();
         holder.mLlRootLayout = rootLayout;
@@ -151,11 +214,11 @@ public class OverflowPopupMenu extends PopupWindow {
             MenuItem menuItem = mMenuBuilder.getItem(position);
             if (menuItem.getIcon() == null) {
                 menuHolder.mIvIcon.setVisibility(View.GONE);
+                menuHolder.mIvIcon.setImageDrawable(null);
             } else {
                 menuHolder.mIvIcon.setVisibility(View.VISIBLE);
                 menuHolder.mIvIcon.setImageDrawable(menuItem.getIcon());
             }
-            menuHolder.mIvIcon.setImageDrawable(menuItem.getIcon());
             menuHolder.mTvTitle.setText(menuItem.getTitle());
             return convertView;
         }

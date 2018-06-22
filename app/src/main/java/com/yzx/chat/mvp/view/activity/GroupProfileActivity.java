@@ -246,7 +246,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                             InputType.TYPE_CLASS_TEXT
                                     | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
                                     | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
-                    .inputRange(0, 16)
+                    .inputRange(0, 100)
                     .positiveText(R.string.Confirm)
                     .negativeText(R.string.Cancel)
                     .input(
@@ -323,9 +323,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         @Override
         public void onClick(View v) {
             new MaterialDialog.Builder(GroupProfileActivity.this)
-                    .content("是否删除所有聊天记录？")
-                    .positiveText("确定")
-                    .negativeText("取消")
+                    .content(R.string.ChatSetup_DeleteHint)
+                    .positiveText(R.string.Confirm)
+                    .negativeText(R.string.Cancel)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

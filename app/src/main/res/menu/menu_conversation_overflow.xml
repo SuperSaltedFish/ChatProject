@@ -3,13 +3,16 @@
 
     <item
         android:id="@+id/ConversationMenu_Top"
+        android:icon="@drawable/ic_top"
         android:title="@string/ConversationMenu_Top" />
 
     <item
         android:id="@+id/ConversationMenu_Clean"
+        android:icon="@drawable/ic_clean"
         android:title="@string/ConversationMenu_Clean" />
 
     <item
         android:id="@+id/ConversationMenu_Remove"
+        android:icon="@drawable/ic_delete"
         android:title="@string/ConversationMenu_Remove" />
 </menu>

@@ -1,7 +1,9 @@
 package com.yzx.chat.mvp.view.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
@@ -89,8 +91,8 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutAnimation(   AnimationUtils.loadLayoutAnimation(mContext,R.anim.layout_alpha));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mContext, R.anim.layout_alpha));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         ((DefaultItemAnimator) (mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
@@ -100,9 +102,10 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     private void setOverflowMenu() {
-        mConversationMenu.setWidth((int) AndroidUtil.dip2px(128));
-        mConversationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.backgroundColorWhite)));
-        mConversationMenu.setElevation(AndroidUtil.dip2px(2));
+        mConversationMenu.setWidth((int) AndroidUtil.dip2px(152));
+        mConversationMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        mConversationMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
+        mConversationMenu.setElevation(AndroidUtil.dip2px(4));
         mConversationMenu.inflate(R.menu.menu_conversation_overflow);
         mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override
@@ -160,10 +163,10 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                         conversation = mConversationList.get(position);
                         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, mConversationList.get(position));
                     } else if (position != 0) {
-                        conversation = mConversationList.get(position-1);
+                        conversation = mConversationList.get(position - 1);
                     } else return;
-                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID,conversation.getTargetId());
-                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE,conversation.getConversationType().getValue());
+                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversation.getTargetId());
+                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, conversation.getConversationType().getValue());
                     startActivity(intent);
                 }
             });
@@ -180,8 +183,8 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             } else {
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_Top);
             }
-
             OverflowMenuShowHelper.show(viewHolder.itemView, mConversationMenu, mRecyclerView.getHeight(), (int) touchX, (int) touchY);
+
         }
 
     };

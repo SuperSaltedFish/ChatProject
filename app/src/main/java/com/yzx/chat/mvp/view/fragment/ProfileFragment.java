@@ -130,29 +130,8 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(mContext, QrCodeScanActivity.class));
-//
+            startActivity(new Intent(mContext, EditProfileActivity.class));
 
-            ///storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg
-//            UserApi userApi = (UserApi) ApiManager.getProxyInstance(UserApi.class);
-//            Call<JsonResponse<Void>> call  = userApi.uploadAvatar("/storage/emulated/0/DCIM/Camera/IMG_20180127_164621.jpg");
-//            call.setCallback(new HttpCallback<JsonResponse<Void>>() {
-//                @Override
-//                public void onResponse(HttpResponse<JsonResponse<Void>> response) {
-//                    LogUtil.e("dwad");
-//                }
-//
-//                @Override
-//                public void onError(@NonNull Throwable e) {
-//                    LogUtil.e("dwad");
-//                }
-//
-//                @Override
-//                public boolean isExecuteNextTask() {
-//                    return false;
-//                }
-//            });
-//            NetworkExecutor.getInstance().submit(call);
         }
     };
 
