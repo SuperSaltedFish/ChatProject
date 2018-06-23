@@ -119,7 +119,6 @@ public class ContactManager {
         return mContactsMap.get(userID);
     }
 
-
     public void requestContact(final UserBean user, final String reason, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mRequestContact);
         mRequestContact = mContactApi.requestContact(user.getUserID(), reason);
@@ -310,6 +309,10 @@ public class ContactManager {
             }
         }, false);
         mNetworkExecutor.submit(mUpdateContact);
+    }
+
+    public HashSet<String> getAllTags() {
+        return mContactDao.getAllTagsType();
     }
 
     public int getContactUnreadCount() {

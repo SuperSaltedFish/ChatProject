@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".mvp.view.activity.EditContactLabelActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"
@@ -13,25 +15,10 @@
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/EditContactLabelActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
-
-        <Button
-            android:id="@+id/EditContactLabelActivity_mBtnConfirm"
-            android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/radius_default_bt"
-            android:elevation="2dp"
-            android:text="@string/RemarkInfoActivity_Confirm"
-            android:textColor="@android:color/white" />
-
-    </android.support.v7.widget.Toolbar>
+        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
 
     <com.yzx.chat.widget.view.FlowLayout
-        android:id="@+id/EditContactLabelActivity_mFlowLayout"
+        android:id="@+id/EditContactLabelActivity_mFlowLayoutSelected"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -61,6 +48,26 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:background="@color/dividerColorBlack" />
+
+    <TextView
+        android:id="@+id/EditContactLabelActivity_mTvSelectionLabelTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:text="已有标签"
+        android:textSize="13sp" />
+
+
+    <com.yzx.chat.widget.view.FlowLayout
+        android:id="@+id/EditContactLabelActivity_mFlowLayoutSelectable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp" />
 
 
 </LinearLayout>

@@ -22,14 +22,12 @@ import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
 import com.yzx.chat.mvp.view.activity.LoginActivity;
 import com.yzx.chat.mvp.view.activity.EditProfileActivity;
 import com.yzx.chat.mvp.view.activity.QrCodeScanActivity;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//import com.yzx.chat.adapter.ProfileNavigatorAdapter;
-//import net.lucode.hackware.magicindicator.MagicIndicator;
 
 /**
  * Created by YZX on 2017年09月01日.
@@ -130,7 +128,8 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(mContext, EditProfileActivity.class));
+            IMClient.getInstance().contactManager().getAllTags();
+          //  startActivity(new Intent(mContext, EditProfileActivity.class));
 
         }
     };

@@ -208,5 +208,6 @@
     <string name="QrCodePresenter_UnableFind">没有在照片中找到二维码</string>
     <string name="People">人</string>
     <string name="ChatSetup_DeleteHint">是否删除所有聊天记录？</string>
+    <string name="EditContactLabelActivity_LabelExists">该标签已添加，无法重复添加</string>
 
 </resources>

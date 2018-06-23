@@ -8,10 +8,13 @@ import android.text.TextUtils;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.util.LogUtil;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +26,7 @@ import java.util.List;
 
 public class ContactDao extends AbstractDao<ContactBean> {
 
-     static final String TABLE_NAME = "Contact";
+    static final String TABLE_NAME = "Contact";
 
     private static final String COLUMN_NAME_ContactID = "UserID";
     private static final String COLUMN_NAME_RemarkName = "RemarkName";
@@ -70,10 +73,10 @@ public class ContactDao extends AbstractDao<ContactBean> {
         return contact;
     }
 
-    public List<ContactBean> loadAllContacts() {
+    public ArrayList<ContactBean> loadAllContacts() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
-        List<ContactBean> contactList = new ArrayList<>(cursor.getCount());
+        ArrayList<ContactBean> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
@@ -93,6 +96,21 @@ public class ContactDao extends AbstractDao<ContactBean> {
         return new UserDao(mReadWriteHelper).replaceAll(userList) && insertAll(contactList);
     }
 
+    public HashSet<String> getAllTagsType() {
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        Cursor cursor = database.query(true, TABLE_NAME, new String[]{COLUMN_NAME_Tags}, COLUMN_NAME_Tags + " IS NOT NULL", null, null, null, null, null);
+        HashSet<String> tagsSet = new HashSet<>();
+        String tags;
+        while (cursor.moveToNext()) {
+            tags = cursor.getString(0);
+            if (!TextUtils.isEmpty(tags)) {
+                tagsSet.addAll(Arrays.asList(tags.split(";")));
+            }
+        }
+        cursor.close();
+        mReadWriteHelper.closeReadableDatabase();
+        return tagsSet;
+    }
 
     @Override
     protected String getTableName() {

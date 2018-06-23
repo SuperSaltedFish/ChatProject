@@ -43,7 +43,7 @@ public class FlowLayout extends ViewGroup {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
         int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
-
+        int maxAvailableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
         mLineViewMap.clear();
 
         int layoutWidth = 0;
@@ -55,12 +55,13 @@ public class FlowLayout extends ViewGroup {
 
         for (int i = 0, count = getChildCount(); i < count; i++) {
             View childView = getChildAt(i);
-            if(childView.getVisibility()!=View.GONE) {
+            if (childView.getVisibility() != View.GONE) {
                 measureChild(childView, widthMeasureSpec, heightMeasureSpec);
                 MarginLayoutParams childLP = (MarginLayoutParams) childView.getLayoutParams();
                 int childWidth = childView.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
                 int childHeight = childView.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin;
-                if (currentLineWidth + childWidth + currentLineChildCount * mItemSpace > maxWidth - getPaddingLeft() - getPaddingRight()) {
+                boolean isNeedAddItemSpace = currentLineChildCount > 0;
+                if (currentLineWidth + childWidth + (isNeedAddItemSpace ? mItemSpace : 0) > maxAvailableWidth) {
                     layoutWidth = Math.max(currentLineWidth, layoutWidth);
                     layoutHeight = layoutHeight + currentLineHeight + mLineSpace;
                     lineCount++;
@@ -70,6 +71,9 @@ public class FlowLayout extends ViewGroup {
                 } else {
                     currentLineChildCount++;
                     currentLineWidth += childWidth;
+                    if (isNeedAddItemSpace) {
+                        currentLineWidth += mItemSpace;
+                    }
                     currentLineHeight = Math.max(childHeight, currentLineHeight);
                 }
                 List<View> singleLineViewList = mLineViewMap.get(lineCount);
@@ -87,7 +91,7 @@ public class FlowLayout extends ViewGroup {
 
         setMeasuredDimension(
                 (widthMode == MeasureSpec.EXACTLY) ? maxWidth : layoutWidth,
-                (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight+getPaddingTop()+getPaddingBottom()
+                (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight + getPaddingTop() + getPaddingBottom()
         );
     }
 
@@ -104,18 +108,17 @@ public class FlowLayout extends ViewGroup {
             MarginLayoutParams childLP;
             for (View child : singleViewList) {
                 childLP = (MarginLayoutParams) child.getLayoutParams();
-                int left = startX + usedWidth+childLP.leftMargin;
-                int top = startY + usedHeight+childLP.topMargin;
+                int left = startX + usedWidth + childLP.leftMargin;
+                if(singleViewList.indexOf(child) >0){
+                    left+=mItemSpace;
+                    usedWidth+=mItemSpace;
+                }
+                int top = startY + usedHeight + childLP.topMargin;
                 int right = left + child.getMeasuredWidth();
                 int bottom = top + child.getMeasuredHeight();
-                if (singleViewList.indexOf(child) == 0) {
-                    child.layout(left , top , right, bottom);
-                    usedWidth +=  (right-left)+childLP.rightMargin+childLP.leftMargin;
-                } else {
-                    child.layout(mItemSpace + left , top , mItemSpace + right, bottom);
-                    usedWidth += (right-left+mItemSpace+childLP.rightMargin+childLP.leftMargin);
-                }
-                lineHeight = Math.max(lineHeight, bottom-top + childLP.topMargin + childLP.bottomMargin);
+                child.layout(left, top, right, bottom);
+                usedWidth += (right - left) + childLP.rightMargin + childLP.leftMargin;
+                lineHeight = Math.max(lineHeight, bottom - top + childLP.topMargin + childLP.bottomMargin);
             }
             usedHeight += lineHeight + mLineSpace;
             i++;

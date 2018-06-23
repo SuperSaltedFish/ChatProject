@@ -6,9 +6,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,7 +26,6 @@ import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.FlowLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by YZX on 2018年01月15日.
@@ -37,8 +37,6 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     public static final String INTENT_EXTRA_CONTACT = "Contact";
 
-    private Button mBtnConfirm;
-
     private ContactBean mContactBean;
     private EditText mEtRemarkName;
     private EditText mEtTelephone;
@@ -46,6 +44,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     private TextView mTvLabelHint;
     private FlowLayout mLabelFlowLayout;
     private LinearLayout mLlTelephoneLayout;
+    private ArrayList<String> mTags;
 
     @Override
     protected int getLayoutID() {
@@ -53,7 +52,6 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     }
 
     protected void init(Bundle savedInstanceState) {
-        mBtnConfirm = findViewById(R.id.RemarkInfoActivity_mBtnConfirm);
         mEtRemarkName = findViewById(R.id.RemarkInfoActivity_mEtRemarkName);
         mEtTelephone = findViewById(R.id.RemarkInfoActivity_mEtTelephone);
         mEtDescription = findViewById(R.id.RemarkInfoActivity_mEtDescription);
@@ -67,8 +65,10 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
+        mLabelFlowLayout.setLineSpace((int) AndroidUtil.dip2px(8));
+        mLabelFlowLayout.setItemSpace((int) AndroidUtil.dip2px(8));
         mLabelFlowLayout.setOnClickListener(mOnLabelFlowLayoutClickListener);
+
         mEtTelephone.setOnEditorActionListener(mOnEditorActionListener);
         setData();
     }
@@ -83,30 +83,63 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
             ContactRemarkBean contactRemark = mContactBean.getRemark();
             mEtRemarkName.setText(mContactBean.getName());
             mEtDescription.setText(contactRemark.getDescription());
-            List<String> telephones = contactRemark.getTelephone();
-            if (telephones != null && telephones.size() > 0) {
-                for (String telephone : telephones) {
-                    addTelephoneInput(telephone);
-                }
-            }
-            setTags(contactRemark.getTags());
+            setTelephones(contactRemark.getTelephone());
+            mTags = contactRemark.getTags();
+            setTags(mTags);
         }
     }
 
     private void setTags(ArrayList<String> tags) {
         mLabelFlowLayout.removeAllViews();
         if (tags != null && tags.size() != 0) {
-            mLabelFlowLayout.setLineSpace((int) AndroidUtil.dip2px(8));
-            mLabelFlowLayout.setItemSpace((int) AndroidUtil.dip2px(8));
             for (String tag : tags) {
-                TextView label = (TextView) getLayoutInflater().inflate(R.layout.item_label, mLabelFlowLayout, false);
+                TextView label = (TextView) getLayoutInflater().inflate(R.layout.item_label_selected, mLabelFlowLayout, false);
                 label.setText(tag);
                 mLabelFlowLayout.addView(label);
             }
-            mContactBean.getRemark().setTags(tags);
         } else {
             mLabelFlowLayout.addView(mTvLabelHint);
         }
+    }
+
+    private ArrayList<String> getTags() {
+        ArrayList<String> tags = null;
+        for (int i = 0, count = mLabelFlowLayout.getChildCount(); i < count; i++) {
+            TextView labelView = (TextView) mLabelFlowLayout.getChildAt(i);
+            if (labelView != mTvLabelHint) {
+                String label = labelView.getText().toString();
+                if (!TextUtils.isEmpty(label)) {
+                    if (tags == null) {
+                        tags = new ArrayList<>(count + 2);
+                    }
+                    tags.add(label);
+                }
+            }
+        }
+        return tags;
+    }
+
+    private void setTelephones(ArrayList<String> telephones) {
+        if (telephones != null && telephones.size() > 0) {
+            for (String telephone : telephones) {
+                addTelephoneInput(telephone);
+            }
+        }
+    }
+
+    private ArrayList<String> getTelephones() {
+        ArrayList<String> telephones = null;
+        for (int i = 0, count = mLlTelephoneLayout.getChildCount(); i < count; i++) {
+            EditText editText = (EditText) mLlTelephoneLayout.getChildAt(i);
+            String telephone = editText.getText().toString();
+            if (!TextUtils.isEmpty(telephone)) {
+                if (telephones == null) {
+                    telephones = new ArrayList<>(count + 2);
+                }
+                telephones.add(telephone);
+            }
+        }
+        return telephones;
     }
 
     private void addTelephoneInput(CharSequence content) {
@@ -117,11 +150,67 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         mLlTelephoneLayout.addView(editText, mLlTelephoneLayout.getChildCount() - 1);
     }
 
+    private void confirm() {
+        ContactRemarkBean contactRemark = mContactBean.getRemark();
+        String remarkName = mEtRemarkName.getText().toString();
+        String description = mEtDescription.getText().toString();
+        ArrayList<String> newTelephones = getTelephones();
+        ArrayList<String> newTags =mTags;
+        ArrayList<String> oldTelephones = contactRemark.getTelephone();
+        ArrayList<String> oldTags = contactRemark.getTags();
+        boolean isChanged = false;
+
+        if (!remarkName.equals(contactRemark.getRemarkName())) {
+            if (!remarkName.equals(mContactBean.getUserProfile().getNickname())) {
+                isChanged = true;
+                contactRemark.setRemarkName(remarkName);
+            } else if (!TextUtils.isEmpty(contactRemark.getRemarkName())) {
+                isChanged = true;
+                contactRemark.setRemarkName(null);
+            }
+        }
+        if (isChanged || !description.equals(contactRemark.getDescription())) {
+            isChanged = true;
+            contactRemark.setDescription(description);
+        }
+        if (isChanged || !isEquals(newTelephones, oldTelephones)) {
+            isChanged = true;
+            contactRemark.setTelephone(newTelephones);
+        }
+        if (isChanged || !isEquals(newTags, oldTags)) {
+            isChanged = true;
+            contactRemark.setTags(newTags);
+        }
+        if (isChanged) {
+            mPresenter.save(mContactBean);
+        }
+
+        finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_simple_confirm, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.SimpleConfirmMenu_Confirm) {
+            confirm();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == EditContactLabelActivity.RESULT_CODE && data != null) {
-            setTags(data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL));
+            mTags = data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL);
+            setTags(mTags);
         }
     }
 
@@ -142,36 +231,13 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(RemarkInfoActivity.this, EditContactLabelActivity.class);
-            ArrayList<String> tags = mContactBean.getRemark().getTags();
-            if (tags != null && tags.size() != 0) {
-                intent.putStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, tags);
-            }
+            intent.putStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, mContactBean.getRemark().getTags());
+            intent.putStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
             startActivityForResult(intent, 0);
 
         }
     };
 
-    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            ContactRemarkBean contactRemark = mContactBean.getRemark();
-            contactRemark.setDescription(mEtDescription.getText().toString());
-            if(!mContactBean.getName().equals(mEtRemarkName.getText().toString())){
-                contactRemark.setRemarkName(mEtRemarkName.getText().toString());
-            }
-            ArrayList<String> telephones = new ArrayList<>();
-            for (int i = 0, count = mLlTelephoneLayout.getChildCount(); i < count; i++) {
-                EditText editText = (EditText) mLlTelephoneLayout.getChildAt(i);
-                String telephone = editText.getText().toString();
-                if (!TextUtils.isEmpty(telephone)) {
-                    telephones.add(telephone);
-                }
-            }
-            contactRemark.setTelephone(telephones);
-            mPresenter.save(mContactBean);
-            finish();
-        }
-    };
 
     @Override
     public RemarkInfoContract.Presenter getPresenter() {
@@ -203,4 +269,24 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
             }
         }
     }
+
+    private static boolean isEquals(ArrayList<String> a1, ArrayList<String> a2) {
+        if (a1 == a2) {
+            return true;
+        }
+        if (a1 == null && a2 != null && a2.size() == 0) {
+            return true;
+        }
+        if (a2 == null && a1 != null && a1.size() == 0) {
+            return true;
+        }
+        if (a1 != null && a2 != null && a1.size() == 0 && a1.size() == a2.size()) {
+            return true;
+        }
+        if (a1 != null && a2 != null && a1.size() == a2.size() && a1.containsAll(a2)) {
+            return true;
+        }
+        return false;
+    }
+
 }

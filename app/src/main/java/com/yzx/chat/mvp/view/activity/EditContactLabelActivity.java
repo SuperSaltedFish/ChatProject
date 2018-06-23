@@ -8,9 +8,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -31,12 +32,16 @@ import java.util.ArrayList;
 public class EditContactLabelActivity extends BaseCompatActivity {
 
     public static final String INTENT_EXTRA_LABEL = "Label";
+    public static final String INTENT_EXTRA_SELECTABLE_LABEL = "SelectableLabel";
     public static final int RESULT_CODE = 1;
 
-    private FlowLayout mFlowLayout;
+    private FlowLayout mFlowLayoutSelected;
+    private FlowLayout mFlowLayoutSelectable;
     private LabelEditText mEtInput;
-    private Button mBtnConfirm;
+    private TextView mTvSelectionLabelTitle;
     private Drawable mCloseDrawable;
+    private ArrayList<String> mLabels;
+    private ArrayList<String> mSelectableLabels;
 
     private int mCurrentSelectedID = -1;
 
@@ -53,9 +58,10 @@ public class EditContactLabelActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mFlowLayout = findViewById(R.id.EditContactLabelActivity_mFlowLayout);
+        mFlowLayoutSelected = findViewById(R.id.EditContactLabelActivity_mFlowLayoutSelected);
+        mFlowLayoutSelectable = findViewById(R.id.EditContactLabelActivity_mFlowLayoutSelectable);
         mEtInput = findViewById(R.id.EditContactLabelActivity_mEtInput);
-        mBtnConfirm = findViewById(R.id.EditContactLabelActivity_mBtnConfirm);
+        mTvSelectionLabelTitle = findViewById(R.id.EditContactLabelActivity_mTvSelectionLabelTitle);
         mCloseDrawable = getDrawable(R.drawable.ic_close);
     }
 
@@ -68,40 +74,109 @@ public class EditContactLabelActivity extends BaseCompatActivity {
         mEtInput.setBackspaceListener(mBackspaceListener);
         mEtInput.setOnEditorActionListener(mOnEditorActionListener);
         mEtInput.addTextChangedListener(mTextWatcher);
-        mFlowLayout.setOnClickListener(mOnFlowLayoutClickListener);
-        mFlowLayout.setItemSpace((int) AndroidUtil.dip2px(8));
-        mFlowLayout.setLineSpace((int) AndroidUtil.dip2px(4));
 
-        int size = (int) AndroidUtil.dip2px(16);
+        mFlowLayoutSelected.setOnClickListener(mOnFlowLayoutClickListener);
+        mFlowLayoutSelected.setItemSpace((int) AndroidUtil.dip2px(8));
+        mFlowLayoutSelected.setLineSpace((int) AndroidUtil.dip2px(4));
+
+        mFlowLayoutSelectable.setItemSpace((int) AndroidUtil.dip2px(8));
+        mFlowLayoutSelectable.setLineSpace((int) AndroidUtil.dip2px(4));
+
+        int size = (int) AndroidUtil.dip2px(12);
         mCloseDrawable.setBounds(0, 0, size, size);
         mCloseDrawable.setTint(Color.WHITE);
-
-        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
 
         setData();
     }
 
     private void setData() {
         Intent intent = getIntent();
-        ArrayList<String> tags = intent.getStringArrayListExtra(INTENT_EXTRA_LABEL);
-        if (tags != null && tags.size() != 0) {
-            for (String tag : tags) {
-                addNewLabelTextView(tag);
+        mLabels = intent.getStringArrayListExtra(INTENT_EXTRA_LABEL);
+        mSelectableLabels = intent.getStringArrayListExtra(INTENT_EXTRA_SELECTABLE_LABEL);
+
+        if (mSelectableLabels != null && mSelectableLabels.size() > 0) {
+            for (String tag : mSelectableLabels) {
+                addSelectableLabelTextView(tag);
+            }
+        } else {
+            mTvSelectionLabelTitle.setVisibility(View.INVISIBLE);
+        }
+
+        if (mLabels == null) {
+            mLabels = new ArrayList<>(6);
+        } else {
+            if (mLabels.size() != 0) {
+                for (String tag : mLabels) {
+                    addNewLabelTextView(tag, false);
+                }
             }
         }
     }
 
-    private void addNewLabelTextView(CharSequence labelContent) {
-        TextView textView = (TextView) getLayoutInflater().inflate(R.layout.item_label, mFlowLayout, false);
+    private void tryAddNewLabelTextView() {
+        String labelContent = mEtInput.getText().toString();
+        if (TextUtils.isEmpty(labelContent)) {
+            return;
+        }
+        addNewLabelTextView(labelContent, true);
+        mEtInput.setText("");
+    }
+
+    private void addNewLabelTextView(String labelContent, boolean isChecked) {
+        if (isChecked) {
+            if (mLabels.contains(labelContent)) {
+                showToast(getString(R.string.EditContactLabelActivity_LabelExists));
+                return;
+            } else {
+                mLabels.add(labelContent);
+            }
+        }
+        TextView textView = (TextView) getLayoutInflater().inflate(R.layout.item_label_selected, mFlowLayoutSelected, false);
         textView.setText(labelContent);
-        int lastIndex = mFlowLayout.getChildCount();
+        int lastIndex = mFlowLayoutSelected.getChildCount();
         if (lastIndex != 0) {
             lastIndex--;
         }
         textView.setId(textView.hashCode());
         textView.setOnClickListener(mOnLabelClickListener);
-        mFlowLayout.addView(textView, lastIndex);
-        mEtInput.setText("");
+        mFlowLayoutSelected.addView(textView, lastIndex);
+
+        if (mSelectableLabels != null && mSelectableLabels.size() > 0) {
+            int index = mSelectableLabels.indexOf(labelContent);
+            if (index >= 0) {
+                mFlowLayoutSelectable.getChildAt(index).setSelected(true);
+            }
+        }
+    }
+
+    private void removeLabel(TextView labelView) {
+        String label = labelView.getText().toString();
+        mFlowLayoutSelected.removeView(labelView);
+        mLabels.remove(label);
+
+        if (mSelectableLabels != null && mSelectableLabels.size() > 0) {
+            int index = mSelectableLabels.indexOf(label);
+            if (index >= 0) {
+                mFlowLayoutSelectable.getChildAt(index).setSelected(false);
+            }
+        }
+    }
+
+    private void removeLabel(String label) {
+        for (int i = 0, count = mFlowLayoutSelected.getChildCount() - 1; i < count; i++) {
+            TextView labelView = (TextView) mFlowLayoutSelected.getChildAt(i);
+            if (label.contentEquals(labelView.getText())) {
+                removeLabel(labelView);
+                return;
+            }
+        }
+    }
+
+    private void addSelectableLabelTextView(String labelContent) {
+        TextView textView = (TextView) getLayoutInflater().inflate(R.layout.item_label_selectable, mFlowLayoutSelected, false);
+        textView.setText(labelContent);
+        textView.setOnClickListener(mOnSelectionLabelClickListener);
+        mFlowLayoutSelectable.addView(textView);
     }
 
 
@@ -110,8 +185,9 @@ public class EditContactLabelActivity extends BaseCompatActivity {
             return;
         }
         if (isSelected) {
+            labelView.setCompoundDrawablePadding((int) AndroidUtil.dip2px(2));
             labelView.setCompoundDrawables(null, null, mCloseDrawable, null);
-            labelView.setPadding(labelView.getPaddingStart(), labelView.getPaddingTop(), (int) AndroidUtil.dip2px(4), labelView.getPaddingBottom());
+            labelView.setPadding(labelView.getPaddingStart(), labelView.getPaddingTop(), (int) AndroidUtil.dip2px(6), labelView.getPaddingBottom());
         } else {
             labelView.setPadding(labelView.getPaddingStart(), labelView.getPaddingTop(), labelView.getPaddingStart(), labelView.getPaddingBottom());
             labelView.setCompoundDrawables(null, null, null, null);
@@ -120,30 +196,38 @@ public class EditContactLabelActivity extends BaseCompatActivity {
         mCurrentSelectedID = labelView.getId();
     }
 
-    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            ArrayList<String> tags = new ArrayList<>();
-            for (int i = 0, count = mFlowLayout.getChildCount() - 1; i < count; i++) {
-                TextView labelView = (TextView) mFlowLayout.getChildAt(i);
-                tags.add(labelView.getText().toString());
-            }
-            Intent intent = new Intent();
-            intent.putStringArrayListExtra(INTENT_EXTRA_LABEL, tags);
-            setResult(RESULT_CODE, intent);
-            finish();
+    private void confirm() {
+        String mCurrentInputContent = mEtInput.getText().toString();
+        if (!TextUtils.isEmpty(mCurrentInputContent) && !mLabels.contains(mCurrentInputContent)) {
+            mLabels.add(mCurrentInputContent);
         }
-    };
+        Intent intent = new Intent();
+        intent.putStringArrayListExtra(INTENT_EXTRA_LABEL, mLabels);
+        setResult(RESULT_CODE, intent);
+        finish();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_simple_confirm, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.SimpleConfirmMenu_Confirm) {
+            confirm();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
 
     private final View.OnClickListener mOnFlowLayoutClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            CharSequence labelContent = mEtInput.getText();
-            if (TextUtils.isEmpty(labelContent)) {
-                return;
-            }
-            addNewLabelTextView(labelContent);
+            tryAddNewLabelTextView();
         }
     };
 
@@ -152,13 +236,26 @@ public class EditContactLabelActivity extends BaseCompatActivity {
         public void onClick(View v) {
             int id = v.getId();
             if (id == mCurrentSelectedID) {
-                mFlowLayout.removeView(v);
+                removeLabel((TextView) v);
                 mCurrentSelectedID = -1;
             } else {
                 if (mCurrentSelectedID > 0) {
-                    setLabelSelected((TextView) mFlowLayout.findViewById(mCurrentSelectedID), false);
+                    setLabelSelected((TextView) mFlowLayoutSelected.findViewById(mCurrentSelectedID), false);
                 }
                 setLabelSelected((TextView) v, true);
+            }
+        }
+    };
+
+    private final View.OnClickListener mOnSelectionLabelClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            TextView view = (TextView) v;
+            String label = view.getText().toString();
+            if (mLabels.contains(label)) {
+                removeLabel(label);
+            } else {
+                addNewLabelTextView(label, true);
             }
         }
     };
@@ -177,21 +274,17 @@ public class EditContactLabelActivity extends BaseCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {
             if (mCurrentSelectedID > 0) {
-                setLabelSelected((TextView) mFlowLayout.findViewById(mCurrentSelectedID), false);
+                setLabelSelected((TextView) mFlowLayoutSelected.findViewById(mCurrentSelectedID), false);
                 mCurrentSelectedID = -1;
             }
         }
     };
 
-
     private final TextView.OnEditorActionListener mOnEditorActionListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_DONE || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
-                CharSequence labelContent = mEtInput.getText();
-                if (!TextUtils.isEmpty(labelContent)) {
-                    addNewLabelTextView(labelContent);
-                }
+                tryAddNewLabelTextView();
             }
             return true;
         }
@@ -204,20 +297,20 @@ public class EditContactLabelActivity extends BaseCompatActivity {
             if (!TextUtils.isEmpty(labelContent)) {
                 return false;
             } else {
-                int childCount = mFlowLayout.getChildCount();
+                int childCount = mFlowLayoutSelected.getChildCount();
                 if (childCount <= 1) {
                     return false;
                 }
                 if (mCurrentSelectedID > 0) {
-                    View selectedView = mFlowLayout.findViewById(mCurrentSelectedID);
-                    if (mFlowLayout.indexOfChild(selectedView) == childCount - 2) {
-                        mFlowLayout.removeView(selectedView);
+                    View selectedView = mFlowLayoutSelected.findViewById(mCurrentSelectedID);
+                    if (mFlowLayoutSelected.indexOfChild(selectedView) == childCount - 2) {
+                        removeLabel((TextView) selectedView);
                     } else {
                         setLabelSelected((TextView) selectedView, false);
-                        setLabelSelected((TextView) mFlowLayout.getChildAt(childCount - 2), true);
+                        setLabelSelected((TextView) mFlowLayoutSelected.getChildAt(childCount - 2), true);
                     }
                 } else {
-                    setLabelSelected((TextView) mFlowLayout.getChildAt(childCount - 2), true);
+                    setLabelSelected((TextView) mFlowLayoutSelected.getChildAt(childCount - 2), true);
                 }
             }
             return true;

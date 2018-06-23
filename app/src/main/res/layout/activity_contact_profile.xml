@@ -36,46 +36,22 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/temp_share_image" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ContactProfileActivity_mIvAvatar"
-                    android:layout_width="88dp"
-                    android:layout_height="88dp"
-                    android:layout_marginTop="32dp"
-                    android:elevation="4dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_head_image"
-                    app:civ_border_color="@android:color/white"
-                    app:civ_border_width="2dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/ContactProfileActivity_mTvNickname"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed" />
-
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvNickname"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:singleLine="true"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/ContactProfileActivity_mTvLocationAndAge"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mIvAvatar" />
-
-                <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvSexIcon"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/selector_src_sex"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge"
-                    app:layout_constraintEnd_toStartOf="@id/ContactProfileActivity_mTvLocationAndAge"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mTvLocationAndAge" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvLocationAndAge"
@@ -87,24 +63,51 @@
                     android:text="23岁 · 广东韶关"
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toTopOf="@id/ContactProfileActivity_mTvDescribe"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvSexIcon"
                     app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
 
 
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvDescribe"
+                <ImageView
+                    android:id="@+id/ContactProfileActivity_mIvSexIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/selector_src_sex"
+                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge"
+                    app:layout_constraintStart_toStartOf="@id/ContactProfileActivity_mTvNickname"
+                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mTvLocationAndAge" />
+
+                <com.yzx.chat.widget.view.FlowLayout
+                    android:id="@+id/ContactProfileActivity_mLabelFlowLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintHorizontal_bias="0"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="@id/ContactProfileActivity_mTvNickname"
+                    app:layout_constraintStart_toStartOf="@id/ContactProfileActivity_mTvNickname"
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge">
+
+                </com.yzx.chat.widget.view.FlowLayout>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ContactProfileActivity_mIvAvatar"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="32dp"
+                    android:elevation="4dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/temp_head_image"
+                    app:civ_border_color="@android:color/white"
+                    app:civ_border_width="2dp" />
+
+
+                <TextView
+                    android:id="@+id/ContactProfileActivity_mTvDescribe"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
                     android:layout_marginTop="4dp"
                     android:gravity="center"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge" />
+                    android:textSize="12sp" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -238,7 +241,7 @@
 
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/ContactProfileActivity_mNicknameLayout"
+                android:id="@+id/ContactProfileActivity_mRemarkNameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
@@ -250,35 +253,35 @@
                 android:visibility="gone">
 
                 <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvIconNickname"
+                    android:id="@+id/ContactProfileActivity_mIvIconRemarkName"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_people"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvLabelNickname"
+                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvLabelRemarkName"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mIvLabelNickname" />
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mIvLabelRemarkName" />
 
                 <TextView
-                    android:id="@+id/ContactProfileActivity_mIvLabelNickname"
-                    android:layout_width="0dp"
+                    android:id="@+id/ContactProfileActivity_mIvLabelRemarkName"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:maxLines="1"
                     android:text="@string/Profile_LabelNickname"
                     android:textColor="@color/textPrimaryColorBlack"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconNickname"
+                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconRemarkName"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/ContactProfileActivity_mTvContentNickname"
+                    android:id="@+id/ContactProfileActivity_mTvContentRemarkName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16sp"
                     android:textSize="13sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconNickname"
-                    app:layout_constraintTop_toBottomOf="@+id/ContactProfileActivity_mIvLabelNickname" />
+                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconRemarkName"
+                    app:layout_constraintTop_toBottomOf="@+id/ContactProfileActivity_mIvLabelRemarkName" />
 
                 <View
                     android:layout_width="0dp"
@@ -288,7 +291,7 @@
                     android:background="@color/dividerColorBlack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvContentNickname" />
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvContentRemarkName" />
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout

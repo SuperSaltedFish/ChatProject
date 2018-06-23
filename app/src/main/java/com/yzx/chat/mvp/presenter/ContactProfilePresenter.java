@@ -46,10 +46,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         if (mContactBean == null) {
             mContactProfileView.goBack();
             return;
-        } else {
-            mContactProfileView.updateContactInfo(mContactBean);
         }
-
         mContactProfileView.updateContactInfo(mContactBean);
         mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserProfile().getUserID());
         if (mConversation == null) {
