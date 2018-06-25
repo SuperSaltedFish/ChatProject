@@ -128,8 +128,7 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            IMClient.getInstance().contactManager().getAllTags();
-          //  startActivity(new Intent(mContext, EditProfileActivity.class));
+            startActivity(new Intent(mContext, EditProfileActivity.class));
 
         }
     };

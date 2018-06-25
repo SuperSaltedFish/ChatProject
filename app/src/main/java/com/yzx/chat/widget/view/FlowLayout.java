@@ -22,7 +22,7 @@ public class FlowLayout extends ViewGroup {
     private SparseArray<List<View>> mLineViewMap;
     private int mItemSpace;
     private int mLineSpace;
-
+    private int mMaxLine;
 
     public FlowLayout(Context context) {
         this(context, null);
@@ -35,6 +35,7 @@ public class FlowLayout extends ViewGroup {
     public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mLineViewMap = new SparseArray<>();
+        mMaxLine = Integer.MAX_VALUE;
     }
 
     @Override
@@ -46,8 +47,6 @@ public class FlowLayout extends ViewGroup {
         int maxAvailableWidth = maxWidth - getPaddingLeft() - getPaddingRight();
         mLineViewMap.clear();
 
-        measureChildren( widthMeasureSpec, heightMeasureSpec);
-
         int layoutWidth = 0;
         int layoutHeight = 0;
         int lineCount = 1;
@@ -58,17 +57,21 @@ public class FlowLayout extends ViewGroup {
         for (int i = 0, count = getChildCount(); i < count; i++) {
             View childView = getChildAt(i);
             if (childView.getVisibility() != View.GONE) {
+                measureChild(childView,widthMeasureSpec,heightMeasureSpec);
                 MarginLayoutParams childLP = (MarginLayoutParams) childView.getLayoutParams();
                 int childWidth = childView.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
                 int childHeight = childView.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin;
                 boolean isNeedAddItemSpace = currentLineChildCount > 0;
                 if (currentLineWidth + childWidth + (isNeedAddItemSpace ? mItemSpace : 0) > maxAvailableWidth) {
+                    lineCount++;
+                    if(lineCount>mMaxLine){
+                        break;
+                    }
                     layoutWidth = Math.max(currentLineWidth, layoutWidth);
                     layoutHeight = layoutHeight + currentLineHeight + mLineSpace;
-                    lineCount++;
                     currentLineWidth = childWidth;
                     currentLineHeight = childHeight;
-                    currentLineChildCount = 0;
+                    currentLineChildCount = 1;
                 } else {
                     currentLineChildCount++;
                     currentLineWidth += childWidth;
@@ -84,12 +87,9 @@ public class FlowLayout extends ViewGroup {
                 }
                 singleLineViewList.add(childView);
             }
-            if (i == count - 1) {
-                layoutWidth = Math.max(currentLineWidth, layoutWidth);
-                layoutHeight += currentLineHeight;
-            }
         }
-
+        layoutWidth = Math.max(currentLineWidth, layoutWidth);
+        layoutHeight += currentLineHeight;
         setMeasuredDimension(
                 (widthMode == MeasureSpec.EXACTLY) ? maxWidth : layoutWidth,
                 (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight + getPaddingTop() + getPaddingBottom()
@@ -110,9 +110,9 @@ public class FlowLayout extends ViewGroup {
             for (View child : singleViewList) {
                 childLP = (MarginLayoutParams) child.getLayoutParams();
                 int left = startX + usedWidth + childLP.leftMargin;
-                if(singleViewList.indexOf(child) >0){
-                    left+=mItemSpace;
-                    usedWidth+=mItemSpace;
+                if (singleViewList.indexOf(child) > 0) {
+                    left += mItemSpace;
+                    usedWidth += mItemSpace;
                 }
                 int top = startY + usedHeight + childLP.topMargin;
                 int right = left + child.getMeasuredWidth();
@@ -127,20 +127,24 @@ public class FlowLayout extends ViewGroup {
 
     }
 
-    public int getItemSpace() {
-        return mItemSpace;
-    }
 
     public void setItemSpace(int itemSpace) {
         mItemSpace = itemSpace;
     }
 
-    public int getLineSpace() {
-        return mLineSpace;
-    }
-
     public void setLineSpace(int lineSpace) {
         mLineSpace = lineSpace;
+    }
+
+    public void setMaxLine(int maxLine) {
+        if (maxLine < 1) {
+            maxLine = 1;
+        }
+        if (mMaxLine == maxLine) {
+            return;
+        }
+        mMaxLine = maxLine;
+        requestLayout();
     }
 
     @Override

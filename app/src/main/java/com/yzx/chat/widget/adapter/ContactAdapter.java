@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -49,6 +50,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         }
         ContactBean contactBean = mContactList.get(position);
         holder.mTvName.setText(contactBean.getName());
+        holder.mIvSex.setSelected(contactBean.getUserProfile().getSex() == UserBean.SEX_WOMAN);
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactBean.getUserProfile().getAvatar());
     }
 
@@ -116,6 +118,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
     static class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvName;
         ImageView mIvAvatar;
+        ImageView mIvSex;
 
         ContactHolder(View itemView) {
             super(itemView);
@@ -126,6 +129,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         private void initView() {
             mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
             mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
+            mIvSex = itemView.findViewById(R.id.ContactAdapter_mIvSex);
         }
     }
 

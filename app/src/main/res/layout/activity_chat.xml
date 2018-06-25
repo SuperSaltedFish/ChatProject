@@ -17,7 +17,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light"/>
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -125,7 +125,8 @@
                 android:layout_gravity="center"
                 android:background="@color/colorAccent"
                 android:padding="20dp"
-                android:src="@drawable/ic_microphone" />
+                android:src="@drawable/ic_microphone"
+                android:tint="@android:color/white" />
 
             <TextView
                 android:id="@+id/ChatActivity_mTvRecorderHint"

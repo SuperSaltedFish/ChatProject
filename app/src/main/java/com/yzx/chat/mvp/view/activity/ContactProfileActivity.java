@@ -170,11 +170,11 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==EditContactLabelActivity.RESULT_CODE){
+        if (resultCode == EditContactLabelActivity.RESULT_CODE) {
             ContactBean contact = mPresenter.getContact();
-            ArrayList<String> newTags =data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL);
-            ArrayList<String> oldTags =contact.getRemark().getTags();
-            if(!StringUtil.isEquals(newTags,oldTags,true)){
+            ArrayList<String> newTags = data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL);
+            ArrayList<String> oldTags = contact.getRemark().getTags();
+            if (!StringUtil.isEquals(newTags, oldTags, true)) {
                 contact.getRemark().setTags(newTags);
                 mPresenter.saveRemarkInfo(contact);
             }
@@ -199,7 +199,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         Intent intent = new Intent(ContactProfileActivity.this, EditContactLabelActivity.class);
         intent.putExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, mPresenter.getContact().getRemark().getTags());
         intent.putExtra(EditContactLabelActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
-        startActivityForResult(intent,0);
+        startActivityForResult(intent, 0);
     }
 
     private void showDeleteChatMessageHintDialog() {
