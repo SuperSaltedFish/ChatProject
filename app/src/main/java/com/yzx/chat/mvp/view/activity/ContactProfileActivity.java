@@ -34,10 +34,12 @@ import com.yzx.chat.mvp.presenter.ContactProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.listener.AppBarStateChangeListener;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.ProgressDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
@@ -165,6 +167,20 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==EditContactLabelActivity.RESULT_CODE){
+            ContactBean contact = mPresenter.getContact();
+            ArrayList<String> newTags =data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL);
+            ArrayList<String> oldTags =contact.getRemark().getTags();
+            if(!StringUtil.isEquals(newTags,oldTags,true)){
+                contact.getRemark().setTags(newTags);
+                mPresenter.saveRemarkInfo(contact);
+            }
+        }
+    }
+
     private void startRemarkInfoActivity() {
         Intent intent = new Intent(this, RemarkInfoActivity.class);
         intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mPresenter.getContact());
@@ -182,6 +198,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private void startEditContactLabelActivity() {
         Intent intent = new Intent(ContactProfileActivity.this, EditContactLabelActivity.class);
         intent.putExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, mPresenter.getContact().getRemark().getTags());
+        intent.putExtra(EditContactLabelActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
         startActivityForResult(intent,0);
     }
 

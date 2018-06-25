@@ -71,7 +71,7 @@
             android:layout_gravity="top"
             app:theme="@style/ToolbarTheme"
             app:title="@string/EditProfileActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     </FrameLayout>
 

@@ -41,7 +41,7 @@
 
     </style>
 
-    <style name="ToolbarTitleTheme.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="ToolbarTitleTextAppearance.Light" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
@@ -52,6 +52,11 @@
 
     <style name="ToolbarPopupDarkTheme" parent="ThemeOverlay.AppCompat">
         <item name="overlapAnchor">false</item>
+    </style>
+
+    <style name="CollapsingToolbarExpandedTitleTextAppearance.Light" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="PopupMenuAnimation_Left_Top" parent="android:Animation">

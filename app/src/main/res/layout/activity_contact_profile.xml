@@ -49,8 +49,8 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -78,15 +78,15 @@
 
                 <com.yzx.chat.widget.view.FlowLayout
                     android:id="@+id/ContactProfileActivity_mLabelFlowLayout"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintHorizontal_bias="0"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="@id/ContactProfileActivity_mTvNickname"
-                    app:layout_constraintStart_toStartOf="@id/ContactProfileActivity_mTvNickname"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge">
-
-                </com.yzx.chat.widget.view.FlowLayout>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ContactProfileActivity_mIvAvatar"
@@ -118,7 +118,7 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ToolbarPopupLightTheme"
                 app:theme="@style/ToolbarTheme"
-                app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
+                app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
 
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvTitle"

@@ -240,6 +240,7 @@ public class GroupManager {
                         for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
                             listener.onGroupInfoUpdated(group);
                         }
+                        mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_GROUP,group);
                     } else {
                         LogUtil.e("updateGroupName Failure in cache Failure");
                     }

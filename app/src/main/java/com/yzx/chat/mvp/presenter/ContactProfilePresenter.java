@@ -8,6 +8,9 @@ import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import io.rong.imlib.model.Conversation;
 
 /**
@@ -110,6 +113,21 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     @Override
     public void clearChatMessages() {
         mIMClient.conversationManager().clearAllConversationMessages(mConversation);
+    }
+
+    @Override
+    public ArrayList<String> getAllTags() {
+        HashSet<String> tags = IMClient.getInstance().contactManager().getAllTags();
+        if(tags!=null&&tags.size()>0){
+            return new ArrayList<>(tags);
+        }else {
+            return null;
+        }
+    }
+
+    @Override
+    public void saveRemarkInfo(ContactBean contact) {
+        IMClient.getInstance().contactManager().updateContactRemark(contact, null);
     }
 
 

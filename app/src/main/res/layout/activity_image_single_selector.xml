@@ -20,7 +20,7 @@
             android:elevation="4dp"
             app:theme="@style/ToolbarTheme"
             app:title="@string/ImageSingleSelectorActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ImageSingleSelectorActivity_mRvImageList"

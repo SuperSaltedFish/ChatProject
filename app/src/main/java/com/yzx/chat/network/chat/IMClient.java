@@ -429,6 +429,22 @@ public class IMClient {
                         }
                     }
                     break;
+                case ConversationManager.CALLBACK_CODE_UPDATE_PRIVATE:
+                    ContactBean contact = (ContactBean) arg;
+                    Conversation privateConversation = mConversationManager.getConversation(Conversation.ConversationType.PRIVATE, contact.getUserProfile().getUserID());
+                    if (privateConversation != null) {
+                        privateConversation.setConversationTitle(contact.getName());
+                        mConversationManager.updateConversation(privateConversation, null);
+                    }
+                    break;
+                case ConversationManager.CALLBACK_CODE_UPDATE_GROUP:
+                    GroupBean group = (GroupBean) arg;
+                    Conversation groupConversation = mConversationManager.getConversation(Conversation.ConversationType.GROUP, group.getGroupID());
+                    if (groupConversation != null) {
+                        groupConversation.setConversationTitle(group.getName());
+                        mConversationManager.updateConversation(groupConversation, null);
+                    }
+                    break;
             }
         }
 

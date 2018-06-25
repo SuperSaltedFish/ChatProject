@@ -23,7 +23,7 @@
             android:elevation="0dp"
             app:theme="@style/ToolbarTheme"
             app:title="@string/app_name"
-            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     </FrameLayout>
 

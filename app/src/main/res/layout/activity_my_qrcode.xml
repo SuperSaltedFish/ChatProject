@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
         app:title="@string/MyQRCodeActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/MyQRCodeActivity_mClQRCodeLayout"

@@ -28,7 +28,7 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
     @Override
     public void save(ContactBean contact) {
-        IMClient.getInstance().contactManager().updateContact(contact, null);
+        IMClient.getInstance().contactManager().updateContactRemark(contact, null);
     }
 
     @Override

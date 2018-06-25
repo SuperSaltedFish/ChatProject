@@ -22,6 +22,7 @@ import com.yzx.chat.mvp.contract.RemarkInfoContract;
 import com.yzx.chat.mvp.presenter.RemarkInfoPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.FlowLayout;
 
@@ -173,11 +174,11 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
             isChanged = true;
             contactRemark.setDescription(description);
         }
-        if (isChanged || !isEquals(newTelephones, oldTelephones)) {
+        if (isChanged || !StringUtil.isEquals(newTelephones, oldTelephones,true)) {
             isChanged = true;
             contactRemark.setTelephone(newTelephones);
         }
-        if (isChanged || !isEquals(newTags, oldTags)) {
+        if (isChanged || !StringUtil.isEquals(newTags, oldTags,true)) {
             isChanged = true;
             contactRemark.setTags(newTags);
         }
@@ -268,25 +269,6 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
                 showSoftKeyboard(mEtTelephone);
             }
         }
-    }
-
-    private static boolean isEquals(ArrayList<String> a1, ArrayList<String> a2) {
-        if (a1 == a2) {
-            return true;
-        }
-        if (a1 == null && a2 != null && a2.size() == 0) {
-            return true;
-        }
-        if (a2 == null && a1 != null && a1.size() == 0) {
-            return true;
-        }
-        if (a1 != null && a2 != null && a1.size() == 0 && a1.size() == a2.size()) {
-            return true;
-        }
-        if (a1 != null && a2 != null && a1.size() == a2.size() && a1.containsAll(a2)) {
-            return true;
-        }
-        return false;
     }
 
 }

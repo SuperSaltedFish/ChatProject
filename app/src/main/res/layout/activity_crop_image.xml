@@ -12,7 +12,7 @@
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/CropActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/CropActivity_mPhotoView"

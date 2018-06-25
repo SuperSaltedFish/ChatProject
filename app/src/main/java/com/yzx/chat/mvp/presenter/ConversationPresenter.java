@@ -136,7 +136,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 case ConversationManager.UPDATE_TYPE_SAVE_DRAFT:
                 case ConversationManager.UPDATE_TYPE_SET_TOP:
                 case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
-                case ConversationManager.UPDATE_TYPE_NOTIFICATION:
+                case ConversationManager.UPDATE_TYPE_NOTIFICATION_CHANGE:
+                case ConversationManager.UPDATE_TYPE_UPDATE:
                     refreshAllConversations();
                     break;
             }
@@ -197,13 +198,16 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
                     @Override
                     public boolean isContentsEquals(Conversation oldItem, Conversation newItem) {
-                        if (oldItem.getSentTime() != newItem.getSentTime()) {
+                        if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
                             return false;
                         }
                         if (oldItem.getUnreadMessageCount() != newItem.getUnreadMessageCount()) {
                             return false;
                         }
-                        if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
+                        if (oldItem.getSentTime() != newItem.getSentTime()) {
+                            return false;
+                        }
+                        if(!oldItem.getConversationTitle().equals(newItem.getConversationTitle())){
                             return false;
                         }
                         String oldDraft = oldItem.getDraft();

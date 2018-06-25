@@ -20,13 +20,16 @@ public class ConversationManager {
     static final int CALLBACK_CODE_UPDATE_UNREAD = 1;
     static final int CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE = 2;
     static final int CALLBACK_CODE_ClEAR_AND_REMOVE_GROUP = 3;
+    static final int CALLBACK_CODE_UPDATE_PRIVATE = 4;
+    static final int CALLBACK_CODE_UPDATE_GROUP = 5;
 
     public static final int UPDATE_TYPE_SET_TOP = 1;
     public static final int UPDATE_TYPE_CLEAR_UNREAD_STATUS = 2;
     public static final int UPDATE_TYPE_REMOVE = 3;
     public static final int UPDATE_TYPE_SAVE_DRAFT = 4;
     public static final int UPDATE_TYPE_CLEAR_MESSAGE = 5;
-    public static final int UPDATE_TYPE_NOTIFICATION = 6;
+    public static final int UPDATE_TYPE_NOTIFICATION_CHANGE = 6;
+    public static final int UPDATE_TYPE_UPDATE = 7;
 
     private RongIMClient mRongIMClient;
     private IMClient.SubManagerCallback mSubManagerCallback;
@@ -91,17 +94,38 @@ public class ConversationManager {
         });
     }
 
-    public void removeConversation( Conversation conversation) {
-        removeConversation(conversation,true);
+    public void updateConversation(final Conversation conversation, final ResultCallback<Boolean> callback) {
+        mRongIMClient.updateConversationInfo(conversation.getConversationType(), conversation.getTargetId(), conversation.getConversationTitle(), "null", new RongIMClient.ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                if (callback != null) {
+                    callback.onSuccess(aBoolean);
+                }
+                callbackConversationChange(conversation, UPDATE_TYPE_UPDATE);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                if (callback != null) {
+                    callback.onFailure(errorCode.getMessage());
+                }else {
+                    LogUtil.e(errorCode.getMessage());
+                }
+            }
+        });
     }
 
-    public void removeConversation(final Conversation conversation,final boolean isCallbackListener) {
+    public void removeConversation(Conversation conversation) {
+        removeConversation(conversation, true);
+    }
+
+    public void removeConversation(final Conversation conversation, final boolean isCallbackListener) {
         final boolean isUpdateUnreadState = conversation.getUnreadMessageCount() > 0;
         mRongIMClient.removeConversation(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    if(isCallbackListener) {
+                    if (isCallbackListener) {
                         callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
                     }
                     if (isUpdateUnreadState) {
@@ -160,7 +184,7 @@ public class ConversationManager {
         mRongIMClient.setConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), status, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_NOTIFICATION);
+                callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_NOTIFICATION_CHANGE);
             }
 
             @Override
@@ -174,15 +198,17 @@ public class ConversationManager {
         mRongIMClient.getConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                if(callback!=null){
+                if (callback != null) {
                     callback.onSuccess(conversationNotificationStatus);
                 }
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                if(callback!=null){
+                if (callback != null) {
                     callback.onFailure(errorCode.getMessage());
+                }else {
+                    LogUtil.e(errorCode.getMessage());
                 }
             }
         });
@@ -204,7 +230,7 @@ public class ConversationManager {
         }
     }
 
-    void destroy(){
+    void destroy() {
         mConversationStateChangeListeners.clear();
         mConversationStateChangeListeners = null;
     }

@@ -177,7 +177,7 @@
             android:layout_height="48dp"
             android:elevation="0dp"
             app:theme="@style/ToolbarTheme"
-            app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
     </FrameLayout>
 
 

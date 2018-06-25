@@ -14,7 +14,7 @@
         android:background="?colorPrimary"
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
 
         <Button
             android:id="@+id/ImageViewpagerActivity_mBtnConfirm"

@@ -14,7 +14,7 @@
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light">
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
 
         <com.yzx.chat.widget.view.SegmentedControlView
             android:id="@+id/NotificationMessageActivity_mSegmentedControlView"

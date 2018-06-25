@@ -15,7 +15,7 @@
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/LocationMapActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     <LinearLayout
         android:layout_width="match_parent"

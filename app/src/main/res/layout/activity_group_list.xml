@@ -15,7 +15,7 @@
         android:elevation="4dp"
         app:theme="@style/ToolbarTheme"
         app:title="@string/GroupListActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/ContactFragmentList_mSmartRefreshLayout"

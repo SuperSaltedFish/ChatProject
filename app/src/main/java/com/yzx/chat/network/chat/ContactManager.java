@@ -270,7 +270,7 @@ public class ContactManager {
         mNetworkExecutor.submit(mDeleteContact);
     }
 
-    public void updateContact(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
+    public void updateContactRemark(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
         AsyncUtil.cancelCall(mUpdateContact);
         mUpdateContact = mContactApi.updateRemark(contact.getUserProfile().getUserID(), contact.getRemark());
         mUpdateContact.setResponseCallback(new BaseResponseCallback<Void>() {
@@ -284,6 +284,7 @@ public class ContactManager {
                     for (OnContactChangeListener listener : mContactChangeListeners) {
                         listener.onContactUpdate(contact);
                     }
+                    mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_PRIVATE,contact);
                 } else {
                     LogUtil.e("updateContact:Failure of operating database");
                 }

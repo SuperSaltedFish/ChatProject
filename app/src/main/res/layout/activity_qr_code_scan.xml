@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
         app:title="@string/QrCodeScanActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     <ImageView
         android:id="@+id/QrCodeScanActivity_mIvToggleFlash"

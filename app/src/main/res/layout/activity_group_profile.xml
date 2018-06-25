@@ -17,6 +17,7 @@
             android:id="@+id/GroupProfileActivity_mCollapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:expandedTitleTextAppearance="@style/CollapsingToolbarExpandedTitleTextAppearance.Light"
             app:contentScrim="@color/colorAccent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@color/colorAccent"
@@ -38,7 +39,7 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ToolbarPopupLightTheme"
                 app:theme="@style/ToolbarTheme"
-                app:titleTextAppearance="@style/ToolbarTitleTheme.Light" />
+                app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
 
         </android.support.design.widget.CollapsingToolbarLayout>
