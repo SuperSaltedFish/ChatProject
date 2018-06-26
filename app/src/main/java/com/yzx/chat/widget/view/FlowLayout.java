@@ -57,14 +57,14 @@ public class FlowLayout extends ViewGroup {
         for (int i = 0, count = getChildCount(); i < count; i++) {
             View childView = getChildAt(i);
             if (childView.getVisibility() != View.GONE) {
-                measureChild(childView,widthMeasureSpec,heightMeasureSpec);
+                measureChild(childView, widthMeasureSpec, heightMeasureSpec);
                 MarginLayoutParams childLP = (MarginLayoutParams) childView.getLayoutParams();
                 int childWidth = childView.getMeasuredWidth() + childLP.leftMargin + childLP.rightMargin;
                 int childHeight = childView.getMeasuredHeight() + childLP.topMargin + childLP.bottomMargin;
                 boolean isNeedAddItemSpace = currentLineChildCount > 0;
                 if (currentLineWidth + childWidth + (isNeedAddItemSpace ? mItemSpace : 0) > maxAvailableWidth) {
                     lineCount++;
-                    if(lineCount>mMaxLine){
+                    if (lineCount > mMaxLine) {
                         break;
                     }
                     layoutWidth = Math.max(currentLineWidth, layoutWidth);
