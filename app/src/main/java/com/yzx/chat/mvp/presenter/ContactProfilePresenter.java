@@ -81,9 +81,9 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     @Override
     public void deleteContact() {
         mContactProfileView.setEnableProgressDialog(true);
-        mIMClient.contactManager().deleteContact(mContactBean, new ResultCallback<Boolean>() {
+        mIMClient.contactManager().deleteContact(mContactBean, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(Void result) {
                 if (mContactBean.getUserProfile().getUserID().equals(ChatPresenter.sConversationID)) {
                     mContactProfileView.finishChatActivity();
                 }

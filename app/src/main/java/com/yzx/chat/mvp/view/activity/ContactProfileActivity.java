@@ -100,7 +100,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mLlContentTelephone = findViewById(R.id.ContactProfileActivity_mLlContentTelephone);
         mTvContentDescription = findViewById(R.id.ContactProfileActivity_mTvContentDescription);
         mLabelFlowLayout = findViewById(R.id.ContactProfileActivity_mLabelFlowLayout);
-        mTvLastLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_small, mLabelFlowLayout, false);
+        mTvLastLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_normal, mLabelFlowLayout, false);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Delete));
         mContactID = getIntent().getStringExtra(INTENT_EXTRA_CONTACT_ID);
     }
@@ -308,7 +308,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         List<String> tags = contactRemark.getTags();
         if (tags != null && tags.size() != 0) {
             for (String tag : tags) {
-                TextView label = (TextView) getLayoutInflater().inflate(R.layout.item_label_small, mLabelFlowLayout, false);
+                TextView label = (TextView) getLayoutInflater().inflate(R.layout.item_label_normal, mLabelFlowLayout, false);
                 label.setText(tag);
                 mLabelFlowLayout.addView(label);
             }

@@ -3,10 +3,13 @@ package com.yzx.chat.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.util.SparseArrayCompat;
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.bean.TagBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.util.LogUtil;
 
@@ -14,9 +17,11 @@ import com.yzx.chat.util.LogUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by YZX on 2017年11月24日.
@@ -110,6 +115,34 @@ public class ContactDao extends AbstractDao<ContactBean> {
         cursor.close();
         mReadWriteHelper.closeReadableDatabase();
         return tagsSet;
+    }
+
+    public ArrayList<TagBean> getAllTagAndMemberCount() {
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        Cursor cursor = database.query(false, TABLE_NAME, new String[]{COLUMN_NAME_Tags}, COLUMN_NAME_Tags + " IS NOT NULL", null, null, null, null, null);
+        HashMap<String, Integer> tagsMap = new HashMap<>(16);
+        String tags;
+        Integer value;
+        while (cursor.moveToNext()) {
+            tags = cursor.getString(0);
+            if (!TextUtils.isEmpty(tags)) {
+                for (String tag : Arrays.asList(tags.split(";"))) {
+                    value = tagsMap.get(tag);
+                    if (value == null) {
+                        tagsMap.put(tag, 1);
+                    } else {
+                        tagsMap.put(tag, value + 1);
+                    }
+                }
+            }
+        }
+        cursor.close();
+        mReadWriteHelper.closeReadableDatabase();
+        ArrayList<TagBean> tagList = new ArrayList<>(tagsMap.size());
+        for (Map.Entry<String, Integer> entry : tagsMap.entrySet()) {
+            tagList.add(new TagBean(entry.getKey(), entry.getValue()));
+        }
+        return tagList;
     }
 
     @Override

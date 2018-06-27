@@ -32,15 +32,15 @@ public class ConversationManager {
     public static final int UPDATE_TYPE_UPDATE = 7;
 
     private RongIMClient mRongIMClient;
-    private IMClient.SubManagerCallback mSubManagerCallback;
+    private IMClient.CallbackHelper mCallbackHelper;
 
     private List<OnConversationStateChangeListener> mConversationStateChangeListeners;
 
-    ConversationManager(IMClient.SubManagerCallback subManagerCallback) {
-        if (subManagerCallback == null) {
+    ConversationManager(IMClient.CallbackHelper callbackHelper) {
+        if (callbackHelper == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
-        mSubManagerCallback = subManagerCallback;
+        mCallbackHelper = callbackHelper;
         mConversationStateChangeListeners = Collections.synchronizedList(new LinkedList<OnConversationStateChangeListener>());
         mRongIMClient = RongIMClient.getInstance();
     }
@@ -80,7 +80,7 @@ public class ConversationManager {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    mCallbackHelper.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
                     callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_UNREAD_STATUS);
                 } else {
                     LogUtil.e("clearMessagesUnreadStatus error");
@@ -129,7 +129,7 @@ public class ConversationManager {
                         callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
                     }
                     if (isUpdateUnreadState) {
-                        mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
+                        mCallbackHelper.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
                     }
                 } else {
                     LogUtil.e("removeConversation fail");
@@ -168,7 +168,7 @@ public class ConversationManager {
             public void onSuccess(Boolean aBoolean) {
                 callbackConversationChange(getConversation(conversation.getConversationType(), conversation.getTargetId()), UPDATE_TYPE_CLEAR_MESSAGE);
                 if (isUpdateUnreadState) {
-                    mSubManagerCallback.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
+                    mCallbackHelper.callConversationManager(CALLBACK_CODE_UPDATE_UNREAD, null);
                 }
             }
 

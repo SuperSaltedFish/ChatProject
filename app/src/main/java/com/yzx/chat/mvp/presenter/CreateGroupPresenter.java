@@ -23,7 +23,6 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
     private CreateGroupContract.View mCreateGroupView;
     private GroupManager mGroupManager;
-    private Handler mHandler;
 
     private boolean isCreating;
 
@@ -31,13 +30,10 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     public void attachView(CreateGroupContract.View view) {
         mCreateGroupView = view;
         mGroupManager = IMClient.getInstance().groupManager();
-        mHandler = new Handler();
     }
 
     @Override
     public void detachView() {
-        mHandler.removeCallbacksAndMessages(null);
-        mHandler = null;
         mGroupManager = null;
         mCreateGroupView = null;
 
@@ -63,24 +59,14 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         mGroupManager.createGroup(stringBuilder.toString(), memberList, new ResultCallback<GroupBean>() {
             @Override
             public void onSuccess(final GroupBean result) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCreateGroupView.launchChatActivity(result);
-                        isCreating = false;
-                    }
-                });
+                mCreateGroupView.launchChatActivity(result);
+                isCreating = false;
             }
 
             @Override
             public void onFailure(final String error) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCreateGroupView.showError(error);
-                        isCreating = false;
-                    }
-                });
+                mCreateGroupView.showError(error);
+                isCreating = false;
             }
         });
         isCreating = true;
@@ -101,24 +87,14 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         mGroupManager.addMember(groupID, memberList, new ResultCallback<GroupBean>() {
             @Override
             public void onSuccess(final GroupBean result) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCreateGroupView.launchChatActivity(result);
-                        isCreating = false;
-                    }
-                });
+                mCreateGroupView.launchChatActivity(result);
+                isCreating = false;
             }
 
             @Override
             public void onFailure(final String error) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCreateGroupView.showError(error);
-                        isCreating = false;
-                    }
-                });
+                mCreateGroupView.showError(error);
+                isCreating = false;
             }
         });
         isCreating = true;

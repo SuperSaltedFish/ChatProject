@@ -56,12 +56,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="我的群聊"
+            android:text="@string/GroupListActivity_Title"
             android:textColor="@color/textPrimaryColorBlack"
             android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ContactFragmentList_mLlTags"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
@@ -75,10 +76,11 @@
             android:src="@drawable/ic_contact_label" />
 
         <TextView
+            android:id="@+id/ContactFragmentList_mTvTags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="我的标签(0)"
+            android:text="@string/MyTagListActivity_Title"
             android:textColor="@color/textPrimaryColorBlack"
             android:textSize="14sp" />
     </LinearLayout>

@@ -35,7 +35,7 @@ import io.rong.message.VoiceMessage;
 public class ChatManager {
 
     private RongIMClient mRongIMClient;
-    private IMClient.SubManagerCallback mSubManagerCallback;
+    private IMClient.CallbackHelper mCallbackHelper;
     private SendMessageCallbackWrapper mSendMessageCallbackWrapper;
     private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
     private Map<OnMessageSendListener, String> mMessageSendStateChangeListenerMap;
@@ -44,11 +44,11 @@ public class ChatManager {
     private volatile int mUnreadChatMessageCount;
     private final Object mUpdateChatUnreadCountLock = new Object();
 
-    ChatManager(IMClient.SubManagerCallback subManagerCallback) {
-        if (subManagerCallback == null) {
+    ChatManager(IMClient.CallbackHelper callbackHelper) {
+        if (callbackHelper == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
-        mSubManagerCallback = subManagerCallback;
+        mCallbackHelper = callbackHelper;
         mRongIMClient = RongIMClient.getInstance();
         mSendMessageCallbackWrapper = new SendMessageCallbackWrapper();
         mMessageListenerMap = new HashMap<>();
@@ -257,22 +257,27 @@ public class ChatManager {
         mChatMessageUnreadCountChangeListeners = null;
     }
 
-    void onReceiveContactNotificationMessage(Message message, int untreatedCount) {
+    void onReceiveContactNotificationMessage(final Message message, final int untreatedCount) {
         if (mMessageListenerMap.size() == 0) {
             return;
         }
-        OnChatMessageReceiveListener chatListener;
-        String conversationID;
-        for (Map.Entry<OnChatMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
-            conversationID = entry.getValue();
-            chatListener = entry.getKey();
-            if (chatListener == null) {
-                continue;
+        mCallbackHelper.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                OnChatMessageReceiveListener chatListener;
+                String conversationID;
+                for (Map.Entry<OnChatMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
+                    conversationID = entry.getValue();
+                    chatListener = entry.getKey();
+                    if (chatListener == null) {
+                        continue;
+                    }
+                    if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
+                        chatListener.onChatMessageReceived(message, untreatedCount);
+                    }
+                }
             }
-            if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
-                chatListener.onChatMessageReceived(message, untreatedCount);
-            }
-        }
+        });
     }
 
     private class SendMessageCallbackWrapper extends RongIMClient.SendImageMessageCallback implements IRongCallback.ISendMediaMessageCallback {

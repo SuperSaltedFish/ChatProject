@@ -52,7 +52,7 @@ public class GroupManager {
     private static final Set<String> GROUP_OPERATION_SET = new HashSet<>(Arrays.asList(GROUP_OPERATION_CREATE, GROUP_OPERATION_ADD, GROUP_OPERATION_QUIT));
 
 
-    private IMClient.SubManagerCallback mSubManagerCallback;
+    private IMClient.CallbackHelper mCallbackHelper;
     private Map<String, GroupBean> mGroupsMap;
     private GroupDao mGroupDao;
     private GroupMemberDao mGroupMemberDao;
@@ -68,11 +68,11 @@ public class GroupManager {
     private Call<JsonResponse<CreateGroupBean>> mCreateGroupCall;
     private Call<JsonResponse<CreateGroupBean>> mAddMemberCall;
 
-    GroupManager(IMClient.SubManagerCallback subManagerCallback, AbstractDao.ReadWriteHelper readWriteHelper) {
-        if (subManagerCallback == null) {
+    GroupManager(IMClient.CallbackHelper callbackHelper, AbstractDao.ReadWriteHelper readWriteHelper) {
+        if (callbackHelper == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
-        mSubManagerCallback = subManagerCallback;
+        mCallbackHelper = callbackHelper;
         mGroupDao = new GroupDao(readWriteHelper);
         mGroupMemberDao = new GroupMemberDao(readWriteHelper);
         mGson = new GsonBuilder().serializeNulls().create();
@@ -99,11 +99,11 @@ public class GroupManager {
         return mGroupsMap.get(groupID);
     }
 
-    public List<GroupBean> getAllGroup() {
+    public ArrayList<GroupBean> getAllGroup() {
         if (mGroupsMap == null) {
             return null;
         }
-        List<GroupBean> groupList = new ArrayList<>(mGroupsMap.size() + 4);
+        ArrayList<GroupBean> groupList = new ArrayList<>(mGroupsMap.size() + 4);
         Parcel parcel;
         for (GroupBean group : mGroupsMap.values()) {
             parcel = Parcel.obtain();
@@ -135,16 +135,21 @@ public class GroupManager {
         mCreateGroupCall.setResponseCallback(new BaseResponseCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
-                GroupBean group = response.getGroup();
+                final GroupBean group = response.getGroup();
                 if (mGroupDao.insertGroupAndMember(group)) {
                     mGroupsMap.put(group.getGroupID(), group);
-                    for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                        listener.onCreatedGroup(group);
-                    }
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                listener.onCreatedGroup(group);
+                            }
 
-                    if (resultCallback != null) {
-                        resultCallback.onSuccess(group);
-                    }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(group);
+                            }
+                        }
+                    });
                 } else {
                     LogUtil.e("createGroup:Failure of operating database");
                     onFailure(AndroidUtil.getString(R.string.Server_Error2));
@@ -152,8 +157,13 @@ public class GroupManager {
             }
 
             @Override
-            protected void onFailure(String message) {
-                resultCallback.onFailure(message);
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultCallback.onFailure(message);
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mCreateGroupCall);
@@ -165,17 +175,22 @@ public class GroupManager {
         mAddMemberCall.setResponseCallback(new BaseResponseCallback<CreateGroupBean>() {
             @Override
             protected void onSuccess(CreateGroupBean response) {
-                GroupBean group = response.getGroup();
+                final GroupBean group = response.getGroup();
                 if (mGroupDao.replaceGroupAndMember(group)) {
                     mGroupsMap.put(group.getGroupID(), group);
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                listener.onMemberAdded(group, group.getMembers());
+                            }
 
-                    for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                        listener.onMemberAdded(group, group.getMembers());
-                    }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(group);
+                            }
+                        }
+                    });
 
-                    if (resultCallback != null) {
-                        resultCallback.onSuccess(group);
-                    }
                 } else {
                     LogUtil.e("createGroup:Failure of operating database");
                     onFailure(AndroidUtil.getString(R.string.Server_Error2));
@@ -185,76 +200,104 @@ public class GroupManager {
             }
 
             @Override
-            protected void onFailure(String message) {
-                resultCallback.onFailure(message);
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultCallback.onFailure(message);
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mAddMemberCall);
     }
 
-    public void quitGroup(final String groupID, final ResultCallback<Boolean> resultCallback) {
+    public void quitGroup(final String groupID, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mQuitGroupCall);
         mQuitGroupCall = mGroupApi.quit(groupID);
         mQuitGroupCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                boolean success = mGroupDao.deleteGroupAndMember(groupID);
-                if (!success) {
-                    LogUtil.e("updateGroupName:Failure of operating database");
+                if (mGroupDao.deleteGroupAndMember(groupID)) {
+                    final GroupBean group = mGroupsMap.remove(groupID);
+                    if (group != null) {
+                        mCallbackHelper.callConversationManager(ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_GROUP, groupID);
+                        mCallbackHelper.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                    listener.onQuitGroup(group);
+                                }
+
+                                if (resultCallback != null) {
+                                    resultCallback.onSuccess(null);
+                                }
+                            }
+                        });
+                    } else {
+                        LogUtil.e("quitGroup:Failure in cache Failure");
+                        onFailure(AndroidUtil.getString(R.string.Server_Error2));
+                    }
+                } else {
+                    LogUtil.e("quitGroup:Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
 
-                GroupBean group = mGroupsMap.remove(groupID);
-                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                    listener.onQuitGroup(group);
-                }
-                mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_GROUP, groupID);
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
             }
 
             @Override
-            protected void onFailure(String message) {
-                resultCallback.onFailure(message);
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultCallback.onFailure(message);
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mQuitGroupCall);
     }
 
-    public void renameGroup(final String groupID, final String newName, final ResultCallback<Boolean> resultCallback) {
+    public void renameGroup(final String groupID, final String newName, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mRenameGroupCall);
         mRenameGroupCall = mGroupApi.rename(groupID, newName);
         mRenameGroupCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                boolean success = mGroupDao.updateGroupName(groupID, newName);
-                if (!success) {
-                    LogUtil.e("updateGroupName:Failure of operating database");
-                }
-
-                GroupBean group = mGroupsMap.get(groupID);
-                if (success) {
+                if (mGroupDao.updateGroupName(groupID, newName)) {
+                    final GroupBean group = mGroupsMap.get(groupID);
                     if (group != null) {
                         group.setName(newName);
-                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                            listener.onGroupInfoUpdated(group);
-                        }
-                        mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_GROUP,group);
+                        mCallbackHelper.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_GROUP, group);
+                        mCallbackHelper.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                    listener.onGroupInfoUpdated(group);
+                                }
+                                if (resultCallback != null) {
+                                    resultCallback.onSuccess(null);
+                                }
+                            }
+                        });
                     } else {
-                        LogUtil.e("updateGroupName Failure in cache Failure");
+                        LogUtil.e("renameGroup Failure in cache Failure");
+                        onFailure(AndroidUtil.getString(R.string.Server_Error2));
                     }
-                }
-
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
+                } else {
+                    LogUtil.e("renameGroup : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
             @Override
-            protected void onFailure(String message) {
-                resultCallback.onFailure(message);
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultCallback.onFailure(message);
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mRenameGroupCall);
@@ -266,70 +309,91 @@ public class GroupManager {
         mUpdateGroupNoticeCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                boolean success = mGroupDao.updateGroupNotice(groupID, newNotice);
-                if (!success) {
-                    LogUtil.e("updateGroupNotice:Failure of operating database");
-                }
-
-                GroupBean group = mGroupsMap.get(groupID);
-                if (success) {
+                if (mGroupDao.updateGroupNotice(groupID, newNotice)) {
+                    final GroupBean group = mGroupsMap.get(groupID);
                     if (group != null) {
                         group.setNotice(newNotice);
-                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                            listener.onGroupInfoUpdated(group);
-                        }
+                        mCallbackHelper.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                    listener.onGroupInfoUpdated(group);
+                                }
+                                if (resultCallback != null) {
+                                    resultCallback.onSuccess(null);
+                                }
+                            }
+                        });
                     } else {
                         LogUtil.e("updateGroupNotice Failure in cache Failure");
+                        onFailure(AndroidUtil.getString(R.string.Server_Error2));
                     }
-                }
 
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
+                } else {
+                    LogUtil.e("updateGroupNotice : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
             @Override
-            protected void onFailure(String message) {
-                resultCallback.onFailure(message);
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultCallback.onFailure(message);
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mUpdateGroupNoticeCall);
     }
 
-    public void updateMemberAlias(final String groupID, final String memberID, final String newAlias, final ResultCallback<Boolean> resultCallback) {
+    public void updateMemberAlias(final String groupID, final String memberID, final String newAlias, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mUpdateAliasCall);
         mUpdateAliasCall = mGroupApi.updateAlias(groupID, newAlias);
         mUpdateAliasCall.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                boolean success = mGroupMemberDao.updateMemberAlias(groupID, memberID, newAlias);
-                if (!success) {
-                    LogUtil.e("updateAlias:Failure of operating database");
-                }
-
-                if (success) {
-                    GroupBean group = mGroupsMap.get(groupID);
-                    GroupMemberBean groupMember = getGroupMember(groupID, memberID);
-                    if (group != null && groupMember != null) {
-                        groupMember.setAlias(newAlias);
-                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                            listener.onMemberInfoUpdated(group, groupMember);
+                if (mGroupMemberDao.updateMemberAlias(groupID, memberID, newAlias)) {
+                    final GroupBean group = mGroupsMap.get(groupID);
+                    if (group != null) {
+                        final GroupMemberBean groupMember = getGroupMember(groupID, memberID);
+                        if (groupMember != null) {
+                            groupMember.setAlias(newAlias);
+                            mCallbackHelper.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                        listener.onMemberInfoUpdated(group, groupMember);
+                                    }
+                                    if (resultCallback != null) {
+                                        resultCallback.onSuccess(null);
+                                    }
+                                }
+                            });
+                        } else {
+                            LogUtil.e("updateAlias: Failure in cache Failure(GroupMemberBean)");
+                            onFailure(AndroidUtil.getString(R.string.Server_Error2));
                         }
                     } else {
                         LogUtil.e("updateAlias Failure in cache Failure");
+                        onFailure(AndroidUtil.getString(R.string.Server_Error2));
                     }
-                }
 
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
+                } else {
+                    LogUtil.e("updateAlias : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
             @Override
-            protected void onFailure(String message) {
-                resultCallback.onFailure(message);
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultCallback.onFailure(message);
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mUpdateAliasCall);
@@ -342,10 +406,10 @@ public class GroupManager {
             LogUtil.e("unknown group operation:" + operation);
             return;
         }
-        GroupBean group;
+        final GroupBean group;
         switch (groupNotification.getOperation()) {
             case GROUP_OPERATION_CREATE:
-                GroupMessageExtra_Created extra_Create;
+                final GroupMessageExtra_Created extra_Create;
                 try {
                     extra_Create = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra_Created.class);
                 } catch (JsonSyntaxException e) {
@@ -353,21 +417,27 @@ public class GroupManager {
                     LogUtil.e("fromJson GroupMessageExtra_Created.class fail,json content:" + groupNotification.getExtra());
                     return;
                 }
-                if (extra_Create.group != null) {
-                    if (!mGroupDao.insertGroupAndMember(extra_Create.group)) {
-                        LogUtil.e(" GroupOperation : insertGroupAndMember fail");
-                        return;
-                    }
-                } else {
+                group = extra_Create.group;
+                if (group == null) {
                     LogUtil.e(" GroupOperation : group is empty");
                     return;
                 }
-                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                    listener.onCreatedGroup(extra_Create.group);
+                if (!mGroupDao.insertGroupAndMember(group)) {
+                    LogUtil.e(" GroupOperation : insertGroupAndMember fail");
+                    return;
                 }
+                mGroupsMap.put(group.getGroupID(), group);
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                            listener.onCreatedGroup(group);
+                        }
+                    }
+                });
                 break;
             case GROUP_OPERATION_ADD:
-                GroupMessageExtra_Add extra_Add;
+                final GroupMessageExtra_Add extra_Add;
                 try {
                     extra_Add = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra_Add.class);
                 } catch (JsonSyntaxException e) {
@@ -384,14 +454,19 @@ public class GroupManager {
                     LogUtil.e(" GroupOperation : getGroup is empty");
                     return;
                 }
-                group.getMembers().addAll(extra_Add.members);
                 if (!mGroupMemberDao.replaceAll(group.getMembers())) {
                     LogUtil.e(" GroupOperation : replaceAll fail");
                     return;
                 }
-                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                    listener.onMemberAdded(group, extra_Add.members);
-                }
+                group.getMembers().addAll(extra_Add.members);
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                            listener.onMemberAdded(group, extra_Add.members);
+                        }
+                    }
+                });
                 break;
             case GROUP_OPERATION_QUIT:
                 GroupMessageExtra_Quit extra_Quit;
@@ -415,15 +490,20 @@ public class GroupManager {
                     LogUtil.e(" GroupOperation : deleteByKey fail");
                     return;
                 }
-                List<GroupMemberBean> groupMemberList = group.getMembers();
-                GroupMemberBean groupMember;
-                for (int i = 0, size = groupMemberList.size(); i < size; i++) {
-                    groupMember = groupMemberList.get(i);
+
+                Iterator<GroupMemberBean> it = group.getMembers().iterator();
+                while (it.hasNext()) {
+                    final GroupMemberBean groupMember = it.next();
                     if (extra_Quit.memberID.equals(groupMember.getUserProfile().getUserID())) {
-                        groupMemberList.remove(i);
-                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                            listener.onMemberQuit(group, Collections.singletonList(groupMember));
-                        }
+                        it.remove();
+                        mCallbackHelper.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                                    listener.onMemberQuit(group, Collections.singletonList(groupMember));
+                                }
+                            }
+                        });
                         break;
                     }
                 }
@@ -482,22 +562,22 @@ public class GroupManager {
 
     }
 
-    private static final class GroupMessageExtra_Created {
-        String groupID;
-        long version;
-        GroupBean group;
+    public static final class GroupMessageExtra_Created {
+        public String groupID;
+        public long version;
+        public GroupBean group;
     }
 
-    private static final class GroupMessageExtra_Add {
-        String groupID;
-        long version;
-        ArrayList<GroupMemberBean> members;
+    public static final class GroupMessageExtra_Add {
+        public String groupID;
+        public long version;
+        public ArrayList<GroupMemberBean> members;
     }
 
-    private static final class GroupMessageExtra_Quit {
-        String groupID;
-        long version;
-        String memberID;
+    public static final class GroupMessageExtra_Quit {
+        public String groupID;
+        public long version;
+        public String memberID;
     }
 
 

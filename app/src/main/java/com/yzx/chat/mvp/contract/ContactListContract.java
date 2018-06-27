@@ -22,6 +22,8 @@ public class ContactListContract {
         void updateContactItem(ContactBean contactBean);
 
         void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList);
+
+        void showTagCount(int count);
     }
 
 
@@ -29,6 +31,8 @@ public class ContactListContract {
         void loadUnreadCount();
 
         void loadAllContact();
+
+        void loadTagCount();
 
     }
 }

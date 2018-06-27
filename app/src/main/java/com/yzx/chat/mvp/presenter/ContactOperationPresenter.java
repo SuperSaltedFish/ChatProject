@@ -58,9 +58,9 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @Override
     public void acceptContactRequest(final ContactOperationBean contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
-        mIMClient.contactManager().acceptContact(contactOperation, new ResultCallback<Boolean>() {
+        mIMClient.contactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
             }
 

@@ -7,9 +7,16 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
+import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.LogUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,8 +27,10 @@ import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.FileMessage;
+import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
+import io.rong.message.NotificationMessage;
 import io.rong.message.StickerMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
@@ -33,6 +42,8 @@ import io.rong.message.VoiceMessage;
 
 
 public class IMMessageHelper {
+
+
     public static CharSequence getMessageDigest(Conversation conversation) {
         if (conversation == null) {
             return "";
@@ -63,6 +74,53 @@ public class IMMessageHelper {
             return AndroidUtil.getString(R.string.EMMessageUtil_FileInfo);
         } else if (messageContent instanceof VideoMessage) {
             return AndroidUtil.getString(R.string.EMMessageUtil_VideoInfo);
+        } else if (messageContent instanceof GroupNotificationMessage) {
+            return groupNotificationMessageToString((GroupNotificationMessage) messageContent);
+        }
+        return "";
+    }
+
+    private static final Gson GSON = ApiHelper.getDefaultGsonInstance();
+
+    public static CharSequence groupNotificationMessageToString(GroupNotificationMessage message) {
+        GroupBean group;
+        switch (message.getOperation()) {
+            case GroupManager.GROUP_OPERATION_CREATE:
+                GroupManager.GroupMessageExtra_Created extra_Create;
+                try {
+                    extra_Create = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra_Created.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                    LogUtil.e("fromJson GroupMessageExtra_Created.class fail,json content:" + message.getExtra());
+                    break;
+                }
+                group = extra_Create.group;
+                if (group == null) {
+                    LogUtil.e(" GroupOperation : group is empty");
+                    break;
+                }
+                UserBean user;
+                StringBuilder builder = new StringBuilder(group.getMembers().size() * 18);
+                boolean isFirst = true;
+                for (GroupMemberBean groupMember : group.getMembers()) {
+                    user = groupMember.getUserProfile();
+                    if (user.getUserID().equals(group.getOwner())) {
+                        builder.insert(0, user.getNickname() + "邀请");
+                    } else {
+                        if (!isFirst) {
+                            builder.append("、");
+                        } else {
+                            isFirst = false;
+                        }
+                        builder.append(user.getNickname());
+                    }
+                }
+                builder.append("加入群组");
+                return builder.toString();
+            case GroupManager.GROUP_OPERATION_ADD:
+                break;
+            case GroupManager.GROUP_OPERATION_QUIT:
+                break;
         }
         return "";
     }
@@ -71,7 +129,12 @@ public class IMMessageHelper {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("M月d日 %'s'HH:mm", Locale.getDefault());
 
     public static String messageTimeToString(long timeMillis) {
-        if (isToday(timeMillis)) {
+        Calendar todayCalendar = Calendar.getInstance();
+        todayCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        todayCalendar.set(Calendar.MINUTE, 0);
+        todayCalendar.set(Calendar.SECOND, 0);
+        todayCalendar.set(Calendar.MILLISECOND, 0);
+        if (timeMillis >= todayCalendar.getTimeInMillis()) {
             return TIME_FORMAT.format(new Date(timeMillis));
         } else {
             Calendar calendar = Calendar.getInstance();
@@ -89,16 +152,7 @@ public class IMMessageHelper {
             } else if (hour >= 18) {
                 am_pm = "晚上";
             }
-            return String.format(DATE_FORMAT.format(new Date(timeMillis)),am_pm);
+            return String.format(DATE_FORMAT.format(new Date(timeMillis)), am_pm);
         }
-    }
-
-    private static boolean isToday(long timeMillis) {
-        Calendar todayCalendar = Calendar.getInstance();
-        todayCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        todayCalendar.set(Calendar.MINUTE, 0);
-        todayCalendar.set(Calendar.SECOND, 0);
-        todayCalendar.set(Calendar.MILLISECOND, 0);
-        return timeMillis >= todayCalendar.getTimeInMillis();
     }
 }

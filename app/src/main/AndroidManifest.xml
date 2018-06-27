@@ -55,63 +55,58 @@
         <activity
             android:name=".mvp.view.activity.LoginActivity"
             android:launchMode="singleTask"
-            android:theme="@style/DefaultDarkTheme"></activity>
+            android:theme="@style/DefaultDarkTheme" />
         <activity
             android:name=".mvp.view.activity.HomeActivity"
             android:theme="@style/NoBackgroundLightTheme"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".mvp.view.activity.ChatActivity"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".mvp.view.activity.QrCodeScanActivity"
-            android:theme="@style/DefaultDarkTheme">
-
-        </activity>
+            android:theme="@style/DefaultDarkTheme"></activity>
         <activity
             android:name=".mvp.view.activity.ImageMultiSelectorActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
+            android:theme="@style/DefaultDarkTheme" />
         <activity
             android:name=".mvp.view.activity.ImageViewPagerActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
-        <activity android:name=".mvp.view.activity.ContactProfileActivity"></activity>
+            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".mvp.view.activity.ContactProfileActivity" />
         <activity
             android:name=".mvp.view.activity.FindNewContactActivity"
             android:theme="@style/NoBackgroundLightTheme"
-            android:windowSoftInputMode="adjustNothing"></activity>
-        <activity android:name=".mvp.view.activity.RemarkInfoActivity"></activity>
-        <activity android:name=".mvp.view.activity.EditContactLabelActivity"></activity>
-        <activity android:name=".mvp.view.activity.StrangerProfileActivity"></activity>
-        <activity android:name=".mvp.view.activity.EditProfileActivity"></activity>
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".mvp.view.activity.RemarkInfoActivity" />
+        <activity android:name=".mvp.view.activity.EditContactLabelActivity" />
+        <activity android:name=".mvp.view.activity.StrangerProfileActivity" />
+        <activity android:name=".mvp.view.activity.EditProfileActivity" />
         <activity
             android:name=".mvp.view.activity.ImageSingleSelectorActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
+            android:theme="@style/DefaultDarkTheme" />
         <activity
             android:name=".mvp.view.activity.ImageOriginalActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
-        <activity android:name=".mvp.view.activity.GroupProfileActivity"></activity>
+            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".mvp.view.activity.GroupProfileActivity" />
         <activity
             android:name=".mvp.view.activity.CreateGroupActivity"
-            android:windowSoftInputMode="adjustNothing"></activity>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".mvp.view.activity.MyQRCodeActivity"
-            android:theme="@style/NoBackgroundLightTheme"></activity>
-        <activity android:name=".mvp.view.activity.LocationMapActivity"></activity>
+            android:theme="@style/NoBackgroundLightTheme" />
+        <activity android:name=".mvp.view.activity.LocationMapActivity" />
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
-            android:theme="@style/NoBackgroundLightTheme"></activity>
+            android:theme="@style/NoBackgroundLightTheme" />
         <activity android:name=".mvp.view.activity.GroupListActivity" />
         <activity
             android:name=".mvp.view.activity.CropImageActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
+            android:theme="@style/DefaultDarkTheme" />
         <activity
             android:name=".mvp.view.activity.VideoPlayActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
-
-        <activity android:name=".mvp.view.activity.NotificationMessageActivity">
-
-        </activity>
+            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".mvp.view.activity.NotificationMessageActivity"></activity>
 
         <receiver android:name=".broadcast.UninstallReceive">
             <intent-filter>
@@ -121,14 +116,14 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".mvp.view.activity.TestActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
+        <activity android:name=".mvp.view.activity.TestActivity">
 
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity android:name=".mvp.view.activity.MyTagListActivity"></activity>
     </application>
 
 </manifest>

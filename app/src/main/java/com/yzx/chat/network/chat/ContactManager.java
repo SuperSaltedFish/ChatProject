@@ -6,9 +6,12 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.yzx.chat.R;
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.bean.TagBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.ContactDao;
@@ -19,6 +22,7 @@ import com.yzx.chat.network.api.contact.ContactApi;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 
@@ -55,7 +59,7 @@ public class ContactManager {
     private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
 
     private Map<String, ContactBean> mContactsMap;
-    private IMClient.SubManagerCallback mSubManagerCallback;
+    private IMClient.CallbackHelper mCallbackHelper;
     private List<OnContactChangeListener> mContactChangeListeners;
     private List<OnContactOperationListener> mContactOperationListeners;
     private List<OnContactOperationUnreadCountChangeListener> mContactOperationUnreadCountChangeListeners;
@@ -75,11 +79,11 @@ public class ContactManager {
     private volatile int mContactOperationUnreadNumber;
     private final Object mUpdateContactUnreadNumberLock = new Object();
 
-    ContactManager(IMClient.SubManagerCallback subManagerCallback, AbstractDao.ReadWriteHelper readWriteHelper) {
-        if (subManagerCallback == null) {
+    ContactManager(IMClient.CallbackHelper callbackHelper, AbstractDao.ReadWriteHelper readWriteHelper) {
+        if (callbackHelper == null) {
             throw new NullPointerException("subManagerCallback can't be NULL");
         }
-        mSubManagerCallback = subManagerCallback;
+        mCallbackHelper = callbackHelper;
         mContactOperationDao = new ContactOperationDao(readWriteHelper);
         mContactDao = new ContactDao(readWriteHelper);
         mUserDao = new UserDao(readWriteHelper);
@@ -119,42 +123,52 @@ public class ContactManager {
         return mContactsMap.get(userID);
     }
 
-    public void requestContact(final UserBean user, final String reason, final ResultCallback<Boolean> resultCallback) {
+    public void requestContact(final UserBean user, final String reason, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mRequestContact);
         mRequestContact = mContactApi.requestContact(user.getUserID(), reason);
         mRequestContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                ContactOperationBean operation = new ContactOperationBean();
+                final ContactOperationBean operation = new ContactOperationBean();
                 operation.setReason(reason);
                 operation.setUserID(user.getUserID());
                 operation.setTime((int) (System.currentTimeMillis() / 1000));
                 operation.setType(ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE);
                 operation.setRemind(false);
-                boolean success = mContactOperationDao.replace(operation) & mUserDao.replace(user);
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
-                if (!success) {
-                    LogUtil.e("requestContact:Failure of operating database");
+                if (mContactOperationDao.replace(operation) & mUserDao.replace(user)) {
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnContactOperationListener listener : mContactOperationListeners) {
+                                listener.onContactOperationUpdate(operation);
+                            }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(null);
+                            }
+                        }
+                    });
                 } else {
-                    for (OnContactOperationListener listener : mContactOperationListeners) {
-                        listener.onContactOperationUpdate(operation);
-                    }
+                    LogUtil.e("requestContact : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
             @Override
-            protected void onFailure(String message) {
-                if (resultCallback != null) {
-                    resultCallback.onFailure(message);
-                }
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (resultCallback != null) {
+                            resultCallback.onFailure(message);
+                        }
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mRequestContact);
     }
 
-    public void rejectContact(final ContactOperationBean contactOperation, final String reason, final ResultCallback<Boolean> resultCallback) {
+    public void rejectContact(final ContactOperationBean contactOperation, final String reason, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mRejectContact);
         mRejectContact = mContactApi.rejectContact(contactOperation.getUser().getUserID(), reason);
         mRejectContact.setResponseCallback(new BaseResponseCallback<Void>() {
@@ -164,29 +178,40 @@ public class ContactManager {
                 contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
                 contactOperation.setType(ContactManager.CONTACT_OPERATION_REFUSED_ACTIVE);
                 contactOperation.setRemind(false);
-                boolean success = mContactOperationDao.replace(contactOperation);
-                if (!success) {
-                    LogUtil.e("rejectContact:Failure of operating database");
-                }
-                for (OnContactOperationListener listener : mContactOperationListeners) {
-                    listener.onContactOperationUpdate(contactOperation);
-                }
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
+                if (mContactOperationDao.replace(contactOperation)) {
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnContactOperationListener listener : mContactOperationListeners) {
+                                listener.onContactOperationUpdate(contactOperation);
+                            }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(null);
+                            }
+                        }
+                    });
+                } else {
+                    LogUtil.e("rejectContact : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
             @Override
-            protected void onFailure(String message) {
-                if (resultCallback != null) {
-                    resultCallback.onFailure(message);
-                }
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (resultCallback != null) {
+                            resultCallback.onFailure(message);
+                        }
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mRejectContact);
     }
 
-    public void acceptContact(final ContactOperationBean contactOperation, final ResultCallback<Boolean> resultCallback) {
+    public void acceptContact(final ContactOperationBean contactOperation, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mAcceptContact);
         mAcceptContact = mContactApi.acceptContact(contactOperation.getUser().getUserID());
         mAcceptContact.setResponseCallback(new BaseResponseCallback<Void>() {
@@ -196,46 +221,48 @@ public class ContactManager {
                 contactOperation.setType(ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE);
                 contactOperation.setRemind(false);
 
-                ContactBean contactBean = new ContactBean();
+                final ContactBean contactBean = new ContactBean();
                 contactBean.setUserProfile(contactOperation.getUser());
+                contactBean.setRemark(new ContactRemarkBean());
 
-                boolean success = mContactOperationDao.replace(contactOperation) & mContactDao.insert(contactBean);
-                for (OnContactOperationListener listener : mContactOperationListeners) {
-                    listener.onContactOperationUpdate(contactOperation);
-                }
-
-                if (success) {
-                    ContactBean newContact = mContactDao.getContact(contactOperation.getUserID());
-                    if (newContact == null) {
-                        LogUtil.e("Contact is null after acceptContact");
-                    } else {
-                        mContactsMap.put(newContact.getUserProfile().getUserID(), newContact);
-
-
-                        for (OnContactChangeListener listener : mContactChangeListeners) {
-                            listener.onContactAdded(newContact);
+                if (mContactOperationDao.replace(contactOperation) & mContactDao.insert(contactBean)) {
+                    mContactsMap.put(contactBean.getUserProfile().getUserID(), contactBean);
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnContactOperationListener listener : mContactOperationListeners) {
+                                listener.onContactOperationUpdate(contactOperation);
+                            }
+                            for(OnContactChangeListener listener:mContactChangeListeners){
+                                listener.onContactAdded(contactBean);
+                            }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(null);
+                            }
                         }
-                    }
+                    });
                 } else {
-                    LogUtil.e("acceptContact:Failure of operating database");
-                }
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
+                    LogUtil.e("acceptContact : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
             }
 
             @Override
-            protected void onFailure(String message) {
-                if (resultCallback != null) {
-                    resultCallback.onFailure(message);
-                }
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (resultCallback != null) {
+                            resultCallback.onFailure(message);
+                        }
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mAcceptContact);
     }
 
-    public void deleteContact(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
+    public void deleteContact(final ContactBean contact, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mDeleteContact);
         mDeleteContact = mContactApi.deleteContact(contact.getUserProfile().getUserID());
         mDeleteContact.setResponseCallback(new BaseResponseCallback<Void>() {
@@ -245,67 +272,93 @@ public class ContactManager {
                 if (!success) {
                     LogUtil.e("deleteContact:Failure of operating database");
                 }
-
-                if (success) {
+                if (mContactDao.delete(contact)) {
                     mContactsMap.remove(contact.getUserProfile().getUserID());
-                    for (OnContactChangeListener listener : mContactChangeListeners) {
-                        listener.onContactDeleted(contact);
-                    }
-
+                    mCallbackHelper.callConversationManager(ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE, contact.getUserProfile().getUserID());
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnContactChangeListener listener : mContactChangeListeners) {
+                                listener.onContactDeleted(contact);
+                            }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(null);
+                            }
+                        }
+                    });
+                } else {
+                    LogUtil.e("deleteContact : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
-
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
-                mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE, contact.getUserProfile().getUserID());
             }
 
             @Override
-            protected void onFailure(String message) {
-                if (resultCallback != null) {
-                    resultCallback.onFailure(message);
-                }
+            protected void onFailure(final String message) {
+                mCallbackHelper.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (resultCallback != null) {
+                            resultCallback.onFailure(message);
+                        }
+                    }
+                });
             }
         }, false);
         mNetworkExecutor.submit(mDeleteContact);
     }
 
-    public void updateContactRemark(final ContactBean contact, final ResultCallback<Boolean> resultCallback) {
+    public void updateContactRemark(final ContactBean contact, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mUpdateContact);
         mUpdateContact = mContactApi.updateRemark(contact.getUserProfile().getUserID(), contact.getRemark());
         mUpdateContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
                 contact.getRemark().setUploadFlag(0);
-                boolean success = mContactDao.update(contact) & mUserDao.update(contact.getUserProfile());
-
-                if (success) {
+                if (mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
                     mContactsMap.put(contact.getUserProfile().getUserID(), contact);
-                    for (OnContactChangeListener listener : mContactChangeListeners) {
-                        listener.onContactUpdate(contact);
-                    }
-                    mSubManagerCallback.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_PRIVATE,contact);
+                    mCallbackHelper.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_PRIVATE, contact);
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnContactChangeListener listener : mContactChangeListeners) {
+                                listener.onContactUpdate(contact);
+                            }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(null);
+                            }
+                        }
+                    });
                 } else {
-                    LogUtil.e("updateContact:Failure of operating database");
+                    LogUtil.e("updateContactRemark : Failure of operating database");
+                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
                 }
 
-                if (resultCallback != null) {
-                    resultCallback.onSuccess(success);
-                }
             }
 
             @Override
-            protected void onFailure(String message) {
+            protected void onFailure(final String message) {
                 contact.getRemark().setUploadFlag(1);
-                if (!mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
-                    for (OnContactChangeListener listener : mContactChangeListeners) {
-                        listener.onContactUpdate(contact);
-                    }
+                if (mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnContactChangeListener listener : mContactChangeListeners) {
+                                listener.onContactUpdate(contact);
+                            }
+                            if (resultCallback != null) {
+                                resultCallback.onSuccess(null);
+                            }
+                        }
+                    });
                 } else {
-                    LogUtil.e("updateContact:Failure of operating database");
-                }
-                if (resultCallback != null) {
-                    resultCallback.onFailure(message);
+                    mCallbackHelper.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (resultCallback != null) {
+                                resultCallback.onFailure(message);
+                            }
+                        }
+                    });
                 }
             }
         }, false);
@@ -316,12 +369,16 @@ public class ContactManager {
         return mContactDao.getAllTagsType();
     }
 
+    public ArrayList<TagBean> getAllTagAndMemberCount() {
+        return mContactDao.getAllTagAndMemberCount();
+    }
+
     public int getContactUnreadCount() {
         return mContactOperationUnreadNumber;
     }
 
     public void updateContactUnreadCount() {
-        mSubManagerCallback.execute(new Runnable() {
+        mCallbackHelper.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 synchronized (mUpdateContactUnreadNumberLock) {
@@ -338,7 +395,7 @@ public class ContactManager {
     }
 
     public void makeAllContactOperationAsRead() {
-        mSubManagerCallback.execute(new Runnable() {
+        mCallbackHelper.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 mContactOperationDao.makeAllRemindAsRemind();
@@ -351,7 +408,7 @@ public class ContactManager {
 
 
     public void removeContactOperationAsync(final ContactOperationBean contactMessage) {
-        mSubManagerCallback.execute(new Runnable() {
+        mCallbackHelper.runOnBackgroundThread(new Runnable() {
             @Override
             public void run() {
                 if (mContactOperationDao.delete(contactMessage)) {

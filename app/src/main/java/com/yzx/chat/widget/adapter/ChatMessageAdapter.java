@@ -28,6 +28,7 @@ import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.mvp.view.activity.VideoPlayActivity;
+import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidUtil;
@@ -72,7 +73,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION = 8;
     private static final int HOLDER_TYPE_SEND_MESSAGE_VIDEO = 9;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO = 10;
-    private static final int HOLDER_TYPE_NOTIFICATION_MESSAGE = 11;
+    private static final int HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE = 11;
 
     private List<Message> mMessageList;
     private SparseLongArray mTimeSparseLongArray;
@@ -107,7 +108,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_video, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                 return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_video, parent, false), viewType);
-            case HOLDER_TYPE_NOTIFICATION_MESSAGE:
+            case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
                 return new NotificationMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_notification_message, parent, false), viewType);
             default:
                 throw new NoSuchElementException("unknown type code:" + viewType);
@@ -141,7 +142,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             case "Custom:VideoMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
             case "RC:GrpNtf":
-                return HOLDER_TYPE_NOTIFICATION_MESSAGE;
+                return HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE;
             default:
                 throw new NoSuchElementException("unknown type:" + message.getObjectName());
         }
@@ -344,8 +345,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                     mViewHolder = new VideoViewHolder(itemView);
                     break;
-                case HOLDER_TYPE_NOTIFICATION_MESSAGE:
-                    mViewHolder = new NotificationViewHolder(itemView);
+                case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
+                    mViewHolder = new GroupNotificationViewHolder(itemView);
             }
             mViewHolder.mContentLayout.setOnClickListener(mOnContentClickListener);
         }
@@ -503,10 +504,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         public abstract void parseMessageContent(Message message);
     }
 
-    static final class NotificationViewHolder extends ItemViewHolder {
+    static final class GroupNotificationViewHolder extends ItemViewHolder {
         TextView mTvNotificationMessage;
 
-        NotificationViewHolder(View itemView) {
+        GroupNotificationViewHolder(View itemView) {
             super(itemView);
             mTvNotificationMessage = itemView.findViewById(R.id.ChatMessageAdapter_mTvNotificationMessage);
             mContentLayout = mTvNotificationMessage;
@@ -515,7 +516,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         @Override
         public void parseMessageContent(Message message) {
             GroupNotificationMessage groupNotification = (GroupNotificationMessage) message.getContent();
-            mTvNotificationMessage.setText(groupNotification.getOperation());
+            mTvNotificationMessage.setText(IMMessageHelper.groupNotificationMessageToString(groupNotification));
         }
     }
 

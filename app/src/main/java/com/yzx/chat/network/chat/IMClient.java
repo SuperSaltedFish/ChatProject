@@ -2,6 +2,8 @@ package com.yzx.chat.network.chat;
 
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -10,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ConversationBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.Constants;
@@ -86,6 +87,7 @@ public class IMClient {
     private ConversationManager mConversationManager;
     private ThreadPoolExecutor mWorkExecutor;
     private DBHelper mDBHelper;
+    private Handler mUiHandler;
     private List<OnConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
 
     private boolean isLogged;
@@ -98,6 +100,7 @@ public class IMClient {
             RongIMClient.registerMessageType(VideoMessage.class);
         } catch (AnnotationNotFoundException ignored) {
         }
+        mUiHandler = new Handler(Looper.getMainLooper());
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
         mWorkExecutor = new ThreadPoolExecutor(
                 0,
@@ -266,8 +269,8 @@ public class IMClient {
                     }
 
                     private void success(boolean isConnectedToServer) {
-                        mChatManager = new ChatManager(mSubManagerCallback);
-                        mConversationManager = new ConversationManager(mSubManagerCallback);
+                        mChatManager = new ChatManager(mCallbackHelper);
+                        mConversationManager = new ConversationManager(mCallbackHelper);
                         latch.countDown();
                     }
 
@@ -310,10 +313,10 @@ public class IMClient {
         if (mCryptoManager == null) {
             return false;
         }
-        mContactManager = new ContactManager(mSubManagerCallback, mDBHelper.getReadWriteHelper());
-        mGroupManager = new GroupManager(mSubManagerCallback, mDBHelper.getReadWriteHelper());
-        mChatManager = new ChatManager(mSubManagerCallback);
-        mConversationManager = new ConversationManager(mSubManagerCallback);
+        mContactManager = new ContactManager(mCallbackHelper, mDBHelper.getReadWriteHelper());
+        mGroupManager = new GroupManager(mCallbackHelper, mDBHelper.getReadWriteHelper());
+        mChatManager = new ChatManager(mCallbackHelper);
+        mConversationManager = new ConversationManager(mCallbackHelper);
         return true;
     }
 
@@ -397,7 +400,7 @@ public class IMClient {
     }
 
 
-    private final SubManagerCallback mSubManagerCallback = new SubManagerCallback() {
+    private final CallbackHelper mCallbackHelper = new CallbackHelper() {
         @Override
         public void callChatManager(int callbackCode, Object arg) {
 
@@ -464,8 +467,13 @@ public class IMClient {
         }
 
         @Override
-        public void execute(Runnable runnable) {
+        public void runOnBackgroundThread(Runnable runnable) {
             mWorkExecutor.execute(runnable);
+        }
+
+        @Override
+        public void runOnUiThread(Runnable runnable) {
+            mUiHandler.post(runnable);
         }
     };
 
@@ -524,7 +532,7 @@ public class IMClient {
 
     }
 
-    interface SubManagerCallback {
+    interface CallbackHelper {
 
         void callChatManager(int callbackCode, Object arg);
 
@@ -536,7 +544,9 @@ public class IMClient {
 
         AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper();
 
-        void execute(Runnable runnable);
+        void runOnBackgroundThread(Runnable runnable);
+
+        void runOnUiThread(Runnable runnable);
     }
 }
 

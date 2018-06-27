@@ -1,6 +1,7 @@
 package com.yzx.chat.mvp.view.fragment;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,6 +34,7 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.mvp.contract.ContactListContract;
 import com.yzx.chat.mvp.presenter.ContactListPresenter;
+import com.yzx.chat.mvp.view.activity.MyTagListActivity;
 import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AnimationUtil;
@@ -54,6 +57,7 @@ import com.yzx.chat.widget.view.OverflowPopupMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by YZX on 2017年06月28日.
@@ -79,6 +83,8 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private SmartRefreshLayout mSmartRefreshLayout;
     private View mLlContactOperation;
     private View mLlGroup;
+    private View mLlTags;
+    private TextView mTvTags;
     private BadgeView mBadgeView;
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
@@ -107,7 +113,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
         mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
         mLlGroup = mHeaderView.findViewById(R.id.ContactFragmentList_mLlGroup);
+        mLlTags = mHeaderView.findViewById(R.id.ContactFragmentList_mLlTags);
         mBadgeView = mHeaderView.findViewById(R.id.ContactFragmentList_mBadgeView);
+        mTvTags = mHeaderView.findViewById(R.id.ContactFragmentList_mTvTags);
         mRvSearchContact = new RecyclerView(mContext);
         mContactMenu = new OverflowPopupMenu(mContext);
         mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
@@ -139,6 +147,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
         mLlContactOperation.setOnClickListener(mOnViewClickListener);
         mLlGroup.setOnClickListener(mOnViewClickListener);
+        mLlTags.setOnClickListener(mOnViewClickListener);
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
@@ -255,6 +264,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     protected void onFirstVisible() {
         mPresenter.loadUnreadCount();
         mPresenter.loadAllContact();
+        mPresenter.loadTagCount();
     }
 
     @Override
@@ -288,6 +298,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                     break;
                 case R.id.ContactFragmentList_mLlGroup:
                     startActivity(new Intent(mContext, GroupListActivity.class));
+                    break;
+                case R.id.ContactFragmentList_mLlTags:
+                    startActivity(new Intent(mContext, MyTagListActivity.class));
                     break;
                 case R.id.ContactFragmentList_mFBtnAdd:
                     startActivity(new Intent(mContext, FindNewContactActivity.class));
@@ -331,6 +344,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
             if (position == 0 && mContactAdapter.isHasHeaderView()) {
                 return;
             }
+
             mRvContact.setTag(position - 1);
             OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mRvContact.getHeight(), (int) touchX, (int) touchY);
         }
@@ -417,5 +431,10 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mContactList.clear();
         mContactList.addAll(newFriendList);
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));
+    }
+
+    @Override
+    public void showTagCount(int count) {
+        mTvTags.setText(String.format(Locale.getDefault(),"%s(%d)",getString(R.string.MyTagListActivity_Title),count));
     }
 }

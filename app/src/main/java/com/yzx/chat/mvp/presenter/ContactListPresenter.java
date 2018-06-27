@@ -15,6 +15,7 @@ import com.yzx.chat.util.AsyncUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -68,6 +69,12 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         mRefreshContactsTask = new RefreshAllContactsTask(this);
         mRefreshContactsTask.execute(mContactList);
 
+    }
+
+    @Override
+    public void loadTagCount() {
+        HashSet<String> tags = mIMClient.contactManager().getAllTags();
+        mContactView.showTagCount(tags==null?0:tags.size());
     }
 
 

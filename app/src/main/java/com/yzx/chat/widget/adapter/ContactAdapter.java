@@ -12,8 +12,11 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.view.FlowLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -51,6 +54,16 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         ContactBean contactBean = mContactList.get(position);
         holder.mTvName.setText(contactBean.getName());
         holder.mIvSex.setSelected(contactBean.getUserProfile().getSex() == UserBean.SEX_WOMAN);
+        holder.mTagsFlowLayout.removeAllViews();
+        ArrayList<String> tags = contactBean.getRemark().getTags();
+        if (tags != null && tags.size() != 0) {
+            TextView label;
+            for (String tag : tags) {
+                label = (TextView) LayoutInflater.from(mContext).inflate(R.layout.item_label_small, holder.mTagsFlowLayout, false);
+                label.setText(tag);
+                holder.mTagsFlowLayout.addView(label);
+            }
+        }
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactBean.getUserProfile().getAvatar());
     }
 
@@ -119,6 +132,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         TextView mTvName;
         ImageView mIvAvatar;
         ImageView mIvSex;
+        FlowLayout mTagsFlowLayout;
 
         ContactHolder(View itemView) {
             super(itemView);
@@ -130,6 +144,10 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
             mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
             mIvSex = itemView.findViewById(R.id.ContactAdapter_mIvSex);
+            mTagsFlowLayout = itemView.findViewById(R.id.ContactAdapter_mTagsFlowLayout);
+
+            mTagsFlowLayout.setMaxLine(1);
+            mTagsFlowLayout.setItemSpace((int) AndroidUtil.dip2px(4));
         }
     }
 
