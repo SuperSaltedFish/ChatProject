@@ -153,7 +153,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
         @Override
         public void onMemberInfoUpdated(GroupBean group, GroupMemberBean groupMember) {
-            
+
         }
 
         @Override

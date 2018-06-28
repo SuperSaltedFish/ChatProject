@@ -149,6 +149,6 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Profession, entity.getProfession());
         values.put(COLUMN_NAME_School, entity.getSchool());
         values.put(COLUMN_NAME_Age, entity.getAge());
-        return Write.replace(TABLE_NAME, null, values) > 0;
+        return Write.replace(TABLE_NAME, null, values) >= 0;
     }
 }

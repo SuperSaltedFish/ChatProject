@@ -90,14 +90,14 @@ public class GroupDao extends AbstractDao<GroupBean> {
                 }
                 values.clear();
                 parseToContentValues(group, values);
-                if (database.insert(TABLE_NAME, null, values) <= 0) {
+                if (database.insert(TABLE_NAME, null, values) < 0) {
                     result = false;
                     break;
                 }
                 for (GroupMemberBean groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
-                if (!GroupMemberDao.replaceAllGroupMember(database, groupMemberList, values)) {
+                if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
                     result = false;
                     break;
                 }
@@ -131,14 +131,14 @@ public class GroupDao extends AbstractDao<GroupBean> {
                 }
                 values.clear();
                 parseToContentValues(group, values);
-                if (database.insert(TABLE_NAME, null, values) <= 0) {
+                if (database.insert(TABLE_NAME, null, values) < 0) {
                     result = false;
                     break;
                 }
                 for (GroupMemberBean groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
-                if (!GroupMemberDao.replaceAllGroupMember(database, groupMemberList, values)) {
+                if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
                     result = false;
                     break;
                 }
@@ -173,14 +173,18 @@ public class GroupDao extends AbstractDao<GroupBean> {
                 }
                 values.clear();
                 parseToContentValues(group, values);
-                if (database.replace(TABLE_NAME, null, values) <= 0) {
+                if (database.replace(TABLE_NAME, null, values) < 0) {
+                    result = false;
+                    break;
+                }
+                if(GroupMemberDao.deleteGroupMemberByGroupID(database, group.getGroupID())<0){
                     result = false;
                     break;
                 }
                 for (GroupMemberBean groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
-                if (!GroupMemberDao.replaceAllGroupMember(database, groupMemberList, values)) {
+                if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
                     result = false;
                     break;
                 }
@@ -206,7 +210,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
         try {
             result = database.delete(TABLE_NAME, getWhereClauseOfKey(), new String[]{groupID}) > 0;
             if (result) {
-                result = GroupMemberDao.deleteGroupMemberByGroupID(database, groupID);
+                result = GroupMemberDao.deleteGroupMemberByGroupID(database, groupID)>=0;
             }
 
             if (result) {

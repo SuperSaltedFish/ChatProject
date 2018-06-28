@@ -401,115 +401,62 @@ public class GroupManager {
 
     void onReceiveGroupNotificationMessage(Message message) {
         GroupNotificationMessage groupNotification = (GroupNotificationMessage) message.getContent();
-        String operation = groupNotification.getOperation();
-        if (!GROUP_OPERATION_SET.contains(operation)) {
-            LogUtil.e("unknown group operation:" + operation);
+        final String operation = groupNotification.getOperation();
+         GroupMessageExtra extra = null;
+        try {
+            switch (operation) {
+                case GROUP_OPERATION_CREATE:
+                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Created.class);
+                    break;
+                case GROUP_OPERATION_ADD:
+                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Add.class);
+                    break;
+                case GROUP_OPERATION_QUIT:
+                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Quit.class);
+                    break;
+                default:
+                    LogUtil.e("unknown group operation:" + operation);
+                    return;
+            }
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+        if (extra == null) {
+            LogUtil.e("GroupOperation:json to object(GroupMessageExtra) error,json content:" + groupNotification.getExtra());
             return;
         }
-        final GroupBean group;
-        switch (groupNotification.getOperation()) {
-            case GROUP_OPERATION_CREATE:
-                final GroupMessageExtra_Created extra_Create;
-                try {
-                    extra_Create = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra_Created.class);
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                    LogUtil.e("fromJson GroupMessageExtra_Created.class fail,json content:" + groupNotification.getExtra());
-                    return;
-                }
-                group = extra_Create.group;
-                if (group == null) {
-                    LogUtil.e(" GroupOperation : group is empty");
-                    return;
-                }
-                if (!mGroupDao.insertGroupAndMember(group)) {
-                    LogUtil.e(" GroupOperation : insertGroupAndMember fail");
-                    return;
-                }
-                mGroupsMap.put(group.getGroupID(), group);
-                mCallbackHelper.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                            listener.onCreatedGroup(group);
-                        }
-                    }
-                });
-                break;
-            case GROUP_OPERATION_ADD:
-                final GroupMessageExtra_Add extra_Add;
-                try {
-                    extra_Add = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra_Add.class);
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                    LogUtil.e("fromJson GroupMessageExtra_Add.class fail,json content:" + groupNotification.getExtra());
-                    return;
-                }
-                if (extra_Add.members == null || extra_Add.members.size() == 0 || TextUtils.isEmpty(extra_Add.groupID)) {
-                    LogUtil.e(" GroupOperation : groupMembers or groupID is empty");
-                    return;
-                }
-                group = getGroup(extra_Add.groupID);
-                if (group == null) {
-                    LogUtil.e(" GroupOperation : getGroup is empty");
-                    return;
-                }
-                if (!mGroupMemberDao.replaceAll(group.getMembers())) {
-                    LogUtil.e(" GroupOperation : replaceAll fail");
-                    return;
-                }
-                group.getMembers().addAll(extra_Add.members);
-                mCallbackHelper.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                            listener.onMemberAdded(group, extra_Add.members);
-                        }
-                    }
-                });
-                break;
-            case GROUP_OPERATION_QUIT:
-                GroupMessageExtra_Quit extra_Quit;
-                try {
-                    extra_Quit = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra_Quit.class);
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                    LogUtil.e("fromJson GroupMessageExtra_Quit.class fail,json content:" + groupNotification.getExtra());
-                    return;
-                }
-                if (TextUtils.isEmpty(extra_Quit.memberID) || TextUtils.isEmpty(extra_Quit.groupID)) {
-                    LogUtil.e(" GroupOperation : memberID or groupID is empty");
-                    return;
-                }
-                group = getGroup(extra_Quit.groupID);
-                if (group == null) {
-                    LogUtil.e(" GroupOperation : getGroup is empty");
-                    return;
-                }
-                if (!mGroupMemberDao.deleteByKey(extra_Quit.groupID, extra_Quit.memberID)) {
-                    LogUtil.e(" GroupOperation : deleteByKey fail");
-                    return;
-                }
-
-                Iterator<GroupMemberBean> it = group.getMembers().iterator();
-                while (it.hasNext()) {
-                    final GroupMemberBean groupMember = it.next();
-                    if (extra_Quit.memberID.equals(groupMember.getUserProfile().getUserID())) {
-                        it.remove();
-                        mCallbackHelper.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                                    listener.onMemberQuit(group, Collections.singletonList(groupMember));
-                                }
-                            }
-                        });
-                        break;
-                    }
-                }
-                break;
+        if (extra.group == null) {
+            LogUtil.e(" GroupOperation : group is empty");
+            return;
         }
+        if (!mGroupDao.replaceGroupAndMember(extra.group)) {
+            LogUtil.e(" GroupOperation : replaceGroupAndMember fail");
+            return;
+        }
+        mGroupsMap.put(extra.group.getGroupID(), extra.group);
 
+       final GroupMessageExtra finalExtra  = extra;
+        mCallbackHelper.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                    switch (operation) {
+                        case GROUP_OPERATION_CREATE:
+                            GroupMessageExtra.Created createdExtra = (GroupMessageExtra.Created) finalExtra;
+                            listener.onCreatedGroup(createdExtra.group);
+                            break;
+                        case GROUP_OPERATION_ADD:
+                            GroupMessageExtra.Add addExtra = (GroupMessageExtra.Add) finalExtra;
+                            listener.onMemberAdded(addExtra.group, addExtra.membersID);
+                            break;
+                        case GROUP_OPERATION_QUIT:
+                            GroupMessageExtra.Quit quitExtra = (GroupMessageExtra.Quit) finalExtra;
+                            listener.onMemberQuit(quitExtra.group,quitExtra.member);
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     void destroy() {
@@ -554,30 +501,28 @@ public class GroupManager {
 
         void onGroupInfoUpdated(GroupBean group);
 
-        void onMemberAdded(GroupBean group, List<GroupMemberBean> groupMemberList);
+        void onMemberAdded(GroupBean group, String []newMembersID);
 
         void onMemberInfoUpdated(GroupBean group, GroupMemberBean groupMember);
 
-        void onMemberQuit(GroupBean group, List<GroupMemberBean> groupMemberList);
+        void onMemberQuit(GroupBean group, GroupMemberBean quitMember);
 
     }
 
-    public static final class GroupMessageExtra_Created {
-        public String groupID;
-        public long version;
+    public static class GroupMessageExtra {
         public GroupBean group;
-    }
 
-    public static final class GroupMessageExtra_Add {
-        public String groupID;
-        public long version;
-        public ArrayList<GroupMemberBean> members;
-    }
+        public static final class Created extends GroupMessageExtra {
 
-    public static final class GroupMessageExtra_Quit {
-        public String groupID;
-        public long version;
-        public String memberID;
+        }
+
+        public static final class Add extends GroupMessageExtra {
+            public String[] membersID;
+        }
+
+        public static final class Quit extends GroupMessageExtra {
+            public GroupMemberBean member;
+        }
     }
 
 

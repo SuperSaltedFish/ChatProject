@@ -2,15 +2,20 @@ package com.yzx.chat.mvp.view.activity;
 
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +27,7 @@ import com.yzx.chat.mvp.contract.FindNewContactContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.mvp.presenter.FindNewContactPresenter;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
+import com.yzx.chat.widget.listener.SimpleTextWatcher;
 
 import java.util.Locale;
 
@@ -37,6 +43,8 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private LinearLayout mLlSearchHintLayout;
     private LinearLayout mLlMoreOperation;
     private TextView mTvMyPhoneNumber;
+    private ImageView mIvSearchIcon;
+    private ImageView mIvEnterIcon;
     private ConstraintLayout mClCreateGroup;
     private MaybeKnowAdapter mAdapter;
 
@@ -55,12 +63,13 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mLlMoreOperation = findViewById(R.id.FindNewContactActivity_mLlMoreOperation);
         mPbSearch = findViewById(R.id.FindNewContactActivity_mPbSearch);
         mClCreateGroup = findViewById(R.id.FindNewContactActivity_mClCreateGroup);
+        mIvSearchIcon = findViewById(R.id.FindNewContactActivity_mIvSearchIcon);
+        mIvEnterIcon = findViewById(R.id.FindNewContactActivity_mIvEnterIcon);
         mAdapter = new MaybeKnowAdapter();
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -74,9 +83,47 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mClScan.setOnClickListener(mOnScanLayoutClickListener);
         mClCreateGroup.setOnClickListener(mOnCreateGroupClickListener);
         mTvMyPhoneNumber.setOnClickListener(mOnMyPhoneClickListener);
-        mEtSearch.setOnEditorActionListener(mOnEditorActionListener);
 
+        setInputListener();
         setData();
+    }
+
+    private void setInputListener() {
+        mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+                    hideSoftKeyboard();
+                    String searchText = mEtSearch.getText().toString();
+                    if (!TextUtils.isEmpty(searchText)) {
+                        mPresenter.searchUser(searchText);
+                        enableSearchHint(true);
+                        mTvSearchHint.setText(R.string.ProgressHint_Search);
+                        mPbSearch.setVisibility(View.VISIBLE);
+                    }
+                }
+                return true;
+            }
+        });
+
+        mEtSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mIvSearchIcon.setImageTintList(ColorStateList.valueOf(Color.WHITE));
+                } else {
+                    mIvSearchIcon.setImageTintList(ColorStateList.valueOf(Color.argb(196,255,255,255)));
+                }
+            }
+
+        });
+
+        mEtSearch.addTextChangedListener(new SimpleTextWatcher(){
+            @Override
+            public void afterTextChanged(Editable s) {
+                mIvEnterIcon.setVisibility(s.length()>0?View.VISIBLE:View.INVISIBLE);
+            }
+        });
     }
 
     private void setData() {
@@ -94,22 +141,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         }
     }
 
-    private final TextView.OnEditorActionListener mOnEditorActionListener = new TextView.OnEditorActionListener() {
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
-                hideSoftKeyboard();
-                String searchText = mEtSearch.getText().toString();
-                if (!TextUtils.isEmpty(searchText)) {
-                    mPresenter.searchUser(searchText);
-                    enableSearchHint(true);
-                    mTvSearchHint.setText(R.string.ProgressHint_Search);
-                    mPbSearch.setVisibility(View.VISIBLE);
-                }
-            }
-            return true;
-        }
-    };
 
     private final View.OnClickListener mOnMyPhoneClickListener = new View.OnClickListener() {
         @Override

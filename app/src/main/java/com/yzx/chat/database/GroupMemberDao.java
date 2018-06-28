@@ -51,7 +51,7 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
         database.beginTransactionNonExclusive();
         try {
             ContentValues values = new ContentValues();
-            result = replaceAllGroupMember(database,entityIterable,values);
+            result = insertAllGroupMember(database,entityIterable,values);
             if (result) {
                 database.setTransactionSuccessful();
             }
@@ -96,14 +96,14 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
         return groupMember;
     }
 
-    static boolean replaceAllGroupMember(SQLiteDatabase Write, Iterable<GroupMemberBean> groupMemberList, ContentValues values) {
+    static boolean insertAllGroupMember(SQLiteDatabase Write, Iterable<GroupMemberBean> groupMemberList, ContentValues values) {
         boolean result = true;
         for (GroupMemberBean groupMember : groupMemberList) {
             values.clear();
             values.put(COLUMN_NAME_UserID, groupMember.getUserProfile().getUserID());
             values.put(COLUMN_NAME_GroupID, groupMember.getGroupID());
             values.put(COLUMN_NAME_Alias, groupMember.getAlias());
-            if (Write.replace(TABLE_NAME, null, values) <= 0) {
+            if (Write.insert(TABLE_NAME, null, values) < 0) {
                 result = false;
                 break;
             }
@@ -116,7 +116,7 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
     }
 
 
-    static boolean deleteGroupMemberByGroupID(SQLiteDatabase Write, String groupID) {
-        return Write.delete(TABLE_NAME,COLUMN_NAME_GroupID + "=?",new String[]{groupID})>0;
+    static int deleteGroupMemberByGroupID(SQLiteDatabase Write, String groupID) {
+        return Write.delete(TABLE_NAME,COLUMN_NAME_GroupID + "=?",new String[]{groupID});
     }
 }

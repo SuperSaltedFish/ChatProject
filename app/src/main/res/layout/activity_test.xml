@@ -4,33 +4,214 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".mvp.view.activity.TestActivity">
 
-    <Button
-        android:onClick="onClick"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="40dp"
+        app:popupTheme="@style/ToolbarPopupLightTheme"
+        app:theme="@style/ToolbarTheme"
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
-    <View
-        android:layout_width="match_parent"
-        android:background="#ffffff"
-        android:layout_height="10dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="搜索好友"
+        android:textSize="22sp"
+        android:layout_marginStart="48dp"
+        android:textColor="@android:color/white" />
 
-    <com.yzx.chat.widget.view.BottomTabLayout
-        android:id="@+id/ssss"
+    <SearchView
         android:layout_width="match_parent"
-        android:elevation="8dp"
-        android:background="#ffffff"
-        android:layout_height="56dp" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
+        android:layout_height="wrap_content"></SearchView>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/asd"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/FindNewContactActivity_mClCreateGroup"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp">
 
+        <ImageView
+            android:id="@+id/ConversationFragment_mIvCreateGroup"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_friend"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ConversationFragment_mTvCreateGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="创建群聊"
+            android:textColor="@color/textPrimaryColorBlack"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/ConversationFragment_mTvCreateGroupHint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvCreateGroup"
+            app:layout_constraintTop_toTopOf="@id/ConversationFragment_mIvCreateGroup"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+
+        <TextView
+            android:id="@+id/ConversationFragment_mTvCreateGroupHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="与身边的朋友进入同一个群聊"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/ConversationFragment_mIvCreateGroup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvCreateGroup"
+            app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvCreateGroup" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/dividerColorBlack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mIvCreateGroup" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/FindNewContactActivity_mClScan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp">
+
+        <ImageView
+            android:id="@+id/ConversationFragment_mIvScan"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_scan"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ConversationFragment_mTvScan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="扫一扫"
+            android:textColor="@color/textPrimaryColorBlack"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/ConversationFragment_mTvScanHint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvScan"
+            app:layout_constraintTop_toTopOf="@+id/ConversationFragment_mIvScan"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+
+        <TextView
+            android:id="@+id/ConversationFragment_mTvScanHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="扫描二维码名片"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/ConversationFragment_mIvScan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvScan"
+            app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvScan" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/dividerColorBlack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mIvScan" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp">
+
+        <ImageView
+            android:id="@+id/ConversationFragment_mIvAddPhoneContact"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_address_book"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ConversationFragment_mTvAddPhoneContact"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="手机联系人"
+            android:textColor="@color/textPrimaryColorBlack"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/ConversationFragment_mTvAddPhoneContactHint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvAddPhoneContact"
+            app:layout_constraintTop_toTopOf="@id/ConversationFragment_mIvAddPhoneContact"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+
+        <TextView
+            android:id="@+id/ConversationFragment_mTvAddPhoneContactHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="添加或邀请通讯录中的好友"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/ConversationFragment_mIvAddPhoneContact"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvAddPhoneContact"
+            app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvAddPhoneContact" />
+
+    </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>
