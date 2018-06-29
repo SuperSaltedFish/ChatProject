@@ -49,7 +49,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mIMClient.addConnectionListener(mOnConnectionStateChangeListener);
         mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
-        mIMClient.groupManager().addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
@@ -58,7 +57,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mIMClient.removeConnectionListener(mOnConnectionStateChangeListener);
         mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
-        mIMClient.groupManager().removeGroupChangeListener(mOnGroupOperationListener);
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
@@ -130,37 +128,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
-    private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
-        @Override
-        public void onCreatedGroup(GroupBean group) {
-            refreshAllConversations();
-        }
-
-        @Override
-        public void onQuitGroup(GroupBean group) {
-
-        }
-
-        @Override
-        public void onGroupInfoUpdated(GroupBean group) {
-            refreshAllConversations();
-        }
-
-        @Override
-        public void onMemberAdded(GroupBean group, List<GroupMemberBean> groupMemberList) {
-            refreshAllConversations();
-        }
-
-        @Override
-        public void onMemberInfoUpdated(GroupBean group, GroupMemberBean groupMember) {
-
-        }
-
-        @Override
-        public void onMemberQuit(GroupBean group, List<GroupMemberBean> groupMemberList) {
-            refreshAllConversations();
-        }
-    };
 
     private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
         @Override

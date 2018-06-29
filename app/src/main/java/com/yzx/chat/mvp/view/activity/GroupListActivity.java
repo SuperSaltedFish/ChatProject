@@ -59,7 +59,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         mRvGroup.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvGroup.setAdapter(mGroupAdapter);
         mRvGroup.setHasFixedSize(true);
-        mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRvGroup.addOnItemTouchListener(mOnRvGroupItemClickListener);
         mRvGroup.addOnScrollListener(new ImageAutoLoadScrollListener());
 
@@ -109,33 +109,28 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         return new GroupListPresenter();
     }
 
-
     @Override
-    public void showGroupList(DiffUtil.DiffResult diffResult, List<GroupBean> groupList) {
-        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mGroupAdapter));
+    public void showAllGroupList(List<GroupBean> groupList) {
         mGroupList.clear();
         mGroupList.addAll(groupList);
+        mGroupAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void refreshGroupItem(GroupBean group) {
-        int index = mGroupList.indexOf(group);
-        if (index >= 0) {
-            mGroupAdapter.notifyItemChangedEx(index);
-            mGroupList.set(index, group);
-        } else {
-            LogUtil.e("refreshGroupItem fail from ui");
-        }
+    public void showNewGroup(GroupBean group, int position) {
+        mGroupList.add(position, group);
+        mGroupAdapter.notifyItemInsertedEx(position);
     }
 
     @Override
-    public void removeGroupItem(GroupBean group) {
-        int index = mGroupList.indexOf(group);
-        if (index >= 0) {
-            mGroupAdapter.notifyItemRemovedEx(index);
-            mGroupList.remove(index);
-        } else {
-            LogUtil.e("removeGroupItem fail from ui");
-        }
+    public void hideGroup(int position) {
+        mGroupList.remove(position);
+        mGroupAdapter.notifyItemRemovedEx(position);
+    }
+
+    @Override
+    public void refreshGroup(GroupBean group, int position) {
+        mGroupList.set(position,group);
+        mGroupAdapter.notifyItemChangedEx(position);
     }
 }

@@ -64,7 +64,7 @@ public class GroupBean implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof GroupBean)) {
+        if (!(obj instanceof GroupBean)) {
             return false;
         }
         if (obj == this) {
@@ -76,6 +76,7 @@ public class GroupBean implements Parcelable {
         GroupBean group = (GroupBean) obj;
         return groupID.equals(group.getGroupID());
     }
+
 
     public String getGroupID() {
         return groupID;
@@ -174,4 +175,16 @@ public class GroupBean implements Parcelable {
             return new GroupBean[size];
         }
     };
+
+    public static GroupBean copy(GroupBean group) {
+        if (group == null) {
+            return null;
+        }
+        Parcel parcel = Parcel.obtain();
+        group.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        group = GroupBean.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        return group;
+    }
 }

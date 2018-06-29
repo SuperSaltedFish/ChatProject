@@ -113,4 +113,16 @@ public class GroupMemberBean implements Parcelable {
             return new GroupMemberBean[size];
         }
     };
+
+    public static GroupMemberBean copy(GroupMemberBean member) {
+        if (member == null) {
+            return null;
+        }
+        Parcel parcel = Parcel.obtain();
+        member.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        member = GroupMemberBean.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        return member;
+    }
 }

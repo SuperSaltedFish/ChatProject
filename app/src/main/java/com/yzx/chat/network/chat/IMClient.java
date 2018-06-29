@@ -467,6 +467,11 @@ public class IMClient {
         }
 
         @Override
+        public String getCurrentUserID() {
+            return mUserManager.getUserID();
+        }
+
+        @Override
         public void runOnBackgroundThread(Runnable runnable) {
             mWorkExecutor.execute(runnable);
         }
@@ -543,6 +548,8 @@ public class IMClient {
         void callGroupManager(int callbackCode, Object arg);
 
         AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper();
+
+        String getCurrentUserID();
 
         void runOnBackgroundThread(Runnable runnable);
 

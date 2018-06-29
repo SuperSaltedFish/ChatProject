@@ -1,7 +1,5 @@
 package com.yzx.chat.mvp.presenter;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
@@ -34,10 +32,12 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupProfileView = view;
         mGroupManager = IMClient.getInstance().groupManager();
         mConversationManager = IMClient.getInstance().conversationManager();
+        mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
+        mGroupManager.removeGroupChangeListener(mOnGroupOperationListener);
         mGroupProfileView = null;
         mGroupManager = null;
     }
@@ -95,7 +95,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupManager.renameGroup(mConversation.getTargetId(), newName, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                mGroupProfileView.showNewGroupName(newName);
                 mGroupProfileView.setEnableProgressDialog(false, null);
             }
 
@@ -110,12 +109,10 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     @Override
     public void updateGroupNotice(final String newNotice) {
         mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
-        mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new ResultCallback<Boolean>() {
+        mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(Void result) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.showNewGroupNotice(newNotice);
-
             }
 
             @Override
@@ -129,11 +126,10 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     @Override
     public void updateMyGroupAlias(final String newAlias) {
         mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
-        mGroupManager.updateMemberAlias(mConversation.getTargetId(), IMClient.getInstance().userManager().getUserID(), newAlias, new ResultCallback<Void>() {
+        mGroupManager.updateMemberAlias(mConversation.getTargetId(), newAlias, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.showNewMyAlias(newAlias);
 
             }
 
@@ -151,11 +147,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupManager.quitGroup(mConversation.getTargetId(), new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (mConversation.getTargetId().equals(ChatPresenter.sConversationID)) {
-                    mGroupProfileView.finishChatActivity();
-                }
                 mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.goBack();
             }
 
             @Override
@@ -185,6 +177,61 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     public void clearChatMessages() {
         mConversationManager.clearAllConversationMessages(mConversation);
     }
+
+    private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
+        @Override
+        public void onCreatedGroup(GroupBean group) {
+
+        }
+
+        @Override
+        public void onQuitGroup(GroupBean group) {
+            if (mConversation.getTargetId().equals(group.getGroupID())) {
+                if (mConversation.getTargetId().equals(ChatPresenter.sConversationID)) {
+                    mGroupProfileView.finishChatActivity();
+                }
+                mGroupProfileView.goBack();
+            }
+        }
+
+        @Override
+        public void onBulletinChange(GroupBean group, String newBulletin) {
+            if (mConversation.getTargetId().equals(group.getGroupID())) {
+                mGroupProfileView.showNewGroupNotice(newBulletin);
+            }
+        }
+
+        @Override
+        public void onNameChange(GroupBean group, String newName) {
+            if (mConversation.getTargetId().equals(group.getGroupID())) {
+                mGroupProfileView.showNewGroupName(newName);
+            }
+        }
+
+        @Override
+        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+            if (mConversation.getTargetId().equals(group.getGroupID())) {
+                mGroupProfileView.showMembers(group.getMembers());
+            }
+        }
+
+        @Override
+        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+            if (mConversation.getTargetId().equals(group.getGroupID())) {
+                mGroupProfileView.showMembers(group.getMembers());
+            }
+        }
+
+        @Override
+        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+            if (mConversation.getTargetId().equals(group.getGroupID())) {
+                if (member.getUserProfile().getUserID().equals(getCurrentUserID())) {
+                    mGroupProfileView.showNewMyAlias(newAlias);
+                }
+                mGroupProfileView.showMembers(group.getMembers());
+            }
+        }
+    };
 
 
 }

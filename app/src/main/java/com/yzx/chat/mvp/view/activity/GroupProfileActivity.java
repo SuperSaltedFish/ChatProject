@@ -349,24 +349,23 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
             finish();
             return;
         }
-        mCollapsingToolbarLayout.setTitle(group.getName());
-        mTvContentGroupName.setText(group.getName());
-        if (TextUtils.isEmpty(group.getNotice())) {
-            mTvContentGroupNotice.setText(R.string.None);
-        } else {
-            mTvContentGroupNotice.setText(group.getNotice());
-        }
-        mGroupMemberList.clear();
-        List<GroupMemberBean> members = group.getMembers();
-        if (members != null) {
-            mGroupMemberList.addAll(members);
-        }
-        mAdapter.notifyDataSetChanged();
+        showNewGroupName(group.getName());
+        showNewGroupNotice(group.getNotice());
+        showNewMyAlias(mySelf.getNicknameInGroup());
+        showMembers(group.getMembers());
 
-        mTvContentNicknameInGroup.setText(mySelf.getNicknameInGroup());
         if (mySelf.getUserProfile().getUserID().equals(group.getOwner())) {
             mIvEditNotice.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void showMembers(List<GroupMemberBean> groupMemberList) {
+        mGroupMemberList.clear();
+        if(groupMemberList!=null&&groupMemberList.size()>0){
+            mGroupMemberList.addAll(groupMemberList);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -387,15 +386,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     @Override
     public void showNewMyAlias(String newAlias) {
         mTvContentNicknameInGroup.setText(newAlias);
-        GroupMemberBean groupMember;
-        for (int i = 0, size = mGroupMemberList.size(); i < size; i++) {
-            groupMember = mGroupMemberList.get(i);
-            if (groupMember.getUserProfile().getUserID().equals(mPresenter.getCurrentUserID())) {
-                groupMember.setAlias(newAlias);
-                mAdapter.notifyItemChangedEx(i);
-                return;
-            }
-        }
     }
 
 

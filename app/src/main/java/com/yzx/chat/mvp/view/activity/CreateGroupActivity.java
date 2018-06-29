@@ -111,7 +111,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setAdapter(mCreateGroupAdapter);
         mRecyclerView.setHasFixedSize(true);
-        // mContactRecyclerView.setItemAnimator(new NoAnimations());
+
         mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mRecyclerView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
@@ -122,12 +122,9 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mCreateGroupAdapter.setHeaderView(mHeaderView);
         mCreateGroupAdapter.setOnItemSelectedChangeListener(mOnItemSelectedChangeListener);
 
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.setCanceledOnTouchOutside(false);
 
         mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
         if (!TextUtils.isEmpty(mGroupID)) {
-            mProgressDialog.setHintText(getString(R.string.ProgressHint_Add));
             List<GroupMemberBean> groupMemberList = getIntent().getParcelableArrayListExtra(INTENT_EXTRA_ALREADY_JOIN_MEMBER);
             mAlreadyJoinContactList = new ArrayList<>(groupMemberList.size());
             ContactBean contact;
@@ -186,10 +183,8 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.CreateGroupMenu_Confirm) {
             if (TextUtils.isEmpty(mGroupID)) {
-                mProgressDialog.show(getString(R.string.ProgressHint_Create));
                 mPresenter.createGroup(mSelectedContactList);
             } else {
-                mProgressDialog.show(getString(R.string.ProgressHint_Add));
                 mPresenter.addMembers(mGroupID, mSelectedContactList);
             }
         } else {
@@ -270,10 +265,20 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     }
 
 
+
+    @Override
+    public void setEnableProgressDialog(boolean isEnable, String hintContent) {
+        mProgressDialog.setHintText(hintContent);
+        if(isEnable){
+            mProgressDialog.show();
+        }else {
+            mProgressDialog.dismiss();
+        }
+    }
+
     @Override
     public void showError(String error) {
         showToast(error);
-        mProgressDialog.dismiss();
     }
 
     @Override

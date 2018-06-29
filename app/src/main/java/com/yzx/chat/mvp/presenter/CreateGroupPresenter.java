@@ -2,15 +2,18 @@ package com.yzx.chat.mvp.presenter;
 
 import android.os.Handler;
 
+import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.CreateGroupMemberBean;
 import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.CreateGroupContract;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.util.AndroidUtil;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,17 +26,25 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
     private CreateGroupContract.View mCreateGroupView;
     private GroupManager mGroupManager;
+    private Handler mHandler;
 
     private boolean isCreating;
+    private boolean isAdding;
+    private String[] mAddingMembersID;
 
     @Override
     public void attachView(CreateGroupContract.View view) {
         mCreateGroupView = view;
+        mHandler = new Handler();
         mGroupManager = IMClient.getInstance().groupManager();
+        mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
+        mGroupManager.removeGroupChangeListener(mOnGroupOperationListener);
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
         mGroupManager = null;
         mCreateGroupView = null;
 
@@ -44,27 +55,32 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         if (isCreating) {
             return;
         }
+        mCreateGroupView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Create));
         StringBuilder stringBuilder = new StringBuilder(64);
-        List<CreateGroupMemberBean> memberList = new ArrayList<>(members.size());
-        CreateGroupMemberBean groupMember;
+        String[] membersID = new String[members.size()];
+        UserBean user;
         for (int i = 0, count = members.size(); i < count; i++) {
-            stringBuilder.append(members.get(i).getUserProfile().getNickname());
+            user = members.get(i).getUserProfile();
+            stringBuilder.append(user.getNickname());
             stringBuilder.append("、");
-            groupMember = new CreateGroupMemberBean();
-            groupMember.setUserID(members.get(i).getUserProfile().getUserID());
-            memberList.add(groupMember);
+            membersID[i] = user.getUserID();
         }
         stringBuilder.append(IMClient.getInstance().userManager().getUser().getNickname()).append("的群聊");
 
-        mGroupManager.createGroup(stringBuilder.toString(), memberList, new ResultCallback<GroupBean>() {
+        mGroupManager.createGroup(stringBuilder.toString(), membersID, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(final GroupBean result) {
-                mCreateGroupView.launchChatActivity(result);
-                isCreating = false;
+            public void onSuccess(final Void result) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        onFailure(AndroidUtil.getString(R.string.Server_Error));
+                    }
+                }, 15000);
             }
 
             @Override
             public void onFailure(final String error) {
+                mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.showError(error);
                 isCreating = false;
             }
@@ -74,30 +90,78 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
     @Override
     public void addMembers(String groupID, List<ContactBean> members) {
-        if (isCreating) {
+        if (isAdding) {
             return;
         }
-        List<CreateGroupMemberBean> memberList = new ArrayList<>(members.size());
-        CreateGroupMemberBean groupMember;
+        mCreateGroupView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Add));
+        mAddingMembersID = new String[members.size()];
         for (int i = 0, count = members.size(); i < count; i++) {
-            groupMember = new CreateGroupMemberBean();
-            groupMember.setUserID(members.get(i).getUserProfile().getUserID());
-            memberList.add(groupMember);
+            mAddingMembersID[i] = members.get(i).getUserProfile().getUserID();
         }
-        mGroupManager.addMember(groupID, memberList, new ResultCallback<GroupBean>() {
+        mGroupManager.addMember(groupID, mAddingMembersID, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(final GroupBean result) {
-                mCreateGroupView.launchChatActivity(result);
-                isCreating = false;
+            public void onSuccess(final Void result) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        onFailure(AndroidUtil.getString(R.string.Server_Error));
+                    }
+                }, 15000);
             }
 
             @Override
             public void onFailure(final String error) {
+                mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.showError(error);
-                isCreating = false;
+                isAdding = false;
             }
         });
-        isCreating = true;
+        isAdding = true;
     }
+
+    private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
+        @Override
+        public void onCreatedGroup(GroupBean group) {
+            if (isCreating && group.getOwner().equals(IMClient.getInstance().userManager().getUserID())) {
+                mCreateGroupView.setEnableProgressDialog(false, null);
+                mCreateGroupView.launchChatActivity(group);
+                isCreating = false;
+            }
+        }
+
+        @Override
+        public void onQuitGroup(GroupBean group) {
+
+        }
+
+        @Override
+        public void onBulletinChange(GroupBean group, String newBulletin) {
+
+        }
+
+        @Override
+        public void onNameChange(GroupBean group, String newName) {
+
+        }
+
+        @Override
+        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+            if (isAdding && Arrays.equals(mAddingMembersID, newMembersID)) {
+                mCreateGroupView.setEnableProgressDialog(false, null);
+                mCreateGroupView.launchChatActivity(group);
+                isCreating = false;
+            }
+        }
+
+        @Override
+        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+
+        }
+
+        @Override
+        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+
+        }
+    };
 
 }
