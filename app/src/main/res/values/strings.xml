@@ -117,7 +117,7 @@
     <string name="ImageViewPagerActivity_Selected">选择</string>
     <string name="ImageSelectorActivity_Original">原图</string>
     <string name="ImageSelectorActivity_Preview">预览</string>
-    <string name="FindNewContactActivity_MyPhoneNumber">我的手机号码</string>
+    <string name="FindNewContactActivity_MyPhoneNumber">我的号码</string>
     <string name="FindNewContactActivity_SearchHint">手机号/群号/昵称</string>
     <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
     <string name="FindNewContactActivity_SearchFail">搜索失败，请稍后再试</string>
@@ -203,7 +203,7 @@
     <string name="EditProfileActivity_NicknameLabel">昵称</string>
     <string name="Details">详情</string>
     <string name="QrCodeScanActivity_Title">二维码扫描</string>
-    <string name="MyQRCodePresenter_GenerateQRCodeFail">生成二维码失败，请稍后再试</string>
+    <string name="MyQRCodePresenter_GenerateQRCodeFail">获取二维码失败，请稍后再试</string>
     <string name="QrCodePresenter_Unrecognized">无法识别该二维码</string>
     <string name="QrCodePresenter_UnableFind">没有在照片中找到二维码</string>
     <string name="People">人</string>

@@ -62,19 +62,19 @@
         <ImageView
             android:id="@+id/MyQRCodeActivity_mIvUserInfoIcon"
             android:layout_width="16dp"
-            android:layout_marginStart="12dp"
             android:layout_height="16dp"
+            android:layout_marginStart="12dp"
             app:layout_constraintBottom_toBottomOf="@id/MyQRCodeActivity_mTvUserInfo"
             app:layout_constraintStart_toEndOf="@id/MyQRCodeActivity_mIvAvatar"
             app:layout_constraintTop_toTopOf="@id/MyQRCodeActivity_mTvUserInfo" />
 
         <TextView
-            android:layout_marginTop="4dp"
             android:id="@+id/MyQRCodeActivity_mTvUserInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
             android:textColor="@color/textPrimaryColorBlack"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/MyQRCodeActivity_mIvAvatar"
@@ -91,13 +91,23 @@
             app:layout_constraintStart_toStartOf="@id/MyQRCodeActivity_mIvQRCode"
             app:layout_constraintTop_toTopOf="@id/MyQRCodeActivity_mIvQRCode" />
 
+        <TextView
+            android:id="@+id/MyQRCodeActivity_mTvErrorHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textPrimaryColorBlack"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvHint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mIvAvatar" />
+
         <ImageView
             android:id="@+id/MyQRCodeActivity_mIvQRCode"
             android:layout_width="280dp"
             android:layout_height="280dp"
             android:padding="8dp"
             android:scaleType="centerCrop"
-            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintBottom_toTopOf="@id/MyQRCodeActivity_mTvHint"
             app:layout_constraintEnd_toEndOf="parent"

@@ -48,6 +48,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
     private TextView mTvUserInfo;
     private TextView mTvNickname;
     private TextView mTvHint;
+    private TextView mTvErrorHint;
 
     private String mGroupID;
     private int mCurrentQRCodeType;
@@ -72,6 +73,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
         mClQRCodeLayout = findViewById(R.id.MyQRCodeActivity_mClQRCodeLayout);
         mTvHint = findViewById(R.id.MyQRCodeActivity_mTvHint);
         mIvUserInfoIcon = findViewById(R.id.MyQRCodeActivity_mIvUserInfoIcon);
+        mTvErrorHint = findViewById(R.id.MyQRCodeActivity_mTvErrorHint);
     }
 
     @Override
@@ -128,7 +130,6 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
             if (!TextUtils.isEmpty(user.getLocation())) {
                 mTvUserInfo.setText(mTvUserInfo.getText() + " · " + user.getLocation());
             }
-            mPresenter.updateUserQRCode();
         } else {
             setTitle(R.string.MyQRCodeActivity_Title2);
             mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
@@ -150,13 +151,15 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
             mIvUserInfoIcon.setImageResource(R.drawable.ic_friend);
             mIvUserInfoIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorAccent)));
             mTvUserInfo.setText(group.getMembers().size() + getString(R.string.People));
-            mPresenter.updateGroupQRCode(mGroupID);
         }
+
+        resetQRCode();
     }
 
     private void resetQRCode() {
+        mIvQRCode.setImageBitmap(null);
+        mTvErrorHint.setText(null);
         mProgressBar.setVisibility(View.VISIBLE);
-        mIvQRCode.setVisibility(View.INVISIBLE);
         if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
             mPresenter.updateUserQRCode();
         } else {
@@ -205,13 +208,26 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
 
     @Override
     public void showQRCode(String content) {
-        mProgressBar.setVisibility(View.INVISIBLE);
-        mIvQRCode.setVisibility(View.VISIBLE);
         mIvQRCode.setImageBitmap(QRUtils.createQRCode(content, 280, 280, null));
     }
 
     @Override
     public void showHint(String error) {
         showToast(error);
+    }
+
+    @Override
+    public void showErrorHint(String hint) {
+        mTvErrorHint.setVisibility(View.VISIBLE);
+        mTvErrorHint.setText(hint);
+    }
+
+    @Override
+    public void setEnableProgressBar(boolean isEnable) {
+        if (isEnable) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }

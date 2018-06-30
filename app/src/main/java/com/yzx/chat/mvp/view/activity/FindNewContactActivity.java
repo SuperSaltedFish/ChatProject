@@ -10,14 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -37,10 +35,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private ConstraintLayout mClScan;
 
     private EditText mEtSearch;
-    private TextView mTvSearchHint;
-    private ProgressBar mPbSearch;
     private RecyclerView mRecyclerView;
-    private LinearLayout mLlSearchHintLayout;
     private LinearLayout mLlMoreOperation;
     private TextView mTvMyPhoneNumber;
     private ImageView mIvSearchIcon;
@@ -57,11 +52,8 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mClScan = findViewById(R.id.FindNewContactActivity_mClScan);
         mRecyclerView = findViewById(R.id.FindNewContactActivity_mRecyclerView);
         mEtSearch = findViewById(R.id.FindNewContactActivity_mEtSearch);
-        mLlSearchHintLayout = findViewById(R.id.FindNewContactActivity_mLlSearchHintLayout);
         mTvMyPhoneNumber = findViewById(R.id.FindNewContactActivity_mTvMyPhoneNumber);
-        mTvSearchHint = findViewById(R.id.FindNewContactActivity_mTvSearchHint);
         mLlMoreOperation = findViewById(R.id.FindNewContactActivity_mLlMoreOperation);
-        mPbSearch = findViewById(R.id.FindNewContactActivity_mPbSearch);
         mClCreateGroup = findViewById(R.id.FindNewContactActivity_mClCreateGroup);
         mIvSearchIcon = findViewById(R.id.FindNewContactActivity_mIvSearchIcon);
         mIvEnterIcon = findViewById(R.id.FindNewContactActivity_mIvEnterIcon);
@@ -97,9 +89,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
                     String searchText = mEtSearch.getText().toString();
                     if (!TextUtils.isEmpty(searchText)) {
                         mPresenter.searchUser(searchText);
-                        enableSearchHint(true);
-                        mTvSearchHint.setText(R.string.ProgressHint_Search);
-                        mPbSearch.setVisibility(View.VISIBLE);
                     }
                 }
                 return true;
@@ -131,15 +120,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
     }
 
-    private void enableSearchHint(boolean isEnable) {
-        if (isEnable) {
-            mLlMoreOperation.animate().translationY(mLlSearchHintLayout.getHeight()).start();
-            mLlSearchHintLayout.setVisibility(View.VISIBLE);
-        } else {
-            mLlMoreOperation.animate().translationY(0).start();
-            mLlSearchHintLayout.setVisibility(View.INVISIBLE);
-        }
-    }
 
 
     private final View.OnClickListener mOnMyPhoneClickListener = new View.OnClickListener() {
@@ -172,7 +152,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     @Override
     public void searchSuccess(UserBean user, boolean isContact) {
-        enableSearchHint(false);
         if (isContact) {
             Intent intent = new Intent(this, ContactProfileActivity.class);
             intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, user.getUserID());
@@ -186,13 +165,13 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     @Override
     public void searchNotExist() {
-        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchNotExist);
-        mPbSearch.setVisibility(View.GONE);
+//        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchNotExist);
+//        mPbSearch.setVisibility(View.GONE);
     }
 
     @Override
     public void searchFail() {
-        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchFail);
-        mPbSearch.setVisibility(View.GONE);
+//        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchFail);
+//        mPbSearch.setVisibility(View.GONE);
     }
 }

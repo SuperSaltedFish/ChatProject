@@ -93,6 +93,9 @@ public class IMMessageHelper {
             switch (message.getOperation()) {
                 case GroupManager.GROUP_OPERATION_CREATE:
                     GroupManager.GroupMessageExtra.Created createExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Created.class);
+                    if (createExtra == null) {
+                        break;
+                    }
                     group = createExtra.group;
                     builder = new StringBuilder(group.getMembers().size() * 18);
                     for (GroupMemberBean groupMember : group.getMembers()) {
@@ -112,6 +115,9 @@ public class IMMessageHelper {
                     return builder.toString();
                 case GroupManager.GROUP_OPERATION_ADD:
                     GroupManager.GroupMessageExtra.Add addExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Add.class);
+                    if (addExtra == null) {
+                        break;
+                    }
                     group = addExtra.group;
                     builder = new StringBuilder(addExtra.membersID.length * 18);
                     List<String> memberIDList = Arrays.asList(addExtra.membersID);
@@ -132,9 +138,15 @@ public class IMMessageHelper {
                     return builder.toString();
                 case GroupManager.GROUP_OPERATION_QUIT:
                     GroupManager.GroupMessageExtra.Quit quitExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Quit.class);
+                    if (quitExtra == null) {
+                        break;
+                    }
                     return quitExtra.member.getNicknameInGroup() + "退出了群组";
                 case GroupManager.GROUP_OPERATION_RENAME:
                     GroupManager.GroupMessageExtra.Rename renameExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Rename.class);
+                    if (renameExtra == null) {
+                        break;
+                    }
                     group = renameExtra.group;
                     for (GroupMemberBean groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
@@ -145,6 +157,9 @@ public class IMMessageHelper {
                     break;
                 case GroupManager.GROUP_OPERATION_BULLETIN:
                     GroupManager.GroupMessageExtra.Bulletin bulletinExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Bulletin.class);
+                    if (bulletinExtra == null) {
+                        break;
+                    }
                     group = bulletinExtra.group;
                     for (GroupMemberBean groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();

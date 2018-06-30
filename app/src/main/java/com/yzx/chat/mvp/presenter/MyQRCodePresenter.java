@@ -75,11 +75,13 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
             return;
         }
         isUpdating = true;
+        mMyQRCodeActivityView.setEnableProgressBar(true);
         AsyncUtil.cancelCall(mGetTempUserIDCall);
         mGetTempUserIDCall = mUserApi.getTempUserID();
         mGetTempUserIDCall.setResponseCallback(new BaseResponseCallback<GetTempUserID>() {
             @Override
             protected void onSuccess(GetTempUserID response) {
+                mMyQRCodeActivityView.setEnableProgressBar(false);
                 isUpdating = false;
                 String id = response.getTempUserID();
                 if (!TextUtils.isEmpty(id)) {
@@ -97,8 +99,10 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
             @Override
             protected void onFailure(String message) {
-                isUpdating = false;
+                mMyQRCodeActivityView.setEnableProgressBar(false);
                 mMyQRCodeActivityView.showHint(message);
+                mMyQRCodeActivityView.showErrorHint(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
+                isUpdating = false;
             }
         });
         sHttpExecutor.submit(mGetTempUserIDCall);
@@ -120,11 +124,13 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
             return;
         }
         isUpdating = true;
+        mMyQRCodeActivityView.setEnableProgressBar(true);
         AsyncUtil.cancelCall(mGetTempGroupIDCall);
         mGetTempGroupIDCall = mGroupApi.getTempGroupID(groupID);
         mGetTempGroupIDCall.setResponseCallback(new BaseResponseCallback<GetTempGroupID>() {
             @Override
             protected void onSuccess(GetTempGroupID response) {
+                mMyQRCodeActivityView.setEnableProgressBar(false);
                 isUpdating = false;
                 String id = response.getTempGroupID();
                 if (!TextUtils.isEmpty(id)) {
@@ -143,8 +149,10 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
             @Override
             protected void onFailure(String message) {
-                isUpdating = false;
+                mMyQRCodeActivityView.setEnableProgressBar(false);
                 mMyQRCodeActivityView.showHint(message);
+                mMyQRCodeActivityView.showErrorHint(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
+                isUpdating = false;
             }
         });
         sHttpExecutor.submit(mGetTempGroupIDCall);

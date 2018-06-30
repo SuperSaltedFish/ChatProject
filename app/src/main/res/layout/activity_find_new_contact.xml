@@ -1,95 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
     android:orientation="vertical"
     tools:context=".mvp.view.activity.FindNewContactActivity">
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@+id/FindNewContactActivity_mTvMyPhoneNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ToolbarTheme"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/FindNewContactActivity_mTvTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="16dp"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp"
+        android:text="@string/FindNewContactActivity_Title"
+        android:textColor="@android:color/white"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/FindNewContactActivity_mClSearchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_search_round"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mTvTitle">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:text="@string/FindNewContactActivity_Title"
-            android:textColor="@android:color/white"
-            android:textSize="23sp" />
+        <ImageView
+            android:id="@+id/FindNewContactActivity_mIvSearchIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_search"
+            android:tint="#d7ffffff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/FindNewContactActivity_mFlSearchLayout"
-            android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_search_round"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+        <EditText
+            android:id="@+id/FindNewContactActivity_mEtSearch"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:gravity="center_vertical|start"
+            android:hint="@string/FindNewContactActivity_SearchHint"
+            android:imeOptions="actionSearch"
+            android:inputType="phone"
+            android:singleLine="true"
+            android:textColor="@color/textColorWhite"
+            android:textColorHint="#d7ffffff"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/FindNewContactActivity_mIvEnterIcon"
+            app:layout_constraintStart_toEndOf="@id/FindNewContactActivity_mIvSearchIcon"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/FindNewContactActivity_mIvSearchIcon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_search"
-                android:tint="#c4ffffff"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/FindNewContactActivity_mEtSearch"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:background="@null"
-                android:gravity="center_vertical|start"
-                android:hint="@string/FindNewContactActivity_SearchHint"
-                android:imeOptions="actionSearch"
-                android:inputType="phone"
-                android:singleLine="true"
-                android:textColor="@color/textColorWhite"
-                android:textColorHint="@color/textColorWhiteAlpha"
-                android:textSize="13sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/FindNewContactActivity_mIvEnterIcon"
-                app:layout_constraintStart_toEndOf="@id/FindNewContactActivity_mIvSearchIcon"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/FindNewContactActivity_mIvEnterIcon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_enter"
-                android:tint="#c4ffffff"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/FindNewContactActivity_mIvEnterIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_enter"
+            android:tint="#c4ffffff"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-        </android.support.constraint.ConstraintLayout>
-
-    </LinearLayout>
-
+    </android.support.constraint.ConstraintLayout>
 
     <TextView
         android:id="@+id/FindNewContactActivity_mTvMyPhoneNumber"
@@ -98,37 +107,19 @@
         android:drawableEnd="@drawable/ic_qrcode"
         android:drawablePadding="4dp"
         android:gravity="center"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:textColor="@android:color/white"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mFlSearchLayout" />
-
-    <LinearLayout
-        android:id="@+id/FindNewContactActivity_mLlSearchHintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mTvMyPhoneNumber">
-
-        <ProgressBar
-            android:id="@+id/FindNewContactActivity_mPbSearch"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/FindNewContactActivity_mTvSearchHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mClSearchLayout" />
 
     <LinearLayout
         android:id="@+id/FindNewContactActivity_mLlMoreOperation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -376,5 +367,5 @@
     </LinearLayout>
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
 
