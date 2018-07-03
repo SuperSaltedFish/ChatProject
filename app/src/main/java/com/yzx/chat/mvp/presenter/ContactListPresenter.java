@@ -39,15 +39,15 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mContactList = new ArrayList<>(128);
-        mIMClient.contactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.contactManager().addContactChangeListener(mOnContactChangeListener);
+        mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
 
     }
 
     @Override
     public void detachView() {
-        mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
+        mIMClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         AsyncUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mHandler.removeCallbacksAndMessages(null);
@@ -58,7 +58,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
-        mContactView.updateUnreadBadge(mIMClient.contactManager().getContactUnreadCount());
+        mContactView.updateUnreadBadge(mIMClient.getContactManager().getContactUnreadCount());
     }
 
     @SuppressWarnings("unchecked")
@@ -73,7 +73,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     @Override
     public void loadTagCount() {
-        HashSet<String> tags = mIMClient.contactManager().getAllTags();
+        HashSet<String> tags = mIMClient.getContactManager().getAllTags();
         mContactView.showTagCount(tags==null?0:tags.size());
     }
 
@@ -146,7 +146,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ContactBean>[] lists) {
-            List<ContactBean> newList = IMClient.getInstance().contactManager().getAllContacts();
+            List<ContactBean> newList = IMClient.getInstance().getContactManager().getAllContacts();
             List<ContactBean> oldList = lists[0];
 
             Collections.sort(newList, new Comparator<ContactBean>() {

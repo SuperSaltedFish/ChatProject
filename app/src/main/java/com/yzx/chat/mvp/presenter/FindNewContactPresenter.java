@@ -62,7 +62,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
                     mFindNewContactContractView.searchNotExist();
                 } else {
                     UserBean user = userList.get(0);
-                    mFindNewContactContractView.searchSuccess(user, IMClient.getInstance().contactManager().getContact(user.getUserID()) != null);
+                    mFindNewContactContractView.searchSuccess(user, IMClient.getInstance().getContactManager().getContact(user.getUserID()) != null);
                 }
                 isSearching = false;
 

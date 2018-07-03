@@ -16,6 +16,8 @@ public class QrCodeScanContract {
 
         void startContactProfileActivity(String contactID);
 
+        void startGroupChatActivity(String groupID);
+
         void setEnableProgressDialog(boolean isEnable);
 
         void showErrorDialog(String error);

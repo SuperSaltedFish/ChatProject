@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;
 
@@ -59,7 +60,7 @@ public class ContactManager {
     private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
 
     private Map<String, ContactBean> mContactsMap;
-    private IMClient.CallbackHelper mCallbackHelper;
+    private IManagerHelper mManagerHelper;
     private List<OnContactChangeListener> mContactChangeListeners;
     private List<OnContactOperationListener> mContactOperationListeners;
     private List<OnContactOperationUnreadCountChangeListener> mContactOperationUnreadCountChangeListeners;
@@ -79,14 +80,11 @@ public class ContactManager {
     private volatile int mContactOperationUnreadNumber;
     private final Object mUpdateContactUnreadNumberLock = new Object();
 
-    ContactManager(IMClient.CallbackHelper callbackHelper, AbstractDao.ReadWriteHelper readWriteHelper) {
-        if (callbackHelper == null) {
-            throw new NullPointerException("subManagerCallback can't be NULL");
-        }
-        mCallbackHelper = callbackHelper;
-        mContactOperationDao = new ContactOperationDao(readWriteHelper);
-        mContactDao = new ContactDao(readWriteHelper);
-        mUserDao = new UserDao(readWriteHelper);
+    ContactManager(IManagerHelper helper) {
+        mManagerHelper = helper;
+        mContactOperationDao = new ContactOperationDao(mManagerHelper.getReadWriteHelper());
+        mContactDao = new ContactDao(mManagerHelper.getReadWriteHelper());
+        mUserDao = new UserDao(mManagerHelper.getReadWriteHelper());
         mContactChangeListeners = Collections.synchronizedList(new LinkedList<OnContactChangeListener>());
         mContactOperationListeners = Collections.synchronizedList(new LinkedList<OnContactOperationListener>());
         mContactOperationUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnContactOperationUnreadCountChangeListener>());
@@ -131,12 +129,12 @@ public class ContactManager {
             protected void onSuccess(Void response) {
                 final ContactOperationBean operation = new ContactOperationBean();
                 operation.setReason(reason);
-                operation.setUserID(user.getUserID());
+                operation.setUser(user);
                 operation.setTime((int) (System.currentTimeMillis() / 1000));
                 operation.setType(ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE);
                 operation.setRemind(false);
                 if (mContactOperationDao.replace(operation) & mUserDao.replace(user)) {
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
@@ -155,7 +153,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mCallbackHelper.runOnUiThread(new Runnable() {
+                mManagerHelper.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -179,7 +177,7 @@ public class ContactManager {
                 contactOperation.setType(ContactManager.CONTACT_OPERATION_REFUSED_ACTIVE);
                 contactOperation.setRemind(false);
                 if (mContactOperationDao.replace(contactOperation)) {
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
@@ -198,7 +196,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mCallbackHelper.runOnUiThread(new Runnable() {
+                mManagerHelper.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -227,7 +225,7 @@ public class ContactManager {
 
                 if (mContactOperationDao.replace(contactOperation) & mContactDao.insert(contactBean)) {
                     mContactsMap.put(contactBean.getUserProfile().getUserID(), contactBean);
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
@@ -249,7 +247,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mCallbackHelper.runOnUiThread(new Runnable() {
+                mManagerHelper.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -273,9 +271,10 @@ public class ContactManager {
                     LogUtil.e("deleteContact:Failure of operating database");
                 }
                 if (mContactDao.delete(contact)) {
-                    mContactsMap.remove(contact.getUserProfile().getUserID());
-                    mCallbackHelper.callConversationManager(ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE, contact.getUserProfile().getUserID());
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                    UserBean user = contact.getUserProfile();
+                    mContactsMap.remove(user.getUserID());
+                    mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, user.getUserID());
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -294,7 +293,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mCallbackHelper.runOnUiThread(new Runnable() {
+                mManagerHelper.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -314,10 +313,11 @@ public class ContactManager {
             @Override
             protected void onSuccess(Void response) {
                 contact.getRemark().setUploadFlag(0);
-                if (mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
-                    mContactsMap.put(contact.getUserProfile().getUserID(), contact);
-                    mCallbackHelper.callConversationManager(ConversationManager.CALLBACK_CODE_UPDATE_PRIVATE, contact);
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                UserBean user = contact.getUserProfile();
+                if (mContactDao.update(contact) & mUserDao.update(user)) {
+                    mContactsMap.put(user.getUserID(), contact);
+                    mManagerHelper.getConversationManager().updateConversationTitle(Conversation.ConversationType.PRIVATE,user.getUserID(),contact.getName());
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -339,7 +339,7 @@ public class ContactManager {
             protected void onFailure(final String message) {
                 contact.getRemark().setUploadFlag(1);
                 if (mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -351,7 +351,7 @@ public class ContactManager {
                         }
                     });
                 } else {
-                    mCallbackHelper.runOnUiThread(new Runnable() {
+                    mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (resultCallback != null) {
@@ -378,7 +378,7 @@ public class ContactManager {
     }
 
     public void updateContactUnreadCount() {
-        mCallbackHelper.runOnBackgroundThread(new Runnable() {
+        mManagerHelper.runOnWorkThread(new Runnable() {
             @Override
             public void run() {
                 synchronized (mUpdateContactUnreadNumberLock) {
@@ -395,7 +395,7 @@ public class ContactManager {
     }
 
     public void makeAllContactOperationAsRead() {
-        mCallbackHelper.runOnBackgroundThread(new Runnable() {
+        mManagerHelper.runOnWorkThread(new Runnable() {
             @Override
             public void run() {
                 mContactOperationDao.makeAllRemindAsRemind();
@@ -408,7 +408,7 @@ public class ContactManager {
 
 
     public void removeContactOperationAsync(final ContactOperationBean contactMessage) {
-        mCallbackHelper.runOnBackgroundThread(new Runnable() {
+        mManagerHelper.runOnWorkThread(new Runnable() {
             @Override
             public void run() {
                 if (mContactOperationDao.delete(contactMessage)) {
@@ -529,7 +529,6 @@ public class ContactManager {
         }
         ContactOperationBean contactOperation = new ContactOperationBean();
         contactOperation.setUser(extra.userProfile);
-        contactOperation.setUserID(contactMessage.getSourceUserId());
         contactOperation.setReason(contactMessage.getMessage());
         contactOperation.setRemind(true);
         contactOperation.setTime((int) (message.getReceivedTime() / 1000));

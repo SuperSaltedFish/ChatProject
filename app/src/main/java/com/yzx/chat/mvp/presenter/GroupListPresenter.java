@@ -26,12 +26,12 @@ public class GroupListPresenter implements GroupListContract.Presenter {
     @Override
     public void attachView(GroupListContract.View view) {
         mGroupListView = view;
-        IMClient.getInstance().groupManager().addGroupChangeListener(mOnGroupOperationListener);
+        IMClient.getInstance().getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
-        IMClient.getInstance().groupManager().removeGroupChangeListener(mOnGroupOperationListener);
+        IMClient.getInstance().getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
         mGroupList = null;
         mGroupListView = null;
     }
@@ -39,7 +39,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
     @SuppressWarnings("unchecked")
     @Override
     public void loadAllGroup() {
-        List<GroupBean> groupList = IMClient.getInstance().groupManager().getAllGroup();
+        List<GroupBean> groupList = IMClient.getInstance().getGroupManager().getAllGroup();
         if (groupList == null) {
             mGroupList = new ArrayList<>(2);
         } else {
@@ -69,12 +69,12 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onBulletinChange(GroupBean group, String newBulletin) {
+        public void onBulletinChange(GroupBean group) {
 
         }
 
         @Override
-        public void onNameChange(GroupBean group, String newName) {
+        public void onNameChange(GroupBean group) {
             int oldPosition = mGroupList.indexOf(group);
             if (oldPosition >= 0) {
                 mGroupList.set(oldPosition, group);
@@ -94,6 +94,11 @@ public class GroupListPresenter implements GroupListContract.Presenter {
             } else {
                 LogUtil.e("onMemberAdded:search group fail");
             }
+        }
+
+        @Override
+        public void onMemberJoin(GroupBean group, String memberID) {
+
         }
 
         @Override

@@ -32,12 +32,12 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         mContactProfileView = view;
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
-        mIMClient.contactManager().addContactChangeListener(mOnContactChangeListener);
+        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
     public void detachView() {
-        mIMClient.contactManager().removeContactChangeListener(mOnContactChangeListener);
+        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mContactProfileView = null;
     }
@@ -45,13 +45,13 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void init(String contactID) {
-        mContactBean = mIMClient.contactManager().getContact(contactID);
+        mContactBean = mIMClient.getContactManager().getContact(contactID);
         if (mContactBean == null) {
             mContactProfileView.goBack();
             return;
         }
         mContactProfileView.updateContactInfo(mContactBean);
-        mConversation = mIMClient.conversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserProfile().getUserID());
+        mConversation = mIMClient.getConversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserProfile().getUserID());
         if (mConversation == null) {
             mConversation = new Conversation();
             mConversation.setTargetId(mContactBean.getUserProfile().getUserID());
@@ -60,7 +60,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         }
 
         mContactProfileView.switchTopState(mConversation.isTop());
-        mIMClient.conversationManager().isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
+        mIMClient.getConversationManager().isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus result) {
                 mContactProfileView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
@@ -81,7 +81,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     @Override
     public void deleteContact() {
         mContactProfileView.setEnableProgressDialog(true);
-        mIMClient.contactManager().deleteContact(mContactBean, new ResultCallback<Void>() {
+        mIMClient.getContactManager().deleteContact(mContactBean, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 if (mContactBean.getUserProfile().getUserID().equals(ChatPresenter.sConversationID)) {
@@ -101,23 +101,23 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void enableConversationNotification(boolean isEnable) {
-        mIMClient.conversationManager().enableConversationNotification(mConversation, isEnable);
+        mIMClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(),mConversation.getTargetId(), isEnable);
     }
 
     @Override
     public void setConversationToTop(boolean isTop) {
-        mIMClient.conversationManager().setConversationTop(mConversation, isTop);
+        mIMClient.getConversationManager().setConversationTop(mConversation.getConversationType(),mConversation.getTargetId(), isTop);
     }
 
 
     @Override
     public void clearChatMessages() {
-        mIMClient.conversationManager().clearAllConversationMessages(mConversation);
+        mIMClient.getConversationManager().clearAllConversationMessages(mConversation.getConversationType(),mConversation.getTargetId());
     }
 
     @Override
     public ArrayList<String> getAllTags() {
-        HashSet<String> tags = IMClient.getInstance().contactManager().getAllTags();
+        HashSet<String> tags = IMClient.getInstance().getContactManager().getAllTags();
         if(tags!=null&&tags.size()>0){
             return new ArrayList<>(tags);
         }else {
@@ -127,7 +127,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void saveRemarkInfo(ContactBean contact) {
-        IMClient.getInstance().contactManager().updateContactRemark(contact, null);
+        IMClient.getInstance().getContactManager().updateContactRemark(contact, null);
     }
 
 

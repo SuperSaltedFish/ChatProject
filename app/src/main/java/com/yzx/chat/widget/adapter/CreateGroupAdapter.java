@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
 
@@ -51,7 +52,6 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
         }
         ContactBean contact = mContactList.get(position);
         holder.mTvName.setText(contact.getName());
-
         if (mAlreadySelectedContactList != null && mAlreadySelectedContactList.contains(mContactList.get(position))) {
             holder.itemView.setEnabled(false);
             holder.mCbIsSelected.setChecked(true);
@@ -61,6 +61,7 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
             holder.mCbIsSelected.setEnabled(true);
             holder.mCbIsSelected.setChecked(mSelectedList.contains(contact));
         }
+        GlideUtil.loadAvatarFromUrl(mContext,holder.mIvAvatar,contact.getUserProfile().getAvatar());
     }
 
     @Override

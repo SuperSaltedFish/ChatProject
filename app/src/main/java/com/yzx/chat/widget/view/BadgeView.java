@@ -7,7 +7,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -55,6 +57,7 @@ public class BadgeView extends View {
         mBackgroundPaint = new Paint();
 
         mBadgePaint.setTextAlign(Paint.Align.CENTER);
+        mBadgePaint.setTypeface(Typeface.DEFAULT_BOLD);
         mBadgePaint.setAntiAlias(true);
         mBackgroundPaint.setAntiAlias(true);
 
@@ -78,9 +81,9 @@ public class BadgeView extends View {
     }
 
     private void setDefault() {
-        setBadgeTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, mContext.getResources().getDisplayMetrics()));
+        setBadgeTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10.5f, mContext.getResources().getDisplayMetrics()));
         setBadgeTextColor(Color.WHITE);
-        setBadgeBackgroundColor(Color.RED);
+        setBadgeBackgroundColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
         int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
         setPadding(padding, padding, padding, padding);
     }
@@ -91,16 +94,27 @@ public class BadgeView extends View {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+
+        boolean isOverstep;
+        String strNumber;
+        if (mBadgeNumber <= MAX_BADGE_NUMBER) {
+            strNumber = String.valueOf(MAX_BADGE_NUMBER);
+            isOverstep = false;
+        } else {
+            isOverstep = true;
+            strNumber = MAX_BADGE_NUMBER + "+";
+        }
+        mBadgePaint.getTextBounds(strNumber, 0, strNumber.length(), mTextRect);
         if (widthMode != MeasureSpec.EXACTLY) {
-            width = (int) mBadgePaint.measureText(String.valueOf(mBadgeNumber));
+            width = mTextRect.width();
         }
         if (heightMode != MeasureSpec.EXACTLY) {
-            String strBadge = String.valueOf(mBadgeNumber);
-            mBadgePaint.getTextBounds(strBadge, 0, strBadge.length(), mTextRect);
             height = mTextRect.height();
         }
-        int maxSize = Math.max(width, height) + 2;
-        setMeasuredDimension(maxSize + getPaddingLeft() + getPaddingRight(), maxSize + getPaddingTop() + getPaddingBottom());
+        if (!isOverstep) {
+            height = width = Math.max(width, height);
+        }
+        setMeasuredDimension(width + getPaddingLeft() + getPaddingRight(), height + getPaddingTop() + getPaddingBottom());
     }
 
     @Override
@@ -115,7 +129,8 @@ public class BadgeView extends View {
         if (mBadgeNumber == 0) {
             return;
         }
-        canvas.drawRoundRect(mBadgeRectF, mBadgeRectF.width() / 2f, mBadgeRectF.height() / 2f, mBackgroundPaint);
+        float radius = Math.min(mBadgeRectF.width() / 2f, mBadgeRectF.height() / 2f);
+        canvas.drawRoundRect(mBadgeRectF, radius, radius, mBackgroundPaint);
         String badge;
         if (mBadgeNumber > MAX_BADGE_NUMBER) {
             badge = String.valueOf(MAX_BADGE_NUMBER) + "+";

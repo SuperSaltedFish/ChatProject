@@ -6,10 +6,7 @@ import android.text.TextUtils;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.LogUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -35,33 +32,25 @@ import io.rong.message.VoiceMessage;
 public class ChatManager {
 
     private RongIMClient mRongIMClient;
-    private IMClient.CallbackHelper mCallbackHelper;
+    private IManagerHelper mManagerHelper;
     private SendMessageCallbackWrapper mSendMessageCallbackWrapper;
     private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
     private Map<OnMessageSendListener, String> mMessageSendStateChangeListenerMap;
-    private List<OnChatMessageUnreadCountChangeListener> mChatMessageUnreadCountChangeListeners;
 
-    private volatile int mUnreadChatMessageCount;
-    private final Object mUpdateChatUnreadCountLock = new Object();
-
-    ChatManager(IMClient.CallbackHelper callbackHelper) {
-        if (callbackHelper == null) {
-            throw new NullPointerException("subManagerCallback can't be NULL");
-        }
-        mCallbackHelper = callbackHelper;
+    ChatManager(IManagerHelper helper) {
+        mManagerHelper = helper;
         mRongIMClient = RongIMClient.getInstance();
         mSendMessageCallbackWrapper = new SendMessageCallbackWrapper();
         mMessageListenerMap = new HashMap<>();
         mMessageSendStateChangeListenerMap = new HashMap<>();
-        mChatMessageUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnChatMessageUnreadCountChangeListener>());
     }
 
-    public List<Message> getHistoryMessages(Conversation conversation, int oldestMessageId, int count) {
-        return mRongIMClient.getHistoryMessages(conversation.getConversationType(), conversation.getTargetId(), oldestMessageId, count);
+    public List<Message> getHistoryMessages(final Conversation.ConversationType type, final String targetId, int oldestMessageId, int count) {
+        return mRongIMClient.getHistoryMessages(type, targetId, oldestMessageId, count);
     }
 
-    public void asyncGetHistoryMessages(Conversation conversation, int oldestMessageId, int count, RongIMClient.ResultCallback<List<Message>> callback) {
-        mRongIMClient.getHistoryMessages(conversation.getConversationType(), conversation.getTargetId(), oldestMessageId, count, callback);
+    public void asyncGetHistoryMessages(final Conversation.ConversationType type, final String targetId, int oldestMessageId, int count, RongIMClient.ResultCallback<List<Message>> callback) {
+        mRongIMClient.getHistoryMessages(type, targetId, oldestMessageId, count, callback);
     }
 
     public void sendMessage(Message message) {
@@ -159,65 +148,6 @@ public class ChatManager {
         mRongIMClient.setMessageReceivedStatus(message.getMessageId(), status, null);
     }
 
-    public int getChatUnreadCount() {
-        return mUnreadChatMessageCount;
-    }
-
-    public void updateChatUnreadCount() {
-        mRongIMClient.getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
-            @Override
-            public void onSuccess(List<Conversation> conversations) {
-                if (conversations == null || conversations.size() == 0) {
-                    updateUnreadCount(0);
-                    return;
-                }
-                Iterator<Conversation> it = conversations.iterator();
-                while (it.hasNext()) {
-                    Conversation conversation = it.next();
-                    if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB) {
-                        it.remove();
-                    }
-                }
-                if (conversations.size() == 0) {
-                    updateUnreadCount(0);
-                    return;
-                }
-
-                Conversation[] conversationArray = new Conversation[conversations.size()];
-                conversations.toArray(conversationArray);
-                mRongIMClient.getTotalUnreadCount(new RongIMClient.ResultCallback<Integer>() {
-                    @Override
-                    public void onSuccess(Integer integer) {
-                        updateUnreadCount(integer);
-                    }
-
-                    @Override
-                    public void onError(RongIMClient.ErrorCode errorCode) {
-                        LogUtil.e(errorCode.getMessage());
-                    }
-                }, conversationArray);
-
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-
-            }
-
-            public void updateUnreadCount(int newCount) {
-                synchronized (mUpdateChatUnreadCountLock) {
-                    if (mUnreadChatMessageCount != newCount) {
-                        mUnreadChatMessageCount = newCount;
-                        for (OnChatMessageUnreadCountChangeListener listener : mChatMessageUnreadCountChangeListeners) {
-                            listener.onChatMessageUnreadCountChange(mUnreadChatMessageCount);
-                        }
-                    }
-                }
-            }
-        }, IMClient.SUPPORT_CONVERSATION_TYPE);
-
-    }
-
     public void addOnMessageReceiveListener(OnChatMessageReceiveListener listener, String conversationID) {
         if (!mMessageListenerMap.containsKey(listener)) {
             mMessageListenerMap.put(listener, conversationID);
@@ -238,30 +168,18 @@ public class ChatManager {
         mMessageSendStateChangeListenerMap.remove(listener);
     }
 
-    public void addChatMessageUnreadCountChangeListener(OnChatMessageUnreadCountChangeListener listener) {
-        if (!mChatMessageUnreadCountChangeListeners.contains(listener)) {
-            mChatMessageUnreadCountChangeListeners.add(listener);
-        }
-    }
-
-    public void removeChatMessageUnreadCountChangeListener(OnChatMessageUnreadCountChangeListener listener) {
-        mChatMessageUnreadCountChangeListeners.remove(listener);
-    }
-
     void destroy() {
         mMessageListenerMap.clear();
         mMessageSendStateChangeListenerMap.clear();
-        mChatMessageUnreadCountChangeListeners.clear();
         mMessageListenerMap = null;
         mMessageSendStateChangeListenerMap = null;
-        mChatMessageUnreadCountChangeListeners = null;
     }
 
     void onReceiveContactNotificationMessage(final Message message, final int untreatedCount) {
         if (mMessageListenerMap.size() == 0) {
             return;
         }
-        mCallbackHelper.runOnUiThread(new Runnable() {
+        mManagerHelper.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 OnChatMessageReceiveListener chatListener;
@@ -347,9 +265,6 @@ public class ChatManager {
         void onCanceled(Message message);
     }
 
-    public interface OnChatMessageUnreadCountChangeListener {
-        void onChatMessageUnreadCountChange(int count);
-    }
 
     public interface OnChatMessageReceiveListener {
         void onChatMessageReceived(Message message, int untreatedCount);

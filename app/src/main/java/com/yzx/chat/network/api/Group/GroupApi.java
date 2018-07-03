@@ -27,6 +27,9 @@ public interface GroupApi {
     @HttpApi(RequestType = RequestType.POST, url = "group/create")
     Call<JsonResponse<Void>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") String[] membersID);
 
+    @HttpApi(RequestType = RequestType.POST, url = "group/join")
+    Call<JsonResponse<Void>> join(@HttpParam("groupID") String groupName);
+
     @HttpApi(RequestType = RequestType.POST, url = "group/add")
     Call<JsonResponse<Void>> add(@HttpParam("groupID") String groupName, @HttpParam("members") String[] membersID);
 

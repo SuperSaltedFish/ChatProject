@@ -14,6 +14,7 @@ import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.network.chat.GroupManager;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -26,13 +27,11 @@ import java.util.List;
 import java.util.Locale;
 
 import io.rong.imlib.model.Conversation;
-import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
-import io.rong.message.NotificationMessage;
 import io.rong.message.StickerMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
@@ -92,8 +91,8 @@ public class IMMessageHelper {
         try {
             switch (message.getOperation()) {
                 case GroupManager.GROUP_OPERATION_CREATE:
-                    GroupManager.GroupMessageExtra.Created createExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Created.class);
-                    if (createExtra == null) {
+                    GroupManager.GroupMessageExtra.Created createExtra = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra.Created.class);
+                    if (createExtra == null || createExtra.group == null) {
                         break;
                     }
                     group = createExtra.group;
@@ -101,7 +100,11 @@ public class IMMessageHelper {
                     for (GroupMemberBean groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(group.getOwner())) {
-                            builder.insert(0, user.getNickname() + "邀请");
+                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                                builder.insert(0, "我邀请");
+                            } else {
+                                builder.insert(0, user.getNickname() + "邀请");
+                            }
                         } else {
                             if (!isFirst) {
                                 builder.append("、");
@@ -114,8 +117,8 @@ public class IMMessageHelper {
                     builder.append("加入群组");
                     return builder.toString();
                 case GroupManager.GROUP_OPERATION_ADD:
-                    GroupManager.GroupMessageExtra.Add addExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Add.class);
-                    if (addExtra == null) {
+                    GroupManager.GroupMessageExtra.Add addExtra = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra.Add.class);
+                    if (addExtra == null || addExtra.group == null || addExtra.membersID == null) {
                         break;
                     }
                     group = addExtra.group;
@@ -123,8 +126,12 @@ public class IMMessageHelper {
                     List<String> memberIDList = Arrays.asList(addExtra.membersID);
                     for (GroupMemberBean groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
-                        if (user.getUserID().equals(addExtra.operatorUserId)) {
-                            builder.insert(0, user.getNickname() + "邀请");
+                        if (user.getUserID().equals(addExtra.operatorUserID)) {
+                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                                builder.insert(0, "我邀请");
+                            } else {
+                                builder.insert(0, user.getNickname() + "邀请");
+                            }
                         } else if (memberIDList.contains(user.getUserID())) {
                             if (!isFirst) {
                                 builder.append("、");
@@ -136,35 +143,55 @@ public class IMMessageHelper {
                     }
                     builder.append("加入群组");
                     return builder.toString();
+                case GroupManager.GROUP_OPERATION_JOIN:
+                    GroupManager.GroupMessageExtra.Join joinExtra = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra.Join.class);
+                    if (joinExtra == null || joinExtra.group == null || joinExtra.memberID == null) {
+                        break;
+                    }
+                    group = joinExtra.group;
+                    for (GroupMemberBean groupMember : group.getMembers()) {
+                        user = groupMember.getUserProfile();
+                        if (user.getUserID().equals(joinExtra.memberID)) {
+                            return user.getNickname() + "通过扫描二维码加入了群组";
+                        }
+                    }
                 case GroupManager.GROUP_OPERATION_QUIT:
-                    GroupManager.GroupMessageExtra.Quit quitExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Quit.class);
-                    if (quitExtra == null) {
+                    GroupManager.GroupMessageExtra.Quit quitExtra = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra.Quit.class);
+                    if (quitExtra == null || quitExtra.member == null) {
                         break;
                     }
                     return quitExtra.member.getNicknameInGroup() + "退出了群组";
                 case GroupManager.GROUP_OPERATION_RENAME:
-                    GroupManager.GroupMessageExtra.Rename renameExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Rename.class);
-                    if (renameExtra == null) {
+                    GroupManager.GroupMessageExtra.Rename renameExtra = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra.Rename.class);
+                    if (renameExtra == null || renameExtra.group == null) {
                         break;
                     }
                     group = renameExtra.group;
                     for (GroupMemberBean groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
-                        if (user.getUserID().equals(renameExtra.operatorUserId)) {
-                            return groupMember.getNicknameInGroup() + "修改群名称为：" + renameExtra.name;
+                        if (user.getUserID().equals(renameExtra.operatorUserID)) {
+                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                                return "我修改群名称为" + group.getName();
+                            } else {
+                                return groupMember.getNicknameInGroup() + "修改群名称为" + group.getName();
+                            }
                         }
                     }
                     break;
                 case GroupManager.GROUP_OPERATION_BULLETIN:
-                    GroupManager.GroupMessageExtra.Bulletin bulletinExtra = GSON.fromJson(message.getMessage(), GroupManager.GroupMessageExtra.Bulletin.class);
-                    if (bulletinExtra == null) {
+                    GroupManager.GroupMessageExtra.Bulletin bulletinExtra = GSON.fromJson(message.getExtra(), GroupManager.GroupMessageExtra.Bulletin.class);
+                    if (bulletinExtra == null || bulletinExtra.group == null) {
                         break;
                     }
                     group = bulletinExtra.group;
                     for (GroupMemberBean groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
-                        if (user.getUserID().equals(bulletinExtra.operatorUserId)) {
-                            return groupMember.getNicknameInGroup() + "修改群公告为：" + bulletinExtra.bulletin;
+                        if (user.getUserID().equals(bulletinExtra.operatorUserID)) {
+                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                                return "我修改群公告为" + group.getNotice();
+                            } else {
+                                return groupMember.getNicknameInGroup() + "修改群公告为" + group.getNotice();
+                            }
                         }
                     }
                     break;

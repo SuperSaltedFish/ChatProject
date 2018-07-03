@@ -28,12 +28,12 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
     @Override
     public void save(ContactBean contact) {
-        IMClient.getInstance().contactManager().updateContactRemark(contact, null);
+        IMClient.getInstance().getContactManager().updateContactRemark(contact, null);
     }
 
     @Override
     public ArrayList<String> getAllTags() {
-        HashSet<String> tags = IMClient.getInstance().contactManager().getAllTags();
+        HashSet<String> tags = IMClient.getInstance().getContactManager().getAllTags();
         if(tags!=null&&tags.size()>0){
             return new ArrayList<>(tags);
         }else {

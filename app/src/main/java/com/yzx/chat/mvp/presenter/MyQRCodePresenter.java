@@ -58,7 +58,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
     @Override
     public UserBean getUserInfo() {
-        return IMClient.getInstance().userManager().getUser();
+        return IMClient.getInstance().getUserManager().getUser();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
         if (TextUtils.isEmpty(groupID)) {
             return null;
         }
-        return IMClient.getInstance().groupManager().getGroup(groupID);
+        return IMClient.getInstance().getGroupManager().getGroup(groupID);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                 isUpdating = false;
                 String id = response.getTempUserID();
                 if (!TextUtils.isEmpty(id)) {
-                    id = IMClient.getInstance().cryptoManager().aesEncryptToBase64(id.getBytes());
+                    id = IMClient.getInstance().getCryptoManager().aesEncryptToBase64(id.getBytes());
                     if (!TextUtils.isEmpty(id)) {
                         QRCodeContentBean qrCodeContent = new QRCodeContentBean();
                         qrCodeContent.setId(id);
@@ -138,7 +138,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                     qrCodeContent.setId(id);
                     qrCodeContent.setType(QRCodeContentBean.TYPE_GROUP);
                     String content = mGson.toJson(qrCodeContent);
-                    content = IMClient.getInstance().cryptoManager().aesEncryptToBase64(content.getBytes());
+                    content = IMClient.getInstance().getCryptoManager().aesEncryptToBase64(content.getBytes());
                     if (!TextUtils.isEmpty(content)) {
                         mMyQRCodeActivityView.showQRCode(content);
                         return;

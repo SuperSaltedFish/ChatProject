@@ -1,6 +1,5 @@
 package com.yzx.chat.mvp.presenter;
 
-import android.app.Activity;
 import android.os.Handler;
 
 import com.yzx.chat.bean.ContactBean;
@@ -12,8 +11,8 @@ import com.yzx.chat.mvp.view.activity.HomeActivity;
 import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ContactManager;
+import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
 
@@ -35,18 +34,18 @@ public class HomePresenter implements HomeContract.Presenter {
         mHomeView = view;
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
-        mIMClient.chatManager().addChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
-        mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
-        mIMClient.contactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.contactManager().addContactOperationListener(mOnContactOperationListener);
+        mIMClient.getConversationManager().addConversationUnreadCountListener(mOnConversationUnreadCountListener);
+        mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mIMClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
     }
 
     @Override
     public void detachView() {
-        mIMClient.chatManager().removeChatMessageUnreadCountChangeListener(mOnChatMessageUnreadCountChangeListener);
-        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.contactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.contactManager().removeContactOperationListener(mOnContactOperationListener);
+        mIMClient.getConversationManager().removeConversationUnreadCountListener(mOnConversationUnreadCountListener);
+        mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mIMClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mIMClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
         mIMClient = null;
@@ -56,15 +55,15 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
-        mHomeView.updateMessageUnreadBadge(mIMClient.chatManager().getChatUnreadCount());
-        mHomeView.updateContactUnreadBadge(mIMClient.contactManager().getContactUnreadCount());
-        mIMClient.chatManager().updateChatUnreadCount();
-        mIMClient.contactManager().updateContactUnreadCount();
+        mHomeView.updateMessageUnreadBadge(mIMClient.getConversationManager().getConversationUnreadCount());
+        mHomeView.updateContactUnreadBadge(mIMClient.getContactManager().getContactUnreadCount());
+        mIMClient.getConversationManager().updateChatUnreadCount();
+        mIMClient.getContactManager().updateContactUnreadCount();
     }
 
-    private final ChatManager.OnChatMessageUnreadCountChangeListener mOnChatMessageUnreadCountChangeListener = new ChatManager.OnChatMessageUnreadCountChangeListener() {
+    private final ConversationManager.OnConversationUnreadCountListener mOnConversationUnreadCountListener = new ConversationManager.OnConversationUnreadCountListener() {
         @Override
-        public void onChatMessageUnreadCountChange(final int count) {
+        public void OnConversationUnreadCountChange(final int count) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -98,13 +97,13 @@ public class HomePresenter implements HomeContract.Presenter {
                 public void run() {
                     switch (message.getConversationType()) {
                         case PRIVATE:
-                            ContactBean contact = IMClient.getInstance().contactManager().getContact(message.getTargetId());
+                            ContactBean contact = IMClient.getInstance().getContactManager().getContact(message.getTargetId());
                             if (contact != null) {
                                 NotificationHelper.getInstance().showPrivateMessageNotification(message, contact);
                             }
                             break;
                         case GROUP:
-                            GroupBean group = IMClient.getInstance().groupManager().getGroup(message.getTargetId());
+                            GroupBean group = IMClient.getInstance().getGroupManager().getGroup(message.getTargetId());
                             if (group != null) {
                                 NotificationHelper.getInstance().showGroupMessageNotification(message, group);
                             }

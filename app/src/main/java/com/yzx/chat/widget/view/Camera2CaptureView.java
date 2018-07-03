@@ -74,17 +74,21 @@ public class Camera2CaptureView extends Camera2PreviewView {
         recreateCaptureSession();
     }
 
-    public void startCapture(){
-        isCapturePrepared = true;
-        if(isPreviewing()){
-            refreshPreview();
+    public void startCapture() {
+        if (!isCapturePrepared) {
+            isCapturePrepared = true;
+            if (isPreviewing()) {
+                refreshPreview();
+            }
         }
     }
 
-    public void stopCapture(){
-        isCapturePrepared = false;
-        if(isPreviewing()){
-            refreshPreview();
+    public void stopCapture() {
+        if (isCapturePrepared) {
+            isCapturePrepared = false;
+            if (isPreviewing()) {
+                refreshPreview();
+            }
         }
     }
 
@@ -111,7 +115,7 @@ public class Camera2CaptureView extends Camera2PreviewView {
                 if (image != null) {
                     boolean isContinueCapture = true;
                     try {
-                        if(!isCapturePrepared){
+                        if (!isCapturePrepared) {
                             return;
                         }
                         if (mCaptureCallback != null) {

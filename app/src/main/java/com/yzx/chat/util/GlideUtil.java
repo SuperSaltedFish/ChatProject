@@ -11,6 +11,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.widget.view.GlideBlurTransform;
+import com.yzx.chat.widget.view.GlideHexagonTransform;
 
 /**
  * Created by YZX on 2017年05月23日.
@@ -19,7 +20,7 @@ import com.yzx.chat.widget.view.GlideBlurTransform;
 
 
 public class GlideUtil {
-
+    private static final GlideHexagonTransform HEXAGON_TRANSFORM = new GlideHexagonTransform();
 
     public static void loadFromUrl(Context context, ImageView view, Object url) {
         if (url == null || view == null) {
@@ -79,6 +80,7 @@ public class GlideUtil {
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
+                .transform(HEXAGON_TRANSFORM)
                 .format(DecodeFormat.PREFER_RGB_565)
                 .placeholder(R.drawable.ic_avatar_default)
                 .error(R.drawable.ic_avatar_default)

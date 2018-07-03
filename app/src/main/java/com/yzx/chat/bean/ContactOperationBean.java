@@ -13,7 +13,6 @@ public class ContactOperationBean implements Parcelable {
 
 
     private int indexID;
-    private String userID;
     private String type;
     private String reason;
     private UserBean mUser;
@@ -22,14 +21,14 @@ public class ContactOperationBean implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj==null||!(obj instanceof ContactOperationBean)){
+        if(!(obj instanceof ContactOperationBean)){
             return false;
         }
         if(this == obj){
             return true;
         }
         ContactOperationBean operation = (ContactOperationBean) obj;
-        return userID!=null&&userID.equals(operation.userID);
+        return mUser!=null&&mUser.equals(operation.getUser());
     }
 
     public int getIndexID() {
@@ -41,11 +40,7 @@ public class ContactOperationBean implements Parcelable {
     }
 
     public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
+        return mUser==null?null:mUser.getUserID();
     }
 
     public String getType() {
@@ -97,7 +92,6 @@ public class ContactOperationBean implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.indexID);
-        dest.writeString(this.userID);
         dest.writeString(this.type);
         dest.writeString(this.reason);
         dest.writeParcelable(this.mUser, flags);
@@ -110,7 +104,6 @@ public class ContactOperationBean implements Parcelable {
 
     protected ContactOperationBean(Parcel in) {
         this.indexID = in.readInt();
-        this.userID = in.readString();
         this.type = in.readString();
         this.reason = in.readString();
         this.mUser = in.readParcelable(UserBean.class.getClassLoader());

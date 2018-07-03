@@ -23,7 +23,7 @@ public class MyTagListPresenter implements MyTagListContract.Presenter {
 
     @Override
     public void loadAllTagList() {
-        mMyTagListView.showAllTags(IMClient.getInstance().contactManager().getAllTagAndMemberCount());
+        mMyTagListView.showAllTags(IMClient.getInstance().getContactManager().getAllTagAndMemberCount());
     }
 
 

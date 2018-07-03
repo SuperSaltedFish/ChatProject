@@ -28,14 +28,14 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     public void detachView() {
         mVideoPlayView = null;
         if (mCurrentDownloadMessage != null) {
-            IMClient.getInstance().chatManager().cancelDownloadMediaContent(mCurrentDownloadMessage);
+            IMClient.getInstance().getChatManager().cancelDownloadMediaContent(mCurrentDownloadMessage);
         }
     }
 
     @Override
     public void downloadVideo(Message message) {
         mCurrentDownloadMessage = message;
-        IMClient.getInstance().chatManager().downloadMediaContent(message, new com.yzx.chat.network.chat.DownloadCallback() {
+        IMClient.getInstance().getChatManager().downloadMediaContent(message, new com.yzx.chat.network.chat.DownloadCallback() {
             @Override
             public void onSuccess(Message message, Uri localUri) {
                 mCurrentDownloadMessage = null;

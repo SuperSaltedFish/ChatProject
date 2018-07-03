@@ -74,13 +74,12 @@
 
     </FrameLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/ChatAdapter_mIvListenedState"
         android:layout_width="8dp"
         android:layout_height="8dp"
         android:elevation="1dp"
         android:src="@color/red"
-        app:civ_border_width="0dp"
         app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mContentLayout" />

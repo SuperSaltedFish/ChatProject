@@ -23,6 +23,7 @@ import com.yzx.chat.mvp.contract.CreateGroupContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.mvp.presenter.CreateGroupPresenter;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.view.FlowLayout;
@@ -33,7 +34,6 @@ import com.yzx.chat.widget.view.ProgressDialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.rong.imlib.model.Conversation;
 
 /**
@@ -76,7 +76,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mTvIndexBarHint = findViewById(R.id.CreateGroupActivity_mTvIndexBarHint);
         mHeaderView = getLayoutInflater().inflate(R.layout.item_create_group_header, (ViewGroup) getWindow().getDecorView(), false);
         mFlowLayout = mHeaderView.findViewById(R.id.CreateGroupActivity_mFlowLayout);
-        mAllContactList = IMClient.getInstance().contactManager().getAllContacts();
+        mAllContactList = IMClient.getInstance().getContactManager().getAllContacts();
         if (mAllContactList == null) {
             return;
         }
@@ -203,16 +203,17 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         public void onItemSelectedChange(int position, boolean isSelect) {
             if (isSelect) {
                 mSelectedContactList.add(mAllContactList.get(position - 1));
-                CircleImageView avatar = new CircleImageView(CreateGroupActivity.this);
+                ImageView avatar = new ImageView(CreateGroupActivity.this);
                 avatar.setId(position);
                 avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                avatar.setImageResource(R.drawable.temp_head_image);
+                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this,avatar,mFilterContactList.get(position-1).getUserProfile().getAvatar());
                 mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidUtil.dip2px(40), (int) AndroidUtil.dip2px(40)));
             } else {
                 mSelectedContactList.remove(mAllContactList.get(position - 1));
-                View needRemoveView = mFlowLayout.findViewById(position);
+                ImageView needRemoveView = mFlowLayout.findViewById(position);
                 if (needRemoveView != null) {
                     mFlowLayout.removeView(needRemoveView);
+                    GlideUtil.clear(CreateGroupActivity.this,needRemoveView);
                 }
             }
             mConfirmMenuItem.setEnabled(mSelectedContactList.size() > 0);
@@ -283,12 +284,12 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
     @Override
     public void launchChatActivity(GroupBean group) {
+        AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
         mProgressDialog.dismiss();
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.GROUP.getValue());
         startActivity(intent);
-        AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
 
     }
 

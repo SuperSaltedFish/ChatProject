@@ -47,16 +47,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mIMClient.addConnectionListener(mOnConnectionStateChangeListener);
-        mIMClient.chatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
-        mIMClient.conversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        mIMClient.getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
         mIMClient.removeConnectionListener(mOnConnectionStateChangeListener);
-        mIMClient.chatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.conversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
+        mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mIMClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
+        mIMClient.getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
@@ -74,18 +76,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void setConversationTop(Conversation conversation, boolean isTop) {
-        mIMClient.conversationManager().setConversationTop(conversation, isTop);
+        mIMClient.getConversationManager().setConversationTop(conversation.getConversationType(),conversation.getTargetId(), isTop);
     }
 
 
     @Override
     public void deleteConversation(Conversation conversation) {
-        mIMClient.conversationManager().removeConversation(conversation);
+        mIMClient.getConversationManager().removeConversation(conversation.getConversationType(),conversation.getTargetId());
     }
 
     @Override
     public void clearConversationMessages(Conversation conversation) {
-        mIMClient.conversationManager().clearAllConversationMessages(conversation);
+        mIMClient.getConversationManager().clearAllConversationMessages(conversation.getConversationType(),conversation.getTargetId());
     }
 
     @Override
@@ -147,6 +149,48 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
     };
 
+    private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
+        @Override
+        public void onCreatedGroup(GroupBean group) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onQuitGroup(GroupBean group) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onBulletinChange(GroupBean group) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onNameChange(GroupBean group) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onMemberJoin(GroupBean group, String memberID) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+            refreshAllConversations();
+        }
+
+        @Override
+        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+
+        }
+    };
+
     private static class RefreshAllConversationTask extends BackstageAsyncTask<ConversationPresenter, List<Conversation>, DiffUtil.DiffResult> {
 
         RefreshAllConversationTask(ConversationPresenter lifeCycleDependence) {
@@ -158,7 +202,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             synchronized (ConversationPresenter.class) {
                 IMClient chatManager = IMClient.getInstance();
                 List<Conversation> oldConversationList = oldConversation[0];
-                List<Conversation> newConversationList = chatManager.conversationManager().getAllConversations();
+                List<Conversation> newConversationList = chatManager.getConversationManager().getAllConversations();
                 if (newConversationList != null) {
                     String conversationID;
                     Iterator<Conversation> it = newConversationList.iterator();
@@ -166,27 +210,27 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         Conversation conversation = it.next();
                         conversationID = conversation.getTargetId();
                         if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
-                            chatManager.conversationManager().clearConversationUnreadStatus(conversation);
+                            chatManager.getConversationManager().clearConversationUnreadStatus(conversation.getConversationType(),conversation.getTargetId());
                             conversation.setUnreadMessageCount(0);
                         }
                         switch (conversation.getConversationType()) {
                             case PRIVATE:
-                                ContactBean contactBean = chatManager.contactManager().getContact(conversationID);
+                                ContactBean contactBean = chatManager.getContactManager().getContact(conversationID);
                                 if (contactBean != null) {
                                     conversation.setConversationTitle(contactBean.getName());
                                     conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
                                 } else {
-                                    IMClient.getInstance().conversationManager().removeConversation(conversation, false);
+                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(),conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;
                             case GROUP:
-                                GroupBean group = chatManager.groupManager().getGroup(conversationID);
+                                GroupBean group = chatManager.getGroupManager().getGroup(conversationID);
                                 if (group != null) {
                                     conversation.setConversationTitle(group.getName());
                                     conversation.setPortraitUrl(group.getAvatarUrlFromMember());
                                 } else {
-                                    IMClient.getInstance().conversationManager().removeConversation(conversation, false);
+                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(),conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;
@@ -211,6 +255,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                             return false;
                         }
                         if (!oldItem.getConversationTitle().equals(newItem.getConversationTitle())) {
+                            return false;
+                        }
+                        if (!oldItem.getNotificationStatus().equals(newItem.getNotificationStatus())) {
                             return false;
                         }
                         String oldDraft = oldItem.getDraft();

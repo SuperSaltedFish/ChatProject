@@ -36,13 +36,13 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mContactOperationList = new ArrayList<>(32);
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
-        mIMClient.contactManager().addContactOperationListener(mOnContactOperationListener);
+        mIMClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
     }
 
     @Override
     public void detachView() {
         AsyncUtil.cancelTask(mLoadAllContactOperationTask);
-        mIMClient.contactManager().removeContactOperationListener(mOnContactOperationListener);
+        mIMClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
         mContactOperationContractView = null;
@@ -51,14 +51,15 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void init() {
-        mIMClient.contactManager().makeAllContactOperationAsRead();
+        mIMClient.getContactManager().makeAllContactOperationAsRead();
         loadAllContactOperation();
+
     }
 
     @Override
     public void acceptContactRequest(final ContactOperationBean contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
-        mIMClient.contactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
+        mIMClient.getContactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
@@ -74,7 +75,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void removeContactOperation(ContactOperationBean ContactOperation) {
-        mIMClient.contactManager().removeContactOperationAsync(ContactOperation);
+        mIMClient.getContactManager().removeContactOperationAsync(ContactOperation);
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +95,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         public void onContactOperationReceive(final ContactOperationBean message) {
-            mIMClient.contactManager().makeAllContactOperationAsRead();
+            mIMClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -150,7 +151,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ContactOperationBean>[] lists) {
             List<ContactOperationBean> oldList = lists[0];
-            List<ContactOperationBean> newList = IMClient.getInstance().contactManager().loadAllContactOperation();
+            List<ContactOperationBean> newList = IMClient.getInstance().getContactManager().loadAllContactOperation();
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactOperationBean>(lists[0], newList) {
                 @Override
                 public boolean isItemEquals(ContactOperationBean oldItem, ContactOperationBean newItem) {

@@ -45,6 +45,8 @@ import com.yzx.chat.widget.view.ProgressDialog;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
+import io.rong.imlib.model.Conversation;
+
 
 public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Presenter> implements QrCodeScanContract.View {
 
@@ -271,6 +273,15 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     public void startContactProfileActivity(String contactID) {
         Intent intent = new Intent(this, ContactProfileActivity.class);
         intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contactID);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void startGroupChatActivity(String groupID) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.GROUP.getValue());
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, groupID);
         startActivity(intent);
         finish();
     }

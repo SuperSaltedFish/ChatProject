@@ -36,7 +36,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     public void attachView(CreateGroupContract.View view) {
         mCreateGroupView = view;
         mHandler = new Handler();
-        mGroupManager = IMClient.getInstance().groupManager();
+        mGroupManager = IMClient.getInstance().getGroupManager();
         mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
     }
 
@@ -65,7 +65,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             stringBuilder.append("、");
             membersID[i] = user.getUserID();
         }
-        stringBuilder.append(IMClient.getInstance().userManager().getUser().getNickname()).append("的群聊");
+        stringBuilder.append(IMClient.getInstance().getUserManager().getUser().getNickname()).append("的群聊");
 
         mGroupManager.createGroup(stringBuilder.toString(), membersID, new ResultCallback<Void>() {
             @Override
@@ -122,7 +122,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
         public void onCreatedGroup(GroupBean group) {
-            if (isCreating && group.getOwner().equals(IMClient.getInstance().userManager().getUserID())) {
+            if (group.getOwner().equals(IMClient.getInstance().getUserManager().getUserID())) {
                 mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
                 isCreating = false;
@@ -135,22 +135,27 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
 
         @Override
-        public void onBulletinChange(GroupBean group, String newBulletin) {
+        public void onBulletinChange(GroupBean group) {
 
         }
 
         @Override
-        public void onNameChange(GroupBean group, String newName) {
+        public void onNameChange(GroupBean group) {
 
         }
 
         @Override
         public void onMemberAdded(GroupBean group, String[] newMembersID) {
-            if (isAdding && Arrays.equals(mAddingMembersID, newMembersID)) {
+            if (Arrays.equals(mAddingMembersID, newMembersID)) {
                 mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
                 isCreating = false;
             }
+        }
+
+        @Override
+        public void onMemberJoin(GroupBean group, String memberID) {
+
         }
 
         @Override

@@ -50,7 +50,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
     }
 
     private void saveComplete(String imagePath) {
-        IMClient.getInstance().userManager().uploadAvatar(imagePath, new ResultCallback<UploadAvatarBean>() {
+        IMClient.getInstance().getUserManager().uploadAvatar(imagePath, new ResultCallback<UploadAvatarBean>() {
             @Override
             public void onSuccess(UploadAvatarBean result) {
                 mHandler.post(new Runnable() {

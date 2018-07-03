@@ -1,6 +1,7 @@
 package com.yzx.chat.widget.adapter;
 
 import android.support.text.emoji.EmojiCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,8 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.tool.IMMessageHelper;
-import com.yzx.chat.widget.view.BadgeImageView;
+import com.yzx.chat.widget.view.BadgeView;
+import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import java.util.List;
 
@@ -55,19 +57,16 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         } else {
             avatarList = avatarUri.split(",");
         }
-        holder.mBadgeImageView.setImageUrlList(avatarList);
 
-        int unreadMsgCount = conversation.getUnreadMessageCount();
-        if (unreadMsgCount > 0) {
-            if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY) {
-                holder.mBadgeImageView.setBadgeText(unreadMsgCount);
-                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW);
-            } else {
-                holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_SHOW_ONLY_SMALL_BACKGROUND);
-            }
+        holder.mIvAvatar.setImageUrlList(avatarList);
+
+        holder.mTvBadge.setBadgeNumber(conversation.getUnreadMessageCount());
+        if (conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY) {
+            holder.mTvBadge.setBadgeBackgroundColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
         } else {
-            holder.mBadgeImageView.setBadgeMode(BadgeImageView.MODE_HIDE);
+            holder.mTvBadge.setBadgeBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAccentLight));
         }
+
     }
 
     @Override
@@ -83,17 +82,19 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     static class ConversationHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
-        BadgeImageView mBadgeImageView;
+        NineGridAvatarView mIvAvatar;
         TextView mTvName;
         TextView mTvLastRecord;
         TextView mTvTime;
+        BadgeView mTvBadge;
 
         ConversationHolder(View itemView) {
             super(itemView);
-            mBadgeImageView = itemView.findViewById(R.id.ConversationAdapter_mIvAvatar);
+            mIvAvatar = itemView.findViewById(R.id.ConversationAdapter_mIvAvatar);
             mTvName = itemView.findViewById(R.id.ConversationAdapter_mTvName);
             mTvLastRecord = itemView.findViewById(R.id.ConversationAdapter_mTvLastMessage);
             mTvTime = itemView.findViewById(R.id.ConversationAdapter_mTvTime);
+            mTvBadge = itemView.findViewById(R.id.ConversationAdapter_mTvBadge);
         }
 
     }

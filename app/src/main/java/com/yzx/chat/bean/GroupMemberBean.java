@@ -18,8 +18,10 @@ public class GroupMemberBean implements Parcelable {
     public String getNicknameInGroup() {
         if (!TextUtils.isEmpty(alias)) {
             return alias;
-        } else {
+        } else if(userProfile!=null){
             return userProfile.getNickname();
+        }else {
+            return "";
         }
     }
 

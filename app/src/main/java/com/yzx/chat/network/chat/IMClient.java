@@ -56,10 +56,7 @@ import io.rong.imlib.model.Message;
  */
 
 
-public class IMClient {
-
-    static final Conversation.ConversationType[] SUPPORT_CONVERSATION_TYPE = {Conversation.ConversationType.PRIVATE, Conversation.ConversationType.GROUP};
-
+public class IMClient implements IManagerHelper {
 
     private static IMClient sIMClient;
     private static Context sAppContext;
@@ -94,12 +91,6 @@ public class IMClient {
 
     private IMClient() {
         mRongIMClient = RongIMClient.getInstance();
-        RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
-        RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
-        try {
-            RongIMClient.registerMessageType(VideoMessage.class);
-        } catch (AnnotationNotFoundException ignored) {
-        }
         mUiHandler = new Handler(Looper.getMainLooper());
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
         mWorkExecutor = new ThreadPoolExecutor(
@@ -107,6 +98,13 @@ public class IMClient {
                 2,
                 30, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(32));
+
+        RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
+        RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+        try {
+            RongIMClient.registerMessageType(VideoMessage.class);
+        } catch (AnnotationNotFoundException ignored) {
+        }
     }
 
 
@@ -269,8 +267,8 @@ public class IMClient {
                     }
 
                     private void success(boolean isConnectedToServer) {
-                        mChatManager = new ChatManager(mCallbackHelper);
-                        mConversationManager = new ConversationManager(mCallbackHelper);
+                        mChatManager = new ChatManager(IMClient.this);
+                        mConversationManager = new ConversationManager();
                         latch.countDown();
                     }
 
@@ -313,16 +311,23 @@ public class IMClient {
         if (mCryptoManager == null) {
             return false;
         }
-        mContactManager = new ContactManager(mCallbackHelper, mDBHelper.getReadWriteHelper());
-        mGroupManager = new GroupManager(mCallbackHelper, mDBHelper.getReadWriteHelper());
-        mChatManager = new ChatManager(mCallbackHelper);
-        mConversationManager = new ConversationManager(mCallbackHelper);
+        mContactManager = new ContactManager(this);
+        mGroupManager = new GroupManager(this);
+        mChatManager = new ChatManager(this);
+        mConversationManager = new ConversationManager();
         return true;
     }
 
     public synchronized void logout() {
         isLogged = false;
         mRongIMClient.logout();
+        if(mUiHandler!=null){
+            mUiHandler.removeCallbacksAndMessages(null);
+            mUiHandler = null;
+        }
+        if(mWorkExecutor!=null){
+            mWorkExecutor.getQueue().clear();
+        }
         if (mChatManager != null) {
             mChatManager.destroy();
             mChatManager = null;
@@ -360,28 +365,50 @@ public class IMClient {
         return mRongIMClient.getCurrentConnectionStatus() == RongIMClient.ConnectionStatusListener.ConnectionStatus.CONNECTED;
     }
 
-    public UserManager userManager() {
-        return mUserManager;
-    }
 
-    public ChatManager chatManager() {
+    @Override
+    public ChatManager getChatManager() {
         return mChatManager;
     }
 
-    public ContactManager contactManager() {
+    @Override
+    public ContactManager getContactManager() {
         return mContactManager;
     }
 
-    public GroupManager groupManager() {
+    @Override
+    public GroupManager getGroupManager() {
         return mGroupManager;
     }
 
-    public ConversationManager conversationManager() {
+    @Override
+    public ConversationManager getConversationManager() {
         return mConversationManager;
     }
 
-    public CryptoManager cryptoManager() {
+    @Override
+    public UserManager getUserManager() {
+        return mUserManager;
+    }
+
+    @Override
+    public CryptoManager getCryptoManager() {
         return mCryptoManager;
+    }
+
+    @Override
+    public AbstractDao.ReadWriteHelper getReadWriteHelper() {
+       return mDBHelper.getReadWriteHelper();
+    }
+
+    @Override
+    public void runOnUiThread(Runnable runnable) {
+        mUiHandler.post(runnable);
+    }
+
+    @Override
+    public void runOnWorkThread(Runnable runnable) {
+        mWorkExecutor.execute(runnable);
     }
 
     public void addConnectionListener(OnConnectionStateChangeListener listener) {
@@ -398,89 +425,6 @@ public class IMClient {
     public void removeConnectionListener(OnConnectionStateChangeListener listener) {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
-
-
-    private final CallbackHelper mCallbackHelper = new CallbackHelper() {
-        @Override
-        public void callChatManager(int callbackCode, Object arg) {
-
-        }
-
-        @Override
-        public void callConversationManager(int code, Object arg) {
-            switch (code) {
-                case ConversationManager.CALLBACK_CODE_UPDATE_UNREAD:
-                    mChatManager.updateChatUnreadCount();
-                    break;
-                case ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_PRIVATE:
-                    String contactID = (String) arg;
-                    if (!TextUtils.isEmpty(contactID)) {
-                        Conversation conversation = mConversationManager.getConversation(Conversation.ConversationType.PRIVATE, contactID);
-                        if (conversation != null) {
-                            mConversationManager.removeConversation(conversation, false);
-                            mConversationManager.clearAllConversationMessages(conversation);
-                        }
-                    }
-                    break;
-                case ConversationManager.CALLBACK_CODE_ClEAR_AND_REMOVE_GROUP:
-                    String groupID = (String) arg;
-                    if (!TextUtils.isEmpty(groupID)) {
-                        Conversation conversation = mConversationManager.getConversation(Conversation.ConversationType.GROUP, groupID);
-                        if (conversation != null) {
-                            mConversationManager.removeConversation(conversation, false);
-                            mConversationManager.clearAllConversationMessages(conversation);
-                        }
-                    }
-                    break;
-                case ConversationManager.CALLBACK_CODE_UPDATE_PRIVATE:
-                    ContactBean contact = (ContactBean) arg;
-                    Conversation privateConversation = mConversationManager.getConversation(Conversation.ConversationType.PRIVATE, contact.getUserProfile().getUserID());
-                    if (privateConversation != null) {
-                        privateConversation.setConversationTitle(contact.getName());
-                        mConversationManager.updateConversation(privateConversation, null);
-                    }
-                    break;
-                case ConversationManager.CALLBACK_CODE_UPDATE_GROUP:
-                    GroupBean group = (GroupBean) arg;
-                    Conversation groupConversation = mConversationManager.getConversation(Conversation.ConversationType.GROUP, group.getGroupID());
-                    if (groupConversation != null) {
-                        groupConversation.setConversationTitle(group.getName());
-                        mConversationManager.updateConversation(groupConversation, null);
-                    }
-                    break;
-            }
-        }
-
-        @Override
-        public void callContactManager(int code, Object arg) {
-
-        }
-
-        @Override
-        public void callGroupManager(int code, Object arg) {
-
-        }
-
-        @Override
-        public AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper() {
-            return mDBHelper.getReadWriteHelper();
-        }
-
-        @Override
-        public String getCurrentUserID() {
-            return mUserManager.getUserID();
-        }
-
-        @Override
-        public void runOnBackgroundThread(Runnable runnable) {
-            mWorkExecutor.execute(runnable);
-        }
-
-        @Override
-        public void runOnUiThread(Runnable runnable) {
-            mUiHandler.post(runnable);
-        }
-    };
 
     private final RongIMClient.ConnectionStatusListener mConnectionStatusListener = new RongIMClient.ConnectionStatusListener() {
 
@@ -522,7 +466,7 @@ public class IMClient {
                     break;
             }
             if (i == 0) {
-                mChatManager.updateChatUnreadCount();
+                mConversationManager.updateChatUnreadCount();
                 mContactManager.updateContactUnreadCount();
             }
             return true;
@@ -535,25 +479,6 @@ public class IMClient {
 
         void onDisconnected(String reason);
 
-    }
-
-    interface CallbackHelper {
-
-        void callChatManager(int callbackCode, Object arg);
-
-        void callConversationManager(int callbackCode, Object arg);
-
-        void callContactManager(int callbackCode, Object arg);
-
-        void callGroupManager(int callbackCode, Object arg);
-
-        AbstractDao.ReadWriteHelper getDatabaseReadWriteHelper();
-
-        String getCurrentUserID();
-
-        void runOnBackgroundThread(Runnable runnable);
-
-        void runOnUiThread(Runnable runnable);
     }
 }
 

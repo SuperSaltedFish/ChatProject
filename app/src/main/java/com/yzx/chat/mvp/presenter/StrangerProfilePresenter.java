@@ -29,19 +29,19 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void requestContact(final UserBean user, final String verifyContent) {
-        IMClient.getInstance().contactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
+        IMClient.getInstance().getContactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
     }
 
     @Override
     public void acceptContactRequest(ContactOperationBean contactOperation) {
         mStrangerProfileView.setEnableProgressDialog(true);
-        IMClient.getInstance().contactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
+        IMClient.getInstance().getContactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
     }
 
-    private final ResultCallback mAcceptOrRequestCallback = new ResultCallback<Boolean>() {
+    private final ResultCallback<Void> mAcceptOrRequestCallback = new ResultCallback<Void>() {
 
         @Override
-        public void onSuccess(Boolean result) {
+        public void onSuccess(Void result) {
             mStrangerProfileView.setEnableProgressDialog(false);
             mStrangerProfileView.goBack();
         }

@@ -1,6 +1,7 @@
 package com.yzx.chat.mvp.view.activity;
 
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -116,11 +117,18 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     private void setData() {
-        UserBean user = IMClient.getInstance().userManager().getUser();
+        UserBean user = IMClient.getInstance().getUserManager().getUser();
         mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
     }
 
-
+    @Override
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+        super.onRequestPermissionsResult(requestCode, isSuccess);
+        if(isSuccess){
+            Intent intent = new Intent(FindNewContactActivity.this, QrCodeScanActivity.class);
+            startActivity(intent);
+        }
+    }
 
     private final View.OnClickListener mOnMyPhoneClickListener = new View.OnClickListener() {
         @Override
@@ -141,7 +149,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     private final View.OnClickListener mOnScanLayoutClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA},0);
         }
     };
 

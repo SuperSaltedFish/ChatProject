@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Toast;
 
 import com.yzx.chat.util.Camera2Helper;
 import com.yzx.chat.util.LogUtil;
@@ -99,7 +100,7 @@ public class Camera2PreviewView extends AutoFitTextureView implements TextureVie
     }
 
     public void recoverPreview() {
-        if (!isPreviewing() && mCamera2Helper.isAllowRepeatingRequest()) {
+        if (!isPreviewing() && mCamera2Helper != null && mCamera2Helper.isAllowRepeatingRequest()) {
             mCamera2Helper.recoverPreview();
             callbackPreviewListener(true);
         }

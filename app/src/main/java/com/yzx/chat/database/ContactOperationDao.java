@@ -33,7 +33,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                    + COLUMN_NAME_ContactID + "  TEXT NOT NULL,"
+                    + COLUMN_NAME_ContactID + "  TEXT NOT NULL CHECK("+COLUMN_NAME_ContactID+"!=''),"
                     + COLUMN_NAME_Type + " TEXT NOT NULL,"
                     + COLUMN_NAME_Reason + " TEXT,"
                     + COLUMN_NAME_IsRemind + " INTEGER,"
@@ -57,22 +57,6 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
         mReadWriteHelper.closeReadableDatabase();
         return contactList;
     }
-
-
-//    public synchronized List<ContactOperationBean> loadMoreContactOperation(int startID, int count) {
-//        if (count <= 0) {
-//            return null;
-//        }
-//        SQLiteDatabase database = mHelper.openReadableDatabase();
-//        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " LEFT OUTER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID + " AND " + COLUMN_NAME_RowID + "<?" + " ORDER BY " + COLUMN_NAME_RowID + " DESC limit ?", new String[]{String.valueOf(startID), String.valueOf(count)});
-//        List<ContactOperationBean> contactList = new ArrayList<>(cursor.getCount());
-//        while (cursor.moveToNext()) {
-//            contactList.add(toEntity(cursor));
-//        }
-//        cursor.close();
-//        mHelper.closeReadableDatabase();
-//        return contactList;
-//    }
 
     public synchronized int loadRemindCount() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
@@ -124,7 +108,6 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
     @Override
     protected ContactOperationBean toEntity(Cursor cursor) {
         ContactOperationBean bean = new ContactOperationBean();
-        bean.setUserID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_ContactID)));
         bean.setType(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Type)));
         bean.setReason(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Reason)));
         bean.setRemind(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_IsRemind)) == 1);

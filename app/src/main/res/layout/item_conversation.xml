@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="68dp"
+    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:paddingEnd="12dp"
+    android:paddingStart="12dp">
 
-    <com.yzx.chat.widget.view.BadgeImageView
+    <com.yzx.chat.widget.view.NineGridAvatarView
         android:id="@+id/ConversationAdapter_mIvAvatar"
         android:layout_width="52dp"
         android:layout_height="52dp"
-        android:layout_marginStart="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +37,6 @@
         android:id="@+id/ConversationAdapter_mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginEnd="12dp"
         android:gravity="center_vertical"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mTvName"
@@ -56,9 +55,18 @@
         android:paddingStart="8dp"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mIvAvatar"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ConversationAdapter_mTvBadge"
         app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvAvatar"
         app:layout_constraintTop_toBottomOf="@id/ConversationAdapter_mTvName" />
+
+    <com.yzx.chat.widget.view.BadgeView
+        android:id="@+id/ConversationAdapter_mTvBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mTvLastMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mTvLastMessage" />
 
 
 </android.support.constraint.ConstraintLayout>

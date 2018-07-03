@@ -17,11 +17,11 @@ import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpRequest;
-import com.yzx.chat.network.framework.RequestType;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -54,13 +54,13 @@ public class ApiHelper {
         public String paramsToString(HttpRequest httpRequest) {
             Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
             LogUtil.e("开始访问：" + httpRequest.url());
-            if (params == null || params.size() == 0) {
-                return null;
+            if (params == null) {
+                params = new HashMap<>(0);
             }
             JsonRequest request = new JsonRequest();
             request.setParams(params);
             request.setStatus(200);
-            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().userManager().getToken() : null);
+            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().getUserManager().getToken() : null);
             String json = sGson.toJson(request);
             LogUtil.e("request: " + json);
 //            if (json != null) {
@@ -84,7 +84,7 @@ public class ApiHelper {
             }
             JsonRequest request = new JsonRequest();
             request.setStatus(200);
-            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().userManager().getToken() : null);
+            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().getUserManager().getToken() : null);
             String json = sGson.toJson(request);
             LogUtil.e("request: " + json);
             httpParams.put("params", json);

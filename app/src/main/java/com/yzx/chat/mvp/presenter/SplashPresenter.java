@@ -88,6 +88,6 @@ public class SplashPresenter implements SplashContract.Presenter {
 
 
     private void initDirectory() {
-        DirectoryHelper.initUserDirectory(IMClient.getInstance().userManager().getUserID());
+        DirectoryHelper.initUserDirectory(IMClient.getInstance().getUserManager().getUserID());
     }
 }
