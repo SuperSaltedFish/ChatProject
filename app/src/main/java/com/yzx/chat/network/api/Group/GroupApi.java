@@ -1,10 +1,15 @@
 package com.yzx.chat.network.api.Group;
 
+import android.support.annotation.StringDef;
+
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpApi;
 import com.yzx.chat.network.framework.HttpParam;
 import com.yzx.chat.network.framework.RequestType;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 /**
@@ -14,6 +19,15 @@ import com.yzx.chat.network.framework.RequestType;
 
 
 public interface GroupApi {
+
+    public final static String JOIN_TYPE_QR_CODE = "QrCode";
+    public final static String JOIN_TYPE_DEFAULT = "Default";
+
+    @StringDef({JOIN_TYPE_QR_CODE, JOIN_TYPE_DEFAULT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface JoinType {
+    }
+
 
     @HttpApi(RequestType = RequestType.POST, url = "group/rename")
     Call<JsonResponse<Void>> rename(@HttpParam("groupID") String groupID, @HttpParam("name") String newName);
@@ -28,7 +42,7 @@ public interface GroupApi {
     Call<JsonResponse<Void>> createGroup(@HttpParam("name") String groupName, @HttpParam("members") String[] membersID);
 
     @HttpApi(RequestType = RequestType.POST, url = "group/join")
-    Call<JsonResponse<Void>> join(@HttpParam("groupID") String groupName);
+    Call<JsonResponse<Void>> join(@HttpParam("groupID") String groupName, @HttpParam("joinType") @JoinType String joinType);
 
     @HttpApi(RequestType = RequestType.POST, url = "group/add")
     Call<JsonResponse<Void>> add(@HttpParam("groupID") String groupName, @HttpParam("members") String[] membersID);

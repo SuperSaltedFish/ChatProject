@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.message.GroupNotificationMessage;
 
@@ -120,9 +121,9 @@ public class GroupManager {
         mNetworkExecutor.submit(mCreateGroupCall);
     }
 
-    public void joinGroup(String groupID, ResultCallback<Void> resultCallback) {
+    public void joinGroup(String groupID,@GroupApi.JoinType String joinType, ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mJoinGroupCall);
-        mJoinGroupCall = mGroupApi.join(groupID);
+        mJoinGroupCall = mGroupApi.join(groupID,joinType);
         mJoinGroupCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
         mNetworkExecutor.submit(mJoinGroupCall);
     }
@@ -252,6 +253,7 @@ public class GroupManager {
                             break;
                         }
                         if (quitExtra.member.getUserProfile().getUserID().equals(mManagerHelper.getUserManager().getUserID())) {
+                            mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.GROUP,quitExtra.group.getGroupID());
                             for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
                                 listener.onQuitGroup(quitExtra.group);
                             }

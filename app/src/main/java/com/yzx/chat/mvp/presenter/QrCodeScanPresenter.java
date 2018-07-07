@@ -12,6 +12,7 @@ import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.bean.QRCodeContentBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.QrCodeScanContract;
+import com.yzx.chat.network.api.Group.GroupApi;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.GroupManager;
@@ -106,7 +107,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     private void joinGroup(String groupID) {
         mHandler.removeCallbacksAndMessages(null);
         isWaitJoiningPush = true;
-        IMClient.getInstance().getGroupManager().joinGroup(groupID, new ResultCallback<Void>() {
+        IMClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 if (isWaitJoiningPush) {
