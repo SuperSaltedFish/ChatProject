@@ -71,7 +71,7 @@ public class RecorderButton extends android.support.v7.widget.AppCompatImageView
     }
 
     private void setDefault() {
-        mArcWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 8, mContext.getResources().getDisplayMetrics());
+        mArcWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, mContext.getResources().getDisplayMetrics());
         mProgressArcInsideColor = Color.WHITE;
         TypedValue value = new TypedValue();
         mContext.getTheme().resolveAttribute(R.attr.colorAccent, value, true);

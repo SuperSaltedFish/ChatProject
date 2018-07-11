@@ -1,5 +1,6 @@
 package com.yzx.chat.base;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -10,6 +11,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.lang.reflect.ParameterizedType;
@@ -35,6 +38,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     public Context mContext;
     protected View mParentView;
+    protected InputMethodManager mInputManager;
     private boolean isOnceVisible;
 
 
@@ -104,6 +108,31 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
 
     protected void onFirstVisible() {
+    }
+
+
+    public void showSoftKeyboard(View focusView) {
+        if(mContext!=null) {
+            if (mInputManager == null) {
+                mInputManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            }
+            focusView.requestFocus();
+            mInputManager.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    public void hideSoftKeyboard() {
+        if(mContext!=null&&mContext instanceof Activity) {
+            Activity activity = (Activity) mContext;
+            if (mInputManager == null) {
+                mInputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            }
+
+            if (activity.getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+                if (activity.getCurrentFocus() != null)
+                    mInputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
     }
 
     protected void showToast(String content) {

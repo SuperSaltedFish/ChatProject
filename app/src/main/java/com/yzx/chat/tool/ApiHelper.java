@@ -2,6 +2,7 @@ package com.yzx.chat.tool;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,12 +13,15 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.network.api.JsonRequest;
+import com.yzx.chat.network.chat.CryptoManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.HttpDataFormatAdapter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpRequest;
+import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.RSAUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -45,6 +49,52 @@ public class ApiHelper {
 
     public static Gson getDefaultGsonInstance() {
         return sGson;
+    }
+
+    public static HttpDataFormatAdapter getRsaHttpDataFormatAdapter(final String publicRsaKey) {
+        if (TextUtils.isEmpty(publicRsaKey)) {
+            return null;
+        }
+        return new HttpDataFormatAdapter() {
+            @Nullable
+            @Override
+            public String paramsToString(HttpRequest httpRequest) {
+                Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
+                LogUtil.e("开始访问：" + httpRequest.url());
+                JsonRequest request = new JsonRequest();
+                request.setParams(params);
+                request.setStatus(200);
+                String json = sGson.toJson(request);
+                LogUtil.e("request: " + json);
+                byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), Base64Util.decode(publicRsaKey.getBytes()));
+                json = Base64Util.encodeToString(encryptData);
+                return json;
+            }
+
+            @Nullable
+            @Override
+            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Object responseToObject(String url, String httpResponse, Type genericType) {
+                byte[] data = Base64Util.decode(httpResponse);
+                if (data == null || data.length == 0) {
+                    LogUtil.e("response: " + null);
+                    return null;
+                }
+                data = CryptoManager.rsaDecrypt(data);
+                if (data == null) {
+                    LogUtil.e("response: " + null);
+                    return null;
+                }
+                String strData = new String(data);
+                LogUtil.e("response: " + strData);
+                return sGson.fromJson(strData, genericType);
+            }
+        };
     }
 
     private static ApiProxy sApiProxy = new ApiProxy(Constants.URL_API_BASE, new HttpDataFormatAdapter() {

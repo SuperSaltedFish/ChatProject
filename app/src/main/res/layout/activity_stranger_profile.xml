@@ -104,7 +104,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:background="@drawable/radius_btn_20dp"
+        android:background="@drawable/radius_btn_4dp"
         android:text="@string/StrangerProfileActivity_RequestAddContact"
         android:textColor="@android:color/white"
         android:textSize="13dp"

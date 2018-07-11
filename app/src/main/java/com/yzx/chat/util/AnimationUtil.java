@@ -11,6 +11,7 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 /**
@@ -34,6 +35,13 @@ public class AnimationUtil {
                 .setDuration(msec);
     }
 
+    public static void errorTranslateAnim(View view){
+        TranslateAnimation animation = new TranslateAnimation(-8, 8, 0, 0);
+        animation.setDuration(20);
+        animation.setRepeatCount(4);
+        animation.setRepeatMode(Animation.REVERSE);
+        view.startAnimation(animation);
+    }
 
     public static void circularRevealHideAnim(View view, Animator.AnimatorListener... animListener) {
         int width = view.getWidth();

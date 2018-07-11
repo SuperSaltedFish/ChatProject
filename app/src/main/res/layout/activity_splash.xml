@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/SplashActivity_mGuideViewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@id/SplashActivity_mFlNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/SplashActivity_mFlNavigation"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/SplashActivity_mLlPageIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:divider="@drawable/divider_space_8dp"
+            android:orientation="horizontal"
+            android:showDividers="middle" />
+
+        <LinearLayout
+            android:id="@+id/SplashActivity_mLlTextIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextSwitcher
+                android:id="@+id/SplashActivity_mTextSwitcher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:inAnimation="@anim/anim_fade_in"
+                android:outAnimation="@anim/anim_fade_out">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="下一页"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="开始"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </TextSwitcher>
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="6dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_arrow_right" />
+
+        </LinearLayout>
+
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

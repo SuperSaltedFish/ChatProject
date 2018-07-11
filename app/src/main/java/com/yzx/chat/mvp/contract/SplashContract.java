@@ -15,9 +15,14 @@ public class SplashContract {
 
     public interface View extends BaseView<Presenter> {
         void startLoginActivity();
+
         void startHomeActivity();
+
+        void startGuide();
+
         Context getContext();
-        void error(String error);
+
+        void showError(String error);
 
     }
 

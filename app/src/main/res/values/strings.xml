@@ -11,6 +11,13 @@
         <item name="moments">系统信息</item>
     </string-array>
 
+    <string-array name="SplashActivity_Titles">
+        <item name="Splash_1">Easy to find events</item>
+        <item name="Splash_2">Fixed a Date for Event</item>
+        <item name="Splash_3">Meet with new folks</item>
+    </string-array>
+    <string name="SplashActivity_Content">There are many variations of passages of Lorem Ipsum available，but the majority have suffered alteration.</string>
+
     <string name="DateFormat_yyyyMMdd">yyyy年MM月dd日</string>
 
     <string name="PermissionMiss">缺少相关权限，无法使用该功能</string>
@@ -30,17 +37,19 @@
     <string name="LoginActivity_Error_PasswordLength">密码的长度不能小于</string>
     <string name="LoginActivity_Error_IllegalPassword">密码不合法,请保证密码只含数字和字母,且长度为8至16位</string>
     <string name="LoginActivity_Error_IllegalNickname">昵称非法,昵称只能由长度1至16的汉字、字幕、数字、下划线组成</string>
-    <string name="LoginActivity_Error_NoneVerify">验证码不能为空</string>
+    <string name="LoginActivity_Error_NoneVerify">请将验证码输入完整</string>
     <string name="LoginActivity_Layout_Register">注册</string>
     <string name="LoginActivity_Layout_Login">登录</string>
-    <string name="LoginActivity_Layout_Username">手机号/邮箱</string>
-    <string name="LoginActivity_Layout_InputPassword">请输入密码</string>
+    <string name="LoginActivity_Layout_Back">返回上一步</string>
+    <string name="LoginActivity_Layout_Username">手机号</string>
+    <string name="LoginActivity_Layout_InputPassword">密码</string>
     <string name="LoginActivity_Layout_NonUsernameHint">你还没有一个帐号?</string>
-    <string name="LoginActivity_Layout_InputNick">请输入昵称</string>
+    <string name="LoginActivity_Layout_LoginOtherHint">登录其他账号?</string>
+    <string name="LoginActivity_Layout_InputNick">昵称</string>
     <string name="LoginActivity_Layout_Confirm">再次输入密码</string>
-    <string name="LoginActivity_Layout_HaveUsernameHint">你已经有一个帐号? </string>
+    <string name="LoginActivity_Layout_HasUsernameHint">你已经有一个帐号? </string>
     <string name="LoginActivity_Layout_InputVerifyCode">请输入验证码</string>
-    <string name="LoginActivity_Layout_VerifyCodeHint">我们已经将验证码发送至你的手机.\n请检查你的手机</string>
+    <string name="LoginActivity_Layout_VerifyCodeHint">我们已经将验证码发送至你的手机，请检查\n你的手机并在下方输入验证码。</string>
     <string name="LoginActivity_Layout_Resend">重新发送</string>
     <string name="LoginActivity_Layout_CopyrightHint">Copyright © 2017-2018 咸鱼科技 版权所有</string>
     <string name="LoginActivity_Error_Resending">正在发送</string>
@@ -210,5 +219,6 @@
     <string name="ChatSetup_DeleteHint">是否删除所有聊天记录？</string>
     <string name="EditContactLabelActivity_LabelExists">该标签已添加，无法重复添加</string>
     <string name="MyTagListActivity_Title">我的标签</string>
+    <string name="LoginActivity_Layout_Forgot">忘记?</string>
 
 </resources>

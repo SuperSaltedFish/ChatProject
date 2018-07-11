@@ -55,7 +55,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activitty_image_view_pager;
+        return R.layout.activity_image_view_pager;
     }
 
     @Override

@@ -13,10 +13,6 @@ public class LoginContract {
 
     public interface View extends BaseView<Presenter> {
 
-        void jumpToLoginPage();
-
-        void jumpToRegisterPage();
-
         void jumpToVerifyPage();
 
         void showErrorHint(String error);
@@ -26,16 +22,9 @@ public class LoginContract {
 
 
     public interface Presenter extends BasePresenter<View> {
+        void tryLogin(String username, String password);
 
-        void reset();
-
-        void login(String username, String password, String verifyCode);
-
-        void register(String username, String password, String nickname, String verifyCode);
-
-        void tryObtainLoginVerifyCode(String username, String password);
-
-        void obtainRegisterVerifyCode(String username);
+        String getServerSecretKey();
     }
 
 

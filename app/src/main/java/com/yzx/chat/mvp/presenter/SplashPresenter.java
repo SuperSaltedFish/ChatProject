@@ -15,6 +15,7 @@ import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.network.chat.UserManager;
 import com.yzx.chat.tool.DirectoryHelper;
+import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
@@ -55,7 +56,17 @@ public class SplashPresenter implements SplashContract.Presenter {
         } else {
             String token = UserManager.getLocalToken();
             if (TextUtils.isEmpty(token)) {
-                mSplashView.startLoginActivity();
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (SharePreferenceManager.getConfigurePreferences().isFirstGuide()) {
+                            mSplashView.startGuide();
+                        } else {
+                            mSplashView.startLoginActivity();
+                        }
+                    }
+                }, 1000);
+
             } else {
                 mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
                 IMClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
@@ -76,7 +87,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                mSplashView.error(AndroidUtil.getString(R.string.SplashPresenter_TokenIncorrect));
+                                mSplashView.showError(AndroidUtil.getString(R.string.SplashPresenter_TokenIncorrect));
                                 mSplashView.startLoginActivity();
                             }
                         });

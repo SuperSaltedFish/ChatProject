@@ -44,20 +44,16 @@ import java.util.Map;
 public class LoginPresenter implements LoginContract.Presenter {
 
     private LoginContract.View mLoginView;
-    private Gson mGson;
     private AuthApi mAuthApi;
     private Call<JsonResponse<GetSecretKeyBean>> mGetSecretKeyCall;
     private Call<JsonResponse<UserInfoBean>> mLoginCall;
-    private Call<JsonResponse<UserInfoBean>> mRegisterCall;
     private Call<JsonResponse<ObtainSMSCode>> mObtainSMSCodeCall;
     private String mServerSecretKey;
-
 
     private Handler mHandler;
 
     public LoginPresenter() {
         mAuthApi = (AuthApi) ApiHelper.getProxyInstance(AuthApi.class);
-        mGson = ApiHelper.getDefaultGsonInstance();
         mHandler = new Handler(Looper.myLooper());
 
         NotificationHelper.getInstance().cancelAllNotification();
@@ -74,56 +70,34 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void detachView() {
-        mLoginView = null;
-        reset();
-        mHandler.removeCallbacksAndMessages(null);
-    }
-
-    @Override
-    public void reset() {
         AsyncUtil.cancelCall(mGetSecretKeyCall);
         AsyncUtil.cancelCall(mLoginCall);
-        AsyncUtil.cancelCall(mRegisterCall);
         AsyncUtil.cancelCall(mObtainSMSCodeCall);
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
+        mLoginView = null;
     }
 
-    @Override
-    public void login(String username, String password, String verifyCode) {
-        initLoginCall(username, password, verifyCode);
-        IMClient.getInstance().login(mLoginCall, mLoginOrRegisterCallBack);
-    }
 
     @Override
-    public void register(String username, String password, String nickname, String verifyCode) {
-        initRegisterCall(username, password, nickname, verifyCode);
-        IMClient.getInstance().login(mRegisterCall, mLoginOrRegisterCallBack);
-    }
-
-    @Override
-    public void tryObtainLoginVerifyCode(String username, String password) {
+    public void tryLogin(String username, String password) {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
         data.put("password", password);
         data.put("deviceID", CryptoManager.getDeviceID());
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_LOGIN, data);
-        startVerify(mObtainSMSCodeCall);
+        initLoginCall(username, password);
+        if (mServerSecretKey == null) {
+            initSecretKeyCall();
+            sHttpExecutor.submit(mGetSecretKeyCall, mObtainSMSCodeCall);
+        } else {
+            sHttpExecutor.submit(mObtainSMSCodeCall);
+        }
     }
 
     @Override
-    public void obtainRegisterVerifyCode(String username) {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("telephone", username);
-        initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_REGISTER, data);
-        startVerify(mObtainSMSCodeCall);
-    }
-
-    private void startVerify(Call<?> afterCall) {
-        if (mServerSecretKey == null) {
-            initSecretKeyCall();
-            sHttpExecutor.submit(mGetSecretKeyCall, afterCall);
-        } else {
-            sHttpExecutor.submit(afterCall);
-        }
+    public String getServerSecretKey() {
+        return mServerSecretKey;
     }
 
     private void initSecretKeyCall() {
@@ -133,6 +107,8 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(GetSecretKeyBean response) {
                 mServerSecretKey = response.getSecretKey();
+                mObtainSMSCodeCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+                mLoginCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
             }
 
             @Override
@@ -163,7 +139,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             public Object responseToObject(String url, String httpResponse, Type genericType) {
                 LogUtil.e(httpResponse);
-                return mGson.fromJson(httpResponse, genericType);
+                return ApiHelper.getDefaultGsonInstance().fromJson(httpResponse, genericType);
             }
         });
     }
@@ -176,13 +152,14 @@ public class LoginPresenter implements LoginContract.Presenter {
                 CryptoManager.getBase64RSAPublicKey(),
                 data);
         mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCode>() {
+
             @Override
             protected void onSuccess(ObtainSMSCode response) {
-                if (response.isSkipVerify()) {
-                    login(username, (String) data.get("password"), "");
-                } else {
+                if (!response.isSkipVerify()) {
                     AndroidUtil.showToast(response.getVerifyCode());
                     mLoginView.jumpToVerifyPage();
+                } else {
+                    IMClient.getInstance().login(mLoginCall, mLoginCallBack);
                 }
             }
 
@@ -191,33 +168,25 @@ public class LoginPresenter implements LoginContract.Presenter {
                 mLoginView.showErrorHint(message);
             }
         });
-        mObtainSMSCodeCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
+        if (mServerSecretKey != null) {
+            mObtainSMSCodeCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+        }
     }
 
-    private void initLoginCall(String username, String password, String verifyCode) {
+    private void initLoginCall(String username, String password) {
         AsyncUtil.cancelCall(mLoginCall);
         mLoginCall = mAuthApi.login(
                 username,
                 password,
                 CryptoManager.getDeviceID(),
                 CryptoManager.getBase64RSAPublicKey(),
-                verifyCode);
-        mLoginCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
+                "");
+        if (mServerSecretKey != null) {
+            mLoginCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+        }
     }
 
-    private void initRegisterCall(String username, String password, String nickname, String verifyCode) {
-        AsyncUtil.cancelCall(mRegisterCall);
-        mRegisterCall = mAuthApi.register(
-                username,
-                password,
-                nickname,
-                CryptoManager.getDeviceID(),
-                CryptoManager.getBase64RSAPublicKey(),
-                verifyCode);
-        mRegisterCall.setHttpDataFormatAdapter(mRSADataFormatAdapter);
-    }
-
-    private final ResultCallback<Void> mLoginOrRegisterCallBack = new ResultCallback<Void>() {
+    private final ResultCallback<Void> mLoginCallBack = new ResultCallback<Void>() {
         @Override
         public void onSuccess(Void result) {
             mHandler.post(new Runnable() {
@@ -236,48 +205,6 @@ public class LoginPresenter implements LoginContract.Presenter {
                     mLoginView.showErrorHint(error);
                 }
             });
-        }
-    };
-
-    private final HttpDataFormatAdapter mRSADataFormatAdapter = new HttpDataFormatAdapter() {
-
-        @Nullable
-        @Override
-        public String paramsToString(HttpRequest httpRequest) {
-            Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
-            LogUtil.e("开始访问：" + httpRequest.url());
-            JsonRequest request = new JsonRequest();
-            request.setParams(params);
-            request.setStatus(200);
-            String json = mGson.toJson(request);
-            LogUtil.e("request: " + json);
-            byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), Base64Util.decode(mServerSecretKey.getBytes()));
-            json = Base64Util.encodeToString(encryptData);
-            return json;
-        }
-
-        @Nullable
-        @Override
-        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Object responseToObject(String url, String httpResponse, Type genericType) {
-            byte[] data = Base64Util.decode(httpResponse);
-            if (data == null || data.length == 0) {
-                LogUtil.e("response: " + null);
-                return null;
-            }
-            data = CryptoManager.rsaDecrypt(data);
-            if (data == null) {
-                LogUtil.e("response: " + null);
-                return null;
-            }
-            String strData = new String(data);
-            LogUtil.e("response: " + strData);
-            return mGson.fromJson(strData, genericType);
         }
     };
 }

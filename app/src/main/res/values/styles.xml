@@ -21,7 +21,6 @@
     </style>
 
 
-
     <style name="NoBackgroundLightTheme" parent="DefaultLightTheme">
         <item name="android:windowBackground">@null</item>
     </style>
@@ -31,10 +30,8 @@
     </style>
 
 
-    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/bg_splash</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+    <style name="SplashTheme" parent="DefaultLightTheme">
+        <item name="android:windowBackground">@drawable/src_bg_splash</item>
     </style>
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

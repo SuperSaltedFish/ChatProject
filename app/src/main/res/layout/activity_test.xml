@@ -4,20 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
     tools:context=".mvp.view.activity.TestActivity">
-
-    <ImageView
-        android:id="@+id/aaaa"
-        android:scaleType="centerCrop"
-        android:layout_width="240dp"
-        android:layout_height="240dp" />
-
-    <ImageView
-        android:layout_marginTop="40dp"
-        android:src="@drawable/temp_share_image"
-        android:layout_width="240dp"
-        android:layout_height="240dp" />
 
 </LinearLayout>

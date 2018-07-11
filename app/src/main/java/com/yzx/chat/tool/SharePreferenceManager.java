@@ -55,9 +55,9 @@ public class SharePreferenceManager {
         }
 
         public void clear(boolean isClearDeviceID) {
-            if(isClearDeviceID){
+            if (isClearDeviceID) {
                 mPreferences.edit().clear().apply();
-            }else {
+            } else {
                 String deviceID = getDeviceID();
                 mPreferences.edit().clear().commit();
                 putDeviceID(deviceID);
@@ -100,6 +100,7 @@ public class SharePreferenceManager {
     public static class ConfigurePreferences {
         private static final String PREFERENCES_NAME_CONFIGURE = "Configure";
         private static final String CONFIGURE_KEY_KEY_BOARD_HEIGHT = "KeyBoardHeight";
+        private static final String CONFIGURE_KEY_IS_FIRST_GUIDE = "IsFirstGuide";
 
         private SharedPreferences mPreferences;
 
@@ -112,7 +113,15 @@ public class SharePreferenceManager {
         }
 
         public int getKeyBoardHeight() {
-            return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT,0);
+            return mPreferences.getInt(CONFIGURE_KEY_KEY_BOARD_HEIGHT, 0);
+        }
+
+        public void putFirstGuide(boolean value) {
+            mPreferences.edit().putBoolean(CONFIGURE_KEY_IS_FIRST_GUIDE, value).apply();
+        }
+
+        public boolean isFirstGuide() {
+            return mPreferences.getBoolean(CONFIGURE_KEY_IS_FIRST_GUIDE, true);
         }
 
     }

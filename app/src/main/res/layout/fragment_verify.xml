@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:id="@+id/VerifyFragment_mIvBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="start"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/ic_back"
+        android:tint="@color/textPrimaryColorBlack2" />
+
+    <ImageView
+        android:layout_width="136dp"
+        android:layout_height="136dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/src_verify" />
+
+    <TextView
+        android:autoSizeMaxTextSize="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="@string/LoginActivity_Layout_InputVerifyCode"
+        android:textColor="@color/textPrimaryColorBlack2"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="@string/LoginActivity_Layout_VerifyCodeHint"
+        android:textColor="@color/textSecondaryColorBlack"
+        android:textSize="14sp" />
+
+
+    <com.yzx.chat.widget.view.VerifyEditView
+        android:id="@+id/VerifyFragment_mVerifyEditView"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp" />
+
+    <Button
+        android:id="@+id/VerifyFragment_mBtnResend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:minHeight="0dp"
+        android:text="@string/LoginActivity_Layout_Resend"
+        android:textAllCaps="false"
+        android:textColor="@color/selector_text_enable_change"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mVerifyEditView" />
+
+    <TextView
+        android:id="@+id/VerifyFragment_mTvErrorHint"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginBottom="4dp"
+        android:gravity="center_vertical"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mBtnResend" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp">
+
+        <ProgressBar
+            android:id="@+id/VerifyFragment_mPbLoginProgress"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/VerifyFragment_mBtnVerify"
+            app:layout_constraintEnd_toEndOf="@id/VerifyFragment_mBtnVerify"
+            app:layout_constraintStart_toStartOf="@id/VerifyFragment_mBtnVerify"
+            app:layout_constraintTop_toTopOf="@id/VerifyFragment_mBtnVerify" />
+
+        <Button
+            android:id="@+id/VerifyFragment_mBtnVerify"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/radius_btn_4dp"
+            android:elevation="4dp"
+            android:text="@string/LoginActivity_Layout_Login"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/VerifyFragment_mTvBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/LoginActivity_Layout_Back"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mBtnVerify" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal|bottom"
+        android:paddingBottom="8dp"
+        android:text="@string/LoginActivity_Layout_CopyrightHint"
+        android:textSize="12sp" />
+
+</LinearLayout>
