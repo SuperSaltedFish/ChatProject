@@ -43,11 +43,11 @@
     <string name="LoginActivity_Layout_Back">返回上一步</string>
     <string name="LoginActivity_Layout_Username">手机号</string>
     <string name="LoginActivity_Layout_InputPassword">密码</string>
-    <string name="LoginActivity_Layout_NonUsernameHint">你还没有一个帐号?</string>
-    <string name="LoginActivity_Layout_LoginOtherHint">登录其他账号?</string>
+    <string name="LoginActivity_Layout_NonUsernameHint">你还没有一个帐号？</string>
+    <string name="LoginActivity_Layout_LoginOtherHint">登录其他账号？</string>
     <string name="LoginActivity_Layout_InputNick">昵称</string>
     <string name="LoginActivity_Layout_Confirm">再次输入密码</string>
-    <string name="LoginActivity_Layout_HasUsernameHint">你已经有一个帐号? </string>
+    <string name="LoginActivity_Layout_HasUsernameHint">你已经有一个帐号？</string>
     <string name="LoginActivity_Layout_InputVerifyCode">请输入验证码</string>
     <string name="LoginActivity_Layout_VerifyCodeHint">我们已经将验证码发送至你的手机，请检查\n你的手机并在下方输入验证码。</string>
     <string name="LoginActivity_Layout_Resend">重新发送</string>

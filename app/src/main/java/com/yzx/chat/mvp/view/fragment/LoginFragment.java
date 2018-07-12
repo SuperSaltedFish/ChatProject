@@ -35,9 +35,8 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     private EditText mEtLoginTelephone;
     private EditText mEtLoginPassword;
     private TextView mTvJumpToRegister;
-    private Button mBtnForgotPassword;
+  //  private Button mBtnForgotPassword;
     private TextView mTvErrorHint;
-    private TextView mTvRegisterHint;
     private Button mBtnLogin;
     private ProgressBar mPbLoginProgress;
     private View mTelephoneUnderline;
@@ -56,25 +55,24 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginPassword = parentView.findViewById(R.id.LoginFragment_mEtPassword);
         mTelephoneUnderline = parentView.findViewById(R.id.LoginFragment_mTelephoneUnderline);
         mPasswordUnderline = parentView.findViewById(R.id.LoginFragment_mPasswordUnderline);
-        mBtnForgotPassword = parentView.findViewById(R.id.LoginFragment_mBtnForgotPassword);
+     //   mBtnForgotPassword = parentView.findViewById(R.id.LoginFragment_mBtnForgotPassword);
         mTvJumpToRegister = parentView.findViewById(R.id.LoginFragment_mTvJumpToRegister);
         mPbLoginProgress = parentView.findViewById(R.id.LoginFragment_mPbLoginProgress);
         mBtnLogin = parentView.findViewById(R.id.LoginFragment_mBtnLogin);
         mTvErrorHint = parentView.findViewById(R.id.LoginFragment_mTvErrorHint);
-        mTvRegisterHint = parentView.findViewById(R.id.LoginFragment_mTvRegisterHint);
     }
 
     @Override
     protected void setup() {
         mTvJumpToRegister.setOnClickListener(mOnViewClickListener);
         mBtnLogin.setOnClickListener(mOnViewClickListener);
-        mBtnForgotPassword.setOnClickListener(mOnViewClickListener);
+      //  mBtnForgotPassword.setOnClickListener(mOnViewClickListener);
         mEtLoginTelephone.setOnFocusChangeListener(mOnInputFocusChangeListener);
         mEtLoginPassword.setOnFocusChangeListener(mOnInputFocusChangeListener);
         mEtLoginTelephone.addTextChangedListener(mTextWatcher);
         mEtLoginPassword.addTextChangedListener(mTextWatcher);
 
-        ViewUtil.autoScrollAtInput(getActivity(),mParentView,mBtnLogin);
+        ViewUtil.autoScrollAtInput(mParentView,mBtnLogin);
     }
 
     private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
@@ -117,8 +115,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginTelephone.setEnabled(!isDisable);
         mEtLoginPassword.setEnabled(!isDisable);
         mTvJumpToRegister.setEnabled(!isDisable);
-        mBtnForgotPassword.setEnabled(!isDisable);
-        mTvRegisterHint.setEnabled(!isDisable);
+       // mBtnForgotPassword.setEnabled(!isDisable);
         mEtLoginTelephone.clearFocus();
         mEtLoginPassword.clearFocus();
         isDisableInput = isDisable;
@@ -160,8 +157,8 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
                     case R.id.LoginFragment_mTvJumpToRegister:
                         jumpToRegisterPage();
                         break;
-                    case R.id.LoginFragment_mBtnForgotPassword:
-                        break;
+//                    case R.id.LoginFragment_mBtnForgotPassword:
+//                        break;
                 }
             }
         }
@@ -236,7 +233,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         if (activity == null) {
             return;
         }
-        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.bg_splash, new AnimatorListenerAdapter() {
+        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();

@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,6 +47,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     private TextView mTvBack;
     private TextView mTvErrorHint;
     private Button mBtnVerify;
+    private ImageView mIvBack;
     private VerifyEditView mVerifyEditView;
     private ProgressBar mPbLoginProgress;
     private Button mBtnResend;
@@ -68,6 +70,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mPbLoginProgress = parentView.findViewById(R.id.VerifyFragment_mPbLoginProgress);
         mBtnResend = parentView.findViewById(R.id.VerifyFragment_mBtnResend);
         mTvErrorHint = parentView.findViewById(R.id.VerifyFragment_mTvErrorHint);
+        mIvBack = parentView.findViewById(R.id.VerifyFragment_mIvBack);
     }
 
     @Override
@@ -84,6 +87,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mTvBack.setOnClickListener(mOnViewClickListener);
         mBtnVerify.setOnClickListener(mOnViewClickListener);
         mBtnResend.setOnClickListener(mOnViewClickListener);
+        mIvBack.setOnClickListener(mOnViewClickListener);
         mVerifyEditView.setOnInputListener(mOnInputListener);
 
         startVerifyCountDown();
@@ -135,6 +139,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mBtnVerify.setEnabled(!isDisable);
         mTvBack.setEnabled(!isDisable);
         mVerifyEditView.setEnabled(!isDisable);
+        mIvBack.setEnabled(!isDisable);
         mBtnResend.setEnabled((!isDisable) && isAllowResendVerifyCode);
         isDisableInput = isDisable;
     }
@@ -205,6 +210,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             if (!isDisableInput) {
                 switch (v.getId()) {
                     case R.id.VerifyFragment_mTvBack:
+                    case R.id.VerifyFragment_mIvBack:
                         backPressed();
                         break;
                     case R.id.VerifyFragment_mBtnVerify:
@@ -259,7 +265,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         if (activity == null) {
             return;
         }
-        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.bg_splash, new AnimatorListenerAdapter() {
+        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();

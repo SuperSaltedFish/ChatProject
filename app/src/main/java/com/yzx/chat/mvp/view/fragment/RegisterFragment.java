@@ -82,7 +82,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mTvJumpToLogin.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
 
-        ViewUtil.autoScrollAtInput(getActivity(), mParentView, mBtnRegister);
+        ViewUtil.autoScrollAtInput( mParentView, mBtnRegister);
     }
 
     private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
@@ -129,6 +129,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mBtnRegister.setEnabled(!isDisable);
         mTvJumpToLogin.setEnabled(!isDisable);
         mTvLoginHint.setEnabled(!isDisable);
+        mIvBack.setEnabled(!isDisable);
         mEtRegisterTelephone.clearFocus();
         mEtRegisterNickname.clearFocus();
         mEtRegisterPassword.clearFocus();

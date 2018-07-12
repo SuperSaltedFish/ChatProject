@@ -6,6 +6,7 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
+
     <ImageView
         android:id="@+id/RegisterFragment_mIvBack"
         android:layout_width="48dp"
@@ -16,10 +17,14 @@
         android:src="@drawable/ic_back"
         android:tint="@color/textPrimaryColorBlack2" />
 
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:gravity="center"
         android:singleLine="true"
         android:text="NEW ACCOUNT ?"
@@ -36,10 +41,15 @@
         android:textColor="@color/textSecondaryColorBlackLight"
         android:textSize="15sp" />
 
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="5" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingEnd="4dp"
@@ -53,7 +63,7 @@
         <EditText
             android:id="@+id/RegisterFragment_mEtTelephone"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="44dp"
             android:layout_marginStart="16dp"
             android:background="@null"
             android:gravity="start|center_vertical"
@@ -70,13 +80,12 @@
         android:id="@+id/RegisterFragment_mTelephoneUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="12dp"
         android:background="@drawable/selector_bg_underline" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="14dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingEnd="4dp"
@@ -90,7 +99,7 @@
         <EditText
             android:id="@+id/RegisterFragment_mEtNickname"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="44dp"
             android:layout_marginStart="16dp"
             android:background="@null"
             android:gravity="start|center_vertical"
@@ -106,13 +115,12 @@
         android:id="@+id/RegisterFragment_mNicknameUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="12dp"
         android:background="@drawable/selector_bg_underline" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="14dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingEnd="4dp"
@@ -126,7 +134,7 @@
         <EditText
             android:id="@+id/RegisterFragment_mEtPassword"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="44dp"
             android:layout_marginStart="16dp"
             android:background="@null"
             android:gravity="start|center_vertical"
@@ -142,13 +150,12 @@
         android:id="@+id/RegisterFragment_mPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="12dp"
         android:background="@drawable/selector_bg_underline" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="14dp"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingEnd="4dp"
@@ -162,7 +169,7 @@
         <EditText
             android:id="@+id/RegisterFragment_mEtConfirmPassword"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="44dp"
             android:layout_marginStart="16dp"
             android:background="@null"
             android:gravity="start|center_vertical"
@@ -176,13 +183,12 @@
         android:id="@+id/RegisterFragment_mConfirmPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="12dp"
         android:background="@drawable/selector_bg_underline" />
 
 
     <TextView
         android:id="@+id/RegisterFragment_mTvErrorHint"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="24dp"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp"
@@ -238,9 +244,14 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="7" />
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal|bottom"
         android:paddingBottom="8dp"
         android:text="@string/LoginActivity_Layout_CopyrightHint"
