@@ -51,7 +51,7 @@ public abstract class AppBarStateChangeListener implements AppBarLayout.OnOffset
         if (minimumHeight == 0) {
             minimumHeight = appBarLayout.getTotalScrollRange();
         }
-        if (Math.abs(i) > minimumHeight) {
+        if (appBarLayout.getHeight()+i <= minimumHeight) {
             if (mCurrentState != STATE_COLLAPSED) {
                 onStateChanged(appBarLayout, STATE_COLLAPSED);
             }
