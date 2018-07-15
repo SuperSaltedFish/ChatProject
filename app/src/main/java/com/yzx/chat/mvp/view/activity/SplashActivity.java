@@ -25,6 +25,7 @@ import com.yzx.chat.mvp.presenter.SplashPresenter;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.view.PageIndicator;
 import com.yzx.chat.widget.view.RoundImageView;
 
 import java.util.ArrayList;
@@ -77,25 +78,12 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
         setContentView(R.layout.activity_splash);
 
-        final LinearLayout llPageIndicator = findViewById(R.id.SplashActivity_mLlPageIndicator);
-        final List<View> indicatorViewList = new ArrayList<>(GUIDE_COUNT);
-        final int indicatorSize = (int) AndroidUtil.dip2px(8);
-        for (int i = 0; i < GUIDE_COUNT; i++) {
-            RoundImageView imageView = new RoundImageView(SplashActivity.this);
-            imageView.setRoundRadius(indicatorSize / 2);
-            if (i == 0) {
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(indicatorSize * 4, indicatorSize));
-                imageView.setBackgroundColor(ContextCompat.getColor(SplashActivity.this, R.color.colorAccent));
-            } else {
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(indicatorSize, indicatorSize));
-                imageView.setBackgroundColor(ContextCompat.getColor(SplashActivity.this, R.color.colorAccentLight));
-            }
-            indicatorViewList.add(imageView);
-            llPageIndicator.addView(imageView);
-        }
-
         final TextSwitcher textSwitcher = findViewById(R.id.SplashActivity_mTextSwitcher);
         final ViewPager guideViewPager = findViewById(R.id.SplashActivity_mGuideViewPager);
+        final PageIndicator pageIndicator = findViewById(R.id.SplashActivity_mPageIndicator);
+        pageIndicator.setIndicatorColorSelected(ContextCompat.getColor(SplashActivity.this, R.color.colorAccent));
+        pageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(SplashActivity.this, R.color.colorAccentLight));
+        pageIndicator.setupWithViewPager(guideViewPager);
         guideViewPager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
@@ -136,16 +124,6 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
             @Override
             public void onPageSelected(int position) {
-                llPageIndicator.removeAllViews();
-                for (int i = 0; i < GUIDE_COUNT; i++) {
-                    if (i == position) {
-                        llPageIndicator.addView(indicatorViewList.get(0));
-                    } else if (i < position) {
-                        llPageIndicator.addView(indicatorViewList.get(i + 1));
-                    } else {
-                        llPageIndicator.addView(indicatorViewList.get(i));
-                    }
-                }
                 if (position == GUIDE_COUNT - 1 && mLastPosition < GUIDE_COUNT - 1) {
                     textSwitcher.showNext();
                 } else if (mLastPosition == GUIDE_COUNT - 1 && position < GUIDE_COUNT - 1) {

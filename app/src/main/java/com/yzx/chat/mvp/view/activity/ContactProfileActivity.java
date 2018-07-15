@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +37,11 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
+import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
+import com.yzx.chat.widget.adapter.ContactInfoPagerAdapter;
 import com.yzx.chat.widget.listener.AppBarStateChangeListener;
 import com.yzx.chat.widget.view.FlowLayout;
+import com.yzx.chat.widget.view.PageIndicator;
 import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
@@ -53,24 +58,21 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private ImageView mIvAvatar;
     private ImageView mIvSexIcon;
     private TextView mTvTitle;
-    private TextView mTvDescribe;
+    private TextView mTvSignature;
     private TextView mTvNickname;
-    private TextView mTvRemarkName;
     private TextView mTvLocationAndAge;
     private TextView mTvLastLabel;
-    private ConstraintLayout mClClearMessage;
-    private Switch mSwitchTop;
-    private Switch mSwitchRemind;
-    private TextView mTvContentDescription;
-    private ConstraintLayout mNicknameLayout;
-    private ConstraintLayout mTelephoneLayout;
-    private ConstraintLayout mDescriptionLayout;
-    private LinearLayout mLlContentTelephone;
-    private LinearLayout mLlRemarkTitleLayout;
     private ProgressDialog mProgressDialog;
     private AppBarLayout mAppBarLayout;
     private FlowLayout mLabelFlowLayout;
+    private TabLayout mTabLayout;
+    private PageIndicator mPageIndicator;
+    private ViewPager mVpBanner;
+    private ViewPager mVpContactInfo;
 
+    private CenterCropImagePagerAdapter mCropImagePagerAdapter;
+
+    private ArrayList<Object> mPicUrlList;
     private String mContactID;
 
 
@@ -84,25 +86,21 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mAppBarLayout = findViewById(R.id.ContactProfileActivity_mAppBarLayout);
         mIvStartChat = findViewById(R.id.ContactProfileActivity_mIvStartChat);
         mTvNickname = findViewById(R.id.ContactProfileActivity_mTvNickname);
-        mTvDescribe = findViewById(R.id.ContactProfileActivity_mTvDescribe);
+        mTvSignature = findViewById(R.id.ContactProfileActivity_mTvSignature);
         mIvAvatar = findViewById(R.id.ContactProfileActivity_mIvAvatar);
         mIvSexIcon = findViewById(R.id.ContactProfileActivity_mIvSexIcon);
         mTvTitle = findViewById(R.id.ContactProfileActivity_mTvTitle);
         mTvLocationAndAge = findViewById(R.id.ContactProfileActivity_mTvLocationAndAge);
-        mSwitchTop = findViewById(R.id.ChatSetup_mSwitchTop);
-        mSwitchRemind = findViewById(R.id.ChatSetup_mSwitchRemind);
-        mClClearMessage = findViewById(R.id.ChatSetup_mClClearMessage);
-        mNicknameLayout = findViewById(R.id.ContactProfileActivity_mRemarkNameLayout);
-        mTelephoneLayout = findViewById(R.id.ContactProfileActivity_mTelephoneLayout);
-        mDescriptionLayout = findViewById(R.id.ContactProfileActivity_mDescriptionLayout);
-        mLlRemarkTitleLayout = findViewById(R.id.ContactProfileActivity_mLlRemarkTitleLayout);
-        mTvRemarkName = findViewById(R.id.ContactProfileActivity_mTvContentRemarkName);
-        mLlContentTelephone = findViewById(R.id.ContactProfileActivity_mLlContentTelephone);
-        mTvContentDescription = findViewById(R.id.ContactProfileActivity_mTvContentDescription);
         mLabelFlowLayout = findViewById(R.id.ContactProfileActivity_mLabelFlowLayout);
+        mTabLayout = findViewById(R.id.ContactProfileActivity_mTabLayout);
+        mPageIndicator = findViewById(R.id.ContactProfileActivity_mPageIndicator);
+        mVpBanner = findViewById(R.id.ContactProfileActivity_mVpBanner);
+        mVpContactInfo = findViewById(R.id.ContactProfileActivity_mVpContactInfo);
         mTvLastLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_normal, mLabelFlowLayout, false);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Delete));
         mContactID = getIntent().getStringExtra(INTENT_EXTRA_CONTACT_ID);
+        mPicUrlList = new ArrayList<>(6);
+        mCropImagePagerAdapter = new CenterCropImagePagerAdapter(mPicUrlList);
     }
 
     @Override
@@ -117,6 +115,18 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        fillTestData();
+
+        mPageIndicator.setIndicatorColorSelected(Color.WHITE);
+        mPageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(this, R.color.backgroundColorWhiteLight));
+        mPageIndicator.setIndicatorRadius((int) AndroidUtil.dip2px(3));
+        mPageIndicator.setupWithViewPager(mVpBanner);
+
+        mVpBanner.setAdapter(mCropImagePagerAdapter);
+        mVpContactInfo.setAdapter(new ContactInfoPagerAdapter(getSupportFragmentManager(), mContactID, getResources().getStringArray(R.array.ContactProfile_TabTitle)));
+
+        mTabLayout.setupWithViewPager(mVpContactInfo);
 
         mLabelFlowLayout.setLineSpace((int) AndroidUtil.dip2px(8));
         mLabelFlowLayout.setItemSpace((int) AndroidUtil.dip2px(8));
@@ -134,15 +144,15 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
         mTvTitle.setAlpha(0);
         mIvStartChat.setOnClickListener(mOnViewClickListener);
-        mClClearMessage.setOnClickListener(mOnViewClickListener);
-        mNicknameLayout.setOnClickListener(mOnViewClickListener);
-        mTelephoneLayout.setOnClickListener(mOnViewClickListener);
-        mDescriptionLayout.setOnClickListener(mOnViewClickListener);
         mLabelFlowLayout.setOnClickListener(mOnViewClickListener);
         mAppBarLayout.addOnOffsetChangedListener(mAppBarStateChangeListener);
-        mSwitchTop.setOnCheckedChangeListener(mOnTopSwitchChangeListener);
-        mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
         mPresenter.init(mContactID);
+    }
+
+    private void fillTestData() {
+        mPicUrlList.add(R.drawable.temp_image_1);
+        mPicUrlList.add(R.drawable.temp_image_2);
+        mPicUrlList.add(R.drawable.temp_image_3);
     }
 
 
@@ -202,36 +212,12 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         startActivityForResult(intent, 0);
     }
 
-    private void showDeleteChatMessageHintDialog() {
-        new MaterialDialog.Builder(ContactProfileActivity.this)
-                .content(R.string.ChatSetup_DeleteHint)
-                .positiveText(R.string.Confirm)
-                .negativeText(R.string.Cancel)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (which == DialogAction.POSITIVE) {
-                            mPresenter.clearChatMessages();
-                        }
-                    }
-                })
-                .show();
-    }
-
     private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.ContactProfileActivity_mRemarkNameLayout:
-                case R.id.ContactProfileActivity_mTelephoneLayout:
-                case R.id.ContactProfileActivity_mDescriptionLayout:
-                    startRemarkInfoActivity();
-                    break;
                 case R.id.ContactProfileActivity_mIvStartChat:
                     startChatActivity();
-                    break;
-                case R.id.ChatSetup_mClClearMessage:
-                    showDeleteChatMessageHintDialog();
                     break;
                 case R.id.ContactProfileActivity_mLabelFlowLayout:
                     startEditContactLabelActivity();
@@ -245,25 +231,12 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         @Override
         public void onStateChanged(AppBarLayout appBarLayout, int state) {
             if (state == AppBarStateChangeListener.STATE_COLLAPSED) {
+                mIvAvatar.animate().alpha(0).scaleX(0).scaleY(0).setDuration(200);
                 mTvTitle.animate().alpha(1).setDuration(200);
             } else {
+                mIvAvatar.animate().alpha(1).scaleX(1).scaleY(1).setDuration(200);
                 mTvTitle.animate().alpha(0).setDuration(200);
             }
-        }
-    };
-
-
-    private final CompoundButton.OnCheckedChangeListener mOnTopSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            mPresenter.setConversationToTop(isChecked);
-        }
-    };
-
-    private final CompoundButton.OnCheckedChangeListener mOnRemindSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            mPresenter.enableConversationNotification(!isChecked);
         }
     };
 
@@ -286,25 +259,17 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 //        if (!TextUtils.isEmpty(user.getLocation())) {
 //            mTvLocationAndAge.setText(" · " + user.getLocation());
 //        }
-//        if (TextUtils.isEmpty(user.getSignature())) {
-//            mTvDescribe.setText("个性签名：无");
-//        } else {
-//            mTvDescribe.setText(user.getSignature());
-//        }
+        if (TextUtils.isEmpty(user.getSignature())) {
+            mTvSignature.setText(null);
+            mTvSignature.setVisibility(View.GONE);
+        } else {
+            mTvSignature.setText(user.getSignature());
+            mTvSignature.setVisibility(View.VISIBLE);
+        }
         GlideUtil.loadAvatarFromUrl(this, mIvAvatar, user.getAvatar());
         mLabelFlowLayout.removeAllViews();
 
         ContactRemarkBean contactRemark = contact.getRemark();
-        boolean isShowRemarkTitle = false;
-        if (!TextUtils.isEmpty(contactRemark.getRemarkName())) {
-            mNicknameLayout.setVisibility(View.VISIBLE);
-            mTvRemarkName.setText(contactRemark.getRemarkName());
-            isShowRemarkTitle = true;
-        } else {
-            mNicknameLayout.setVisibility(View.GONE);
-        }
-
-
         List<String> tags = contactRemark.getTags();
         if (tags != null && tags.size() != 0) {
             for (String tag : tags) {
@@ -312,59 +277,6 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
                 label.setText(tag);
                 mLabelFlowLayout.addView(label);
             }
-        }
-
-
-        mLlContentTelephone.removeAllViews();
-        List<String> telephones = contactRemark.getTelephone();
-        if (telephones != null && telephones.size() > 0) {
-            isShowRemarkTitle = true;
-            mTelephoneLayout.setVisibility(View.VISIBLE);
-            for (String telephone : telephones) {
-                TextView textView = new TextView(ContactProfileActivity.this);
-                textView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
-                textView.setTextSize(13.5f);
-                textView.setTextColor(ContextCompat.getColor(ContactProfileActivity.this, R.color.colorAccent));
-                textView.setText(telephone);
-                textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String telephone = ((TextView) v).getText().toString();
-                        if (TextUtils.isEmpty(telephone)) {
-                            return;
-                        }
-                        final String headStr = getString(R.string.ContactInfoFragment_Call);
-                        final String content = headStr + "  " + telephone;
-                        new MaterialDialog.Builder(ContactProfileActivity.this)
-                                .items(content)
-                                .itemsColor(Color.BLACK)
-                                .itemsCallback(new MaterialDialog.ListCallback() {
-                                    @Override
-                                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                                        Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + telephone));//跳转到拨号界面，同时传递电话号码
-                                        startActivity(dialIntent);
-                                    }
-                                })
-                                .show();
-                    }
-                });
-                mLlContentTelephone.addView(textView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            }
-        } else {
-            mTelephoneLayout.setVisibility(View.GONE);
-        }
-
-        String description = contactRemark.getDescription();
-        if (!TextUtils.isEmpty(description)) {
-            isShowRemarkTitle = true;
-            mDescriptionLayout.setVisibility(View.VISIBLE);
-            mTvContentDescription.setText(description);
-        } else {
-            mDescriptionLayout.setVisibility(View.GONE);
-        }
-
-        if (isShowRemarkTitle) {
-            mLlRemarkTitleLayout.setVisibility(View.VISIBLE);
         }
         mLabelFlowLayout.addView(mTvLastLabel);
     }
@@ -396,17 +308,4 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         }
     }
 
-    @Override
-    public void switchTopState(boolean isOpen) {
-        mSwitchTop.setOnCheckedChangeListener(null);
-        mSwitchTop.setChecked(isOpen);
-        mSwitchTop.setOnCheckedChangeListener(mOnTopSwitchChangeListener);
-    }
-
-    @Override
-    public void switchRemindState(boolean isOpen) {
-        mSwitchRemind.setOnCheckedChangeListener(null);
-        mSwitchRemind.setChecked(isOpen);
-        mSwitchRemind.setOnCheckedChangeListener(mOnRemindSwitchChangeListener);
-    }
 }

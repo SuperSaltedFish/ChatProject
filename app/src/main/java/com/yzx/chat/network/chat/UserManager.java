@@ -68,7 +68,7 @@ public class UserManager {
             protected void onFailure(String message) {
                 callback.onFailure(message);
             }
-        }, false);
+        });
         mNetworkExecutor.submit(mUpdateUserProfileCall);
     }
 
@@ -86,7 +86,7 @@ public class UserManager {
             protected void onFailure(String message) {
                 callback.onFailure(message);
             }
-        }, false);
+        });
         mNetworkExecutor.submit(mUploadAvatarCall);
     }
 
@@ -101,7 +101,7 @@ public class UserManager {
     }
 
     public UserBean getUser() {
-        return mUserBean;
+        return UserBean.copy(mUserBean);
     }
 
 

@@ -10,7 +10,7 @@ import android.text.TextUtils;
  */
 
 
-public class UserBean implements Parcelable, Cloneable {
+public class UserBean implements Parcelable {
     public static final int SEX_MAN = 1;
     public static final int SEX_WOMAN = 2;
 
@@ -26,6 +26,15 @@ public class UserBean implements Parcelable, Cloneable {
     private String school;
     private int sex;
     private int age;
+
+    public static UserBean copy(UserBean user) {
+        Parcel parcel = Parcel.obtain();
+        user.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        UserBean copy = CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        return copy;
+    }
 
     public boolean isEmpty() {
         return (TextUtils.isEmpty(userID) || TextUtils.isEmpty(telephone) || TextUtils.isEmpty(nickname));
@@ -46,19 +55,9 @@ public class UserBean implements Parcelable, Cloneable {
     @Override
     public int hashCode() {
         if (!TextUtils.isEmpty(userID)) {
-            return userID.hashCode()+1;//+1是为了将和字符串的userID的hashCode区分
+            return userID.hashCode() + 1;//+1是为了将和字符串的userID的hashCode区分
         }
         return super.hashCode();
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public String getUserID() {

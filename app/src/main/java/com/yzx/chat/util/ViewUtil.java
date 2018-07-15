@@ -2,9 +2,14 @@ package com.yzx.chat.util;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.support.design.widget.TabLayout;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by YZX on 2018年07月09日.
@@ -42,4 +47,5 @@ public class ViewUtil {
                     }
                 });
     }
+
 }

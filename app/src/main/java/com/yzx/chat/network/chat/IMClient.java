@@ -323,7 +323,6 @@ public class IMClient implements IManagerHelper {
         mRongIMClient.logout();
         if(mUiHandler!=null){
             mUiHandler.removeCallbacksAndMessages(null);
-            mUiHandler = null;
         }
         if(mWorkExecutor!=null){
             mWorkExecutor.getQueue().clear();

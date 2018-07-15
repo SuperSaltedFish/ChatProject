@@ -8,7 +8,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/ContactProfileActivity_mAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="352dp"
         android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -21,93 +21,28 @@
             app:titleEnabled="false"
             app:toolbarId="@+id/Default_mToolbar">
 
-            <android.support.constraint.ConstraintLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5">
+                app:layout_collapseParallaxMultiplier="0.7">
 
-                <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvPersonalityBackground"
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/ContactProfileActivity_mVpBanner"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:foreground="@drawable/fg_bg_gradual_mask"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_share_image" />
+                    android:overScrollMode="never" />
 
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvNickname"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:ellipsize="end"
-                    android:gravity="start|center_vertical"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvLocationAndAge"
+                <com.yzx.chat.widget.view.PageIndicator
+                    android:id="@+id/ContactProfileActivity_mPageIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
-                    android:text="23岁 · 广东韶关"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvSexIcon"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="16dp" />
+            </FrameLayout>
 
-
-                <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvSexIcon"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/selector_src_sex"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge"
-                    app:layout_constraintStart_toStartOf="@id/ContactProfileActivity_mTvNickname"
-                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mTvLocationAndAge" />
-
-                <com.yzx.chat.widget.view.FlowLayout
-                    android:id="@+id/ContactProfileActivity_mLabelFlowLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLocationAndAge" />
-
-                <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvAvatar"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="32dp"
-                    android:elevation="4dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_head_image" />
-
-
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvDescribe"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
-
-            </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/Default_mToolbar"
@@ -136,282 +71,123 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingBottom="16dp">
+            android:paddingBottom="16dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/ContactProfileActivity_mTvNickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:paddingEnd="160dp"
+                android:paddingStart="16dp"
+                android:singleLine="true"
+                android:textColor="@color/textPrimaryColorBlack"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp">
 
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvMomentsTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="他的动态"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvMomentsNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:gravity="center_vertical"
-                    android:text="218"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="12dp"
-                android:divider="@drawable/divider_space_16dp"
-                android:orientation="horizontal"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:showDividers="middle">
-
-                <com.yzx.chat.widget.view.RoundImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_share_image" />
-
-                <com.yzx.chat.widget.view.RoundImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_share_image" />
-
-                <com.yzx.chat.widget.view.RoundImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_share_image" />
-
-                <com.yzx.chat.widget.view.RoundImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/temp_share_image" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/ContactProfileActivity_mLlRemarkTitleLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="@string/RemarkInfoActivity_Title"
-                    android:textSize="12sp" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/dividerColorBlack" />
-            </LinearLayout>
-
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/ContactProfileActivity_mRemarkNameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
-
                 <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvIconRemarkName"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_people"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvLabelRemarkName"
+                    android:id="@+id/ContactProfileActivity_mIvSexIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/selector_src_sex"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mIvLabelRemarkName" />
+                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
 
                 <TextView
-                    android:id="@+id/ContactProfileActivity_mIvLabelRemarkName"
+                    android:id="@+id/ContactProfileActivity_mTvLocationAndAge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:maxLines="1"
-                    android:text="@string/Profile_LabelNickname"
-                    android:textColor="@color/textPrimaryColorBlack"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconRemarkName"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvContentRemarkName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16sp"
+                    android:layout_marginStart="6dp"
+                    android:gravity="center_vertical"
+                    android:text="23岁 · 广东韶关"
                     android:textSize="13sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconRemarkName"
-                    app:layout_constraintTop_toBottomOf="@+id/ContactProfileActivity_mIvLabelRemarkName" />
+                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvSexIcon"
+                    app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvSexIcon"
+                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mIvSexIcon" />
+            </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1px"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/dividerColorBlack"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvContentRemarkName" />
-            </android.support.constraint.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/ContactProfileActivity_mTelephoneLayout"
+            <TextView
+                android:id="@+id/ContactProfileActivity_mTvSignature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="start|center_vertical"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
+                android:textSize="12sp" />
 
-                <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvIconTelephone"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_telephone"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mTvLabelIconTelephone"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLabelIconTelephone" />
-
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvLabelIconTelephone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/RemarkInfoActivity_TelephoneLabel"
-                    android:textColor="@color/textPrimaryColorBlack"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconTelephone"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <LinearLayout
-                    android:id="@+id/ContactProfileActivity_mLlContentTelephone"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconTelephone"
-                    app:layout_constraintTop_toBottomOf="@+id/ContactProfileActivity_mTvLabelIconTelephone" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1px"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/dividerColorBlack"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mLlContentTelephone" />
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/ContactProfileActivity_mDescriptionLayout"
+            <com.yzx.chat.widget.view.FlowLayout
+                android:id="@+id/ContactProfileActivity_mLabelFlowLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
+                android:layout_marginTop="4dp"
                 android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/ContactProfileActivity_mIvIconDescription"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_describe"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mTvLabelDescriptionLayout"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvLabelDescriptionLayout" />
+                android:paddingStart="16dp" />
 
 
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvLabelDescriptionLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16sp"
-                    android:text="@string/RemarkInfoActivity_DescriptionLabel"
-                    android:textColor="@color/textPrimaryColorBlack"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconDescription"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <android.support.design.widget.TabLayout
+                android:id="@+id/ContactProfileActivity_mTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginTop="2dp"
+                app:tabSelectedTextColor="@color/colorAccent" />
 
-                <TextView
-                    android:id="@+id/ContactProfileActivity_mTvContentDescription"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16sp"
-                    android:textSize="13sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ContactProfileActivity_mIvIconDescription"
-                    app:layout_constraintTop_toBottomOf="@+id/ContactProfileActivity_mTvLabelDescriptionLayout" />
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1px"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/dividerColorBlack"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvContentDescription" />
-            </android.support.constraint.ConstraintLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="@color/grey" />
 
-            <include layout="@layout/include_chat_setup" />
+            <android.support.v4.view.ViewPager
+                android:id="@+id/ContactProfileActivity_mVpContactInfo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/ContactProfileActivity_mIvStartChat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+    <com.yzx.chat.widget.view.HexagonAvatarView
+        android:id="@+id/ContactProfileActivity_mIvAvatar"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
+        android:layout_marginEnd="32dp"
+        android:padding="4dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/temp_head_image"
         app:layout_anchor="@id/ContactProfileActivity_mAppBarLayout"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_chat"
-        app:useCompatPadding="true" />
+        app:layout_anchorGravity="bottom|end" />
+
+
+    <com.yzx.chat.widget.view.CircleImageView
+        android:id="@+id/ContactProfileActivity_mIvStartChat"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_chat"
+        android:tint="@color/colorAccent" />
+
 
 </android.support.design.widget.CoordinatorLayout>

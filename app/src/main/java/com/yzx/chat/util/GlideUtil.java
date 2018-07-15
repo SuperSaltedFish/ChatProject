@@ -1,6 +1,7 @@
 package com.yzx.chat.util;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -10,6 +11,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
+import com.yzx.chat.configure.GlideRequest;
 import com.yzx.chat.widget.view.GlideBlurTransform;
 import com.yzx.chat.widget.view.GlideHexagonTransform;
 
@@ -76,15 +78,20 @@ public class GlideUtil {
             }
         }
 
-        GlideApp.with(context)
+        GlideRequest<Drawable> glideRequest = GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
-                .transform(HEXAGON_TRANSFORM)
-                .format(DecodeFormat.PREFER_RGB_565)
-                .placeholder(R.drawable.ic_avatar_default)
-                .error(R.drawable.ic_avatar_default)
-                .into(view);
+                .format(DecodeFormat.PREFER_RGB_565);
+
+        if ((url instanceof Integer) && ((Integer) url == R.drawable.ic_avatar_default)) {
+            glideRequest.into(view);
+        } else {
+            glideRequest.transform(HEXAGON_TRANSFORM)
+                    .placeholder(R.drawable.ic_avatar_default)
+                    .error(R.drawable.ic_avatar_default)
+                    .into(view);
+        }
     }
 
     public static void clear(Context context, ImageView view) {

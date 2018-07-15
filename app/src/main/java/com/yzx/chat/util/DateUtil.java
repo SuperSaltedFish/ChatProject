@@ -45,6 +45,17 @@ public class DateUtil {
         return null;
     }
 
+    public static String formatToISO(String pattern, String time) {
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        SimpleDateFormat customFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        try {
+            return isoFormat.format(customFormat.parse(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Calendar isoToCalendar(String isoTime) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
         Calendar calendar = Calendar.getInstance();

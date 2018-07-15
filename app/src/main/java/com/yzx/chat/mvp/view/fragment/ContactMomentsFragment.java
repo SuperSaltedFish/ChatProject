@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.fragment;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,6 +21,17 @@ import com.yzx.chat.widget.view.TimeLineItemDecoration;
 
 
 public class ContactMomentsFragment extends BaseFragment {
+
+    private static final String ARGUMENT_CONTENT_ID = "ContentID";
+
+    public static ContactMomentsFragment newInstance(String contactID) {
+        Bundle args = new Bundle();
+        args.putString(ARGUMENT_CONTENT_ID,contactID);
+        ContactMomentsFragment fragment = new ContactMomentsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -54,7 +66,7 @@ public class ContactMomentsFragment extends BaseFragment {
                         .setTimeLineWidth((int) AndroidUtil.dip2px(32))
                         .setTimeLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack))
                         .setLineWidth(1)
-                        .setTimePointDrawable(AndroidUtil.getDrawable(R.drawable.temp3))
+                    //    .setTimePointDrawable(AndroidUtil.getDrawable(R.drawable.temp3))
                         .setTimePointOffsetY((int) AndroidUtil.dip2px(16))
                         .setTimePointSize((int) AndroidUtil.dip2px(24)));
     }

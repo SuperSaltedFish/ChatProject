@@ -1,6 +1,5 @@
 package com.yzx.chat.mvp.presenter;
 
-import android.os.Handler;
 
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.mvp.contract.ContactProfileContract;
@@ -10,8 +9,6 @@ import com.yzx.chat.network.chat.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2018年01月25日.
@@ -23,14 +20,11 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     private ContactProfileContract.View mContactProfileView;
     private ContactBean mContactBean;
-    private Conversation mConversation;
-    private Handler mHandler;
     private IMClient mIMClient;
 
     @Override
     public void attachView(ContactProfileContract.View view) {
         mContactProfileView = view;
-        mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
     }
@@ -38,7 +32,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     @Override
     public void detachView() {
         mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
-        mHandler.removeCallbacksAndMessages(null);
         mContactProfileView = null;
     }
 
@@ -51,26 +44,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
             return;
         }
         mContactProfileView.updateContactInfo(mContactBean);
-        mConversation = mIMClient.getConversationManager().getConversation(Conversation.ConversationType.PRIVATE, mContactBean.getUserProfile().getUserID());
-        if (mConversation == null) {
-            mConversation = new Conversation();
-            mConversation.setTargetId(mContactBean.getUserProfile().getUserID());
-            mConversation.setTop(false);
-            mConversation.setConversationType(Conversation.ConversationType.PRIVATE);
-        }
-
-        mContactProfileView.switchTopState(mConversation.isTop());
-        mIMClient.getConversationManager().isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
-            @Override
-            public void onSuccess(Conversation.ConversationNotificationStatus result) {
-                mContactProfileView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
-            }
-
-            @Override
-            public void onFailure(String error) {
-
-            }
-        });
     }
 
     @Override
@@ -100,27 +73,11 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     }
 
     @Override
-    public void enableConversationNotification(boolean isEnable) {
-        mIMClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(),mConversation.getTargetId(), isEnable);
-    }
-
-    @Override
-    public void setConversationToTop(boolean isTop) {
-        mIMClient.getConversationManager().setConversationTop(mConversation.getConversationType(),mConversation.getTargetId(), isTop);
-    }
-
-
-    @Override
-    public void clearChatMessages() {
-        mIMClient.getConversationManager().clearAllConversationMessages(mConversation.getConversationType(),mConversation.getTargetId());
-    }
-
-    @Override
     public ArrayList<String> getAllTags() {
         HashSet<String> tags = IMClient.getInstance().getContactManager().getAllTags();
-        if(tags!=null&&tags.size()>0){
+        if (tags != null && tags.size() > 0) {
             return new ArrayList<>(tags);
-        }else {
+        } else {
             return null;
         }
     }
@@ -143,15 +100,10 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         }
 
         @Override
-        public void onContactUpdate( ContactBean contact) {
+        public void onContactUpdate(ContactBean contact) {
             if (contact.equals(mContactBean)) {
                 mContactBean = contact;
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mContactProfileView.updateContactInfo(mContactBean);
-                    }
-                });
+                mContactProfileView.updateContactInfo(mContactBean);
             }
         }
     };

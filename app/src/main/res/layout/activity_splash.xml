@@ -24,14 +24,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
-            android:id="@+id/SplashActivity_mLlPageIndicator"
+        <com.yzx.chat.widget.view.PageIndicator
+            android:id="@+id/SplashActivity_mPageIndicator"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:divider="@drawable/divider_space_8dp"
-            android:orientation="horizontal"
-            android:showDividers="middle" />
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:id="@+id/SplashActivity_mLlTextIndicator"

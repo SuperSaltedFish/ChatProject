@@ -23,10 +23,12 @@ import com.yzx.chat.bean.ProvinceBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.ProfileModifyContract;
 import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
+import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.GsonUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.RoundImageView;
@@ -55,7 +57,6 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
     private EditText mEtSignature;
     private ClearEditText mEtEmail;
     private UserBean mUserBean;
-    private UserBean mOldUserBean;
 
     @Override
     protected int getLayoutID() {
@@ -103,7 +104,6 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
             finish();
             return;
         }
-        mOldUserBean = (UserBean) mUserBean.clone();
 
         mEtNickname.setText(mUserBean.getNickname());
         if (TextUtils.isEmpty(mUserBean.getLocation())) {
@@ -143,28 +143,55 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
     }
 
     private void save() {
+        String none = getString(R.string.EditProfileActivity_NoSet);
         String nickname = mEtNickname.getText().toString();
+        String location = mTvLocation.getText().toString();
+        String signature = mEtSignature.getText().toString();
+
+        String birthday = mTvBirthday.getText().toString();
+        String strSex = mTvSex.getText().toString();
+        int sex = mUserBean.getSex();
+
+        if (!none.equals(birthday)) {
+            birthday = DateUtil.formatToISO(getString(R.string.DateFormat_yyyyMMdd), birthday);
+            if (birthday == null) {
+                LogUtil.e("date formatToISO fail");
+            }
+        }else {
+            birthday=null;
+        }
+        if(!strSex.equals(none)){
+            sex = mTvSex.getText().equals(getString(R.string.Woman)) ? UserBean.SEX_WOMAN : UserBean.SEX_MAN;
+        }
+
+
         if (TextUtils.isEmpty(nickname)) {
             mEtNickname.setError(getString(R.string.EditProfileActivity_NoneNickname));
             return;
         }
         boolean isChange = false;
-        if (!mOldUserBean.getNickname().equals(nickname)) {
+        if (!nickname.equals(mUserBean.getNickname())) {
             isChange = true;
             mUserBean.setNickname(nickname);
         }
-        if (!mOldUserBean.getLocation().equals(mUserBean.getLocation())) {
+        if (!none.equals(location)&&!location.equals(mUserBean.getLocation())) {
             isChange = true;
+            mUserBean.setLocation(location);
         }
-        if (!mOldUserBean.getSignature().equals(mUserBean.getSignature())) {
+        if (!signature.equals(mUserBean.getSignature())) {
             isChange = true;
+            mUserBean.setSignature(signature);
         }
-        if (mOldUserBean.getSex() != mUserBean.getSex()) {
+        if (sex != mUserBean.getSex()) {
             isChange = true;
+            mUserBean.setSex(sex);
         }
-        if (!mOldUserBean.getBirthday().equals(mUserBean.getBirthday())) {
+
+        if (birthday!=null&&!birthday.equals(mUserBean.getBirthday())) {
             isChange = true;
+            mUserBean.setBirthday(birthday);
         }
+
         if (isChange) {
             mProgressDialog.show();
             mPresenter.updateProfile(mUserBean);

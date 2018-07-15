@@ -2,13 +2,19 @@
     <string name="app_name">尬聊</string>
 
     <string-array name="EditProfileActivity_SexList">
-        <item name="information">男</item>
-        <item name="moments">女</item>
+        <item name="Man">男</item>
+        <item name="Woman">女</item>
     </string-array>
 
     <string-array name="NotificationMessageActivity_Subtitle">
-        <item name="information">好友通知</item>
-        <item name="moments">系统信息</item>
+        <item name="Information">好友通知</item>
+        <item name="Moments">系统信息</item>
+    </string-array>
+
+    <string-array name="ContactProfile_TabTitle">
+        <item name="ChatSetting">聊天设置</item>
+        <item name="Moments">动态</item>
+        <item name="Motion">运动</item>
     </string-array>
 
     <string-array name="SplashActivity_Titles">

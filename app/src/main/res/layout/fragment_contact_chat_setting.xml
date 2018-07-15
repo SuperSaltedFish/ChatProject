@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ContactChatSettingFragment_mLlRemarkTitleLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/RemarkInfoActivity_Title"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/dividerColorBlack" />
+        </LinearLayout>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/ContactChatSettingFragment_mRemarkNameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ContactChatSettingFragment_mIvIconRemarkName"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_people"
+                app:layout_constraintBottom_toBottomOf="@id/ContactChatSettingFragment_mIvLabelRemarkName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ContactChatSettingFragment_mIvLabelRemarkName" />
+
+            <TextView
+                android:id="@+id/ContactChatSettingFragment_mIvLabelRemarkName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:maxLines="1"
+                android:text="@string/Profile_LabelNickname"
+                android:textColor="@color/textPrimaryColorBlack"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/ContactChatSettingFragment_mIvIconRemarkName"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ContactChatSettingFragment_mTvContentRemarkName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16sp"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ContactChatSettingFragment_mIvIconRemarkName"
+                app:layout_constraintTop_toBottomOf="@+id/ContactChatSettingFragment_mIvLabelRemarkName" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/dividerColorBlack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ContactChatSettingFragment_mTvContentRemarkName" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/ContactChatSettingFragment_mTelephoneLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ContactChatSettingFragment_mIvIconTelephone"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_telephone"
+                app:layout_constraintBottom_toBottomOf="@id/ContactChatSettingFragment_mTvLabelIconTelephone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ContactChatSettingFragment_mTvLabelIconTelephone" />
+
+            <TextView
+                android:id="@+id/ContactChatSettingFragment_mTvLabelIconTelephone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/RemarkInfoActivity_TelephoneLabel"
+                android:textColor="@color/textPrimaryColorBlack"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/ContactChatSettingFragment_mIvIconTelephone"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/ContactChatSettingFragment_mLlContentTelephone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ContactChatSettingFragment_mIvIconTelephone"
+                app:layout_constraintTop_toBottomOf="@+id/ContactChatSettingFragment_mTvLabelIconTelephone" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/dividerColorBlack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ContactChatSettingFragment_mLlContentTelephone" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/ContactChatSettingFragment_mDescriptionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ContactChatSettingFragment_mIvIconDescription"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_describe"
+                app:layout_constraintBottom_toBottomOf="@id/ContactChatSettingFragment_mTvLabelDescriptionLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ContactChatSettingFragment_mTvLabelDescriptionLayout" />
+
+
+            <TextView
+                android:id="@+id/ContactChatSettingFragment_mTvLabelDescriptionLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16sp"
+                android:text="@string/RemarkInfoActivity_DescriptionLabel"
+                android:textColor="@color/textPrimaryColorBlack"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/ContactChatSettingFragment_mIvIconDescription"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ContactChatSettingFragment_mTvContentDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16sp"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ContactChatSettingFragment_mIvIconDescription"
+                app:layout_constraintTop_toBottomOf="@+id/ContactChatSettingFragment_mTvLabelDescriptionLayout" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/dividerColorBlack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ContactChatSettingFragment_mTvContentDescription" />
+        </android.support.constraint.ConstraintLayout>
+
+        <include layout="@layout/include_chat_setup" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
