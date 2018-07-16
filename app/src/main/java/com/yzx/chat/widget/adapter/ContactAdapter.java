@@ -1,6 +1,7 @@
 package com.yzx.chat.widget.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,8 +53,19 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             holder.itemView.setTag(null);
         }
         ContactBean contactBean = mContactList.get(position);
+        UserBean user = contactBean.getUserProfile();
         holder.mTvName.setText(contactBean.getName());
-        holder.mIvSex.setSelected(contactBean.getUserProfile().getSex() == UserBean.SEX_WOMAN);
+        holder.mIvSex.setSelected(user.getSex() == UserBean.SEX_WOMAN);
+        holder.mTvAge.setText(user.getAge());
+
+        if (TextUtils.isEmpty(user.getSignature())) {
+            holder.mTvSignature.setText(null);
+            holder.mTvSignature.setVisibility(View.GONE);
+        } else {
+            holder.mTvSignature.setText(user.getSignature());
+            holder.mTvSignature.setVisibility(View.VISIBLE);
+        }
+
         holder.mTagsFlowLayout.removeAllViews();
         ArrayList<String> tags = contactBean.getRemark().getTags();
         if (tags != null && tags.size() != 0) {
@@ -132,6 +144,8 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         TextView mTvName;
         ImageView mIvAvatar;
         ImageView mIvSex;
+        TextView mTvSignature;
+        TextView mTvAge;
         FlowLayout mTagsFlowLayout;
 
         ContactHolder(View itemView) {
@@ -145,10 +159,12 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
             mIvSex = itemView.findViewById(R.id.ContactAdapter_mIvSex);
             mTagsFlowLayout = itemView.findViewById(R.id.ContactAdapter_mTagsFlowLayout);
-
+            mTvSignature = itemView.findViewById(R.id.ContactAdapter_mTvSignature);
+            mTvAge = itemView.findViewById(R.id.ContactAdapter_mTvAge);
             mTagsFlowLayout.setMaxLine(1);
             mTagsFlowLayout.setItemSpace((int) AndroidUtil.dip2px(4));
         }
+
     }
 
 

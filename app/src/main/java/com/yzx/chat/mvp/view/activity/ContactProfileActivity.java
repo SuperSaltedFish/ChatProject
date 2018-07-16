@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -66,6 +67,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private AppBarLayout mAppBarLayout;
     private FlowLayout mLabelFlowLayout;
     private TabLayout mTabLayout;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private PageIndicator mPageIndicator;
     private ViewPager mVpBanner;
     private ViewPager mVpContactInfo;
@@ -96,6 +98,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mPageIndicator = findViewById(R.id.ContactProfileActivity_mPageIndicator);
         mVpBanner = findViewById(R.id.ContactProfileActivity_mVpBanner);
         mVpContactInfo = findViewById(R.id.ContactProfileActivity_mVpContactInfo);
+        mCollapsingToolbarLayout = findViewById(R.id.ContactProfileActivity_mCollapsingToolbarLayout);
         mTvLastLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_normal, mLabelFlowLayout, false);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Delete));
         mContactID = getIntent().getStringExtra(INTENT_EXTRA_CONTACT_ID);
@@ -145,9 +148,10 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mTvTitle.setAlpha(0);
         mIvStartChat.setOnClickListener(mOnViewClickListener);
         mLabelFlowLayout.setOnClickListener(mOnViewClickListener);
-        mAppBarLayout.addOnOffsetChangedListener(mAppBarStateChangeListener);
+        mAppBarLayout.addOnOffsetChangedListener(mOnOffsetChangedListener);
         mPresenter.init(mContactID);
     }
+
 
     private void fillTestData() {
         mPicUrlList.add(R.drawable.temp_image_1);
@@ -227,15 +231,23 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         }
     };
 
-    private AppBarStateChangeListener mAppBarStateChangeListener = new AppBarStateChangeListener() {
+    private AppBarLayout.OnOffsetChangedListener mOnOffsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {
+        private boolean isHide;
+
         @Override
-        public void onStateChanged(AppBarLayout appBarLayout, int state) {
-            if (state == AppBarStateChangeListener.STATE_COLLAPSED) {
-                mIvAvatar.animate().alpha(0).scaleX(0).scaleY(0).setDuration(200);
-                mTvTitle.animate().alpha(1).setDuration(200);
+        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+            if (mCollapsingToolbarLayout.getHeight() + verticalOffset < mCollapsingToolbarLayout.getScrimVisibleHeightTrigger()) {
+                if (!isHide) {
+                    isHide = true;
+                    mIvAvatar.animate().alpha(0).scaleX(0).scaleY(0).setDuration(200);
+                    mTvTitle.animate().alpha(1).setDuration(200);
+                }
             } else {
-                mIvAvatar.animate().alpha(1).scaleX(1).scaleY(1).setDuration(200);
-                mTvTitle.animate().alpha(0).setDuration(200);
+                if (isHide) {
+                    isHide = false;
+                    mIvAvatar.animate().alpha(1).scaleX(1).scaleY(1).setDuration(200);
+                    mTvTitle.animate().alpha(0).setDuration(200);
+                }
             }
         }
     };
@@ -251,14 +263,11 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mTvNickname.setText(contact.getUserProfile().getNickname());
         UserBean user = contact.getUserProfile();
         mIvSexIcon.setSelected(user.getSex() == UserBean.SEX_WOMAN);
-//        if (user.getAge() > 0) {
-//            mTvLocationAndAge.setText(user.getAge() + "岁");
-//        } else {
-//            mTvLocationAndAge.setText("年龄保密");
-//        }
-//        if (!TextUtils.isEmpty(user.getLocation())) {
-//            mTvLocationAndAge.setText(" · " + user.getLocation());
-//        }
+        mTvLocationAndAge.setText(user.getAge());
+
+        if (!TextUtils.isEmpty(user.getLocation())) {
+            mTvLocationAndAge.setText(" · " + user.getLocation());
+        }
         if (TextUtils.isEmpty(user.getSignature())) {
             mTvSignature.setText(null);
             mTvSignature.setVisibility(View.GONE);

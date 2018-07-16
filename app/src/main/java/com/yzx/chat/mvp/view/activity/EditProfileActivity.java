@@ -271,6 +271,13 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
 
         @Override
         public void onClick(View v) {
+            if (mCalendar == null) {
+                if (TextUtils.isEmpty(mUserBean.getBirthday())) {
+                    mCalendar = Calendar.getInstance();
+                } else {
+                    mCalendar = DateUtil.isoToCalendar(mUserBean.getBirthday());
+                }
+            }
             if (mDatePickerDialog == null) {
                 mDatePickerDialog = new DatePickerDialog(EditProfileActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
@@ -281,14 +288,7 @@ public class EditProfileActivity extends BaseCompatActivity<ProfileModifyContrac
                         mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         mUserBean.setBirthday(DateUtil.msecToISO(mCalendar.getTimeInMillis()));
                     }
-                }, -1, -1, -1);
-            }
-            if (mCalendar == null) {
-                if (TextUtils.isEmpty(mUserBean.getBirthday())) {
-                    mCalendar = Calendar.getInstance();
-                } else {
-                    mCalendar = DateUtil.isoToCalendar(mUserBean.getBirthday());
-                }
+                }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             }
             mDatePickerDialog.updateDate(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             mDatePickerDialog.setTitle(getString(R.string.EditProfileActivity_BirthdayDialogTitle));

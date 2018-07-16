@@ -4,6 +4,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.yzx.chat.R;
+import com.yzx.chat.util.AndroidUtil;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Created by YZX on 2017年11月17日.
  * 每一个不曾起舞的日子,都是对生命的辜负.
@@ -25,7 +34,7 @@ public class UserBean implements Parcelable {
     private String profession;
     private String school;
     private int sex;
-    private int age;
+    private String age;
 
     public static UserBean copy(UserBean user) {
         Parcel parcel = Parcel.obtain();
@@ -148,14 +157,50 @@ public class UserBean implements Parcelable {
         this.sex = sex;
     }
 
-    public int getAge() {
-        return age;
+    public String getAge() {
+        return calculateAgeFromBirthday(birthday);
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
+    public static String calculateAgeFromBirthday(String strBirthday) {
+        if (!TextUtils.isEmpty(strBirthday)) {
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            try {
+                Date birthDay = isoFormat.parse(strBirthday);
+                Calendar cal = Calendar.getInstance();
+                if (cal.before(birthDay)) {
+                    return "0"+AndroidUtil.getString(R.string.Unit_Age);
+                }
+                int yearNow = cal.get(Calendar.YEAR);
+                int monthNow = cal.get(Calendar.MONTH);
+                int dayOfMonthNow = cal.get(Calendar.DAY_OF_MONTH);
+                cal.setTime(birthDay);
+
+                int yearBirth = cal.get(Calendar.YEAR);
+                int monthBirth = cal.get(Calendar.MONTH);
+                int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);
+
+                int age = yearNow - yearBirth;
+
+                if (monthNow <= monthBirth) {
+                    if (monthNow == monthBirth) {
+                        if (dayOfMonthNow < dayOfMonthBirth) age--;
+                    } else {
+                        age--;
+                    }
+                }
+                return String.valueOf(age)+AndroidUtil.getString(R.string.Unit_Age);
+            } catch (ParseException e) {
+                e.printStackTrace();
+
+            }
+        }
+        return AndroidUtil.getString(R.string.ContactProfileActivity_AgeInvisible);
+
+    }
 
     @Override
     public int describeContents() {
@@ -175,7 +220,7 @@ public class UserBean implements Parcelable {
         dest.writeString(this.profession);
         dest.writeString(this.school);
         dest.writeInt(this.sex);
-        dest.writeInt(this.age);
+        dest.writeString(this.age);
     }
 
     public UserBean() {
@@ -193,7 +238,7 @@ public class UserBean implements Parcelable {
         this.profession = in.readString();
         this.school = in.readString();
         this.sex = in.readInt();
-        this.age = in.readInt();
+        this.age = in.readString();
     }
 
     public static final Creator<UserBean> CREATOR = new Creator<UserBean>() {

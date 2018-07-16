@@ -1,10 +1,11 @@
 package com.yzx.chat.widget.adapter;
 
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +26,7 @@ import java.util.List;
 public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOperationAdapter.ContactMessageHolder> {
 
     private List<ContactOperationBean> mContactOperationList;
-    private OnAcceptContactRequestListener mOnAcceptContactRequestListener;
+    private OnContactRequestListener mOnContactRequestListener;
 
     public ContactOperationAdapter(List<ContactOperationBean> contactOperationList) {
         mContactOperationList = contactOperationList;
@@ -39,37 +40,49 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
     @Override
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
         ContactOperationBean contactMessage = mContactOperationList.get(position);
+        holder.setOnContactRequestListener(mOnContactRequestListener);
         holder.mTvName.setText(contactMessage.getUser().getNickname());
         String reason = contactMessage.getReason();
-        if(TextUtils.isEmpty(reason)){
+        if (TextUtils.isEmpty(reason)) {
             holder.mTvReason.setText(R.string.ContactOperationAdapter_DefaultReason);
-        }else {
+        } else {
             holder.mTvReason.setText(contactMessage.getReason());
         }
         String type = contactMessage.getType();
         if (ContactManager.CONTACT_OPERATION_REQUEST.equals(type)) {
-            holder.mBtnState.setEnabled(true);
-            holder.setAcceptContactRequestListener(mOnAcceptContactRequestListener);
+            holder.mTvRefused.setVisibility(View.VISIBLE);
+            holder.mTvAccept.setEnabled(true);
         } else {
-            holder.mBtnState.setEnabled(false);
-            holder.setAcceptContactRequestListener(null);
+            holder.mTvRefused.setVisibility(View.INVISIBLE);
+            holder.mTvAccept.setEnabled(false);
         }
+
         switch (type) {
             case ContactManager.CONTACT_OPERATION_ACCEPT:
             case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
-                holder.mBtnState.setText(R.string.ContactMessageAdapter_Added);
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_Added);
+                holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_accepted);
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
                 break;
             case ContactManager.CONTACT_OPERATION_REFUSED:
-                holder.mBtnState.setText(R.string.ContactMessageAdapter_Disagree);
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_Disagree);
+                holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_refused);
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
                 break;
             case ContactManager.CONTACT_OPERATION_REFUSED_ACTIVE:
-                holder.mBtnState.setText(R.string.ContactMessageAdapter_Refused);
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_AlreadyRefused);
+                holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_accepted);
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
                 break;
             case ContactManager.CONTACT_OPERATION_REQUEST:
-                holder.mBtnState.setText(R.string.ContactMessageAdapter_Requesting);
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_Requesting);
+                holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_acceptable);
+                holder.mTvAccept.setTextColor(Color.WHITE);
                 break;
             case ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE:
-                holder.mBtnState.setText(R.string.ContactMessageAdapter_Verifying);
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_Verifying);
+                holder.mTvAccept.setBackgroundColor(ContextCompat.getColor(mContext, R.color.grey));
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
                 break;
         }
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUser().getAvatar());
@@ -81,41 +94,54 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         return mContactOperationList == null ? 0 : mContactOperationList.size();
     }
 
-    public void setOnAcceptContactRequestListener(OnAcceptContactRequestListener onAcceptContactRequestListener) {
-        mOnAcceptContactRequestListener = onAcceptContactRequestListener;
+    public void setOnContactRequestListener(OnContactRequestListener onContactRequestListener) {
+        mOnContactRequestListener = onContactRequestListener;
+        notifyDataSetChanged();
     }
 
     static final class ContactMessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 
-        private OnAcceptContactRequestListener mAcceptContactRequestListener;
+        private OnContactRequestListener mOnContactRequestListener;
         ImageView mIvAvatar;
         TextView mTvName;
         TextView mTvReason;
-        Button mBtnState;
+        TextView mTvAccept;
+        TextView mTvRefused;
 
         ContactMessageHolder(View itemView) {
             super(itemView);
             mIvAvatar = itemView.findViewById(R.id.ContactMessageAdapter_mIvAvatar);
             mTvName = itemView.findViewById(R.id.ContactMessageAdapter_mTvName);
             mTvReason = itemView.findViewById(R.id.ContactMessageAdapter_mTvReason);
-            mBtnState = itemView.findViewById(R.id.ContactMessageAdapter_mBtnState);
+            mTvAccept = itemView.findViewById(R.id.ContactMessageAdapter_mTvAccept);
+            mTvRefused = itemView.findViewById(R.id.ContactMessageAdapter_mTvRefused);
             setup();
         }
 
         private void setup() {
-            mBtnState.setOnClickListener(mOnAcceptClickListener);
+            mTvAccept.setOnClickListener(mOnAcceptClickListener);
+            mTvRefused.setOnClickListener(mOnRefusedClickListener);
             itemView.setOnClickListener(mOnDetailsClickListener);
         }
 
-        void setAcceptContactRequestListener(OnAcceptContactRequestListener acceptContactRequestListener) {
-            mAcceptContactRequestListener = acceptContactRequestListener;
+        public void setOnContactRequestListener(OnContactRequestListener onContactRequestListener) {
+            mOnContactRequestListener = onContactRequestListener;
         }
 
         private final View.OnClickListener mOnAcceptClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mAcceptContactRequestListener != null) {
-                    mAcceptContactRequestListener.onAcceptContactRequest(getAdapterPosition());
+                if (mOnContactRequestListener != null) {
+                    mOnContactRequestListener.onAcceptRequest(getAdapterPosition());
+                }
+            }
+        };
+
+        private final View.OnClickListener mOnRefusedClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnContactRequestListener != null) {
+                    mOnContactRequestListener.onRefusedRequest(getAdapterPosition());
                 }
             }
         };
@@ -123,15 +149,17 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         private final View.OnClickListener mOnDetailsClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mAcceptContactRequestListener != null) {
-                    mAcceptContactRequestListener.enterDetails(getAdapterPosition());
+                if (mOnContactRequestListener != null) {
+                    mOnContactRequestListener.enterDetails(getAdapterPosition());
                 }
             }
         };
     }
 
-    public interface OnAcceptContactRequestListener {
-        void onAcceptContactRequest(int position);
+    public interface OnContactRequestListener {
+        void onAcceptRequest(int position);
+
+        void onRefusedRequest(int position);
 
         void enterDetails(int position);
     }

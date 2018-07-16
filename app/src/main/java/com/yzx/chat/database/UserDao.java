@@ -27,7 +27,6 @@ public class UserDao extends AbstractDao<UserBean> {
     private static final String COLUMN_NAME_Email = "Email";
     private static final String COLUMN_NAME_Profession = "Profession";
     private static final String COLUMN_NAME_School = "School";
-    private static final String COLUMN_NAME_Age = "Age";
 
 
     private static final int COLUMN_INDEX_UserID = 0;
@@ -57,7 +56,6 @@ public class UserDao extends AbstractDao<UserBean> {
                     + COLUMN_NAME_Email + " TEXT,"
                     + COLUMN_NAME_Profession + " TEXT,"
                     + COLUMN_NAME_School + " TEXT,"
-                    + COLUMN_NAME_Age + " INTEGER,"
                     + "PRIMARY KEY (" + COLUMN_NAME_UserID + ")"
                     + ")";
 
@@ -94,7 +92,6 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Email, entity.getEmail());
         values.put(COLUMN_NAME_Profession, entity.getProfession());
         values.put(COLUMN_NAME_School, entity.getSchool());
-        values.put(COLUMN_NAME_Age, entity.getAge());
     }
 
     @Override
@@ -111,7 +108,6 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setEmail(cursor.getString(COLUMN_INDEX_Email));
         bean.setProfession(cursor.getString(COLUMN_INDEX_Profession));
         bean.setSchool(cursor.getString(COLUMN_INDEX_School));
-        bean.setAge(cursor.getInt(COLUMN_INDEX_Age));
         return bean;
     }
 
@@ -128,7 +124,6 @@ public class UserDao extends AbstractDao<UserBean> {
         bean.setEmail(cursor.getString(COLUMN_INDEX_Email));
         bean.setProfession(cursor.getString(COLUMN_INDEX_Profession));
         bean.setSchool(cursor.getString(COLUMN_INDEX_School));
-        bean.setAge(cursor.getInt(COLUMN_INDEX_Age));
         return bean;
     }
 
@@ -148,7 +143,6 @@ public class UserDao extends AbstractDao<UserBean> {
         values.put(COLUMN_NAME_Email, entity.getEmail());
         values.put(COLUMN_NAME_Profession, entity.getProfession());
         values.put(COLUMN_NAME_School, entity.getSchool());
-        values.put(COLUMN_NAME_Age, entity.getAge());
         return Write.replace(TABLE_NAME, null, values) >= 0;
     }
 }

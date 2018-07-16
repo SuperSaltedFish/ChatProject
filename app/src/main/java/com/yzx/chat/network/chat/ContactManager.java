@@ -266,10 +266,6 @@ public class ContactManager {
         mDeleteContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                boolean success = mContactDao.delete(contact);
-                if (!success) {
-                    LogUtil.e("deleteContact:Failure of operating database");
-                }
                 if (mContactDao.delete(contact)) {
                     UserBean user = contact.getUserProfile();
                     mContactsMap.remove(user.getUserID());

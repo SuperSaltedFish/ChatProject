@@ -74,7 +74,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         ((DefaultItemAnimator) (mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
 
-        mAdapter.setOnAcceptContactRequestListener(mOnAcceptContactRequestListener);
+        mAdapter.setOnContactRequestListener(mOnContactRequestListener);
 
         mTvLoadMoreHint.setText(R.string.LoadMoreHint_Default);
 
@@ -126,10 +126,15 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         }
     };
 
-    private final ContactOperationAdapter.OnAcceptContactRequestListener mOnAcceptContactRequestListener = new ContactOperationAdapter.OnAcceptContactRequestListener() {
+    private final ContactOperationAdapter.OnContactRequestListener mOnContactRequestListener = new ContactOperationAdapter.OnContactRequestListener() {
         @Override
-        public void onAcceptContactRequest(int position) {
+        public void onAcceptRequest(int position) {
             mPresenter.acceptContactRequest(mContactOperationList.get(position));
+        }
+
+        @Override
+        public void onRefusedRequest(int position) {
+
         }
 
         @Override

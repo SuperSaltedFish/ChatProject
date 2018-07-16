@@ -8,12 +8,15 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/ContactProfileActivity_mAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="352dp"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:elevation="0dp"
         android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/ContactProfileActivity_mCollapsingToolbarLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="352dp"
             app:contentScrim="@color/colorAccent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@color/colorAccent"
@@ -41,6 +44,7 @@
                     android:layout_gravity="bottom|start"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="16dp" />
+
             </FrameLayout>
 
 
@@ -66,24 +70,16 @@
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
         <LinearLayout
+            android:id="@+id/ContactProfileActivity_mLlContactInfoLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingBottom="16dp"
-            android:paddingTop="10dp">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/ContactProfileActivity_mTvNickname"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:gravity="start|center_vertical"
@@ -116,7 +112,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:gravity="center_vertical"
-                    android:text="23岁 · 广东韶关"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvSexIcon"
                     app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvSexIcon"
@@ -154,15 +149,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
                 android:background="@color/grey" />
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/ContactProfileActivity_mVpContactInfo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/ContactProfileActivity_mVpContactInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/ContactProfileActivity_mIvAvatar"
@@ -171,9 +167,8 @@
         android:layout_marginEnd="32dp"
         android:padding="4dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/temp_head_image"
-        app:layout_anchor="@id/ContactProfileActivity_mAppBarLayout"
-        app:layout_anchorGravity="bottom|end" />
+        app:layout_anchor="@id/ContactProfileActivity_mLlContactInfoLayout"
+        app:layout_anchorGravity="top|end" />
 
 
     <com.yzx.chat.widget.view.CircleImageView

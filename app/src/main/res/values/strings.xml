@@ -114,8 +114,9 @@
     <string name="ImageSelectorActivity_Title">选择图片</string>
     <string name="ContactMessageAdapter_Added">已添加</string>
     <string name="ContactMessageAdapter_Disagree">对方拒绝添加</string>
-    <string name="ContactMessageAdapter_Refused">已拒绝</string>
-    <string name="ContactMessageAdapter_Requesting">添加</string>
+    <string name="ContactMessageAdapter_AlreadyRefused">已拒绝</string>
+    <string name="ContactMessageAdapter_Refused">拒绝</string>
+    <string name="ContactMessageAdapter_Requesting">同意</string>
     <string name="ContactMessageAdapter_Verifying">等待验证</string>
     <string name="ContactMessageMenu_Delete">删除</string>
     <string name="EditContactLabelActivity_Title">添加标签</string>
@@ -203,7 +204,7 @@
     <string name="shoot">拍摄</string>
     <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
     <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
-    <string name="unit_age">岁</string>
+    <string name="Unit_Age">岁</string>
     <string name="StrangerProfileActivity_AllowViewMoment">允许查看我的动态</string>
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
     <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>
@@ -226,5 +227,6 @@
     <string name="EditContactLabelActivity_LabelExists">该标签已添加，无法重复添加</string>
     <string name="MyTagListActivity_Title">我的标签</string>
     <string name="LoginActivity_Layout_Forgot">忘记?</string>
+    <string name="ContactProfileActivity_AgeInvisible">年龄保密</string>
 
 </resources>

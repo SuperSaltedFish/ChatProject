@@ -82,9 +82,9 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
             mBtnConfirm.setText(R.string.StrangerProfileActivity_RequestAddContact);
         } else if (mUserBean == null && mContactOperationBean != null) {
             mUserBean = mContactOperationBean.getUser();
-            if(TextUtils.isEmpty(mContactOperationBean.getReason())){
+            if (TextUtils.isEmpty(mContactOperationBean.getReason())) {
                 mEtReason.setText(R.string.None);
-            }else {
+            } else {
                 mEtReason.setText(mContactOperationBean.getReason());
             }
             mEtReason.setEnabled(false);
@@ -112,9 +112,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
                 .transforms(new GlideSemicircleTransform(AndroidUtil.dip2px(40), Color.WHITE))
                 .into(mIvPicture);
 
-        if (mUserBean.getAge() > 0) {
-            mTvUserInfo.setText(mTvUserInfo.getText() + " · " + mUserBean.getAge() + getString(R.string.unit_age));
-        }
+        mTvUserInfo.setText(mTvUserInfo.getText() + " · " + mUserBean.getAge());
         if (!TextUtils.isEmpty(mUserBean.getLocation())) {
             mTvUserInfo.setText(mTvUserInfo.getText() + " · " + mUserBean.getLocation());
         }

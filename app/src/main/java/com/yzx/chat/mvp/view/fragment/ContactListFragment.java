@@ -329,14 +329,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
             if (position == 0 && mContactAdapter.isHasHeaderView()) {
                 return;
             }
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(mContext, ContactProfileActivity.class);
-                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactList.get(position - 1).getUserProfile().getUserID());
-                    startActivity(intent);
-                }
-            });
+            Intent intent = new Intent(mContext, ContactProfileActivity.class);
+            intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactList.get(position - 1).getUserProfile().getUserID());
+            startActivity(intent);
         }
 
         @Override
@@ -435,6 +430,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
     @Override
     public void showTagCount(int count) {
-        mTvTags.setText(String.format(Locale.getDefault(),"%s(%d)",getString(R.string.MyTagListActivity_Title),count));
+        mTvTags.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.MyTagListActivity_Title), count));
     }
 }
