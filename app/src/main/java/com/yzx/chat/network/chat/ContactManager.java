@@ -166,9 +166,9 @@ public class ContactManager {
         mNetworkExecutor.submit(mRequestContact);
     }
 
-    public void rejectContact(final ContactOperationBean contactOperation, final String reason, final ResultCallback<Void> resultCallback) {
+    public void refusedContact(final ContactOperationBean contactOperation, final String reason, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mRejectContact);
-        mRejectContact = mContactApi.rejectContact(contactOperation.getUser().getUserID(), reason);
+        mRejectContact = mContactApi.refusedContact(contactOperation.getUser().getUserID(), reason);
         mRejectContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {

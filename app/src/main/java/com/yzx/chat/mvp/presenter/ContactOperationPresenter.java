@@ -74,6 +74,23 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
+    public void refusedContactRequest(ContactOperationBean contactOperation) {
+        mContactOperationContractView.setEnableProgressDialog(true);
+        mIMClient.getContactManager().refusedContact(contactOperation,"", new ResultCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                mContactOperationContractView.setEnableProgressDialog(false);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                mContactOperationContractView.showError(error);
+                mContactOperationContractView.setEnableProgressDialog(false);
+            }
+        });
+    }
+
+    @Override
     public void removeContactOperation(ContactOperationBean ContactOperation) {
         mIMClient.getContactManager().removeContactOperationAsync(ContactOperation);
     }

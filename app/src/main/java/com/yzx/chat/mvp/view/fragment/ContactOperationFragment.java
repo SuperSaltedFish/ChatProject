@@ -134,7 +134,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
 
         @Override
         public void onRefusedRequest(int position) {
-
+            mPresenter.refusedContactRequest(mContactOperationList.get(position));
         }
 
         @Override

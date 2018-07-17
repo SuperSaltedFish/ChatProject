@@ -21,7 +21,7 @@ public interface ContactApi {
     Call<JsonResponse<Void>> requestContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
 
     @HttpApi(RequestType = RequestType.POST, url = "contact/rejectContact")
-    Call<JsonResponse<Void>> rejectContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
+    Call<JsonResponse<Void>> refusedContact(@HttpParam("contactID") String contactID, @HttpParam("reason") String reason);
 
     @HttpApi(RequestType = RequestType.POST, url = "contact/acceptContact")
     Call<JsonResponse<Void>> acceptContact(@HttpParam("contactID") String contactID);

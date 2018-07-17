@@ -39,6 +39,8 @@ public class ContactOperationContract {
 
         void acceptContactRequest(ContactOperationBean contactOperation);
 
+        void refusedContactRequest(ContactOperationBean contactOperation);
+
         void removeContactOperation(ContactOperationBean ContactOperation);
 
         void loadAllContactOperation();

@@ -111,7 +111,7 @@ public class ContactOperationBean implements Parcelable {
         this.time = in.readInt();
     }
 
-    public static final Parcelable.Creator<ContactOperationBean> CREATOR = new Parcelable.Creator<ContactOperationBean>() {
+    public static final Creator<ContactOperationBean> CREATOR = new Creator<ContactOperationBean>() {
         @Override
         public ContactOperationBean createFromParcel(Parcel source) {
             return new ContactOperationBean(source);

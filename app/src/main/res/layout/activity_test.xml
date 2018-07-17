@@ -8,10 +8,6 @@
     android:gravity="center"
     tools:context=".mvp.view.activity.TestActivity">
 
-    <com.yzx.chat.widget.view.PageIndicator
-        android:layout_width="300dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center" />
 
 
 </android.support.constraint.ConstraintLayout>
