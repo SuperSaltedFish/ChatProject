@@ -74,7 +74,7 @@ public class UserManager {
 
     public void uploadAvatar(String imagePath, final ResultCallback<UploadAvatarBean> callback) {
         AsyncUtil.cancelCall(mUploadAvatarCall);
-        mUploadAvatarCall = mUserApi.uploadAvatar(imagePath);
+        mUploadAvatarCall = mUserApi.uploadAvatar(imagePath,null);
         mUploadAvatarCall.setResponseCallback(new BaseResponseCallback<UploadAvatarBean>() {
             @Override
             protected void onSuccess(UploadAvatarBean response) {

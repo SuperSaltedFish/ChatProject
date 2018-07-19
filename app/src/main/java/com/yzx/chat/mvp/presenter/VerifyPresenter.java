@@ -3,20 +3,17 @@ package com.yzx.chat.mvp.presenter;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.gson.Gson;
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.mvp.contract.VerifyContract;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.api.auth.UserInfoBean;
-import com.yzx.chat.network.api.user.UserApi;
 import com.yzx.chat.network.chat.CryptoManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
-import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 
 import java.util.HashMap;
@@ -61,7 +58,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
                 CryptoManager.getDeviceID(),
                 CryptoManager.getBase64RSAPublicKey(),
                 verifyCode);
-        mLoginCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(serverSecretKey));
+        mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(serverSecretKey));
         IMClient.getInstance().login(mLoginCall, mLoginOrRegisterCallBack);
     }
 
@@ -75,7 +72,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
                 CryptoManager.getDeviceID(),
                 CryptoManager.getBase64RSAPublicKey(),
                 verifyCode);
-        mRegisterCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(serverSecretKey));
+        mRegisterCall.setHttpConverter(ApiHelper.getRsaHttpConverter(serverSecretKey));
         IMClient.getInstance().login(mRegisterCall, mLoginOrRegisterCallBack);
     }
 
@@ -114,7 +111,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
                 mVerifyView.showErrorHint(message);
             }
         });
-        mObtainSMSCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(serverSecretKey));
+        mObtainSMSCall.setHttpConverter(ApiHelper.getRsaHttpConverter(serverSecretKey));
         sHttpExecutor.submit(mObtainSMSCall);
     }
 

@@ -56,14 +56,7 @@ public class NetworkExecutor {
         if (mCalls == null || mCalls.length == 0) {
             return;
         }
-        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, 0, mCalls.length, this, sUIHandler));
-    }
-
-    public void submit(Call<?>[] mCalls, int startIndex, int length) {
-        if (mCalls == null || length == 0 || startIndex == length) {
-            return;
-        }
-        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, startIndex, length, this, sUIHandler));
+        mThreadPoolExecutor.execute(new NetworkRunnable(mCalls, sUIHandler));
     }
 
     public void cleanAllTask() {

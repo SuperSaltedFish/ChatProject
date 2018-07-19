@@ -5,10 +5,8 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.mvp.contract.LoginContract;
-import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.AuthApi;
 import com.yzx.chat.network.api.auth.GetSecretKeyBean;
@@ -18,17 +16,15 @@ import com.yzx.chat.network.chat.CryptoManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
 import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.HttpDataFormatAdapter;
+import com.yzx.chat.network.framework.HttpConverter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpRequest;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
-import com.yzx.chat.util.RSAUtil;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -107,8 +103,8 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(GetSecretKeyBean response) {
                 mServerSecretKey = response.getSecretKey();
-                mObtainSMSCodeCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
-                mLoginCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+                mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
+                mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
             }
 
             @Override
@@ -121,25 +117,29 @@ public class LoginPresenter implements LoginContract.Presenter {
                 return !TextUtils.isEmpty(mServerSecretKey);
             }
         });
-        mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
+
+        mGetSecretKeyCall.setHttpConverter(new HttpConverter() {
             @Nullable
             @Override
-            public String paramsToString(HttpRequest httpRequest) {
-                LogUtil.e("开始访问：" + httpRequest.url());
+            public byte[] convertRequest(Map<String, Object> requestParams) {
                 return null;
             }
 
             @Nullable
             @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
+            public byte[] convertMultipartRequest(String partName, Object body) {
                 return null;
             }
 
             @Nullable
             @Override
-            public Object responseToObject(String url, String httpResponse, Type genericType) {
-                LogUtil.e(httpResponse);
-                return ApiHelper.getDefaultGsonInstance().fromJson(httpResponse, genericType);
+            public Object convertResponseBody(byte[] body, Type genericType) {
+                if(body==null||body.length==0){
+                    return null;
+                }
+                String strBody = new String(body);
+                LogUtil.e("convertResponseBody:"+strBody);
+                return ApiHelper.getDefaultGsonInstance().fromJson(new String(body), genericType);
             }
         });
     }
@@ -169,7 +169,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             }
         });
         if (mServerSecretKey != null) {
-            mObtainSMSCodeCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+            mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
         }
     }
 
@@ -182,7 +182,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 CryptoManager.getBase64RSAPublicKey(),
                 "");
         if (mServerSecretKey != null) {
-            mLoginCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+            mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
         }
     }
 

@@ -1,8 +1,9 @@
 package com.yzx.chat.network.framework;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
-import com.yzx.chat.util.LogUtil;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -11,253 +12,156 @@ import com.yzx.chat.util.LogUtil;
  */
 public class NetworkRunnable implements Runnable {
 
-    private Call<?>[] mCalls;
-    private int mStartIndex;
-    private int mLength;
-    private NetworkExecutor mExecutor;
+    private Call[] mCalls;
     private Handler mUIHandler;
 
-    NetworkRunnable(Call<?>[] call, int startIndex, int length, NetworkExecutor executor, Handler uiHandler) {
+    NetworkRunnable(Call[] call, Handler uiHandler) {
         mCalls = call;
-        mStartIndex = startIndex;
-        mLength = length;
-        mExecutor = executor;
         mUIHandler = uiHandler;
     }
 
     @Override
     public void run() {
-        Call call = mCalls[mStartIndex++];
-        if (call.isCancel()) {
+        if (mCalls == null || mCalls.length == 0) {
             return;
         }
-        if (!NetworkExecutor.getNetworkConfigure().isEnableNetworkStateCheck || NetworkUtil.isNetworkConnected(NetworkExecutor.sAppContext)) {
-            request(call);
-        } else {
-            requestError(call, new NetworkUnavailableException("Current network is unavailable."));
+        for (Call call : mCalls) {
+            if (call.isCancel()) {
+                break;
+            }
+            if (NetworkExecutor.getNetworkConfigure().isEnableNetworkStateCheck && !NetworkUtil.isNetworkConnected(NetworkExecutor.sAppContext)) {
+                callbackError(call.getResponseCallback(), new NetworkUnavailableException("Current network is unavailable."), call.isCallbackRunOnMainThread());
+            } else {
+                request(call);
+            }
+            ResponseCallback callback = call.getResponseCallback();
+            if (call.isCancel() || (callback != null && !callback.isExecuteNextTask())) {
+                break;
+            }
         }
     }
+
 
     private void request(final Call call) {
-        HttpDataFormatAdapter adapter = call.getHttpDataFormatAdapter();
-        HttpRequest request = call.getHttpRequest();
-        String strParams = adapter != null ? adapter.paramsToString(request) : null;
-        String url = request.url();
-        RequestType requestType = request.requestType();
-        DownloadCallback downloadCallback = call.getDownloadCallback();
-        DownloadProcessListenerImpl processListener = null;
-        if (downloadCallback != null) {
-            processListener = new DownloadProcessListenerImpl(downloadCallback, call.isDownloadCallbackRunOnMainThread() ? mUIHandler : null);
-        }
-
-
-        Http.Result result;
-        switch (requestType) {
-            case GET:
-                result = Http.doGet(url, strParams, call);
-                break;
-            case POST:
-                result = Http.doPost(url, strParams, call);
-                break;
-            case GET_DOWNLOAD:
-                result = Http.doGetByDownload(url, strParams, request.savePath(), processListener, call);
-                break;
-            case POST_DOWNLOAD:
-                result = Http.doPostByDownload(url, strParams, request.savePath(), processListener, call);
-                break;
-            case POST_MULTI_PARAMS:
-                result = Http.doPostByMultiParams(url, adapter != null ? adapter.multiParamsFormat(request) : request.params(), call);
-                break;
-            default:
-                throw new RuntimeException("unknown request type:" + request.requestType());
-        }
-
-
-        Throwable throwable = result.getThrowable();
-        if (throwable != null) {
-            requestError(call, throwable);
+        boolean isCallbackRunOnMainThread = call.isCallbackRunOnMainThread();
+        boolean isDownload = call instanceof DownloadCall;
+        ResponseCallback responseCallback = isDownload ? ((DownloadCall) call).getDownloadCallback() : call.getResponseCallback();
+        HttpRequest request = call.request();
+        HttpConverter converter = call.getHttpConverter();
+        ResponseParams responseParams;
+        if (isDownload) {
+            DownloadCallback downloadCallback = (DownloadCallback) responseCallback;
+            String savePath = ((DownloadCall) call).getSavePath();
+            UniformVelocityInterpolator interpolator = null;
+            if (downloadCallback != null) {
+                interpolator = new UniformVelocityInterpolator(downloadCallback, mUIHandler);
+            }
+            responseParams = Http.callDownload(request, converter, savePath, interpolator, call);
         } else {
-            HttpResponseImpl response = new HttpResponseImpl(call.getGenericType());
-            int responseCode = result.getResponseCode();
-            response.setResponseCode(responseCode);
-            if (responseCode == 200) {
-                if (requestType == RequestType.GET_DOWNLOAD || requestType == RequestType.POST_DOWNLOAD) {
-                    response.setResponse(result.getDownloadPath());
-                    requestSuccess(call, response);
-                } else {
-                    try {
-                        Object toObject = adapter != null ? adapter.responseToObject(url, result.getResponseContent(), call.getGenericType()) : null;
-                        response.setResponse(toObject);
-                        requestSuccess(call, response);
-                    } catch (Exception e) {
-                        requestError(call, e);
-                    }
-                }
+            responseParams = Http.call(request, converter);
+        }
+
+        if (responseCallback != null && !call.isCancel()) {
+            final Throwable throwable = responseParams.throwable;
+            if (throwable != null) {
+                callbackError(responseCallback, throwable, isCallbackRunOnMainThread);
             } else {
-                requestSuccess(call, response);
+                try {
+                    HttpResponse response = responseParams.convert(converter, call.getGenericType());
+                    callbackResponse(responseCallback, request, response, isCallbackRunOnMainThread);
+                } catch (Exception e) {
+                    callbackError(responseCallback, e, isCallbackRunOnMainThread);
+                }
             }
         }
     }
 
 
     @SuppressWarnings("unchecked")
-    private void requestSuccess(final Call call, final HttpResponse httpResponse) {
-        switch (call.getHttpRequest().requestType()) {
-            case GET:
-            case POST:
-            case POST_MULTI_PARAMS:
-                if (call.isResponseCallbackRunOnMainThread()) {
-                    mUIHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            responseSuccess(call, httpResponse);
-                        }
-                    });
-                } else {
-                    responseSuccess(call, httpResponse);
+    private void callbackResponse(final ResponseCallback responseCallback, final HttpRequest request, final HttpResponse response, boolean isRunOnMainThread) {
+        if (isRunOnMainThread) {
+            final CountDownLatch latch = new CountDownLatch(1);
+            mUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    responseCallback.onResponse(request, response);
+                    latch.countDown();
                 }
-                break;
-            case GET_DOWNLOAD:
-            case POST_DOWNLOAD:
-                if (call.isDownloadCallbackRunOnMainThread()) {
-                    mUIHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadSuccess(call, httpResponse);
-                        }
-                    });
-                } else {
-                    downloadSuccess(call, httpResponse);
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            responseCallback.onResponse(request, response);
+        }
+    }
+
+    private void callbackError(final ResponseCallback responseCallback, final Throwable throwable, boolean isRunOnMainThread) {
+        if (isRunOnMainThread) {
+            final CountDownLatch latch = new CountDownLatch(1);
+            mUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    responseCallback.onError(throwable);
+                    latch.countDown();
                 }
-                break;
-        }
-    }
-
-    private void requestError(final Call call, final Throwable e) {
-        switch (call.getHttpRequest().requestType()) {
-            case GET:
-            case POST:
-            case POST_MULTI_PARAMS:
-                if (call.isResponseCallbackRunOnMainThread()) {
-                    mUIHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            responseError(call, e);
-                        }
-                    });
-                } else {
-                    responseError(call, e);
-                }
-                break;
-            case GET_DOWNLOAD:
-            case POST_DOWNLOAD:
-                if (call.isDownloadCallbackRunOnMainThread()) {
-                    mUIHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadError(call, e);
-                        }
-                    });
-                } else {
-                    downloadError(call, e);
-                }
-                break;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void downloadSuccess(final Call call, final HttpResponse httpResponse) {
-        DownloadCallback downloadCallback = call.getDownloadCallback();
-        if (!call.isCancel() && downloadCallback != null) {
-            downloadCallback.onFinish(httpResponse);
-            if (isExecuteNextTask(call)) {
-                mExecutor.submit(mCalls[mStartIndex]);
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        } else {
+            responseCallback.onError(throwable);
         }
     }
 
-    private void downloadError(final Call call, final Throwable e) {
-        DownloadCallback downloadCallback = call.getDownloadCallback();
-        if (!call.isCancel() && downloadCallback != null) {
-            downloadCallback.onDownloadError(e);
-            if (isExecuteNextTask(call)) {
-                mExecutor.submit(mCalls[mStartIndex]);
-            }
-        }
-    }
+    private static class UniformVelocityInterpolator implements DownloadCallback {
 
-    @SuppressWarnings("unchecked")
-    private void responseSuccess(final Call call, final HttpResponse httpResponse) {
-        ResponseCallback responseCallback = call.getResponseCallback();
-        if (!call.isCancel() && responseCallback != null) {
-            responseCallback.onResponse(httpResponse);
-            if (isExecuteNextTask(call)) {
-                mExecutor.submit(mCalls[mStartIndex]);
-            }
-        }
-    }
+        private static final int MIN_CALLBACK_INTERVAL_MS = 16;
 
-    private void responseError(final Call call, final Throwable e) {
-        ResponseCallback responseCallback = call.getResponseCallback();
-        if (!call.isCancel() && responseCallback != null) {
-            responseCallback.onError(e);
-            if (isExecuteNextTask(call)) {
-                mExecutor.submit(mCalls[mStartIndex]);
-            }
-        }
-    }
-
-    private boolean isExecuteNextTask(final Call call) {
-        ResponseCallback callback = call.getResponseCallback();
-        return mStartIndex < mLength && !call.isCancel() && callback != null && callback.isExecuteNextTask();
-    }
-
-    private static class DownloadProcessListenerImpl implements Http.DownloadProcessListener {
-        private static final int CALLBACK_FREQUENCY = 500;
         private DownloadCallback mDownloadCallback;
         private Handler mHandler;
-        private boolean isStarted;
-        private long mLastCallbackTime;
-        private long mAlreadyDownloadSize;
-        private long mTotalSize;
-        private int mCurrentPercent = -1;
+        private long mLastCallbackProcessTimeMs;
 
-        private DownloadProcessListenerImpl(DownloadCallback downloadCallback, Handler handler) {
+        private UniformVelocityInterpolator(DownloadCallback downloadCallback, Handler handler) {
             mDownloadCallback = downloadCallback;
             mHandler = handler;
         }
 
+
         @Override
-        public void onProcess(long alreadyDownloadSize, long totalSize) {
-            if (totalSize == 0) {
+        public void onProcess(final int percent) {
+            if (mDownloadCallback == null) {
                 return;
             }
-            mAlreadyDownloadSize = alreadyDownloadSize;
-            mTotalSize = totalSize;
-            if (!isStarted) {
-                isStarted = true;
-            }
-            long nowTime = System.currentTimeMillis();
-            int percent = (int) ((mAlreadyDownloadSize * 100.0 / mTotalSize));
-            if (nowTime - mLastCallbackTime >= CALLBACK_FREQUENCY || percent == 100) {
-                if (percent != mCurrentPercent) {
-                    mCurrentPercent = percent;
-                    mLastCallbackTime = nowTime;
-                    if (mHandler != null) {
-                        mHandler.post(mCallbackProcessRunnable);
-                    } else {
-                        mCallbackProcessRunnable.run();
+            long now = System.currentTimeMillis();
+            if (now - mLastCallbackProcessTimeMs >= MIN_CALLBACK_INTERVAL_MS || percent == 100) {
+                mLastCallbackProcessTimeMs = now;
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDownloadCallback.onProcess(percent);
                     }
-                }
+                });
             }
         }
 
-        private final Runnable mCallbackProcessRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mDownloadCallback.onProcess(mCurrentPercent);
-            }
-        };
+        @Override
+        public void onResponse(HttpRequest request, HttpResponse<String> response) {
 
+        }
+
+        @Override
+        public void onError(@NonNull Throwable e) {
+
+        }
+
+        @Override
+        public boolean isExecuteNextTask() {
+            return false;
+        }
     }
 }

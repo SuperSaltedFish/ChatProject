@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 public interface ResponseCallback<T> {
 
-    void onResponse(HttpResponse<T> response);
+    void onResponse(HttpRequest request,HttpResponse<T> response);
 
     void onError(@NonNull Throwable e);
 

@@ -8,27 +8,19 @@ import java.lang.reflect.Type;
 
 public interface Call<T> extends Cancellable {
 
-    boolean isResponseCallbackRunOnMainThread();
-
-    boolean isDownloadCallbackRunOnMainThread();
+    boolean isCallbackRunOnMainThread();
 
     void setResponseCallback(@Nullable ResponseCallback<T> callback);
 
     void setResponseCallback(@Nullable ResponseCallback<T> callback, boolean runOnMainThread);
 
-    void setDownloadCallback(@Nullable DownloadCallback callback);
-
-    void setDownloadCallback(@Nullable DownloadCallback callback, boolean runOnMainThread);
-
     ResponseCallback<T> getResponseCallback();
 
-    DownloadCallback getDownloadCallback();
+    HttpRequest request();
 
-    HttpRequest getHttpRequest();
+    void setHttpConverter(HttpConverter adapter);
 
-    void setHttpDataFormatAdapter(HttpDataFormatAdapter adapter);
-
-    HttpDataFormatAdapter getHttpDataFormatAdapter();
+    HttpConverter getHttpConverter();
 
     Type getGenericType();
 }

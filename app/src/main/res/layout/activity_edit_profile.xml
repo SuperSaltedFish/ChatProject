@@ -221,7 +221,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="@string/EditProfileActivity_EmailLabbel"
+        android:text="@string/EditProfileActivity_EmailLabel"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/EditProfileActivity_mEtEmail"

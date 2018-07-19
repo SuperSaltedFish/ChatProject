@@ -115,7 +115,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
                         @Override
                         public void run() {
                             if (isWaitJoiningPush) {
-                                decodeFail(AndroidUtil.getString(R.string.Server_Error));
+                                decodeFail(AndroidUtil.getString(R.string.Error_Server));
                             }
                         }
                     }, 15000);

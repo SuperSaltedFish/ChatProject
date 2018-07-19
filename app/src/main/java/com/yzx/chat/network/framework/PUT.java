@@ -7,14 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by YZX on 2018年02月12日.
+ * Created by YZX on 2018年07月17日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
-
-
 @Documented
-@Target(ElementType.PARAMETER)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UploadPath {
-    String value();
+public @interface PUT {
+    String value() default "";
 }

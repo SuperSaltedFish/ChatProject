@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.yzx.chat.R;
 import com.yzx.chat.network.api.JsonResponse;
+import com.yzx.chat.network.framework.HttpRequest;
+import com.yzx.chat.network.framework.NetworkUnavailableException;
 import com.yzx.chat.network.framework.ResponseCallback;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.util.AndroidUtil;
@@ -11,6 +13,7 @@ import com.yzx.chat.util.LogUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.SocketTimeoutException;
 
 /**
  * Created by YZX on 2017年10月17日.
@@ -26,22 +29,22 @@ public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonRe
 
 
     @Override
-    public void onResponse(HttpResponse<JsonResponse<T>> response) {
-        if(response.getResponseCode()!=200){
-            LogUtil.e("ResponseCode:"+response.getResponseCode());
-            onFailure(AndroidUtil.getString(R.string.Server_Error));
+    public void onResponse(HttpRequest request, HttpResponse<JsonResponse<T>> response) {
+        if (response.responseCode() != 200) {
+            LogUtil.e("ResponseCode:" + response.responseCode());
+            onFailure(AndroidUtil.getString(R.string.Error_Server));
             return;
         }
-        JsonResponse<T> jsonResponse = response.getResponse();
+        JsonResponse<T> jsonResponse = response.body();
         if (jsonResponse == null) {
-            onFailure(AndroidUtil.getString(R.string.Server_Error));
+            onFailure(AndroidUtil.getString(R.string.Error_Server));
         } else if (jsonResponse.getStatus() != 200) {
             onFailure(jsonResponse.getMessage());
         } else if (jsonResponse.getData() == null) {
             ParameterizedType pType = (ParameterizedType) response.getClass().getGenericInterfaces()[0];
             Type type = pType.getActualTypeArguments()[0];
             if (type != Void.class) {
-                onFailure("数据解析失败，请稍后再试！");
+                onFailure(AndroidUtil.getString(R.string.Error_Server));
             } else {
                 onSuccess(null);
             }
@@ -53,7 +56,14 @@ public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonRe
     @Override
     public void onError(@NonNull Throwable e) {
         e.printStackTrace();
-        onFailure("数据解析失败，请稍后再试！");
+        Class errorClass = e.getClass();
+        if (errorClass == NetworkUnavailableException.class) {
+            onFailure(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
+        } else if (errorClass == SocketTimeoutException.class) {
+            onFailure(AndroidUtil.getString(R.string.Error_NetworkTimeout));
+        } else {
+            onFailure(AndroidUtil.getString(R.string.Error_Server));
+        }
     }
 
     @Override

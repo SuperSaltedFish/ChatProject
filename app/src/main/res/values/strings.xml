@@ -60,8 +60,6 @@
     <string name="LoginActivity_Layout_CopyrightHint">Copyright © 2017-2018 咸鱼科技 版权所有</string>
     <string name="LoginActivity_Error_Resending">正在发送</string>
 
-    <string name="Server_Error">服务器繁忙，请稍候再试！</string>
-    <string name="Server_Error2">服务器繁忙，请尝试重新登录！</string>
 
     <string name="LoadMoreHint_Default">我是有底线的</string>
     <string name="LoadMoreHint_None">没有找到任何的信息</string>
@@ -179,7 +177,6 @@
     <string name="Send">发送</string>
     <string name="Search">搜索</string>
     <string name="LocationMapActivity_SearchHint">请输入搜索内容...</string>
-    <string name="NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="GroupListActivity_Title">群聊</string>
     <string name="GroupProfileActivity_NoticeDialogTitle">群公告</string>
     <string name="GroupProfileActivity_NoticeDialogHint">编辑群公告，该公告只有群主才能编辑。</string>
@@ -212,7 +209,7 @@
     <string name="EditProfileActivity_SignatureHint">一句话介绍自己，个性签名会显示在个人主页上！</string>
     <string name="EditProfileActivity_SignatureLabel">个性签名</string>
     <string name="EditProfileActivity_EmailHint">请输入邮箱地址</string>
-    <string name="EditProfileActivity_EmailLabbel">邮箱地址</string>
+    <string name="EditProfileActivity_EmailLabel">邮箱地址</string>
     <string name="EditProfileActivity_SexLabel">性别</string>
     <string name="EditProfileActivity_BirthdayLabel">出生日期</string>
     <string name="EditProfileActivity_LocationLabel">所在地区</string>
@@ -229,4 +226,8 @@
     <string name="LoginActivity_Layout_Forgot">忘记?</string>
     <string name="ContactProfileActivity_AgeInvisible">年龄保密</string>
 
+    <string name="Error_Server">服务器繁忙，请稍候再试！</string>
+    <string name="Error_Server2">服务器繁忙，请尝试重新登录！</string>
+    <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
+    <string name="Error_NetworkTimeout">网络访问超时，请检查网络连接</string>
 </resources>

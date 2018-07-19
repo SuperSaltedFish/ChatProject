@@ -147,7 +147,7 @@ public class ContactManager {
                     });
                 } else {
                     LogUtil.e("requestContact : Failure of operating database");
-                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
+                    onFailure(AndroidUtil.getString(R.string.Error_Server2));
                 }
             }
 
@@ -190,7 +190,7 @@ public class ContactManager {
                     });
                 } else {
                     LogUtil.e("rejectContact : Failure of operating database");
-                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
+                    onFailure(AndroidUtil.getString(R.string.Error_Server2));
                 }
             }
 
@@ -241,7 +241,7 @@ public class ContactManager {
                     });
                 } else {
                     LogUtil.e("acceptContact : Failure of operating database");
-                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
+                    onFailure(AndroidUtil.getString(R.string.Error_Server2));
                 }
             }
 
@@ -283,7 +283,7 @@ public class ContactManager {
                     });
                 } else {
                     LogUtil.e("deleteContact : Failure of operating database");
-                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
+                    onFailure(AndroidUtil.getString(R.string.Error_Server2));
                 }
             }
 
@@ -326,7 +326,7 @@ public class ContactManager {
                     });
                 } else {
                     LogUtil.e("updateContactRemark : Failure of operating database");
-                    onFailure(AndroidUtil.getString(R.string.Server_Error2));
+                    onFailure(AndroidUtil.getString(R.string.Error_Server2));
                 }
 
             }

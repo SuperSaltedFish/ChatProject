@@ -8,29 +8,22 @@ import java.lang.reflect.Type;
 class CallImpl<T> implements Call<T> {
 
     private ResponseCallback<T> mResponseCallback;
-    private DownloadCallback mDownloadCallback;
-    private HttpRequest mHttpRequest;
-    private HttpDataFormatAdapter mAdapter;
+    private HttpRequest mRequestParams;
     private Type mGenericType;
+    private HttpConverter mHttpConverter;
     private boolean isCancel;
-    private boolean isResponseCallbackRunOnMainThread;
-    private boolean isDownloadCallbackRunOnMainThread;
+    private boolean isCallbackRunOnMainThread;
 
-    CallImpl(HttpRequest httpRequest, HttpDataFormatAdapter adapter, Type genericType) {
-        mHttpRequest = httpRequest;
-        mAdapter = adapter;
+    CallImpl(HttpRequest httpRequest, Type genericType, HttpConverter httpConverter) {
+        mRequestParams = httpRequest;
         mGenericType = genericType;
+        mHttpConverter = httpConverter;
     }
 
 
     @Override
-    public boolean isResponseCallbackRunOnMainThread() {
-        return isResponseCallbackRunOnMainThread;
-    }
-
-    @Override
-    public boolean isDownloadCallbackRunOnMainThread() {
-        return isDownloadCallbackRunOnMainThread;
+    public boolean isCallbackRunOnMainThread() {
+        return isCallbackRunOnMainThread;
     }
 
     @Override
@@ -41,18 +34,7 @@ class CallImpl<T> implements Call<T> {
     @Override
     public void setResponseCallback(@Nullable ResponseCallback<T> callback, boolean runOnMainThread) {
         mResponseCallback = callback;
-        isResponseCallbackRunOnMainThread = runOnMainThread;
-    }
-
-    @Override
-    public void setDownloadCallback(@Nullable DownloadCallback callback) {
-        setDownloadCallback(callback, true);
-    }
-
-    @Override
-    public void setDownloadCallback(@Nullable DownloadCallback callback, boolean runOnMainThread) {
-        mDownloadCallback = callback;
-        isDownloadCallbackRunOnMainThread = runOnMainThread;
+        isCallbackRunOnMainThread = runOnMainThread;
     }
 
     @Override
@@ -61,23 +43,21 @@ class CallImpl<T> implements Call<T> {
     }
 
     @Override
-    public DownloadCallback getDownloadCallback() {
-        return mDownloadCallback;
+    public HttpRequest request() {
+        return mRequestParams;
     }
 
     @Override
-    public HttpRequest getHttpRequest() {
-        return mHttpRequest;
+    public void setHttpConverter(HttpConverter adapter) {
+        if (adapter == null) {
+            throw new IllegalArgumentException("HttpConverter == null");
+        }
+        mHttpConverter = adapter;
     }
 
     @Override
-    public void setHttpDataFormatAdapter(HttpDataFormatAdapter adapter) {
-        mAdapter = adapter;
-    }
-
-    @Override
-    public HttpDataFormatAdapter getHttpDataFormatAdapter() {
-        return mAdapter;
+    public HttpConverter getHttpConverter() {
+        return mHttpConverter;
     }
 
     @Override
@@ -97,9 +77,9 @@ class CallImpl<T> implements Call<T> {
     }
 
     private void destroy() {
+        mRequestParams=null;
         mResponseCallback = null;
-        mAdapter = null;
-        mHttpRequest = null;
+        mHttpConverter = null;
     }
 
 }

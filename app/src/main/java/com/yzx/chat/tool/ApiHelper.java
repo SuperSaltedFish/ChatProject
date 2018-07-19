@@ -1,12 +1,10 @@
 package com.yzx.chat.tool;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -16,17 +14,14 @@ import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.chat.CryptoManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.ApiProxy;
-import com.yzx.chat.network.framework.HttpDataFormatAdapter;
-import com.yzx.chat.network.framework.HttpParamsType;
-import com.yzx.chat.network.framework.HttpRequest;
+import com.yzx.chat.network.framework.HttpConverter;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.RSAUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -51,64 +46,78 @@ public class ApiHelper {
         return sGson;
     }
 
-    public static HttpDataFormatAdapter getRsaHttpDataFormatAdapter(final String publicRsaKey) {
+    public static HttpConverter getRsaHttpConverter(final String publicRsaKey) {
         if (TextUtils.isEmpty(publicRsaKey)) {
             return null;
         }
-        return new HttpDataFormatAdapter() {
+        return new HttpConverter() {
             @Nullable
             @Override
-            public String paramsToString(HttpRequest httpRequest) {
-                Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
-                LogUtil.e("开始访问：" + httpRequest.url());
+            public byte[] convertRequest(Map<String, Object> requestParams) {
                 JsonRequest request = new JsonRequest();
-                request.setParams(params);
+                request.setParams(requestParams);
                 request.setStatus(200);
                 String json = sGson.toJson(request);
-                LogUtil.e("request: " + json);
+                LogUtil.e("convertRequest: " + json);
                 byte[] encryptData = RSAUtil.encryptByPublicKey(json.getBytes(), Base64Util.decode(publicRsaKey.getBytes()));
                 json = Base64Util.encodeToString(encryptData);
-                return json;
+                return json == null ? null : json.getBytes(StandardCharsets.UTF_8);
             }
 
             @Nullable
             @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
+            public byte[] convertMultipartRequest(String partName, Object body) {
                 return null;
             }
 
             @Nullable
             @Override
-            public Object responseToObject(String url, String httpResponse, Type genericType) {
-                byte[] data = Base64Util.decode(httpResponse);
-                if (data == null || data.length == 0) {
-                    LogUtil.e("response: " + null);
+            public Object convertResponseBody(byte[] body, Type genericType) {
+                if (body != null && body.length > 0) {
+                    byte[] data = Base64Util.decode(new String(body));
+                    if (data == null || data.length == 0) {
+                        LogUtil.e("response: " + null);
+                        return null;
+                    }
+                    data = CryptoManager.rsaDecrypt(data);
+                    if (data == null) {
+                        LogUtil.e("response: " + null);
+                        return null;
+                    }
+                    String strData = new String(data);
+                    LogUtil.e("convertResponseBody: " + strData);
+                    return sGson.fromJson(strData, genericType);
+                } else {
+                    LogUtil.e("convertResponseBody fail:body == null");
                     return null;
                 }
-                data = CryptoManager.rsaDecrypt(data);
-                if (data == null) {
-                    LogUtil.e("response: " + null);
-                    return null;
-                }
-                String strData = new String(data);
-                LogUtil.e("response: " + strData);
-                return sGson.fromJson(strData, genericType);
             }
+
         };
     }
 
-    private static ApiProxy sApiProxy = new ApiProxy(Constants.URL_API_BASE, new HttpDataFormatAdapter() {
+    private static ApiProxy sApiProxy = new ApiProxy(Constants.URL_API_BASE, new HttpConverter() {
 
         @Nullable
         @Override
-        public String paramsToString(HttpRequest httpRequest) {
-            Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
-            LogUtil.e("开始访问：" + httpRequest.url());
-            if (params == null) {
-                params = new HashMap<>(0);
-            }
+        public byte[] convertRequest(Map<String, Object> requestParams) {
             JsonRequest request = new JsonRequest();
-            request.setParams(params);
+            request.setParams(requestParams);
+            request.setStatus(200);
+            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().getUserManager().getToken() : null);
+            String json = sGson.toJson(request);
+            LogUtil.e("convertRequest: " + json);
+//            if (json != null) {
+//                return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
+//            }
+            return json == null ? null : json.getBytes(StandardCharsets.UTF_8);
+        }
+
+        @Nullable
+        @Override
+        public byte[] convertMultipartRequest(String partName, Object body) {
+            JsonRequest request = new JsonRequest();
+            request.setParams(body);
             request.setStatus(200);
             request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().getUserManager().getToken() : null);
             String json = sGson.toJson(request);
@@ -116,35 +125,13 @@ public class ApiHelper {
 //            if (json != null) {
 //                return IdentityManager.getInstance().aesEncryptToBase64(json.getBytes());
 //            }
-            if (json != null) {
-                return json;
-            }
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
-            LogUtil.e("开始访问：" + httpRequest.url());
-            Map<HttpParamsType, Map<String, Object>> params = httpRequest.params();
-            Map<String, Object> httpParams = params.get(HttpParamsType.PARAMETER_HTTP);
-            if (httpParams == null) {
-                httpParams = new LinkedHashMap<>(2);
-                params.put(HttpParamsType.PARAMETER_HTTP, httpParams);
-            }
-            JsonRequest request = new JsonRequest();
-            request.setStatus(200);
-            request.setToken(IMClient.getInstance().isLogged() ? IMClient.getInstance().getUserManager().getToken() : null);
-            String json = sGson.toJson(request);
-            LogUtil.e("request: " + json);
-            httpParams.put("params", json);
-            return params;
+            return json == null ? null : json.getBytes(StandardCharsets.UTF_8);
         }
 
         @Nullable
         @Override
-        public Object responseToObject(String url, String httpResponse, Type genericType) {
-//            byte[] data = IdentityManager.getInstance().aesDecryptFromBase64String(httpResponse);
+        public Object convertResponseBody(byte[] body, Type genericType) {
+            //            byte[] data = IdentityManager.getInstance().aesDecryptFromBase64String(httpResponse);
 //            if (data != null) {
 //                try {
 //                    String strData = new String(data);
@@ -155,13 +142,12 @@ public class ApiHelper {
 //                }
 //            }
 //            return null;
-            try {
-                LogUtil.e("response: " + httpResponse);
-                return sGson.fromJson(httpResponse, genericType);
-            } catch (JsonSyntaxException e) {
-                e.printStackTrace();
+            if (body == null || body.length == 0) {
+                return null;
             }
-            return null;
+            String strBody = new String(body);
+            LogUtil.e("convertResponseBody:" + strBody);
+            return sGson.fromJson(new String(body), genericType);
         }
     });
 

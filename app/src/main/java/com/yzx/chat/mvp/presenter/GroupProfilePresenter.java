@@ -103,7 +103,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Server_Error));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server));
                     }
                 }, 15000);
             }
@@ -125,7 +125,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Server_Error));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server));
                     }
                 }, 15000);
             }
@@ -165,7 +165,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Server_Error));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server));
                     }
                 }, 15000);
             }

@@ -15,7 +15,7 @@ import com.yzx.chat.util.LogUtil;
  */
 public class NetworkUtil {
 
-    public static boolean isHasNetworkAccessPermission;
+    private static boolean isHasNetworkAccessPermission;
 
     public static boolean isNetworkConnected(Context context) {
         if (context != null) {
@@ -24,16 +24,15 @@ public class NetworkUtil {
             }
             if (isHasNetworkAccessPermission) {
                 ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                if (cm == null) {
-                    return false;
-                }
-                NetworkInfo mNetworkInfo = cm.getActiveNetworkInfo();
-                if (mNetworkInfo != null) {
-                    return mNetworkInfo.isAvailable();
+                if (cm != null) {
+                    NetworkInfo mNetworkInfo = cm.getActiveNetworkInfo();
+                    if (mNetworkInfo != null) {
+                        return mNetworkInfo.isAvailable();
+                    }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     public static boolean checkNetworkAccessPermission(Context context) {

@@ -13,7 +13,7 @@ import com.yzx.chat.network.api.auth.GetSecretKeyBean;
 import com.yzx.chat.network.api.auth.ObtainSMSCode;
 import com.yzx.chat.network.chat.CryptoManager;
 import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.HttpDataFormatAdapter;
+import com.yzx.chat.network.framework.HttpConverter;
 import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpRequest;
 import com.yzx.chat.tool.ApiHelper;
@@ -78,11 +78,35 @@ public class RegisterPresenter implements RegisterContract.Presenter {
     private void initSecretKeyCall() {
         AsyncUtil.cancelCall(mGetSecretKeyCall);
         mGetSecretKeyCall = mAuthApi.getSignature();
+        mGetSecretKeyCall.setHttpConverter(new HttpConverter() {
+            @Nullable
+            @Override
+            public byte[] convertRequest(Map<String, Object> requestParams) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public byte[] convertMultipartRequest(String partName, Object body) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Object convertResponseBody(byte[] body, Type genericType) {
+                if(body==null||body.length==0){
+                    return null;
+                }
+                String strBody = new String(body);
+                LogUtil.e("convertResponseBody:"+strBody);
+                return ApiHelper.getDefaultGsonInstance().fromJson(new String(body), genericType);
+            }
+        });
         mGetSecretKeyCall.setResponseCallback(new BaseResponseCallback<GetSecretKeyBean>() {
             @Override
             protected void onSuccess(GetSecretKeyBean response) {
                 mServerSecretKey = response.getSecretKey();
-                mObtainSMSCodeCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+                mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
             }
 
             @Override
@@ -93,27 +117,6 @@ public class RegisterPresenter implements RegisterContract.Presenter {
             @Override
             public boolean isExecuteNextTask() {
                 return !TextUtils.isEmpty(mServerSecretKey);
-            }
-        });
-        mGetSecretKeyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
-            @Nullable
-            @Override
-            public String paramsToString(HttpRequest httpRequest) {
-                LogUtil.e("开始访问：" + httpRequest.url());
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public Object responseToObject(String url, String httpResponse, Type genericType) {
-                LogUtil.e(httpResponse);
-                return ApiHelper.getDefaultGsonInstance().fromJson(httpResponse, genericType);
             }
         });
     }
@@ -138,7 +141,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
             }
         });
         if (!TextUtils.isEmpty(mServerSecretKey)) {
-            mObtainSMSCodeCall.setHttpDataFormatAdapter(ApiHelper.getRsaHttpDataFormatAdapter(mServerSecretKey));
+            mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
         }
     }
 }

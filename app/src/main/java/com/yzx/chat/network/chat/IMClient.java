@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.GroupBean;
@@ -22,10 +21,9 @@ import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.UserInfoBean;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.network.framework.Call;
-import com.yzx.chat.network.framework.ResponseCallback;
-import com.yzx.chat.network.framework.HttpDataFormatAdapter;
-import com.yzx.chat.network.framework.HttpParamsType;
 import com.yzx.chat.network.framework.HttpRequest;
+import com.yzx.chat.network.framework.ResponseCallback;
+import com.yzx.chat.network.framework.HttpConverter;
 import com.yzx.chat.network.framework.HttpResponse;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
@@ -35,6 +33,7 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.MD5Util;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -47,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.RongIMClient;
-import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
 /**
@@ -109,42 +107,38 @@ public class IMClient implements IManagerHelper {
 
 
     public void loginByToken(Call<JsonResponse<UserInfoBean>> loginOrRegisterOrTokenVerifyCall, final ResultCallback<Void> resultCallback) {
-        loginOrRegisterOrTokenVerifyCall.setHttpDataFormatAdapter(new HttpDataFormatAdapter() {
+        loginOrRegisterOrTokenVerifyCall.setHttpConverter(new HttpConverter() {
             private Gson mGson = ApiHelper.getDefaultGsonInstance();
 
             @Nullable
             @Override
-            public String paramsToString(HttpRequest httpRequest) {
-                Map<String, Object> params = httpRequest.params().get(HttpParamsType.PARAMETER_HTTP);
+            public byte[] convertRequest(Map<String, Object> requestParams) {
                 JsonRequest request = new JsonRequest();
-                request.setParams(params);
+                request.setParams(requestParams);
                 request.setStatus(200);
                 request.setToken(UserManager.getLocalToken());
                 String json = mGson.toJson(request);
-                LogUtil.e("request: " + json);
-                if (json != null) {
-                    return json;
-                }
+                LogUtil.e("convertRequest: " + json);
+                return json==null?null:json.getBytes(StandardCharsets.UTF_8);
+            }
+
+            @Nullable
+            @Override
+            public byte[] convertMultipartRequest(String partName, Object body) {
                 return null;
             }
 
             @Nullable
             @Override
-            public Map<HttpParamsType, Map<String, Object>> multiParamsFormat(HttpRequest httpRequest) {
-                return null;
+            public Object convertResponseBody(byte[] body, Type genericType) {
+                if(body==null||body.length==0){
+                    return null;
+                }
+                String strBody = new String(body);
+                LogUtil.e("convertResponseBody:"+strBody);
+                return ApiHelper.getDefaultGsonInstance().fromJson(new String(body), genericType);
             }
 
-            @Nullable
-            @Override
-            public Object responseToObject(String url, String httpResponse, Type genericType) {
-                try {
-                    LogUtil.e("response: " + httpResponse);
-                    return mGson.fromJson(httpResponse, genericType);
-                } catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
         });
         login(loginOrRegisterOrTokenVerifyCall, resultCallback);
     }
@@ -159,15 +153,16 @@ public class IMClient implements IManagerHelper {
             public void run() {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final Result<Boolean> result = new Result<>(true);
-                final Result<String> errorMessage = new Result<>(AndroidUtil.getString(R.string.Server_Error));
+                final Result<String> errorMessage = new Result<>(AndroidUtil.getString(R.string.Error_Server));
                 loginOrRegisterOrTokenVerifyCall.setResponseCallback(new ResponseCallback<JsonResponse<UserInfoBean>>() {
+
                     @Override
-                    public void onResponse(HttpResponse<JsonResponse<UserInfoBean>> response) {
-                        if (response.getResponseCode() != 200) {
-                            failure("HTTP response:" + response.getResponseCode());
+                    public void onResponse(HttpRequest request, HttpResponse<JsonResponse<UserInfoBean>> response) {
+                        if (response.responseCode() != 200) {
+                            failure("HTTP response:" + response.responseCode());
                             return;
                         }
-                        JsonResponse<UserInfoBean> jsonResponse = response.getResponse();
+                        JsonResponse<UserInfoBean> jsonResponse = response.body();
                         if (jsonResponse == null) {
                             failure("JsonResponse is null");
                             return;

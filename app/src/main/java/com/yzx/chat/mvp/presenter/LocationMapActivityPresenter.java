@@ -4,7 +4,6 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
-import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.mvp.contract.LocationMapActivityContract;
@@ -88,9 +87,9 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     mLocationMapActivityView.showNewCurrentLocation(poiItemList);
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_Server));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }
@@ -135,9 +134,9 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     mLocationMapActivityView.showMoreCurrentLocation(poiItemList, mHasMoreCurrentLocation);
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_Server));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }
@@ -179,9 +178,9 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     mLocationMapActivityView.showNewSearchLocation(poiItemList);
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_Server));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }
@@ -225,9 +224,9 @@ public class LocationMapActivityPresenter implements LocationMapActivityContract
                     mLocationMapActivityView.showMoreSearchLocation(poiItemList, mHasMoreSearchLocation);
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.NetworkUnavailable));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Server_Error));
+                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_Server));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }
