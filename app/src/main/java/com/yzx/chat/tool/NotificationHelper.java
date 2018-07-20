@@ -39,6 +39,7 @@ import com.yzx.chat.mvp.view.activity.ChatActivity;
 import com.yzx.chat.mvp.view.activity.HomeActivity;
 import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.widget.view.GlideHexagonTransform;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
@@ -79,6 +80,7 @@ public class NotificationHelper {
         channel.enableVibration(true);
         channel.setLightColor(Color.GREEN);
         channel.setVibrationPattern(new long[]{100, 200});
+        channel.setImportance(NotificationManager.IMPORTANCE_DEFAULT);
         return channel;
     }
 
@@ -88,7 +90,7 @@ public class NotificationHelper {
             builder = new Notification.Builder(context, channelID);
         } else {
             builder = new Notification.Builder(context);
-            builder.setPriority(Notification.PRIORITY_HIGH);
+            builder.setPriority(Notification.PRIORITY_DEFAULT);
         }
         builder
                 .setAutoCancel(true)
@@ -121,7 +123,7 @@ public class NotificationHelper {
         appContext.registerReceiver(mContactOperationReceiver, new IntentFilter(ACTION_CONTACT_OPERATION));
     }
 
-    public void showPrivateMessageNotification(Message message, ContactBean contact) {
+    public void showPrivateMessageNotification(Message message, ContactBean contact, boolean isFullScreen) {
         String conversationID = contact.getUserProfile().getUserID();
         String title = contact.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -138,10 +140,11 @@ public class NotificationHelper {
                 content,
                 time,
                 avatarUrl,
-                contentIntent);
+                contentIntent,
+                isFullScreen);
     }
 
-    public void showGroupMessageNotification(Message message, GroupBean group) {
+    public void showGroupMessageNotification(Message message, GroupBean group, boolean isFullScreen) {
         String conversationID = group.getGroupID();
         String title = group.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -158,10 +161,11 @@ public class NotificationHelper {
                 content,
                 time,
                 avatarUrl,
-                contentIntent);
+                contentIntent,
+                isFullScreen);
     }
 
-    public void showContactOperationNotification(ContactOperationBean contactOperation) {
+    public void showContactOperationNotification(ContactOperationBean contactOperation, boolean isFullScreen) {
         String id = contactOperation.getUserID();
         String title = contactOperation.getUser().getNickname();
         String content = contactOperation.getReason();
@@ -181,11 +185,12 @@ public class NotificationHelper {
                 content,
                 time,
                 avatarUrl,
-                contentIntent);
+                contentIntent,
+                isFullScreen);
     }
 
 
-    private void showNotification(final Notification.Builder builder, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent) {
+    private void showNotification(final Notification.Builder builder, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFullScreen) {
         final CharSequence compatStr = EmojiCompat.get().process(content);
         SimpleTarget<Bitmap> bitmapTarget = new SimpleTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
             @Override
@@ -199,6 +204,10 @@ public class NotificationHelper {
                         .setWhen(timestamp)
                         .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                         .setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+
+                if (isFullScreen) {
+                    builder.setFullScreenIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT), false);
+                }
                 mNotificationMessage.notify(notificationID, builder.build());
 
                 SimpleTarget<Bitmap> oldBitmapTarget = mSimpleTargetMap.get(notificationID);
@@ -212,12 +221,12 @@ public class NotificationHelper {
         GlideRequest<Bitmap> glideRequest = GlideApp.with(mAppContext).asBitmap();
         if (!TextUtils.isEmpty(largeIconUrl)) {
             glideRequest.load(largeIconUrl)
-                    .transforms(new CircleCrop())
+                    .transforms(new GlideHexagonTransform())
                     .error(R.mipmap.ic_launcher)
                     .into(bitmapTarget);
         } else {
             glideRequest.load(R.mipmap.ic_launcher)
-                    .transforms(new CircleCrop())
+                    .transforms(new GlideHexagonTransform())
                     .into(bitmapTarget);
         }
     }

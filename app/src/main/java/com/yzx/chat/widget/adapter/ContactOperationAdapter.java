@@ -64,7 +64,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_accepted);
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
                 break;
-            case ContactManager.CONTACT_OPERATION_REFUSED:
+            case ContactManager.CONTACT_OPERATION_REJECT:
                 holder.mTvAccept.setText(R.string.ContactMessageAdapter_Disagree);
                 holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_refused);
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));

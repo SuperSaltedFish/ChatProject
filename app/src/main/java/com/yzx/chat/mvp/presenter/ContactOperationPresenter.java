@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.mvp.contract.ContactOperationContract;
 import com.yzx.chat.network.chat.ContactManager;
@@ -76,7 +77,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @Override
     public void refusedContactRequest(ContactOperationBean contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
-        mIMClient.getContactManager().refusedContact(contactOperation,"", new ResultCallback<Void>() {
+        mIMClient.getContactManager().refusedContact(contactOperation, "", new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
@@ -101,6 +102,11 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         AsyncUtil.cancelTask(mLoadAllContactOperationTask);
         mLoadAllContactOperationTask = new LoadAllContactOperationTask(this);
         mLoadAllContactOperationTask.execute(mContactOperationList);
+    }
+
+    @Override
+    public ContactBean findContact(String userID) {
+        return mIMClient.getContactManager().getContact(userID);
     }
 
 
@@ -130,6 +136,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         public void onContactOperationUpdate(final ContactOperationBean message) {
+            mIMClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -146,6 +153,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         public void onContactOperationRemove(final ContactOperationBean message) {
+            mIMClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -192,7 +200,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         }
 
     }
-
 
 
 }

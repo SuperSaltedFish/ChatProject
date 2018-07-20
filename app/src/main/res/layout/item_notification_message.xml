@@ -28,6 +28,7 @@
         android:layout_marginTop="4dp"
         android:background="@drawable/bg_chat_time_round"
         android:gravity="center"
+        android:paddingBottom="1dp"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
         android:textColor="@android:color/white"

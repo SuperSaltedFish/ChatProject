@@ -14,9 +14,11 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.mvp.contract.ContactOperationContract;
 import com.yzx.chat.mvp.presenter.ContactOperationPresenter;
+import com.yzx.chat.mvp.view.activity.ContactProfileActivity;
 import com.yzx.chat.mvp.view.activity.StrangerProfileActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -35,9 +37,7 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-
 public class ContactOperationFragment extends BaseFragment<ContactOperationContract.Presenter> implements ContactOperationContract.View {
-
 
     private RecyclerView mRecyclerView;
     private View mFooterView;
@@ -139,8 +139,16 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
 
         @Override
         public void enterDetails(int position) {
-            Intent intent = new Intent(mContext, StrangerProfileActivity.class);
-            intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, mContactOperationList.get(position));
+            ContactOperationBean contactOperation = mContactOperationList.get(position);
+            ContactBean contact = mPresenter.findContact(contactOperation.getUserID());
+            Intent intent;
+            if (contact == null) {
+                intent = new Intent(mContext, StrangerProfileActivity.class);
+                intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, mContactOperationList.get(position));
+            } else {
+                intent = new Intent(mContext, ContactProfileActivity.class);
+                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserProfile().getUserID());
+            }
             startActivity(intent);
         }
     };

@@ -13,8 +13,10 @@ import com.yzx.chat.R;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -28,6 +30,7 @@ import java.util.Locale;
 
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.MessageContent;
+import io.rong.message.ContactNotificationMessage;
 import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
@@ -64,24 +67,47 @@ public class IMMessageHelper {
             TextMessage textMessage = (TextMessage) messageContent;
             return textMessage.getContent();
         } else if (messageContent instanceof VoiceMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_VoiceInfo);
+            return AndroidUtil.getString(R.string.MessageSummary_VoiceInfo);
         } else if (messageContent instanceof ImageMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_ImageInfo);
+            return AndroidUtil.getString(R.string.MessageSummary_ImageInfo);
         } else if (messageContent instanceof LocationMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_LocationInfo);
+            return AndroidUtil.getString(R.string.MessageSummary_LocationInfo);
         } else if (messageContent instanceof StickerMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_EmotionInfo);
+            return AndroidUtil.getString(R.string.MessageSummary_EmotionInfo);
         } else if (messageContent instanceof FileMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_FileInfo);
+            return AndroidUtil.getString(R.string.MessageSummary_FileInfo);
         } else if (messageContent instanceof VideoMessage) {
-            return AndroidUtil.getString(R.string.EMMessageUtil_VideoInfo);
+            return AndroidUtil.getString(R.string.MessageSummary_VideoInfo);
         } else if (messageContent instanceof GroupNotificationMessage) {
             return groupNotificationMessageToString((GroupNotificationMessage) messageContent);
+        } else if (messageContent instanceof ContactNotificationMessage) {
+            return contactNotificationMessageToString((ContactNotificationMessageEx) messageContent);
         }
         return "";
     }
 
     private static final Gson GSON = ApiHelper.getDefaultGsonInstance();
+
+    public static CharSequence contactNotificationMessageToString(ContactNotificationMessageEx message) {
+        switch (message.getOperation()) {
+            case ContactManager.CONTACT_OPERATION_ACCEPT:
+            case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
+                try {
+                    ContactManager.ContactMessageExtra extra = GSON.fromJson(message.getExtra(), ContactManager.ContactMessageExtra.class);
+                    if (extra != null && extra.userProfile != null) {
+                        return String.format(AndroidUtil.getString(R.string.MessageSummary_ContactNtf_Accept), extra.userProfile.getNickname());
+                    } else {
+                        LogUtil.e("extra==null || extra.userProfile==null,data:" + message.getExtra());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return "";
+            default:
+                LogUtil.e("Unknown contact operation " + message.getOperation());
+                return "";
+        }
+    }
 
     public static CharSequence groupNotificationMessageToString(GroupNotificationMessage message) {
         GroupBean group;

@@ -29,6 +29,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.mvp.view.activity.VideoPlayActivity;
 import com.yzx.chat.network.chat.GroupManager;
+import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidUtil;
@@ -46,6 +47,7 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import io.rong.imlib.model.Message;
+import io.rong.message.ContactNotificationMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
@@ -74,6 +76,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_SEND_MESSAGE_VIDEO = 9;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO = 10;
     private static final int HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE = 11;
+    private static final int HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE = 12;
 
     private List<Message> mMessageList;
     private SparseLongArray mTimeSparseLongArray;
@@ -109,6 +112,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                 return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_video, parent, false), viewType);
             case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
+            case HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE:
                 return new NotificationMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_notification_message, parent, false), viewType);
             default:
                 throw new NoSuchElementException("unknown type code:" + viewType);
@@ -143,6 +147,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
             case "RC:GrpNtf":
                 return HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE;
+            case "Custom:ContactNtf":
+                return HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE;
             default:
                 throw new NoSuchElementException("unknown type:" + message.getObjectName());
         }
@@ -347,6 +353,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                     break;
                 case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
                     mViewHolder = new GroupNotificationViewHolder(itemView);
+                    break;
+                case HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE:
+                    mViewHolder = new ContactNotificationViewHolder(itemView);
+                    break;
             }
             mViewHolder.mContentLayout.setOnClickListener(mOnContentClickListener);
         }
@@ -502,6 +512,22 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         public abstract void parseMessageContent(Message message);
+    }
+
+    static final class ContactNotificationViewHolder extends ItemViewHolder {
+        TextView mTvNotificationMessage;
+
+        ContactNotificationViewHolder(View itemView) {
+            super(itemView);
+            mTvNotificationMessage = itemView.findViewById(R.id.ChatMessageAdapter_mTvNotificationMessage);
+            mContentLayout = mTvNotificationMessage;
+        }
+
+        @Override
+        public void parseMessageContent(Message message) {
+            ContactNotificationMessageEx contactNotification = (ContactNotificationMessageEx) message.getContent();
+            mTvNotificationMessage.setText(IMMessageHelper.contactNotificationMessageToString(contactNotification));
+        }
     }
 
     static final class GroupNotificationViewHolder extends ItemViewHolder {

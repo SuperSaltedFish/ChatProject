@@ -13,10 +13,12 @@ import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
 
 import io.rong.imlib.model.Message;
+import io.rong.message.GroupNotificationMessage;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -64,24 +66,14 @@ public class HomePresenter implements HomeContract.Presenter {
     private final ConversationManager.OnConversationUnreadCountListener mOnConversationUnreadCountListener = new ConversationManager.OnConversationUnreadCountListener() {
         @Override
         public void OnConversationUnreadCountChange(final int count) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mHomeView.updateMessageUnreadBadge(count);
-                }
-            });
+            mHomeView.updateMessageUnreadBadge(count);
         }
     };
 
     private final ContactManager.OnContactOperationUnreadCountChangeListener mOnContactOperationUnreadCountChangeListener = new ContactManager.OnContactOperationUnreadCountChangeListener() {
         @Override
         public void onContactOperationUnreadCountChange(final int count) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mHomeView.updateContactUnreadBadge(count);
-                }
-            });
+            mHomeView.updateContactUnreadBadge(count);
         }
     };
 
@@ -98,14 +90,14 @@ public class HomePresenter implements HomeContract.Presenter {
                     switch (message.getConversationType()) {
                         case PRIVATE:
                             ContactBean contact = IMClient.getInstance().getContactManager().getContact(message.getTargetId());
-                            if (contact != null) {
-                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact);
+                            if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
+                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact,!AndroidUtil.isAppForeground());
                             }
                             break;
                         case GROUP:
                             GroupBean group = IMClient.getInstance().getGroupManager().getGroup(message.getTargetId());
-                            if (group != null) {
-                                NotificationHelper.getInstance().showGroupMessageNotification(message, group);
+                            if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
+                                NotificationHelper.getInstance().showGroupMessageNotification(message, group,!AndroidUtil.isAppForeground());
                             }
                             break;
                     }
@@ -121,12 +113,7 @@ public class HomePresenter implements HomeContract.Presenter {
             if (activityClass == HomeActivity.class || activityClass == NotificationMessageActivity.class) {
                 return;
             }
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    NotificationHelper.getInstance().showContactOperationNotification(contactOperation);
-                }
-            });
+            NotificationHelper.getInstance().showContactOperationNotification(contactOperation,!AndroidUtil.isAppForeground());
         }
 
         @Override
@@ -136,12 +123,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
         @Override
         public void onContactOperationRemove(final ContactOperationBean contactOperation) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    NotificationHelper.getInstance().cancelNotification(contactOperation.getUserID().hashCode());
-                }
-            });
+            NotificationHelper.getInstance().cancelNotification(contactOperation.getUserID().hashCode());
         }
     };
 

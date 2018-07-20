@@ -19,6 +19,7 @@ import com.yzx.chat.database.DBHelper;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.UserInfoBean;
+import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.HttpRequest;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.GroupNotificationMessage;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -101,6 +103,7 @@ public class IMClient implements IManagerHelper {
         RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
         try {
             RongIMClient.registerMessageType(VideoMessage.class);
+            RongIMClient.registerMessageType(ContactNotificationMessageEx.class);
         } catch (AnnotationNotFoundException ignored) {
         }
     }
@@ -119,7 +122,7 @@ public class IMClient implements IManagerHelper {
                 request.setToken(UserManager.getLocalToken());
                 String json = mGson.toJson(request);
                 LogUtil.e("convertRequest: " + json);
-                return json==null?null:json.getBytes(StandardCharsets.UTF_8);
+                return json == null ? null : json.getBytes(StandardCharsets.UTF_8);
             }
 
             @Nullable
@@ -131,11 +134,11 @@ public class IMClient implements IManagerHelper {
             @Nullable
             @Override
             public Object convertResponseBody(byte[] body, Type genericType) {
-                if(body==null||body.length==0){
+                if (body == null || body.length == 0) {
                     return null;
                 }
                 String strBody = new String(body);
-                LogUtil.e("convertResponseBody:"+strBody);
+                LogUtil.e("convertResponseBody:" + strBody);
                 return ApiHelper.getDefaultGsonInstance().fromJson(new String(body), genericType);
             }
 
@@ -316,10 +319,10 @@ public class IMClient implements IManagerHelper {
     public synchronized void logout() {
         isLogged = false;
         mRongIMClient.logout();
-        if(mUiHandler!=null){
+        if (mUiHandler != null) {
             mUiHandler.removeCallbacksAndMessages(null);
         }
-        if(mWorkExecutor!=null){
+        if (mWorkExecutor != null) {
             mWorkExecutor.getQueue().clear();
         }
         if (mChatManager != null) {
@@ -392,7 +395,7 @@ public class IMClient implements IManagerHelper {
 
     @Override
     public AbstractDao.ReadWriteHelper getReadWriteHelper() {
-       return mDBHelper.getReadWriteHelper();
+        return mDBHelper.getReadWriteHelper();
     }
 
     @Override
@@ -452,12 +455,14 @@ public class IMClient implements IManagerHelper {
                 case "Custom:VideoMsg":
                     mChatManager.onReceiveContactNotificationMessage(message, i);
                     break;
-                case "RC:ContactNtf":
-                    mContactManager.onReceiveContactNotificationMessage(message);
+                case "Custom:ContactNtf"://该类型不会保存期起来
+                    mContactManager.onReceiveContactNotificationMessage((ContactNotificationMessageEx) message.getContent());
                     break;
                 case "RC:GrpNtf":
-                    mGroupManager.onReceiveGroupNotificationMessage(message);
+                    mGroupManager.onReceiveGroupNotificationMessage((GroupNotificationMessage) message.getContent());
                     break;
+                default:
+                    LogUtil.e("Unknown Message ObjectName:" + message.getObjectName());
             }
             if (i == 0) {
                 mConversationManager.updateChatUnreadCount();

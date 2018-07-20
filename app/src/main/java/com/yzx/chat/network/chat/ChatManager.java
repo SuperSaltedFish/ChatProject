@@ -64,6 +64,16 @@ public class ChatManager {
         }
     }
 
+    public void insertOutgoingMessage(Message message) {
+        mRongIMClient.insertOutgoingMessage(message.getConversationType(), message.getTargetId(), message.getSentStatus(), message.getContent(), message.getSentTime(), null);
+        onReceiveContactNotificationMessage(message, 0);
+    }
+
+    public void insertIncomingMessage(Message message) {
+        mRongIMClient.insertIncomingMessage(message.getConversationType(), message.getTargetId(), message.getSenderUserId(), message.getReceivedStatus(), message.getContent(), message.getSentTime(), null);
+        onReceiveContactNotificationMessage(message, 0);
+    }
+
     @Nullable
     public Message getMessage(int messageID) {
         final CountDownLatch latch = new CountDownLatch(1);

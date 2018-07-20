@@ -85,12 +85,14 @@
     <string name="ProgressHint_Decode">正在解析...</string>
     <string name="ProgressHint_DownloadVideo">正在下载视频\n(%d%%)</string>
 
-    <string name="EMMessageUtil_LocationInfo">[位置信息]</string>
-    <string name="EMMessageUtil_ImageInfo">[图片信息]</string>
-    <string name="EMMessageUtil_VoiceInfo">[语音信息]</string>
-    <string name="EMMessageUtil_VideoInfo">[视频信息]</string>
-    <string name="EMMessageUtil_EmotionInfo">[表情]</string>
-    <string name="EMMessageUtil_FileInfo">[文件信息]</string>
+    <string name="MessageSummary_LocationInfo">[位置信息]</string>
+    <string name="MessageSummary_ImageInfo">[图片信息]</string>
+    <string name="MessageSummary_VoiceInfo">[语音信息]</string>
+    <string name="MessageSummary_VideoInfo">[视频信息]</string>
+    <string name="MessageSummary_EmotionInfo">[表情]</string>
+    <string name="MessageSummary_FileInfo">[文件信息]</string>
+    <string name="MessageSummary_ContactNtf_Accept">你已添加了%s,现在可以开始聊天了。</string>
+
     <string name="AlertDialogChat_Title">重发提示</string>
     <string name="AlertDialogChat_Content">该消息此前发送失败,是否选择重新发送这条信息?</string>
     <string name="AlertDialogChat_Cancel">取消发送</string>

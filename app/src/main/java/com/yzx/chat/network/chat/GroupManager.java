@@ -163,8 +163,7 @@ public class GroupManager {
         mNetworkExecutor.submit(mUpdateAliasCall);
     }
 
-    void onReceiveGroupNotificationMessage(Message message) {
-        GroupNotificationMessage groupNotification = (GroupNotificationMessage) message.getContent();
+    void onReceiveGroupNotificationMessage(GroupNotificationMessage groupNotification) {
         final String operation = groupNotification.getOperation();
         GroupMessageExtra extra = null;
         try {

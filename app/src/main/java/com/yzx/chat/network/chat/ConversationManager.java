@@ -34,7 +34,6 @@ public class ConversationManager {
     private List<OnConversationUnreadCountListener> mConversationUnreadCountListeners;
 
     private volatile int mUnreadChatMessageCount;
-    private final Object mUpdateChatUnreadCountLock = new Object();
 
     ConversationManager() {
         mConversationUnreadCountListeners = Collections.synchronizedList(new LinkedList<OnConversationUnreadCountListener>());
@@ -253,12 +252,10 @@ public class ConversationManager {
             }
 
             void updateUnreadCount(int newCount) {
-                synchronized (mUpdateChatUnreadCountLock) {
-                    if (mUnreadChatMessageCount != newCount) {
-                        mUnreadChatMessageCount = newCount;
-                        for (OnConversationUnreadCountListener listener : mConversationUnreadCountListeners) {
-                            listener.OnConversationUnreadCountChange(mUnreadChatMessageCount);
-                        }
+                if (mUnreadChatMessageCount != newCount) {
+                    mUnreadChatMessageCount = newCount;
+                    for (OnConversationUnreadCountListener listener : mConversationUnreadCountListeners) {
+                        listener.OnConversationUnreadCountChange(mUnreadChatMessageCount);
                     }
                 }
             }

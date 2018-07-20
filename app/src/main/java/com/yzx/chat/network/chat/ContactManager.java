@@ -19,6 +19,7 @@ import com.yzx.chat.database.ContactOperationDao;
 import com.yzx.chat.database.UserDao;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.contact.ContactApi;
+import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
 import com.yzx.chat.tool.ApiHelper;
@@ -50,14 +51,14 @@ public class ContactManager {
 
     public static final String CONTACT_OPERATION_REQUEST = "Request";//对方请求
     public static final String CONTACT_OPERATION_ACCEPT = "Accept";//对方同意添加
-    public static final String CONTACT_OPERATION_REFUSED = "Refused";//对方拒绝添加
+    public static final String CONTACT_OPERATION_REJECT = "Reject";//对方拒绝添加
     public static final String CONTACT_OPERATION_DELETE = "Delete";//对方删除好友
 
     public static final String CONTACT_OPERATION_REQUEST_ACTIVE = "ActiveRequest";//主动请求
     public static final String CONTACT_OPERATION_ACCEPT_ACTIVE = "ActiveAccept";//主动同意添加
-    public static final String CONTACT_OPERATION_REFUSED_ACTIVE = "ActiveRefused";//主动拒绝添加
+    public static final String CONTACT_OPERATION_REFUSED_ACTIVE = "ActiveReject";//主动拒绝添加
 
-    private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REFUSED, CONTACT_OPERATION_DELETE));
+    private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REJECT, CONTACT_OPERATION_DELETE));
 
     private Map<String, ContactBean> mContactsMap;
     private IManagerHelper mManagerHelper;
@@ -78,7 +79,6 @@ public class ContactManager {
     private Call<JsonResponse<Void>> mUpdateContact;
 
     private volatile int mContactOperationUnreadNumber;
-    private final Object mUpdateContactUnreadNumberLock = new Object();
 
     ContactManager(IManagerHelper helper) {
         mManagerHelper = helper;
@@ -219,20 +219,17 @@ public class ContactManager {
                 contactOperation.setType(ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE);
                 contactOperation.setRemind(false);
 
-                final ContactBean contactBean = new ContactBean();
-                contactBean.setUserProfile(contactOperation.getUser());
-                contactBean.setRemark(new ContactRemarkBean());
+                final ContactBean contact = new ContactBean();
+                UserBean user = contactOperation.getUser();
+                contact.setUserProfile(user);
+                contact.setRemark(new ContactRemarkBean());
 
-                if (mContactOperationDao.replace(contactOperation) & mContactDao.insert(contactBean)) {
-                    mContactsMap.put(contactBean.getUserProfile().getUserID(), contactBean);
+                if (mContactOperationDao.replace(contactOperation) & addContactToDB(contact)) {
                     mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
                                 listener.onContactOperationUpdate(contactOperation);
-                            }
-                            for(OnContactChangeListener listener:mContactChangeListeners){
-                                listener.onContactAdded(contactBean);
                             }
                             if (resultCallback != null) {
                                 resultCallback.onSuccess(null);
@@ -266,16 +263,10 @@ public class ContactManager {
         mDeleteContact.setResponseCallback(new BaseResponseCallback<Void>() {
             @Override
             protected void onSuccess(Void response) {
-                if (mContactDao.delete(contact)) {
-                    UserBean user = contact.getUserProfile();
-                    mContactsMap.remove(user.getUserID());
-                    mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, user.getUserID());
+                if (deleteContactFromDB(contact)) {
                     mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            for (OnContactChangeListener listener : mContactChangeListeners) {
-                                listener.onContactDeleted(contact);
-                            }
                             if (resultCallback != null) {
                                 resultCallback.onSuccess(null);
                             }
@@ -302,6 +293,51 @@ public class ContactManager {
         mNetworkExecutor.submit(mDeleteContact);
     }
 
+    private boolean addContactToDB(final ContactBean contact) {
+        if (mContactDao.insert(contact)) {
+            mContactsMap.put(contact.getUserProfile().getUserID(), contact);
+            ContactMessageExtra extra = new ContactMessageExtra();
+            extra.userProfile = contact.getUserProfile();
+            extra.sourceUserNickname = extra.userProfile.getNickname();
+            ContactNotificationMessage messageContent = ContactNotificationMessage.obtain(CONTACT_OPERATION_ACCEPT_ACTIVE, extra.userProfile.getUserID(), extra.userProfile.getUserID(), "");
+            messageContent.setExtra(mGson.toJson(extra));
+            Message hintMessage = Message.obtain(extra.userProfile.getUserID(), Conversation.ConversationType.PRIVATE, messageContent);
+            hintMessage.setSenderUserId(mManagerHelper.getUserManager().getUserID());
+            hintMessage.setSentTime(System.currentTimeMillis());
+            hintMessage.setReceivedStatus(new Message.ReceivedStatus(1));
+            mManagerHelper.getChatManager().insertIncomingMessage(hintMessage);
+            mManagerHelper.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnContactChangeListener listener : mContactChangeListeners) {
+                        listener.onContactAdded(contact);
+                    }
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    private boolean deleteContactFromDB(final ContactBean contact) {
+        if (mContactDao.delete(contact)) {
+            UserBean user = contact.getUserProfile();
+            mContactsMap.remove(user.getUserID());
+            mManagerHelper.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.PRIVATE, user.getUserID());
+            mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, user.getUserID());
+            mManagerHelper.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnContactChangeListener listener : mContactChangeListeners) {
+                        listener.onContactDeleted(contact);
+                    }
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
     public void updateContactRemark(final ContactBean contact, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mUpdateContact);
         mUpdateContact = mContactApi.updateRemark(contact.getUserProfile().getUserID(), contact.getRemark());
@@ -312,7 +348,7 @@ public class ContactManager {
                 UserBean user = contact.getUserProfile();
                 if (mContactDao.update(contact) & mUserDao.update(user)) {
                     mContactsMap.put(user.getUserID(), contact);
-                    mManagerHelper.getConversationManager().updateConversationTitle(Conversation.ConversationType.PRIVATE,user.getUserID(),contact.getName());
+                    mManagerHelper.getConversationManager().updateConversationTitle(Conversation.ConversationType.PRIVATE, user.getUserID(), contact.getName());
                     mManagerHelper.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -374,16 +410,14 @@ public class ContactManager {
     }
 
     public void updateContactUnreadCount() {
-        mManagerHelper.runOnWorkThread(new Runnable() {
+        mManagerHelper.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                synchronized (mUpdateContactUnreadNumberLock) {
-                    int count = mContactOperationDao.loadRemindCount();
-                    if (count != mContactOperationUnreadNumber) {
-                        mContactOperationUnreadNumber = count;
-                        for (OnContactOperationUnreadCountChangeListener listener : mContactOperationUnreadCountChangeListeners) {
-                            listener.onContactOperationUnreadCountChange(mContactOperationUnreadNumber);
-                        }
+                int count = mContactOperationDao.loadRemindCount();
+                if (count != mContactOperationUnreadNumber) {
+                    mContactOperationUnreadNumber = count;
+                    for (OnContactOperationUnreadCountChangeListener listener : mContactOperationUnreadCountChangeListeners) {
+                        listener.onContactOperationUnreadCountChange(mContactOperationUnreadNumber);
                     }
                 }
             }
@@ -492,8 +526,7 @@ public class ContactManager {
         mContactsMap = null;
     }
 
-    void onReceiveContactNotificationMessage(Message message) {
-        ContactNotificationMessage contactMessage = (ContactNotificationMessage) message.getContent();
+    void onReceiveContactNotificationMessage(ContactNotificationMessageEx contactMessage) {
         String operation = contactMessage.getOperation();
         if (!CONTACT_OPERATION_SET.contains(operation)) {
             LogUtil.e("unknown contact operation:" + operation);
@@ -506,6 +539,7 @@ public class ContactManager {
         LogUtil.d("ContactOperationExtra" + contactMessage.getExtra());
 
         ContactMessageExtra extra;
+
         try {
             extra = mGson.fromJson(contactMessage.getExtra(), ContactMessageExtra.class);
         } catch (JsonSyntaxException e) {
@@ -523,30 +557,48 @@ public class ContactManager {
             LogUtil.e(" ContactOperation : userProfile is empty");
             return;
         }
-        ContactOperationBean contactOperation = new ContactOperationBean();
-        contactOperation.setUser(extra.userProfile);
-        contactOperation.setReason(contactMessage.getMessage());
-        contactOperation.setRemind(true);
-        contactOperation.setTime((int) (message.getReceivedTime() / 1000));
-        contactOperation.setType(operation);
-        if (mContactOperationDao.isExist(contactOperation)) {
-            if (!mContactOperationDao.update(contactOperation)) {
-                LogUtil.e("update contact operation fail");
-                return;
-            }
-            for (OnContactOperationListener contactListener : mContactOperationListeners) {
-                contactListener.onContactOperationUpdate(contactOperation);
-            }
-        } else {
-            if (!mContactOperationDao.insert(contactOperation)) {
-                LogUtil.e("insert contact operation fail");
-                return;
-            }
-            for (OnContactOperationListener contactListener : mContactOperationListeners) {
-                contactListener.onContactOperationReceive(contactOperation);
-            }
+
+        switch (operation) {
+            case CONTACT_OPERATION_ACCEPT:
+                ContactBean contact = new ContactBean();
+                contact.setUserProfile(extra.userProfile);
+                contact.setRemark(new ContactRemarkBean());
+                addContactToDB(contact);
+                break;
+            case CONTACT_OPERATION_DELETE:
+                contact = getContact(extra.userProfile.getUserID());
+                if (contact != null) {
+                    deleteContactFromDB(contact);
+                } else {
+                    LogUtil.e("delete contact fail: Non-existent");
+                }
+                break;
+            default:
+                ContactOperationBean contactOperation = new ContactOperationBean();
+                contactOperation.setUser(extra.userProfile);
+                contactOperation.setReason(contactMessage.getMessage());
+                contactOperation.setRemind(true);
+                contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
+                contactOperation.setType(operation);
+                if (mContactOperationDao.isExist(contactOperation)) {
+                    if (!mContactOperationDao.update(contactOperation)) {
+                        LogUtil.e("update contact operation fail");
+                        return;
+                    }
+                    for (OnContactOperationListener contactListener : mContactOperationListeners) {
+                        contactListener.onContactOperationUpdate(contactOperation);
+                    }
+                } else {
+                    if (!mContactOperationDao.insert(contactOperation)) {
+                        LogUtil.e("insert contact operation fail");
+                        return;
+                    }
+                    for (OnContactOperationListener contactListener : mContactOperationListeners) {
+                        contactListener.onContactOperationReceive(contactOperation);
+                    }
+                }
+                updateContactUnreadCount();
         }
-        updateContactUnreadCount();
     }
 
 
@@ -582,10 +634,10 @@ public class ContactManager {
         void onContactUpdate(ContactBean contact);
     }
 
-    private static final class ContactMessageExtra {
-        String sourceUserNickname;
-        long version;
-        UserBean userProfile;
+    public static final class ContactMessageExtra {
+        public String sourceUserNickname;
+        public long version;
+        public UserBean userProfile;
     }
 
 }
