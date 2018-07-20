@@ -23,9 +23,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yzx.chat.R;
