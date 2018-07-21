@@ -37,7 +37,11 @@ public class ChatContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        Conversation init(int ConversationTypeCode, String conversationID);
+        ContactBean initPrivateChat( String conversationID);
+
+        GroupBean initGroupChat( String conversationID);
+
+        String getConversationID();
 
         void resendMessage(Message message);
 
@@ -61,9 +65,7 @@ public class ChatContract {
 
         void saveMessageDraft(String draft);
 
-        ContactBean getContact();
-
-        GroupBean getGroup();
+        String getMessageDraft();
 
     }
 }

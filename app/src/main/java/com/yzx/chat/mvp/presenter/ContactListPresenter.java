@@ -28,14 +28,13 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     private ContactListContract.View mContactView;
     private RefreshAllContactsTask mRefreshContactsTask;
     private List<ContactBean> mContactList;
-    private Handler mHandler;
+
     private IMClient mIMClient;
 
 
     @Override
     public void attachView(ContactListContract.View view) {
         mContactView = view;
-        mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mContactList = new ArrayList<>(128);
         mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
@@ -49,10 +48,8 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         AsyncUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
-        mHandler.removeCallbacksAndMessages(null);
         mContactList.clear();
         mContactList = null;
-        mHandler = null;
     }
 
     @Override
@@ -73,7 +70,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     @Override
     public void loadTagCount() {
         HashSet<String> tags = mIMClient.getContactManager().getAllTags();
-        mContactView.showTagCount(tags==null?0:tags.size());
+        mContactView.showTagCount(tags == null ? 0 : tags.size());
     }
 
 
@@ -84,55 +81,35 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     private final ContactManager.OnContactOperationUnreadCountChangeListener mOnContactOperationUnreadCountChangeListener = new ContactManager.OnContactOperationUnreadCountChangeListener() {
         @Override
         public void onContactOperationUnreadCountChange(final int count) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mContactView.updateUnreadBadge(count);
-                }
-            });
+            mContactView.updateUnreadBadge(count);
         }
     };
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
         public void onContactAdded(final ContactBean contact) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    loadAllContact();
-                }
-            });
+            loadAllContact();
         }
 
         @Override
         public void onContactDeleted(final ContactBean contact) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    loadAllContact();
-                }
-            });
+            loadAllContact();
         }
 
         @Override
         public void onContactUpdate(final ContactBean contact) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    int index = mContactList.indexOf(contact);
-                    if (index >= 0) {
-                        ContactBean old = mContactList.get(index);
-                        if (!old.getName().equals(contact.getName())) {
-                            loadAllContact();
-                        } else {
-                            mContactList.set(index, contact);
-                            mContactView.updateContactItem(contact);
-                        }
-                    } else {
-                        loadAllContact();
-                    }
+            int index = mContactList.indexOf(contact);
+            if (index >= 0) {
+                ContactBean old = mContactList.get(index);
+                if (!old.getName().equals(contact.getName())) {
+                    loadAllContact();
+                } else {
+                    mContactList.set(index, contact);
+                    mContactView.updateContactItem(contact);
                 }
-            });
+            } else {
+                loadAllContact();
+            }
         }
     };
 

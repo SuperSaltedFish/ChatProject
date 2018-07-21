@@ -1,12 +1,10 @@
 package com.yzx.chat.bean;
 
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.yzx.chat.R;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -16,7 +14,7 @@ import java.util.Locale;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class GroupBean implements Parcelable {
+public class GroupBean implements Parcelable, BasicInfoProvider {
 
     private String groupID;
     private String name;
@@ -28,8 +26,8 @@ public class GroupBean implements Parcelable {
 
     private String avatarUrlFromMember;
 
-    public String getNameAndMemberNumber(){
-        return String.format(Locale.getDefault(),"%s(%d)",name,members==null?0:members.size());
+    public String getNameAndMemberNumber() {
+        return String.format(Locale.getDefault(), "%s(%d)", name, members == null ? 0 : members.size());
     }
 
     public String getAvatarUrlFromMember() {
@@ -90,6 +88,14 @@ public class GroupBean implements Parcelable {
         return name;
     }
 
+    @Override
+    public String getName(int position) {
+        if (members == null || members.size() <= position) {
+            return null;
+        }
+        return members.get(position).getNicknameInGroup();
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -112,6 +118,14 @@ public class GroupBean implements Parcelable {
 
     public String getAvatar() {
         return avatar;
+    }
+
+    @Override
+    public String getAvatar(int position) {
+        if (members == null || members.size() <= position) {
+            return null;
+        }
+        return members.get(position).getUserProfile().getAvatar();
     }
 
     public void setAvatar(String avatar) {

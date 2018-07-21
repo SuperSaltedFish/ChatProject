@@ -278,7 +278,16 @@ public class NotificationHelper {
                     }
                     Intent startActivityIntent = new Intent(homeActivity, ChatActivity.class);
                     startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
-                    startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, type.getValue());
+                    switch (type) {
+                        case PRIVATE:
+                            startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_PRIVATE);
+                            break;
+                        case GROUP:
+                            startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
+                            break;
+                        default:
+                            return;
+                    }
                     homeActivity.startActivity(startActivityIntent);
                 }
             }

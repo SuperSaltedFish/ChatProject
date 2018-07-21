@@ -27,6 +27,7 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.bean.BasicInfoProvider;
 import com.yzx.chat.mvp.view.activity.VideoPlayActivity;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
@@ -81,6 +82,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private List<Message> mMessageList;
     private SparseLongArray mTimeSparseLongArray;
     private MessageCallback mMessageCallback;
+    private BasicInfoProvider mBasicInfoProvider;
 
     public ChatMessageAdapter(List<Message> messageList) {
         mMessageList = messageList;
@@ -123,6 +125,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     public void bindDataToViewHolder(MessageHolder holder, int position) {
         holder.isEnableTimeHint = mTimeSparseLongArray.get(mMessageList.get(position).getMessageId(), -1) > 0;
         holder.setMessageCallback(mMessageCallback);
+        if (holder instanceof ReceiveMessageHolder) {
+            ((ReceiveMessageHolder) holder).setBasicInfoProvider(mBasicInfoProvider);
+        }
         holder.setDate(mMessageList.get(position));
     }
 
@@ -242,6 +247,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     };
 
+    public void setBasicInfoProvider(BasicInfoProvider basicInfoProvider) {
+        mBasicInfoProvider = basicInfoProvider;
+    }
+
     public void setMessageCallback(MessageCallback messageCallback) {
         mMessageCallback = messageCallback;
     }
@@ -256,13 +265,27 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     static final class ReceiveMessageHolder extends MessageHolder {
         ImageView mIvAvatar;
+        TextView mTvNickname;
+        BasicInfoProvider mBasicInfoProvider;
 
         ReceiveMessageHolder(View itemView, int type) {
             super(itemView, type);
             mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
-            GlideUtil.loadFromUrl(mIvAvatar.getContext(), mIvAvatar, R.drawable.temp_head_image);
+            mTvNickname = itemView.findViewById(R.id.ChatMessageAdapter_mTvNickname);
         }
 
+        void setBasicInfoProvider(BasicInfoProvider basicInfoProvider) {
+            mBasicInfoProvider = basicInfoProvider;
+        }
+
+        @Override
+        protected void setDate(Message message) {
+            super.setDate(message);
+            if (mBasicInfoProvider != null) {
+                GlideUtil.loadAvatarFromUrl(itemView.getContext(), mIvAvatar, mBasicInfoProvider.getAvatar(getAdapterPosition()));
+                mTvNickname.setText(mBasicInfoProvider.getAvatar(getAdapterPosition()));
+            }
+        }
     }
 
     static final class SendMessageHolder extends MessageHolder {

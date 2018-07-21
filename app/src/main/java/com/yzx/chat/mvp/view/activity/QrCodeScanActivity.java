@@ -280,7 +280,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     @Override
     public void startGroupChatActivity(String groupID) {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.GROUP.getValue());
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE,ChatActivity.CONVERSATION_GROUP);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, groupID);
         startActivity(intent);
         finish();

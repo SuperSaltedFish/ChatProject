@@ -14,7 +14,7 @@ import com.yzx.chat.util.PinYinUtil;
  */
 
 
-public class ContactBean implements Parcelable {
+public class ContactBean implements Parcelable,BasicInfoProvider {
 
     private UserBean userProfile;
     private ContactRemarkBean remark;
@@ -27,6 +27,21 @@ public class ContactBean implements Parcelable {
             remarkName = remark.getRemarkName();
         }
         return TextUtils.isEmpty(remarkName) ? userProfile.getNickname() : remarkName;
+    }
+
+    @Override
+    public String getName(int position) {
+        return getName();
+    }
+
+    @Override
+    public String getAvatar() {
+        return userProfile==null?null:userProfile.getAvatar();
+    }
+
+    @Override
+    public String getAvatar(int position) {
+        return getAvatar();
     }
 
     public String getAbbreviation() {

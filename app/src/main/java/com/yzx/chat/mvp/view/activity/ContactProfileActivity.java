@@ -3,12 +3,8 @@ package com.yzx.chat.mvp.view.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
@@ -18,15 +14,9 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
@@ -40,15 +30,12 @@ import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
 import com.yzx.chat.widget.adapter.ContactInfoPagerAdapter;
-import com.yzx.chat.widget.listener.AppBarStateChangeListener;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.PageIndicator;
 import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.rong.imlib.model.Conversation;
 
 
 public class ContactProfileActivity extends BaseCompatActivity<ContactProfileContract.Presenter> implements ContactProfileContract.View {
@@ -204,7 +191,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private void startChatActivity() {
         Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, mContactID);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, Conversation.ConversationType.PRIVATE.getValue());
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_PRIVATE);
         startActivity(intent);
         finish();
     }

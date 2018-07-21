@@ -34,6 +34,7 @@ import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.bean.BasicInfoProvider;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.ChatContract;
@@ -85,6 +86,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public static final String INTENT_EXTRA_CONVERSATION_ID = "ConversationID";
     public static final String INTENT_EXTRA_CONVERSATION_TYPE_CODE = "ConversationTypeCode";
 
+    public static final int CONVERSATION_PRIVATE = 1;
+    public static final int CONVERSATION_GROUP = 2;
+
+
     private RecyclerView mRvChatView;
     private ImageSwitcher mIsvSendMessage;
     private ImageView mIvEmoticons;
@@ -109,7 +114,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private Alerter mAlerter;
     private Animation mAlerterIconAnimation;
 
-    private Conversation mConversation;
     private List<Message> mMessageList;
     private Message mNeedResendMessage;
     private int mNeedResendPosition;
@@ -119,8 +123,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private boolean isOpenedKeyBoard;
     private boolean isHasContentInInputBox;
     private int isShowMoreTypeAfterCloseKeyBoard;
-
     private boolean isHasVoiceRecorderPermission;
+
+    private int mCurrentConversationType;
+    private BasicInfoProvider mBasicInfoProvider;
+
 
     @Override
     protected void onResume() {
@@ -283,27 +290,31 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         setVoiceRecorder();
 
         setData(getIntent());
-
     }
 
     private void setData(Intent intent) {
         String conversationID = intent.getStringExtra(INTENT_EXTRA_CONVERSATION_ID);
         int conversationTypeCode = intent.getIntExtra(INTENT_EXTRA_CONVERSATION_TYPE_CODE, -1);
-        if (TextUtils.isEmpty(conversationID) || conversationTypeCode < 0) {
+        if (TextUtils.isEmpty(conversationID) || (conversationTypeCode != CONVERSATION_PRIVATE && conversationTypeCode != CONVERSATION_GROUP)) {
             finish();
             return;
         }
-        if (mConversation != null && mConversation.getTargetId().equals(conversationID)) {
+        if (TextUtils.equals(conversationID, mPresenter.getConversationID())) {
             return;
         }
-        Conversation conversation = mPresenter.init(conversationTypeCode, conversationID);
-        if (conversation == null) {
+        mCurrentConversationType = conversationTypeCode;
+        if (mCurrentConversationType == CONVERSATION_PRIVATE) {
+            mBasicInfoProvider = mPresenter.initPrivateChat(conversationID);
+        } else {
+            mBasicInfoProvider = mPresenter.initGroupChat(conversationID);
+        }
+        if (mBasicInfoProvider == null) {
             finish();
             return;
         }
-        mConversation = conversation;
-        setTitle(mConversation.getConversationTitle());
-        mEtContent.setText(mConversation.getDraft());
+        mAdapter.setBasicInfoProvider(mBasicInfoProvider);
+        setTitle(mBasicInfoProvider.getName());
+        mEtContent.setText(mPresenter.getMessageDraft());
     }
 
     private void setChatRecyclerViewAndAdapter() {
@@ -687,26 +698,16 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void enterProfile() {
-        switch (mConversation.getConversationType()) {
-            case PRIVATE:
-                ContactBean contact = mPresenter.getContact();
-                if (contact != null) {
-                    Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
-                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserProfile().getUserID());
-                    startActivity(intent);
-                } else {
-                    LogUtil.e("contactBean == null,open ContactProfileActivity fail");
-                }
+        switch (mCurrentConversationType) {
+            case CONVERSATION_PRIVATE:
+                Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
+                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mPresenter.getConversationID());
+                startActivity(intent);
                 break;
-            case GROUP:
-                GroupBean group = mPresenter.getGroup();
-                if (group != null) {
-                    Intent intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
-                    intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, group.getGroupID());
-                    startActivity(intent);
-                } else {
-                    LogUtil.e("GroupBean == null,open GroupProfileActivity fail");
-                }
+            case CONVERSATION_GROUP:
+                intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
+                intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getConversationID());
+                startActivity(intent);
         }
     }
 

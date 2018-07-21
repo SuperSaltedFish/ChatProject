@@ -166,7 +166,16 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                         conversation = mConversationList.get(position - 1);
                     } else return;
                     intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversation.getTargetId());
-                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, conversation.getConversationType().getValue());
+                    switch (conversation.getConversationType()) {
+                        case PRIVATE:
+                            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_PRIVATE);
+                            break;
+                        case GROUP:
+                            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
+                            break;
+                        default:
+                            return;
+                    }
                     startActivity(intent);
                 }
             });

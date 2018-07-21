@@ -43,7 +43,9 @@ public class ChatPresenter implements ChatContract.Presenter {
     private Handler mHandler;
     private IMClient mIMClient;
 
-    private Conversation mConversation;
+    private String mConversationID;
+    private Conversation.ConversationType mConversationType;
+    private String mMessageDraft;
     private boolean mHasMoreMessage;
     private boolean mIsLoadingMore;
     private boolean mIsConversationStateChange;
@@ -63,49 +65,56 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public Conversation init(int ConversationTypeCode, String conversationID) {
+    public ContactBean initPrivateChat(String conversationID) {
+        ContactBean contact = mIMClient.getContactManager().getContact(conversationID);
+        if (contact != null) {
+            mConversationID = conversationID;
+            mConversationType = Conversation.ConversationType.PRIVATE;
+            init();
+            return contact;
+        }
+        return null;
+    }
+
+    @Override
+    public GroupBean initGroupChat(String conversationID) {
+        GroupBean group = mIMClient.getGroupManager().getGroup(conversationID);
+        if (group != null) {
+            mConversationID = conversationID;
+            mConversationType = Conversation.ConversationType.GROUP;
+            init();
+            return group;
+        }
+        return null;
+    }
+
+    @Override
+    public String getConversationID() {
+        return mConversationID;
+    }
+
+    private void init() {
         reset();
-        Conversation.ConversationType type = Conversation.ConversationType.setValue(ConversationTypeCode);
-        Conversation conversation = mIMClient.getConversationManager().getConversation(type, conversationID);
+        Conversation conversation = mIMClient.getConversationManager().getConversation(mConversationType, mConversationID);
         if (conversation == null) {
-            conversation = new Conversation();
+            conversation = Conversation.obtain(mConversationType, mConversationID, "");
+        } else {
+            mMessageDraft = conversation.getDraft();
         }
-        switch (type) {
-            case PRIVATE:
-                ContactBean contact = mIMClient.getContactManager().getContact(conversationID);
-                if (contact != null) {
-                    conversation.setConversationTitle(contact.getName());
-                }
-                break;
-            case GROUP:
-                GroupBean group = mIMClient.getGroupManager().getGroup(conversationID);
-                if (group != null) {
-                    conversation.setConversationTitle(group.getNameAndMemberNumber());
-                }
-                break;
-            default:
-                conversation = null;
 
+        sConversationID = mConversationID;
+        mChatView.clearMessage();
+        if (conversation.getUnreadMessageCount() != 0) {
+            mIMClient.getConversationManager().clearConversationUnreadStatus(mConversationType, mConversationID);
         }
-        if (conversation != null) {
-            conversation.setTargetId(conversationID);
-            conversation.setConversationType(type);
-            mConversation = conversation;
-            sConversationID = mConversation.getTargetId();
-            mChatView.clearMessage();
-            if (mConversation.getUnreadMessageCount() != 0) {
-                mIMClient.getConversationManager().clearConversationUnreadStatus(mConversation.getConversationType(),mConversation.getTargetId());
-            }
-            List<Message> messageList = mIMClient.getChatManager().getHistoryMessages(mConversation.getConversationType(),mConversation.getTargetId(), -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
-            mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
-            mChatView.enableLoadMoreHint(mHasMoreMessage);
-            mChatView.addNewMessage(messageList);
+        List<Message> messageList = mIMClient.getChatManager().getHistoryMessages(mConversationType, mConversationID, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
+        mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
+        mChatView.enableLoadMoreHint(mHasMoreMessage);
+        mChatView.addNewMessage(messageList);
 
-            mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
-            mIMClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
-            mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
-        }
-        return conversation;
+        mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
+        mIMClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
+        mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
     }
 
     private void reset() {
@@ -113,7 +122,6 @@ public class ChatPresenter implements ChatContract.Presenter {
         mIMClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mIMClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
-        mConversation = null;
         sConversationID = null;
         mHasMoreMessage = true;
         mIsConversationStateChange = false;
@@ -165,7 +173,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void loadMoreMessage(int lastMessageID) {
         mIsLoadingMore = true;
         mIMClient.getChatManager().asyncGetHistoryMessages(
-                mConversation.getConversationType(),mConversation.getTargetId(),
+                mConversationType, mConversationID,
                 lastMessageID,
                 Constants.CHAT_MESSAGE_PAGE_SIZE,
                 new RongIMClient.ResultCallback<List<Message>>() {
@@ -202,31 +210,19 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void saveMessageDraft(String draft) {
-        String oldDraft = mConversation.getDraft();
-        if (((TextUtils.isEmpty(draft) && TextUtils.isEmpty(oldDraft)) || draft.equals(oldDraft)) && !mIsConversationStateChange) {
+        if (TextUtils.equals(mMessageDraft,draft) && !mIsConversationStateChange) {
             return;
         }
-        mIMClient.getConversationManager().saveConversationDraft(mConversation.getConversationType(),mConversation.getTargetId(), draft);
+        mIMClient.getConversationManager().saveConversationDraft(mConversationType, mConversationID, draft);
     }
 
     @Override
-    public ContactBean getContact() {
-        if (mConversation.getConversationType() == Conversation.ConversationType.PRIVATE) {
-            return mIMClient.getContactManager().getContact(mConversation.getTargetId());
-        }
-        return null;
-    }
-
-    @Override
-    public GroupBean getGroup() {
-        if (mConversation.getConversationType() == Conversation.ConversationType.GROUP) {
-            return mIMClient.getGroupManager().getGroup(mConversation.getTargetId());
-        }
-        return null;
+    public String getMessageDraft() {
+        return mMessageDraft;
     }
 
     private void sendMessage(MessageContent messageContent) {
-        sendMessage(Message.obtain(mConversation.getTargetId(), mConversation.getConversationType(), messageContent));
+        sendMessage(Message.obtain(mConversationID, mConversationType, messageContent));
     }
 
     private void sendMessage(Message message) {
