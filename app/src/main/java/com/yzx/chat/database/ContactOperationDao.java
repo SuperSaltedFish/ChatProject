@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
-     static final String TABLE_NAME = "ContactOperation";
+    static final String TABLE_NAME = "ContactOperation";
 
     private static final String COLUMN_NAME_ContactID = "ContactID";
     private static final String COLUMN_NAME_Type = "Type";
@@ -33,7 +33,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                    + COLUMN_NAME_ContactID + "  TEXT NOT NULL CHECK("+COLUMN_NAME_ContactID+"!=''),"
+                    + COLUMN_NAME_ContactID + "  TEXT NOT NULL CHECK(" + COLUMN_NAME_ContactID + "!=''),"
                     + COLUMN_NAME_Type + " TEXT NOT NULL,"
                     + COLUMN_NAME_Reason + " TEXT,"
                     + COLUMN_NAME_IsRemind + " INTEGER,"
@@ -60,7 +60,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
 
     public synchronized int loadRemindCount() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + COLUMN_NAME_ContactID + "=" + UserDao.COLUMN_NAME_UserID + " AND " + COLUMN_NAME_IsRemind + "=1", null);
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE " + COLUMN_NAME_IsRemind + "=1", null);
         int result;
         if (cursor.moveToFirst()) {
             result = cursor.getInt(0);
@@ -79,6 +79,22 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
         int result = database.update(getTableName(), values, null, null);
         mReadWriteHelper.closeWritableDatabase();
         return result;
+    }
+
+    @Override
+    public ContactOperationBean loadByKey(String... keyValues) {
+        if (keyValues == null || keyValues.length == 0) {
+            return null;
+        }
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + COLUMN_NAME_ContactID + "=" + UserDao.COLUMN_NAME_UserID + " AND " + COLUMN_NAME_ContactID + "=?", keyValues);
+        ContactOperationBean entity = null;
+        if (cursor.moveToFirst()) {
+            entity = toEntity(cursor);
+        }
+        cursor.close();
+        mReadWriteHelper.closeReadableDatabase();
+        return entity;
     }
 
     @Override

@@ -81,14 +81,14 @@ public class IMMessageHelper {
         } else if (messageContent instanceof GroupNotificationMessage) {
             return groupNotificationMessageToString((GroupNotificationMessage) messageContent);
         } else if (messageContent instanceof ContactNotificationMessage) {
-            return contactNotificationMessageToString((ContactNotificationMessageEx) messageContent);
+            return contactNotificationMessageToString((ContactNotificationMessage) messageContent);
         }
         return "";
     }
 
     private static final Gson GSON = ApiHelper.getDefaultGsonInstance();
 
-    public static CharSequence contactNotificationMessageToString(ContactNotificationMessageEx message) {
+    public static CharSequence contactNotificationMessageToString(ContactNotificationMessage message) {
         switch (message.getOperation()) {
             case ContactManager.CONTACT_OPERATION_ACCEPT:
             case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:

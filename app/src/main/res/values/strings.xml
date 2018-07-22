@@ -233,4 +233,5 @@
     <string name="Error_Server2">服务器繁忙，请尝试重新登录！</string>
     <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="Error_NetworkTimeout">网络访问超时，请检查网络连接</string>
+    <string name="StrangerProfileActivity_DefaultReason">添加理由：无</string>
 </resources>

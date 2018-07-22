@@ -238,14 +238,12 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     private final VerifyEditView.OnInputListener mOnInputListener = new VerifyEditView.OnInputListener() {
         @Override
         public void onInputComplete(String content) {
-            LogUtil.e("onInputComplete: " + content);
             mInputVerifyCode = content;
             hideSoftKeyboard();
         }
 
         @Override
         public void onInputChange(String content) {
-            LogUtil.e("onInputChange: " + content);
             mInputVerifyCode = null;
             showErrorHint(null);
         }

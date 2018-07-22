@@ -60,6 +60,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         switch (type) {
             case ContactManager.CONTACT_OPERATION_ACCEPT:
             case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
+            case ContactManager.CONTACT_OPERATION_DELETE:
                 holder.mTvAccept.setText(R.string.ContactMessageAdapter_Added);
                 holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_accepted);
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));

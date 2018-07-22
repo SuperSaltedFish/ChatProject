@@ -152,7 +152,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
             case "RC:GrpNtf":
                 return HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE;
-            case "Custom:ContactNtf":
+            case "RC:ContactNtf":
                 return HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE;
             default:
                 throw new NoSuchElementException("unknown type:" + message.getObjectName());
@@ -548,7 +548,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         @Override
         public void parseMessageContent(Message message) {
-            ContactNotificationMessageEx contactNotification = (ContactNotificationMessageEx) message.getContent();
+            ContactNotificationMessage contactNotification = (ContactNotificationMessage) message.getContent();
             mTvNotificationMessage.setText(IMMessageHelper.contactNotificationMessageToString(contactNotification));
         }
     }

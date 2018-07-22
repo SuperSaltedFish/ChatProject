@@ -10,6 +10,7 @@ import com.yzx.chat.mvp.contract.ContactOperationContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
@@ -54,7 +55,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     public void init() {
         mIMClient.getContactManager().makeAllContactOperationAsRead();
         loadAllContactOperation();
-
     }
 
     @Override

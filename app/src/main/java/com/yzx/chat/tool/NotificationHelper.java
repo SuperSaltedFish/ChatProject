@@ -93,8 +93,7 @@ public class NotificationHelper {
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setSmallIcon(R.drawable.ic_notification)
-                .setColor(ContextCompat.getColor(context, R.color.colorAccent));
+                .setSmallIcon(R.drawable.ic_notification);
         return builder;
     }
 
@@ -223,7 +222,6 @@ public class NotificationHelper {
                     .into(bitmapTarget);
         } else {
             glideRequest.load(R.mipmap.ic_launcher)
-                    .transforms(new GlideHexagonTransform())
                     .into(bitmapTarget);
         }
     }

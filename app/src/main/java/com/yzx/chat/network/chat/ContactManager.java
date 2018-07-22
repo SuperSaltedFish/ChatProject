@@ -558,12 +558,22 @@ public class ContactManager {
             return;
         }
 
+
+        ContactOperationBean old = mContactOperationDao.loadByKey(extra.userProfile.getUserID());
+        final ContactOperationBean contactOperation = new ContactOperationBean();
+        contactOperation.setUser(extra.userProfile);
+        contactOperation.setReason(contactMessage.getMessage());
+        contactOperation.setRemind(true);
+        contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
+        contactOperation.setType(operation);
+
         switch (operation) {
             case CONTACT_OPERATION_ACCEPT:
                 ContactBean contact = new ContactBean();
                 contact.setUserProfile(extra.userProfile);
                 contact.setRemark(new ContactRemarkBean());
                 addContactToDB(contact);
+                contactOperation.setRemind(false);
                 break;
             case CONTACT_OPERATION_DELETE:
                 contact = getContact(extra.userProfile.getUserID());
@@ -572,32 +582,44 @@ public class ContactManager {
                 } else {
                     LogUtil.e("delete contact fail: Non-existent");
                 }
+                contactOperation.setRemind(false);
                 break;
-            default:
-                ContactOperationBean contactOperation = new ContactOperationBean();
-                contactOperation.setUser(extra.userProfile);
-                contactOperation.setReason(contactMessage.getMessage());
-                contactOperation.setRemind(true);
-                contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
-                contactOperation.setType(operation);
-                if (mContactOperationDao.isExist(contactOperation)) {
-                    if (!mContactOperationDao.update(contactOperation)) {
-                        LogUtil.e("update contact operation fail");
-                        return;
-                    }
+        }
+
+        if (old != null) {
+            contactOperation.setRemind((!old.getType().equals(contactOperation.getType()))||old.isRemind());
+            if (!CONTACT_OPERATION_REQUEST.equals(operation)) {
+                contactOperation.setReason(old.getReason());
+            }
+            if (!mContactOperationDao.update(contactOperation)) {
+                LogUtil.e("update contact operation fail");
+                return;
+            }
+            mManagerHelper.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                     for (OnContactOperationListener contactListener : mContactOperationListeners) {
                         contactListener.onContactOperationUpdate(contactOperation);
                     }
-                } else {
-                    if (!mContactOperationDao.insert(contactOperation)) {
-                        LogUtil.e("insert contact operation fail");
-                        return;
-                    }
+                }
+            });
+
+        } else {
+            if (!mContactOperationDao.insert(contactOperation)) {
+                LogUtil.e("insert contact operation fail");
+                return;
+            }
+            mManagerHelper.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                     for (OnContactOperationListener contactListener : mContactOperationListeners) {
                         contactListener.onContactOperationReceive(contactOperation);
                     }
                 }
-                updateContactUnreadCount();
+            });
+        }
+        if (contactOperation.isRemind()) {
+            updateContactUnreadCount();
         }
     }
 

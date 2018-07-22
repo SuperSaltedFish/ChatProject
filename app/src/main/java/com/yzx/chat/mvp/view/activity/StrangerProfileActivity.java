@@ -131,14 +131,23 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
                     mBtnConfirm.setText(R.string.ContactMessageAdapter_Disagree);
                     isOperable = false;
                     break;
+                case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
+                case ContactManager.CONTACT_OPERATION_DELETE:
+                    mBtnConfirm.setText(R.string.ContactMessageAdapter_Added);
+                    isOperable = false;
+                    break;
                 default:
                     finish();
                     return;
             }
 
-            mEtReason.setEnabled(isOperable);
+            mEtReason.setEnabled(false);
             mBtnConfirm.setEnabled(isOperable);
-            mEtReason.setText(mContactOperationBean.getReason());
+            if(TextUtils.isEmpty(mContactOperationBean.getReason())){
+                mEtReason.setText(R.string.StrangerProfileActivity_DefaultReason);
+            }else {
+                mEtReason.setText(mContactOperationBean.getReason());
+            }
         } else {
             mBtnConfirm.setText(R.string.StrangerProfileActivity_RequestAddContact);
         }

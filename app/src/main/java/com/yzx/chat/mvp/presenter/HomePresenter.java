@@ -40,6 +40,7 @@ public class HomePresenter implements HomeContract.Presenter {
         mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
+        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
@@ -48,6 +49,7 @@ public class HomePresenter implements HomeContract.Presenter {
         mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
+        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
         mIMClient = null;
@@ -81,7 +83,7 @@ public class HomePresenter implements HomeContract.Presenter {
         @Override
         public void onChatMessageReceived(final Message message, int untreatedCount) {
             Class activityClass = AndroidUtil.getStackTopActivityClass();
-            if (activityClass == HomeActivity.class || (activityClass == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID))) {
+            if (activityClass == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID)) {
                 return;
             }
             mHandler.post(new Runnable() {
@@ -106,11 +108,28 @@ public class HomePresenter implements HomeContract.Presenter {
         }
     };
 
+    private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
+        @Override
+        public void onContactAdded(ContactBean contact) {
+
+        }
+
+        @Override
+        public void onContactDeleted(ContactBean contact) {
+
+        }
+
+        @Override
+        public void onContactUpdate(ContactBean contact) {
+
+        }
+    };
+
     private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
         @Override
         public void onContactOperationReceive(final ContactOperationBean contactOperation) {
             Class activityClass = AndroidUtil.getStackTopActivityClass();
-            if (activityClass == HomeActivity.class || activityClass == NotificationMessageActivity.class) {
+            if ( activityClass == NotificationMessageActivity.class) {
                 return;
             }
             NotificationHelper.getInstance().showContactOperationNotification(contactOperation,!AndroidUtil.isAppForeground());
