@@ -250,11 +250,12 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mTvNickname.setText(contact.getUserProfile().getNickname());
         UserBean user = contact.getUserProfile();
         mIvSexIcon.setSelected(user.getSex() == UserBean.SEX_WOMAN);
-        mTvLocationAndAge.setText(user.getAge());
-
+        StringBuilder locationAndAge = new StringBuilder();
+        locationAndAge.append(user.getAge());
         if (!TextUtils.isEmpty(user.getLocation())) {
-            mTvLocationAndAge.setText(" · " + user.getLocation());
+            locationAndAge.append(" · ").append(user.getLocation());
         }
+        mTvLocationAndAge.setText(locationAndAge.toString());
         if (TextUtils.isEmpty(user.getSignature())) {
             mTvSignature.setText(null);
             mTvSignature.setVisibility(View.GONE);

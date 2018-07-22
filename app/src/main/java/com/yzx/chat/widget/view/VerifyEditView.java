@@ -70,8 +70,8 @@ public class VerifyEditView extends LinearLayout {
 
     private void initDefault() {
         mItemSpace = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
-        mTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, mContext.getResources().getDisplayMetrics());
-        mItemMinWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 28, mContext.getResources().getDisplayMetrics());
+        mTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 17, mContext.getResources().getDisplayMetrics());
+        mItemMinWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, mContext.getResources().getDisplayMetrics());
         mTextColor = Color.BLACK;
         mItemBackground = null;
         isPasswordMode = false;
@@ -148,23 +148,25 @@ public class VerifyEditView extends LinearLayout {
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            if (TextUtils.isEmpty(s) && after == 0 && mCurrentInputPosition != 0) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (before == 0 && count == 0) {
                 if (mCurrentInputPosition != 0) {
                     mCurrentInputPosition--;
                     EditText editText = mEditTextList.get(mCurrentInputPosition);
                     editText.requestFocus();
                     editText.setText("");
-                    mContent.deleteCharAt(mCurrentInputPosition);
                     if (mOnInputListener != null) {
                         mOnInputListener.onInputChange(getCurrentInputContent());
                     }
                 }
-            }
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (!TextUtils.isEmpty(s)) {
+                return;
+            } else if (before > 0 && count == 0) {
+                mContent.deleteCharAt(mCurrentInputPosition);
+            } else if (before == 0 && count > 0) {
                 mContent.append(s);
                 if (mCurrentInputPosition < mItemCount - 1) {
                     mCurrentInputPosition++;
@@ -173,10 +175,11 @@ public class VerifyEditView extends LinearLayout {
                     mOnInputListener.onInputComplete(getCurrentInputContent());
                     return;
                 }
-                if (mOnInputListener != null) {
-                    mOnInputListener.onInputChange(getCurrentInputContent());
-                }
             }
+            if (mOnInputListener != null) {
+                mOnInputListener.onInputChange(getCurrentInputContent());
+            }
+
         }
 
         @Override

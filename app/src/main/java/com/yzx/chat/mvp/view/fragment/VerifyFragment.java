@@ -23,6 +23,7 @@ import com.yzx.chat.mvp.presenter.VerifyPresenter;
 import com.yzx.chat.mvp.view.activity.LoginActivity;
 import com.yzx.chat.mvp.view.activity.SplashActivity;
 import com.yzx.chat.util.AnimationUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.VerifyEditView;
 
 import java.util.Locale;
@@ -46,6 +47,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
 
     private TextView mTvBack;
     private TextView mTvErrorHint;
+    private TextView mTvTelephone;
     private Button mBtnVerify;
     private ImageView mIvBack;
     private VerifyEditView mVerifyEditView;
@@ -71,6 +73,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mBtnResend = parentView.findViewById(R.id.VerifyFragment_mBtnResend);
         mTvErrorHint = parentView.findViewById(R.id.VerifyFragment_mTvErrorHint);
         mIvBack = parentView.findViewById(R.id.VerifyFragment_mIvBack);
+        mTvTelephone = parentView.findViewById(R.id.VerifyFragment_mTvTelephone);
     }
 
     @Override
@@ -89,6 +92,8 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mBtnResend.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
         mVerifyEditView.setOnInputListener(mOnInputListener);
+
+        mTvTelephone.setText(mVerifyInfo.telephone);
 
         startVerifyCountDown();
     }
@@ -195,7 +200,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
                 mResendName = getString(R.string.LoginActivity_Layout_Resend);
             }
             int endTime = (int) (millisUntilFinished / 1000);
-            mBtnResend.setText(String.format(Locale.getDefault(), mResendName + "(%ds)", endTime));
+            mBtnResend.setText(String.format(Locale.getDefault(), mResendName + " %d%s", endTime, getString(R.string.Unit_Second)));
         }
 
         @Override
@@ -233,12 +238,14 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     private final VerifyEditView.OnInputListener mOnInputListener = new VerifyEditView.OnInputListener() {
         @Override
         public void onInputComplete(String content) {
+            LogUtil.e("onInputComplete: " + content);
             mInputVerifyCode = content;
             hideSoftKeyboard();
         }
 
         @Override
         public void onInputChange(String content) {
+            LogUtil.e("onInputChange: " + content);
             mInputVerifyCode = null;
             showErrorHint(null);
         }

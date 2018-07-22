@@ -55,7 +55,7 @@
     <string name="LoginActivity_Layout_Confirm">再次输入密码</string>
     <string name="LoginActivity_Layout_HasUsernameHint">你已经有一个帐号？</string>
     <string name="LoginActivity_Layout_InputVerifyCode">请输入验证码</string>
-    <string name="LoginActivity_Layout_VerifyCodeHint">我们已经将验证码发送至你的手机，请检查\n你的手机并在下方输入验证码。</string>
+    <string name="LoginActivity_Layout_VerifyCodeHint">验证码已经发送至：+86 </string>
     <string name="LoginActivity_Layout_Resend">重新发送</string>
     <string name="LoginActivity_Layout_CopyrightHint">Copyright © 2017-2018 咸鱼科技 版权所有</string>
     <string name="LoginActivity_Error_Resending">正在发送</string>
@@ -117,7 +117,7 @@
     <string name="ContactMessageAdapter_AlreadyRefused">已拒绝</string>
     <string name="ContactMessageAdapter_Refused">拒绝</string>
     <string name="ContactMessageAdapter_Requesting">同意</string>
-    <string name="ContactMessageAdapter_Verifying">等待验证</string>
+    <string name="ContactMessageAdapter_Verifying">等待对方同意</string>
     <string name="ContactMessageMenu_Delete">删除</string>
     <string name="EditContactLabelActivity_Title">添加标签</string>
     <string name="RemarkInfoActivity_RemarkNameLabel">备注名称</string>
@@ -204,6 +204,7 @@
     <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
     <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
     <string name="Unit_Age">岁</string>
+    <string name="Unit_Second">秒</string>
     <string name="StrangerProfileActivity_AllowViewMoment">允许查看我的动态</string>
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
     <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>

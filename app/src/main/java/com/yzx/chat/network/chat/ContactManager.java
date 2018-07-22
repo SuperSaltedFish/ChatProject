@@ -56,7 +56,7 @@ public class ContactManager {
 
     public static final String CONTACT_OPERATION_REQUEST_ACTIVE = "ActiveRequest";//主动请求
     public static final String CONTACT_OPERATION_ACCEPT_ACTIVE = "ActiveAccept";//主动同意添加
-    public static final String CONTACT_OPERATION_REFUSED_ACTIVE = "ActiveReject";//主动拒绝添加
+    public static final String CONTACT_OPERATION_REJECT_ACTIVE = "ActiveReject";//主动拒绝添加
 
     private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REJECT, CONTACT_OPERATION_DELETE));
 
@@ -174,7 +174,7 @@ public class ContactManager {
             protected void onSuccess(Void response) {
                 contactOperation.setReason(reason);
                 contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
-                contactOperation.setType(ContactManager.CONTACT_OPERATION_REFUSED_ACTIVE);
+                contactOperation.setType(ContactManager.CONTACT_OPERATION_REJECT_ACTIVE);
                 contactOperation.setRemind(false);
                 if (mContactOperationDao.replace(contactOperation)) {
                     mManagerHelper.runOnUiThread(new Runnable() {

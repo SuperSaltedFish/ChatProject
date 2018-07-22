@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
-        app:elevation="0dp"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:elevation="0dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/ContactProfileActivity_mCollapsingToolbarLayout"
@@ -93,6 +93,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingEnd="16dp"
@@ -102,9 +103,8 @@
                     android:id="@+id/ContactProfileActivity_mIvSexIcon"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/selector_src_sex"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ContactProfileActivity_mTvNickname" />
+                    android:padding="1dp"
+                    android:src="@drawable/selector_src_sex" />
 
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvLocationAndAge"
@@ -112,10 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:gravity="center_vertical"
-                    android:textSize="13sp"
-                    app:layout_constraintBottom_toBottomOf="@id/ContactProfileActivity_mIvSexIcon"
-                    app:layout_constraintStart_toEndOf="@id/ContactProfileActivity_mIvSexIcon"
-                    app:layout_constraintTop_toTopOf="@id/ContactProfileActivity_mIvSexIcon" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
 
@@ -123,6 +120,7 @@
                 android:id="@+id/ContactProfileActivity_mTvSignature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:gravity="start|center_vertical"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"

@@ -1,167 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     tools:context=".mvp.view.activity.StrangerProfileActivity">
 
-
-    <EditText
-        android:id="@+id/StrangerProfileActivity_mEtReason"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/selector_bg_edit_dashed_round"
-        android:gravity="start|top"
-        android:hint="@string/StrangerProfileActivity_VerifyContentHint"
-        android:paddingBottom="8dp"
-        android:paddingEnd="12dp"
-        android:paddingStart="12dp"
-        android:paddingTop="8dp"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:id="@+id/StrangerProfileActivity_mDivider_1"
-        android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@color/dividerColorBlack"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mEtReason"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:id="@+id/StrangerProfileActivity_mDivider_2"
-        android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:layout_marginBottom="36dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@color/dividerColorBlack"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/StrangerProfileActivity_mIvSexIcon"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_marginStart="20dp"
-        android:src="@drawable/selector_src_sex"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
-
-    <TextView
-        android:id="@+id/StrangerProfileActivity_mTvUserInfo"
+    <android.support.constraint.Guideline
+        android:id="@+id/StrangerProfileActivity_mGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textColor="@color/textPrimaryColorBlack"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
-        app:layout_constraintStart_toEndOf="@id/StrangerProfileActivity_mIvSexIcon"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.61" />
 
-    <CheckBox
-        android:layout_width="28dp"
-        android:layout_height="24dp"
-        android:checked="true"
-        android:scaleX="0.85"
-        android:scaleY="0.85"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
-        app:layout_constraintEnd_toStartOf="@id/StrangerProfileActivity_mTvAllowViewMomentHint"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
-
-    <TextView
-        android:id="@+id/StrangerProfileActivity_mTvAllowViewMomentHint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:includeFontPadding="false"
-        android:text="@string/StrangerProfileActivity_AllowViewMoment"
-        android:textColor="@color/textPrimaryColorBlack"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mDivider_2" />
-
-    <Button
-        android:id="@+id/StrangerProfileActivity_mBtnConfirm"
-        style="?attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:background="@drawable/radius_btn_4dp"
-        android:text="@string/StrangerProfileActivity_RequestAddContact"
-        android:textColor="@android:color/white"
-        android:textSize="13dp"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
-    <View
-        android:id="@+id/StrangerProfileActivity_mDivider_3"
-        android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@color/dividerColorBlack"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mBtnConfirm"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/StrangerProfileActivity_mTvSignature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:ellipsize="end"
-        android:gravity="start|center_vertical"
-        android:maxLines="2"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mDivider_3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/StrangerProfileActivity_mTvNickname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginStart="20dp"
-        android:gravity="start|center_vertical"
-        android:textColor="@color/textPrimaryColorBlack"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mTvSignature"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/StrangerProfileActivity_mIvPicture"
-        android:layout_width="match_parent"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/StrangerProfileActivity_mVpBanner"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mTvNickname"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.yzx.chat.widget.view.PageIndicator
+        android:id="@+id/StrangerProfileActivity_mPageIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/StrangerProfileActivity_mVpBanner"
+        app:layout_constraintStart_toStartOf="@id/StrangerProfileActivity_mVpBanner" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -175,11 +44,108 @@
             android:id="@+id/Default_mToolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:elevation="0dp"
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/ToolbarPopupLightTheme"
             app:theme="@style/ToolbarTheme"
             app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvNickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:paddingEnd="160dp"
+        android:paddingStart="16dp"
+        android:singleLine="true"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mGuideline" />
+
+    <ImageView
+        android:id="@+id/StrangerProfileActivity_mIvSexIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="1dp"
+        android:padding="1dp"
+        android:src="@drawable/selector_src_sex"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvNickname" />
+
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvLocationAndAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:gravity="center_vertical"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/StrangerProfileActivity_mIvSexIcon"
+        app:layout_constraintStart_toEndOf="@id/StrangerProfileActivity_mIvSexIcon"
+        app:layout_constraintTop_toTopOf="@id/StrangerProfileActivity_mIvSexIcon" />
+
+    <TextView
+        android:id="@+id/StrangerProfileActivity_mTvSignature"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:gravity="start|center_vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mIvSexIcon" />
+
+    <EditText
+        android:id="@+id/StrangerProfileActivity_mEtReason"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/selector_bg_edit_dashed_round"
+        android:gravity="start|top"
+        android:hint="@string/StrangerProfileActivity_VerifyContentHint"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvSignature" />
+
+    <Button
+        android:id="@+id/StrangerProfileActivity_mBtnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/selector_bg_btn_radius"
+        android:text="@string/StrangerProfileActivity_RequestAddContact"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mEtReason" />
+
+
+    <com.yzx.chat.widget.view.HexagonAvatarView
+        android:id="@+id/StrangerProfileActivity_mIvAvatar"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
+        android:layout_marginEnd="32dp"
+        android:padding="4dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/StrangerProfileActivity_mGuideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/StrangerProfileActivity_mGuideline" />
+
 
 </android.support.constraint.ConstraintLayout>
-

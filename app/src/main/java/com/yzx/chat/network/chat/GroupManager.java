@@ -142,14 +142,12 @@ public class GroupManager {
         mQuitGroupCall.setResponseCallback(new BaseResponseCallback<QuitGroupBean>() {
             @Override
             protected void onSuccess(QuitGroupBean response) {
-                if (response.isDismiss()) {
-                    GroupBean group = mGroupsMap.get(groupID);
-                    mGroupsMap.remove(groupID);
-                    mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID);
-                    mManagerHelper.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.GROUP, groupID);
-                    for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                        listener.onQuitGroup(group);
-                    }
+                GroupBean group = mGroupsMap.get(groupID);
+                mGroupsMap.remove(groupID);
+                mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID);
+                mManagerHelper.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.GROUP, groupID);
+                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                    listener.onQuitGroup(group);
                 }
                 if (resultCallback != null) {
                     resultCallback.onSuccess(null);
