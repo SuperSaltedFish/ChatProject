@@ -47,7 +47,7 @@ public interface GroupApi {
     Call<JsonResponse<Void>> add(@Param("groupID") String groupName, @Param("members") String[] membersID);
 
     @POST("group/quit")
-    Call<JsonResponse<Void>> quit(@Param("groupID") String groupID);
+    Call<JsonResponse<QuitGroupBean>> quit(@Param("groupID") String groupID);
 
     @POST("group/getTempGroupID")
     Call<JsonResponse<GetTempGroupID>> getTempGroupID(@Param("groupID") String groupID);

@@ -7,6 +7,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.GroupMemberBean;
 import com.yzx.chat.mvp.contract.GroupProfileContract;
+import com.yzx.chat.network.api.Group.QuitGroupBean;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.GroupManager;
 import com.yzx.chat.network.chat.IMClient;

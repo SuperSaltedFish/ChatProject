@@ -10,6 +10,7 @@ import com.yzx.chat.database.AbstractDao;
 import com.yzx.chat.database.GroupDao;
 import com.yzx.chat.database.GroupMemberDao;
 import com.yzx.chat.network.api.Group.GroupApi;
+import com.yzx.chat.network.api.Group.QuitGroupBean;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.framework.Call;
 import com.yzx.chat.network.framework.NetworkExecutor;
@@ -56,7 +57,7 @@ public class GroupManager {
     private Call<JsonResponse<Void>> mRenameGroupCall;
     private Call<JsonResponse<Void>> mUpdateGroupNoticeCall;
     private Call<JsonResponse<Void>> mUpdateAliasCall;
-    private Call<JsonResponse<Void>> mQuitGroupCall;
+    private Call<JsonResponse<QuitGroupBean>> mQuitGroupCall;
     private Call<JsonResponse<Void>> mCreateGroupCall;
     private Call<JsonResponse<Void>> mJoinGroupCall;
     private Call<JsonResponse<Void>> mAddMemberCall;
@@ -121,9 +122,9 @@ public class GroupManager {
         mNetworkExecutor.submit(mCreateGroupCall);
     }
 
-    public void joinGroup(String groupID,@GroupApi.JoinType String joinType, ResultCallback<Void> resultCallback) {
+    public void joinGroup(String groupID, @GroupApi.JoinType String joinType, ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mJoinGroupCall);
-        mJoinGroupCall = mGroupApi.join(groupID,joinType);
+        mJoinGroupCall = mGroupApi.join(groupID, joinType);
         mJoinGroupCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
         mNetworkExecutor.submit(mJoinGroupCall);
     }
@@ -135,10 +136,33 @@ public class GroupManager {
         mNetworkExecutor.submit(mAddMemberCall);
     }
 
-    public void quitGroup(String groupID, ResultCallback<Void> resultCallback) {
+    public void quitGroup(final String groupID, final ResultCallback<Void> resultCallback) {
         AsyncUtil.cancelCall(mQuitGroupCall);
         mQuitGroupCall = mGroupApi.quit(groupID);
-        mQuitGroupCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
+        mQuitGroupCall.setResponseCallback(new BaseResponseCallback<QuitGroupBean>() {
+            @Override
+            protected void onSuccess(QuitGroupBean response) {
+                if (response.isDismiss()) {
+                    GroupBean group = mGroupsMap.get(groupID);
+                    mGroupsMap.remove(groupID);
+                    mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID);
+                    mManagerHelper.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.GROUP, groupID);
+                    for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                        listener.onQuitGroup(group);
+                    }
+                }
+                if (resultCallback != null) {
+                    resultCallback.onSuccess(null);
+                }
+            }
+
+            @Override
+            protected void onFailure(String message) {
+                if (resultCallback != null) {
+                    resultCallback.onFailure(message);
+                }
+            }
+        });
         mNetworkExecutor.submit(mQuitGroupCall);
     }
 
@@ -251,15 +275,8 @@ public class GroupManager {
                             LogUtil.e("quitExtra.member == null || quitExtra.member.getUserProfile() == null");
                             break;
                         }
-                        if (quitExtra.member.getUserProfile().getUserID().equals(mManagerHelper.getUserManager().getUserID())) {
-                            mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.GROUP,quitExtra.group.getGroupID());
-                            for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                                listener.onQuitGroup(quitExtra.group);
-                            }
-                        } else {
-                            for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                                listener.onMemberQuit(quitExtra.group, quitExtra.member);
-                            }
+                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                            listener.onMemberQuit(quitExtra.group, quitExtra.member);
                         }
                         break;
                     case GROUP_OPERATION_RENAME:

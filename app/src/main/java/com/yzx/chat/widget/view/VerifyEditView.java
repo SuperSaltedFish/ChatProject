@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import com.yzx.chat.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +36,8 @@ import java.util.List;
 public class VerifyEditView extends LinearLayout {
 
     private Context mContext;
-    private List<EditItem> mEditTextList;
+    InputMethodManager mInputMethodManager;
+    private List<EditText> mEditTextList;
     private OnInputListener mOnInputListener;
 
     private int mItemCount;
@@ -43,6 +47,9 @@ public class VerifyEditView extends LinearLayout {
     private int mTextColor;
     private Drawable mItemBackground;
     private boolean isPasswordMode;
+
+    private int mCurrentInputPosition;
+    private StringBuilder mContent;
 
     public VerifyEditView(Context context) {
         this(context, null);
@@ -55,6 +62,7 @@ public class VerifyEditView extends LinearLayout {
     public VerifyEditView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
+        mInputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         setGravity(Gravity.CENTER);
         initDefault();
         update();
@@ -72,41 +80,42 @@ public class VerifyEditView extends LinearLayout {
         this.setOnClickListener(mOnClickListener);
     }
 
-    public void update() {
+    private void update() {
         mEditTextList.clear();
         removeAllViews();
-        for (int i = 0; i < mItemCount; i++) {
-            EditItem editItem = new EditItem(mContext, i);
-            LayoutParams params = new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            if (i != 0) {
-                params.setMarginStart(mItemSpace);
+        if (mItemCount > 0) {
+            for (int i = 0; i < mItemCount; i++) {
+                EditText editItem = new EditItem(mContext);
+                LayoutParams params = new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+                if (i != 0) {
+                    params.setMarginStart(mItemSpace);
+                }
+                editItem.setLayoutParams(params);
+                editItem.setGravity(Gravity.CENTER);
+                editItem.setSingleLine();
+                editItem.setMinWidth(mItemMinWidth);
+                editItem.setTextColor(mTextColor);
+                editItem.setLongClickable(false);
+                editItem.addTextChangedListener(mTextWatcher);
+                editItem.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+                editItem.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
+                if (mItemBackground != null) {
+                    editItem.setBackground(mItemBackground);
+                }
+                if (isPasswordMode) {
+                    editItem.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                } else {
+                    editItem.setInputType(InputType.TYPE_CLASS_NUMBER);
+                }
+                mEditTextList.add(editItem);
+                addView(editItem);
             }
-            editItem.setLayoutParams(params);
-            editItem.setGravity(Gravity.CENTER);
-            editItem.setSingleLine();
-            editItem.setMinWidth(mItemMinWidth);
-            editItem.setTextColor(mTextColor);
-            editItem.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
-            editItem.setFilters(new InputFilter[]{new InputFilter.LengthFilter(1)});
-            if (mItemBackground != null) {
-                editItem.setBackground(mItemBackground);
-            }
-            if (isPasswordMode) {
-                editItem.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-            } else {
-                editItem.setInputType(InputType.TYPE_CLASS_NUMBER);
-            }
-            mEditTextList.add(editItem);
-            addView(editItem);
+            mContent = new StringBuilder(mItemCount);
         }
     }
 
-    public String getCurrentInputContent(){
-        StringBuilder builder = new StringBuilder(mEditTextList.size()+1);
-        for (EditText ed : mEditTextList) {
-            builder.append(ed.getText());
-        }
-        return builder.toString();
+    public String getCurrentInputContent() {
+        return mContent == null ? "" : mContent.toString();
     }
 
     @Override
@@ -125,62 +134,101 @@ public class VerifyEditView extends LinearLayout {
     private final OnClickListener mOnClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            EditText editText = mEditTextList.get(mItemCount - 1);
-            for (EditText ed : mEditTextList) {
-                if (TextUtils.isEmpty(ed.getText().toString())) {
-                    editText = ed;
-                    break;
-                }
+            if (mCurrentInputPosition >= mItemCount) {
+                return;
             }
-            InputMethodManager inputManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            EditText editText = mEditTextList.get(mCurrentInputPosition);
             editText.requestFocus();
-            assert inputManager != null;
-            inputManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+            if (mInputMethodManager != null) {
+                mInputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+            }
         }
     };
 
-    public VerifyEditView setItemSpace(int itemSpace) {
+    private final TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            if (TextUtils.isEmpty(s) && after == 0 && mCurrentInputPosition != 0) {
+                if (mCurrentInputPosition != 0) {
+                    mCurrentInputPosition--;
+                    EditText editText = mEditTextList.get(mCurrentInputPosition);
+                    editText.requestFocus();
+                    editText.setText("");
+                    mContent.deleteCharAt(mCurrentInputPosition);
+                    if (mOnInputListener != null) {
+                        mOnInputListener.onInputChange(getCurrentInputContent());
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (!TextUtils.isEmpty(s)) {
+                mContent.append(s);
+                if (mCurrentInputPosition < mItemCount - 1) {
+                    mCurrentInputPosition++;
+                    mEditTextList.get(mCurrentInputPosition).requestFocus();
+                } else if (mOnInputListener != null) {
+                    mOnInputListener.onInputComplete(getCurrentInputContent());
+                    return;
+                }
+                if (mOnInputListener != null) {
+                    mOnInputListener.onInputChange(getCurrentInputContent());
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    public void setItemCount(int itemCount) {
+        mItemCount = itemCount;
+        update();
+    }
+
+    public void setItemSpace(int itemSpace) {
         mItemSpace = itemSpace;
-        return this;
+        update();
     }
 
-    public VerifyEditView setTextSize(float textSize) {
+    public void setTextSize(float textSize) {
         mTextSize = textSize;
-        return this;
+        update();
     }
 
-    public VerifyEditView setTextColor(@ColorInt int textColor) {
+    public void setTextColor(@ColorInt int textColor) {
         mTextColor = textColor;
-        return this;
+        update();
     }
 
-    public VerifyEditView setItemBackground(Drawable itemBackground) {
+    public void setItemBackground(Drawable itemBackground) {
         mItemBackground = itemBackground;
-        return this;
+        update();
     }
 
-    public VerifyEditView setPasswordMode(boolean passwordMode) {
+    public void setPasswordMode(boolean passwordMode) {
         isPasswordMode = passwordMode;
-        return this;
+        update();
     }
 
-    public VerifyEditView setOnInputListener(OnInputListener onInputListener) {
+    public void setOnInputListener(OnInputListener onInputListener) {
         mOnInputListener = onInputListener;
-        return this;
+        update();
     }
 
-    public VerifyEditView setItemMinWidth(int itemMinWidth) {
+    public void setItemMinWidth(int itemMinWidth) {
         mItemMinWidth = itemMinWidth;
-        return this;
+        update();
     }
 
-    private class EditItem extends EditText {
-        private int mPosition;
+    private static class EditItem extends EditText {
 
-        public EditItem(Context context, int position) {
+        public EditItem(Context context) {
             super(context);
-            mPosition = position;
-            addTextChangedListener(mTextWatcher);
         }
 
         @Override
@@ -190,49 +238,14 @@ public class VerifyEditView extends LinearLayout {
                 @Override
                 public boolean onBackspace() {
                     if (TextUtils.isEmpty(getText())) {
-                        if (mPosition > 0) {
-                            mEditTextList.get(mPosition - 1).requestFocus();
-                            mEditTextList.get(mPosition - 1).setText("");
-                        }
-                    } else {
                         setText("");
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             });
             return backInputConnection;
         }
-
-        private final TextWatcher mTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (mOnInputListener != null) {
-                    mOnInputListener.onInputChange(getCurrentInputContent());
-                }
-                if (!TextUtils.isEmpty(s)) {
-                    if (mPosition + 1 < mEditTextList.size()) {
-                        mEditTextList.get(mPosition + 1).requestFocus();
-                    } else if (mOnInputListener != null) {
-                        StringBuilder stringBuilder = new StringBuilder(mEditTextList.size());
-                        for (int i = 0, size = mEditTextList.size(); i < size; i++) {
-                            stringBuilder.append(mEditTextList.get(i).getText());
-                        }
-                        mOnInputListener.onInputComplete(stringBuilder.toString());
-                    }
-
-                }
-            }
-        };
 
     }
 
