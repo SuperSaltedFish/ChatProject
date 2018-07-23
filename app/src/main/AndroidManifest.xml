@@ -2,29 +2,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yzx.chat">
 
+    <!-- 以下为不需要手动申请的权限 -->
     <!-- 允许程序振动 -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- 允许程序访问网络连接 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 允许程序访问摄像头进行拍照 -->
-    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 允许程序获取网络信息状态，如当前的网络连接是否有效 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 允许程序访问WiFi网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 允许程序控制屏幕常亮了 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- 允许程序通知显示在状态栏 -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
+    <!-- 以下为需要手动申请的权限 -->
     <!-- 允许程序可以读取设备外部存储空间 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- 允许程序写入外部存储 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- 允许程序获取网络信息状态，如当前的网络连接是否有效 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 允许程序访问摄像头进行拍照 -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- 允许程序使用录音设备 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- 允许程序访问WiFi网络信息 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- 允许程序读写手机状态和身份 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- 允许程序控制屏幕常亮了 -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".configure.AppApplication"
