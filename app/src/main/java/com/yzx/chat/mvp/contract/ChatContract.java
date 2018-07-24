@@ -47,7 +47,7 @@ public class ChatContract {
 
         void sendTextMessage(String message);
 
-        void sendVoiceMessage(String filePath, int timeLengthSec);
+        void sendVoiceMessage(String filePath, long timeLengthMs);
 
         void sendImageMessage(String imagePath, boolean isOriginal);
 

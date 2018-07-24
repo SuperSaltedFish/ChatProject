@@ -3,6 +3,7 @@ package com.yzx.chat.util;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
 import android.text.TextUtils;
 
 import java.io.IOException;
@@ -19,9 +20,13 @@ public class VoicePlayer {
 
     private AudioManager mAudioManager;
     private MediaPlayer mMediaPlayer;
+    private Visualizer mVisualizer;
     private String mCurrentPlayPath;
 
     private OnPlayStateChangeListener mOnPlayStateChangeListener;
+    private Visualizer.OnDataCaptureListener mOnDataCaptureListener;
+
+    private long mAlreadyPlayTime;
 
     public static VoicePlayer getInstance(Context context) {
         if (sVoicePlayer == null) {
@@ -45,6 +50,7 @@ public class VoicePlayer {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                mVisualizer.setEnabled(false);
                 if (mOnPlayStateChangeListener != null) {
                     mOnPlayStateChangeListener.onCompletion(mp, false);
                 }
@@ -54,6 +60,7 @@ public class VoicePlayer {
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
+                mVisualizer.setEnabled(false);
                 if (mOnPlayStateChangeListener != null) {
                     mOnPlayStateChangeListener.onError("MediaPlayerError, what=" + what + ",extra=" + extra);
                 }
@@ -65,25 +72,48 @@ public class VoicePlayer {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mMediaPlayer.start();
+                mAlreadyPlayTime = System.currentTimeMillis();
+                mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+                    @Override
+                    public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+                        if (mOnDataCaptureListener != null) {
+                            mOnDataCaptureListener.onWaveFormDataCapture(visualizer, waveform, samplingRate);
+                        }
+                    }
+
+                    @Override
+                    public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+                        if (mOnDataCaptureListener != null) {
+                            mOnDataCaptureListener.onFftDataCapture(visualizer, fft, samplingRate);
+                        }
+                    }
+                }, Visualizer.getMaxCaptureRate() / 2, true, false);
+                mVisualizer.setEnabled(mOnDataCaptureListener != null);
                 if (mOnPlayStateChangeListener != null) {
                     mOnPlayStateChangeListener.onStartPlay();
                 }
             }
         });
+        mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
     }
 
     private void reset() {
+        mVisualizer.setEnabled(false);
+        mVisualizer.setDataCaptureListener(null, Visualizer.getMaxCaptureRate() / 2, false, false);
         mMediaPlayer.reset();
+        mOnDataCaptureListener = null;
         mOnPlayStateChangeListener = null;
         mCurrentPlayPath = null;
+        mAlreadyPlayTime = 0;
     }
 
-    public void play(String path, OnPlayStateChangeListener listener) {
+    public void play(String path, OnPlayStateChangeListener playStateChangeListener, Visualizer.OnDataCaptureListener dataCaptureListener) {
         if (TextUtils.isEmpty(path)) {
             return;
         }
         stop();
-        mOnPlayStateChangeListener = listener;
+        mOnPlayStateChangeListener = playStateChangeListener;
+        mOnDataCaptureListener = dataCaptureListener;
         mCurrentPlayPath = path;
         setSpeaker(true);
         try {
@@ -113,8 +143,33 @@ public class VoicePlayer {
         return mMediaPlayer.isPlaying();
     }
 
+    public long getAlreadyPlayTime() {
+        if (isPlaying()) {
+            return System.currentTimeMillis() - mAlreadyPlayTime;
+        }
+        return 0;
+    }
+
     public String getCurrentPlayPath() {
         return mCurrentPlayPath;
+    }
+
+    public void setOnPlayStateChangeListenerIfPlaying(OnPlayStateChangeListener listener) {
+        if (isPlaying()) {
+            mOnPlayStateChangeListener = listener;
+        }
+    }
+
+    public void setOnDataCaptureListenerIfPlaying(Visualizer.OnDataCaptureListener listener) {
+        if (isPlaying()) {
+            mOnDataCaptureListener = listener;
+            mVisualizer.setEnabled(mOnDataCaptureListener != null);
+        }
+    }
+
+    public void clearAllListener() {
+        mOnPlayStateChangeListener = null;
+        mOnDataCaptureListener = null;
     }
 
     private void setSpeaker(boolean speakerOn) {

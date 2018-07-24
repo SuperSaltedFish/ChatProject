@@ -35,7 +35,7 @@ public class AnimationUtil {
                 .setDuration(msec);
     }
 
-    public static void errorTranslateAnim(View view){
+    public static void errorTranslateAnim(View view) {
         TranslateAnimation animation = new TranslateAnimation(-8, 8, 0, 0);
         animation.setDuration(20);
         animation.setRepeatCount(4);
@@ -72,7 +72,6 @@ public class AnimationUtil {
     }
 
     public static void circularRevealShowByFullActivityAnim(final Activity activity, View triggerView, int colorOrImageRes, final Animator.AnimatorListener animListener) {
-
         int[] location = new int[2];
         triggerView.getLocationInWindow(location);
         final int cx = location[0] + triggerView.getWidth() / 2;
@@ -94,13 +93,34 @@ public class AnimationUtil {
         double rate = 1d * finalRadius / maxRadius;
         final long finalDuration = (long) (618 * Math.sqrt(rate));
         anim.setDuration((long) (finalDuration * 0.9));
-        anim.addListener(new AnimatorListenerAdapter() {
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                if (animListener != null) {
+                    animListener.onAnimationCancel(animation);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                if (animListener != null) {
+                    animListener.onAnimationRepeat(animation);
+                }
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (animListener != null) {
+                    animListener.onAnimationStart(animation);
+                }
+            }
+
             @Override
             public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                animListener.onAnimationEnd(animation);
+                if (animListener != null) {
+                    animListener.onAnimationEnd(animation);
+                }
                 activity.overridePendingTransition(0, 0);
-                //activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
         anim.start();

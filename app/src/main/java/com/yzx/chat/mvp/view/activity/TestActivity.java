@@ -2,15 +2,9 @@ package com.yzx.chat.mvp.view.activity;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.network.framework.ApiProxy;
 import com.yzx.chat.network.framework.Call;
-
 import com.yzx.chat.network.framework.POST;
 import com.yzx.chat.network.framework.Param;
 

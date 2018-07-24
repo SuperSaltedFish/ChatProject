@@ -55,6 +55,7 @@ import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
 import com.yzx.chat.widget.view.RecorderButton;
+import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -126,7 +127,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private boolean isHasVoiceRecorderPermission;
 
     private int mCurrentConversationType;
-    private BasicInfoProvider mBasicInfoProvider;
 
 
     @Override
@@ -303,17 +303,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             return;
         }
         mCurrentConversationType = conversationTypeCode;
+        BasicInfoProvider basicInfoProvider;
         if (mCurrentConversationType == CONVERSATION_PRIVATE) {
-            mBasicInfoProvider = mPresenter.initPrivateChat(conversationID);
+            basicInfoProvider = mPresenter.initPrivateChat(conversationID);
         } else {
-            mBasicInfoProvider = mPresenter.initGroupChat(conversationID);
+            basicInfoProvider = mPresenter.initGroupChat(conversationID);
         }
-        if (mBasicInfoProvider == null) {
+        if (basicInfoProvider == null) {
             finish();
             return;
         }
-        mAdapter.setBasicInfoProvider(mBasicInfoProvider);
-        setTitle(mBasicInfoProvider.getName());
+        mAdapter.setBasicInfoProvider(basicInfoProvider);
+        setTitle(basicInfoProvider.getName());
         mEtContent.setText(mPresenter.getMessageDraft());
     }
 
@@ -323,6 +324,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
         mRvChatView.setLayoutManager(layoutManager);
+        mRvChatView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(6)));
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         ((DefaultItemAnimator) (mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
@@ -559,7 +561,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     mVoiceRecorder.cancelAndDelete();
                     showToast(getString(R.string.ChatActivity_VoiceRecorderVeryShort));
                 } else if (new File(filePath).exists()) {
-                    mPresenter.sendVoiceMessage(filePath, (int) Math.ceil(duration / 1000.0));
+                    mPresenter.sendVoiceMessage(filePath, duration);
                 } else {
                     showToast(getString(R.string.ChatActivity_VoiceRecorderFail));
                 }

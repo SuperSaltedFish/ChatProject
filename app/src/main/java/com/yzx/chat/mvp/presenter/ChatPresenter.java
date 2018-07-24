@@ -136,12 +136,12 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void sendTextMessage(String content) {
-        sendMessage(TextMessage.obtain(content));
+        sendMessage(TextMessage.obtain(content.trim()));
     }
 
     @Override
-    public void sendVoiceMessage(String filePath, int timeLengthSec) {
-        sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), timeLengthSec));
+    public void sendVoiceMessage(String filePath, long timeLengthMs) {
+        sendMessage(VoiceMessage.obtain(Uri.fromFile(new File(filePath)), (int) timeLengthMs));
     }
 
     @Override
@@ -210,7 +210,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void saveMessageDraft(String draft) {
-        if (TextUtils.equals(mMessageDraft,draft) && !mIsConversationStateChange) {
+        if (TextUtils.equals(mMessageDraft, draft) && !mIsConversationStateChange) {
             return;
         }
         mIMClient.getConversationManager().saveConversationDraft(mConversationType, mConversationID, draft);

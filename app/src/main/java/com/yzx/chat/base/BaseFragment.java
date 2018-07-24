@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -48,12 +49,15 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
         mContext = context;
     }
 
+    protected boolean isSaveFragmentView(){
+        return true;
+    }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mContext = getActivity();
-        if (mParentView == null) {
+        if (mParentView == null||!isSaveFragmentView()) {
             mParentView = inflater.inflate(getLayoutID(), container, false);
             initPresenter();
             init(mParentView);

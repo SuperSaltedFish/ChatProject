@@ -73,7 +73,7 @@ public class LoginActivity extends BaseCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.LoginActivity_mFlContent, new LoginFragment())
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void jumpToRegisterPage() {
@@ -82,7 +82,7 @@ public class LoginActivity extends BaseCompatActivity {
                 .setCustomAnimations(R.anim.anim_fragment_in_right, R.anim.anim_fragment_out_left, R.anim.anim_fragment_in_left, R.anim.anim_fragment_out_right)
                 .addToBackStack(null)
                 .replace(R.id.LoginActivity_mFlContent, new RegisterFragment())
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void jumpToVerifyPage(VerifyFragment.VerifyInfo info) {
@@ -91,7 +91,7 @@ public class LoginActivity extends BaseCompatActivity {
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.anim_fragment_in_right, R.anim.anim_fragment_out_left, R.anim.anim_fragment_in_left, R.anim.anim_fragment_out_right)
                 .replace(R.id.LoginActivity_mFlContent, VerifyFragment.newInstance(info))
-                .commit();
+                .commitAllowingStateLoss();
     }
 
 

@@ -3,16 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical|end"
-    android:paddingBottom="3dp"
-    android:paddingEnd="8dp"
-    android:paddingStart="8dp"
-    android:paddingTop="3dp">
+    android:gravity="center_vertical|end">
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_chat_time_round"
         android:gravity="center"
@@ -21,6 +18,7 @@
         android:textColor="@android:color/white"
         android:textSize="12sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,6 +27,7 @@
         android:id="@+id/ChatMessageAdapter_mIvMessageState"
         android:layout_width="24dp"
         android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
         android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mContentLayout"
@@ -38,9 +37,8 @@
         android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        app:cardCornerRadius="3dp"
-        app:cardElevation="2dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="1dp"
         app:cardUseCompatPadding="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"

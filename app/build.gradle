@@ -42,4 +42,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     //    debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
     implementation project(':IMLib')
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
 }

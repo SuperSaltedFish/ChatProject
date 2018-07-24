@@ -63,7 +63,6 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-
 public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityContract.Presenter> implements LocationMapActivityContract.View {
 
     public static final int RESULT_CODE = LocationMapActivity.class.hashCode();
@@ -142,7 +141,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvCurrentLocation.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvCurrentLocation.setAdapter(mCurrentLocationAdapter);
         mRvCurrentLocation.setHasFixedSize(true);
-        mRvCurrentLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRvCurrentLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRvCurrentLocation.addOnItemTouchListener(mOnRvCurrentLocationItemClickListener);
         mCurrentLocationAdapter.setScrollToBottomListener(mOnCurrentLocationScrollToBottomListener);
 
@@ -150,7 +149,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mRvSearchLocation.setAdapter(mSearchLocationAdapter);
         mRvSearchLocation.setRecycledViewPool(mRvCurrentLocation.getRecycledViewPool());
         mRvSearchLocation.setHasFixedSize(true);
-        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack),DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRvSearchLocation.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
         mRvSearchLocation.addOnItemTouchListener(mOnRvSearchLocationItemClickListener);
         mSearchLocationAdapter.setScrollToBottomListener(mOnSearchLocationScrollToBottomListener);
 
@@ -293,9 +292,11 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        mAMap.setOnMyLocationChangeListener(null);
+        mAMap.setOnCameraChangeListener(null);
         mSearchHandler.removeCallbacksAndMessages(null);
         mMapView.onDestroy();
+        super.onDestroy();
     }
 
     @Override

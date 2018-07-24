@@ -2,16 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="3dp"
-    android:paddingEnd="8dp"
-    android:paddingStart="8dp"
-    android:paddingTop="3dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_chat_time_round"
         android:gravity="center"
@@ -20,15 +17,15 @@
         android:textColor="@android:color/white"
         android:textSize="12sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvAvatar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
 
@@ -42,50 +39,47 @@
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
         app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvAvatar" />
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/ChatMessageAdapter_mContentLayout"
+
+    <com.yzx.chat.widget.view.RoundImageView
+        android:id="@+id/ChatMessageAdapter_mIvVideoThumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginStart="8dp"
-        app:cardCornerRadius="3dp"
-        app:cardElevation="2dp"
-        app:cardUseCompatPadding="true"
+        android:adjustViewBounds="true"
+        android:foreground="@drawable/fg_video_gradual_mask"
+        android:maxHeight="160dp"
+        android:maxWidth="160dp"
+        android:minHeight="120dp"
+        android:minWidth="120dp"
+        android:scaleType="centerCrop"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvNickname">
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvNickname" />
 
-        <ImageView
-            android:id="@+id/ChatMessageAdapter_mIvVideoThumbnail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:foreground="@drawable/fg_video_gradual_mask"
-            android:maxHeight="160dp"
-            android:maxWidth="160dp"
-            android:minHeight="120dp"
-            android:minWidth="120dp"
-            android:scaleType="centerCrop" />
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_play"
+        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
+        app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
+        app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
+        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvVideoThumbnail" />
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_play" />
+    <TextView
+        android:id="@+id/ChatMessageAdapter_mTvVideoDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
+        app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvVideoThumbnail" />
 
-        <TextView
-            android:id="@+id/ChatMessageAdapter_mTvVideoDuration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginBottom="4dp"
-            android:layout_marginEnd="8dp"
-            android:textColor="@android:color/white"
-            android:textSize="12sp" />
-
-    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

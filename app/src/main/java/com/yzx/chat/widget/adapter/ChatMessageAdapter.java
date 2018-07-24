@@ -2,11 +2,11 @@ package com.yzx.chat.widget.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.support.annotation.CallSuper;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -19,7 +19,6 @@ import android.util.SparseLongArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,18 +28,20 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.BasicInfoProvider;
 import com.yzx.chat.mvp.view.activity.VideoPlayActivity;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.BitmapUtil;
+import com.yzx.chat.util.CountDownTimer;
+import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.mvp.view.activity.ChatActivity;
 import com.yzx.chat.mvp.view.activity.ImageOriginalActivity;
 import com.yzx.chat.mvp.view.activity.LocationMapActivity;
+import com.yzx.chat.widget.view.RoundImageView;
+import com.yzx.chat.widget.view.VisualizerView;
 
 import java.io.File;
 import java.util.List;
@@ -159,9 +160,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
+
     @Override
     public void onViewRecycled(@NonNull BaseViewHolder holder) {
         super.onViewRecycled(holder);
+
         if (holder instanceof SendMessageHolder) {
             SendMessageHolder sendMessageHolder = (SendMessageHolder) holder;
             if (sendMessageHolder.mProgressDrawable != null) {
@@ -170,19 +173,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
         if (holder instanceof MessageHolder) {
             MessageHolder messageHolder = (MessageHolder) holder;
-            switch (messageHolder.mHolderType) {
-                case HOLDER_TYPE_SEND_MESSAGE_VOICE:
-                case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                    VoiceViewHolder voiceViewHolder = (VoiceViewHolder) messageHolder.mViewHolder;
-                    voiceViewHolder.setEnablePlayAnimation(false);
-                    break;
-                case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
-                case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                    ImageViewHolder imageViewHolder = (ImageViewHolder) messageHolder.mViewHolder;
-                    GlideUtil.clear(mContext, imageViewHolder.mIvImageContent);
-                    imageViewHolder.mIvImageContent.setImageBitmap(null);
-                    break;
-            }
+            messageHolder.mViewHolder.OnRecycle();
         }
     }
 
@@ -361,6 +352,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 case HOLDER_TYPE_SEND_MESSAGE_VOICE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                     mViewHolder = new VoiceViewHolder(itemView);
+                    if (type == HOLDER_TYPE_RECEIVE_MESSAGE_VOICE) {
+                        ((VoiceViewHolder) mViewHolder).setVisualizerColor(AndroidUtil.getColor(R.color.colorAccent));
+                    }
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
@@ -462,30 +456,15 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             final VoiceViewHolder voiceViewHolder = (VoiceViewHolder) mViewHolder;
             if (uri != null) {
                 String path = uri.getPath();
-                VoicePlayer voicePlayer = VoicePlayer.getInstance(itemView.getContext());
-                if (TextUtils.isEmpty(path) || path.equals(voicePlayer.getCurrentPlayPath())) {
+                if (TextUtils.isEmpty(path)) {
                     return;
                 }
-                voicePlayer.play(path, new VoicePlayer.OnPlayStateChangeListener() {
-                    @Override
-                    public void onStartPlay() {
-                        voiceViewHolder.setEnablePlayAnimation(true);
-                    }
-
-                    @Override
-                    public void onCompletion(MediaPlayer mediaPlayer, boolean isStop) {
-                        voiceViewHolder.setEnablePlayAnimation(false);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        LogUtil.e("Play voice fail:" + error);
-                        voiceViewHolder.setEnablePlayAnimation(false);
-                    }
-                });
+                voiceViewHolder.playVoice(path);
             }
-            voiceViewHolder.setEnableListenedState(true);
-            mMessageCallback.setVoiceMessageAsListened(mMessage);
+            if (!mMessage.getReceivedStatus().isListened()) {
+                mMessageCallback.setVoiceMessageAsListened(mMessage);
+                voiceViewHolder.setVoiceListened();
+            }
         }
 
         void performClickLocationContent() {
@@ -535,6 +514,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         public abstract void parseMessageContent(Message message);
+
+        void OnRecycle() {
+        }
     }
 
     static final class ContactNotificationViewHolder extends ItemViewHolder {
@@ -586,11 +568,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     static final class ImageViewHolder extends ItemViewHolder {
-        ImageView mIvImageContent;
+        RoundImageView mIvImageContent;
 
         ImageViewHolder(View itemView) {
             super(itemView);
             mIvImageContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
+            mContentLayout = mIvImageContent;
+            mIvImageContent.setRoundRadius(AndroidUtil.dip2px(10));
         }
 
         @Override
@@ -614,6 +598,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 params.height = imageHeight;
             }
             GlideUtil.loadFromUrl(mIvImageContent.getContext(), mIvImageContent, imageMessage.getThumUri());
+        }
+
+        @Override
+        void OnRecycle() {
+            super.OnRecycle();
+            GlideUtil.clear(mIvImageContent.getContext(), mIvImageContent);
+            mIvImageContent.setImageBitmap(null);
         }
     }
 
@@ -642,82 +633,166 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             }
             GlideUtil.loadFromUrl(mIvMapImage.getContext(), mIvMapImage, locationMessage.getImgUri());
         }
+
+
+        @Override
+        void OnRecycle() {
+            super.OnRecycle();
+            GlideUtil.clear(mIvMapImage.getContext(), mIvMapImage);
+            mIvMapImage.setImageBitmap(null);
+        }
     }
 
     static final class VoiceViewHolder extends ItemViewHolder {
         TextView mTvVoiceDuration;
-        ImageView mIvPlayIcon;
+        VisualizerView mVisualizerView;
         ImageView mIvListenedState;
-        private FrameLayout mFlContentLayout;
+        ImageView mIvPlayIcon;
         private VoicePlayer mVoicePlayer;
-        private AnimationDrawable mPlayAnimation;
-        private Drawable mDefaultIcon;
+        private String mVoicePath;
+        private long mDurationMs;
+        private CountDownTimer mCountDownTimer;
 
         VoiceViewHolder(View itemView) {
             super(itemView);
             mTvVoiceDuration = itemView.findViewById(R.id.ChatAdapter_mTvVoiceDuration);
-            mFlContentLayout = itemView.findViewById(R.id.ChatMessageAdapter_mContentLayout);
-            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
+            mVisualizerView = itemView.findViewById(R.id.ChatMessageAdapter_mVisualizerView);
             mIvListenedState = itemView.findViewById(R.id.ChatAdapter_mIvListenedState);
+            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
             mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
-            mPlayAnimation = (AnimationDrawable) AndroidUtil.getDrawable(R.drawable.anim_play_voice);
-            mDefaultIcon = AndroidUtil.getDrawable(R.drawable.ic_voice_sent_play3);
-            mPlayAnimation.setTint(AndroidUtil.getColor(R.color.textColorWhite));
-            mDefaultIcon.setTint(AndroidUtil.getColor(R.color.textColorWhite));
         }
 
-        public void setEnablePlayAnimation(boolean isEnable) {
-            if (isEnable) {
-                mIvPlayIcon.setImageDrawable(mPlayAnimation);
-                mPlayAnimation.start();
-            } else {
-                mPlayAnimation.stop();
-                mIvPlayIcon.setImageDrawable(mDefaultIcon);
+        @Override
+        void OnRecycle() {
+            super.OnRecycle();
+            if (mVoicePlayer.isPlaying() && TextUtils.equals(mVoicePlayer.getCurrentPlayPath(), mVoicePath)) {
+                mVoicePlayer.clearAllListener();
+            }
+            if (mCountDownTimer != null) {
+                mCountDownTimer.cancel();
+                mCountDownTimer = null;
             }
         }
 
-        public void setEnableListenedState(boolean isEnable) {
-            if (mIvListenedState != null) {
-                mIvListenedState.setVisibility(isEnable ? View.INVISIBLE : View.VISIBLE);
+        void setVisualizerColor(@ColorInt int color) {
+            mVisualizerView.setStrokeColor(color);
+        }
+
+        void setVoiceListened() {
+            mIvListenedState.setVisibility(View.INVISIBLE);
+        }
+
+        void playVoice(String path) {
+            mVoicePath = path;
+            if (mVoicePlayer.isPlaying() && TextUtils.equals(mVoicePlayer.getCurrentPlayPath(), mVoicePath)) {
+                mVoicePlayer.stop();
+            } else {
+                mVoicePlayer.play(path, mOnPlayStateChangeListener, mOnDataCaptureListener);
+            }
+        }
+
+        void reset() {
+            mIvPlayIcon.setSelected(false);
+            mVisualizerView.reset();
+            setCurrentDuration(mDurationMs);
+            if (mCountDownTimer != null) {
+                mCountDownTimer.cancel();
             }
         }
 
         @Override
         public void parseMessageContent(Message message) {
             VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
-            int timeLength_ms = voiceMessage.getDuration() * 1000;
-            mTvVoiceDuration.setText(String.format(Locale.getDefault(), "%d\"", timeLength_ms / 1000));
-            int rowWidth = mFlContentLayout.getMinimumWidth();
-            if (timeLength_ms >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+            mDurationMs = voiceMessage.getDuration();
+            setCurrentDuration(mDurationMs);
+            int rowWidth = mVisualizerView.getMinimumWidth();
+            if (mDurationMs >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
                 rowWidth = 2 * rowWidth;
             } else {
-                rowWidth = (int) (rowWidth * (1 + timeLength_ms * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
+                rowWidth = (int) (rowWidth * (1 + mDurationMs * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
             }
-            ViewGroup.LayoutParams layoutParams = mFlContentLayout.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams = mVisualizerView.getLayoutParams();
             layoutParams.width = rowWidth;
-            mFlContentLayout.setLayoutParams(layoutParams);
+            mVisualizerView.setLayoutParams(layoutParams);
             Uri voiceUri = voiceMessage.getUri();
-            if (mVoicePlayer.isPlaying() && mVoicePlayer.getCurrentPlayPath().equals(voiceUri.getPath())) {
-                mIvPlayIcon.setImageDrawable(mPlayAnimation);
-                mPlayAnimation.start();
-            } else {
-                mPlayAnimation.stop();
-                mIvPlayIcon.setImageDrawable(mDefaultIcon);
-            }
+            mVoicePath = voiceUri.getPath();
             if (mIvListenedState != null) {
-                setEnableListenedState(message.getReceivedStatus().isListened());
+                mIvListenedState.setVisibility(message.getReceivedStatus().isListened() ? View.INVISIBLE : View.VISIBLE);
+            }
+            if (mVoicePlayer.isPlaying() && TextUtils.equals(mVoicePlayer.getCurrentPlayPath(), mVoicePath)) {
+                mVoicePlayer.setOnPlayStateChangeListenerIfPlaying(mOnPlayStateChangeListener);
+                mVoicePlayer.setOnDataCaptureListenerIfPlaying(mOnDataCaptureListener);
+                mIvPlayIcon.setSelected(true);
+                startCountDownTimer(mDurationMs - mVoicePlayer.getAlreadyPlayTime());
+            } else {
+                reset();
             }
         }
+
+        private void setCurrentDuration(long duration) {
+            mTvVoiceDuration.setText(DateUtil.msecToDate_mm_ss(duration));
+        }
+
+        private void startCountDownTimer(long duration) {
+            if (mCountDownTimer != null) {
+                mCountDownTimer.cancel();
+            }
+            mCountDownTimer = new CountDownTimer(duration, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    setCurrentDuration(millisUntilFinished);
+                }
+
+                @Override
+                public void onFinish() {
+                    setCurrentDuration(mVoicePlayer.isPlaying() ? 0 : mDurationMs);
+                }
+            };
+            mCountDownTimer.start();
+        }
+
+        private final VoicePlayer.OnPlayStateChangeListener mOnPlayStateChangeListener = new VoicePlayer.OnPlayStateChangeListener() {
+            @Override
+            public void onStartPlay() {
+                mIvPlayIcon.setSelected(true);
+                startCountDownTimer(mDurationMs);
+            }
+
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer, boolean isStop) {
+                reset();
+            }
+
+            @Override
+            public void onError(String error) {
+                LogUtil.e("play voice error: " + error);
+                reset();
+            }
+        };
+
+        private final Visualizer.OnDataCaptureListener mOnDataCaptureListener = new Visualizer.OnDataCaptureListener() {
+            @Override
+            public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+                mVisualizerView.updateVisualizer(waveform);
+            }
+
+            @Override
+            public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+
+            }
+        };
     }
 
     static final class VideoViewHolder extends ItemViewHolder {
-        ImageView mIvVideoThumbnail;
+        RoundImageView mIvVideoThumbnail;
         TextView mTvVideoDuration;
 
         VideoViewHolder(View itemView) {
             super(itemView);
             mIvVideoThumbnail = itemView.findViewById(R.id.ChatMessageAdapter_mIvVideoThumbnail);
             mTvVideoDuration = itemView.findViewById(R.id.ChatMessageAdapter_mTvVideoDuration);
+            mIvVideoThumbnail.setRoundRadius(AndroidUtil.dip2px(10));
+            mContentLayout = mIvVideoThumbnail;
         }
 
         @Override
@@ -746,6 +821,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             }
             mTvVideoDuration.setText(videoTimeFormat(videoMessage.getDuration()));
             GlideUtil.loadFromUrl(mIvVideoThumbnail.getContext(), mIvVideoThumbnail, thumbnailUri);
+        }
+
+        @Override
+        void OnRecycle() {
+            super.OnRecycle();
+            GlideUtil.clear(mIvVideoThumbnail.getContext(), mIvVideoThumbnail);
+            mIvVideoThumbnail.setImageBitmap(null);
         }
 
         private static String videoTimeFormat(long millisecond) {

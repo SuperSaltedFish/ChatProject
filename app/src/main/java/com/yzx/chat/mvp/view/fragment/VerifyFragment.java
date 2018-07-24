@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,7 +17,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.huawei.android.hms.agent.common.BaseAgentActivity;
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.mvp.contract.VerifyContract;
 import com.yzx.chat.mvp.presenter.VerifyPresenter;
@@ -272,9 +275,16 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         }
         AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                BaseCompatActivity activity = (BaseCompatActivity) getActivity();
+                activity.setSystemUiMode(BaseCompatActivity.SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
                 startActivity(new Intent(mContext, SplashActivity.class));
+                getActivity().finish();
             }
         });
     }

@@ -43,11 +43,11 @@ import java.util.List;
 
 public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCompatActivity {
 
-    protected static final int SYSTEM_UI_MODE_NONE = 0;
-    protected static final int SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS = 1;
-    protected static final int SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS = 2;
-    protected static final int SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION = 3;
-    protected static final int SYSTEM_UI_MODE_FULLSCREEN = 4;
+    public static final int SYSTEM_UI_MODE_NONE = 0;
+    public static final int SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS = 1;
+    public static final int SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS = 2;
+    public static final int SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION = 3;
+    public static final int SYSTEM_UI_MODE_FULLSCREEN = 4;
 
     @IntDef({SYSTEM_UI_MODE_NONE
             , SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS
@@ -222,6 +222,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             case SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS:
             case SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS:
                 if (mode == SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                 //   window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                     window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 } else {
                     window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);

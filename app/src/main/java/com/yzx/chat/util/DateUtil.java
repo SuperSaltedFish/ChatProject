@@ -23,6 +23,11 @@ public class DateUtil {
         return format.format(new Date(milliseconds));
     }
 
+    public static String msecToDate_mm_ss(long milliseconds) {
+        SimpleDateFormat format = new SimpleDateFormat("mm:ss", Locale.getDefault());
+        return format.format(new Date(milliseconds));
+    }
+
     public static String isoToDate_yyyy_MM_dd(String isoTime) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
         try {

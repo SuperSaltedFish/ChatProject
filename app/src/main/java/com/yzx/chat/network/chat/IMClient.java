@@ -452,6 +452,7 @@ public class IMClient implements IManagerHelper {
                 case "RC:TxtMsg":
                 case "RC:VcMsg":
                 case "RC:ImgMsg":
+                case "RC:LBSMsg":
                 case "Custom:VideoMsg":
                     mChatManager.onReceiveContactNotificationMessage(message, i);
                     break;

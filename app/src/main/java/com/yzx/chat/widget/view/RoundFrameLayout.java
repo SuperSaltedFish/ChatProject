@@ -35,7 +35,7 @@ public class RoundFrameLayout extends FrameLayout {
 
     private void setRound() {
         mRoundRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                20, mContext.getResources().getDisplayMetrics());
+                8, mContext.getResources().getDisplayMetrics());
         this.setClipToOutline(true);
         this.setOutlineProvider(new RoundOutlineProvider(mRoundRadius));
     }
