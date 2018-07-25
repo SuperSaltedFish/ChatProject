@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import java.io.IOException;
@@ -73,33 +74,43 @@ public class VoicePlayer {
             public void onPrepared(MediaPlayer mp) {
                 mMediaPlayer.start();
                 mAlreadyPlayTime = System.currentTimeMillis();
-                mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-                    @Override
-                    public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
-                        if (mOnDataCaptureListener != null) {
-                            mOnDataCaptureListener.onWaveFormDataCapture(visualizer, waveform, samplingRate);
+                if (mVisualizer != null) {
+                    mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+                        @Override
+                        public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+                            if (mOnDataCaptureListener != null) {
+                                mOnDataCaptureListener.onWaveFormDataCapture(visualizer, waveform, samplingRate);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
-                        if (mOnDataCaptureListener != null) {
-                            mOnDataCaptureListener.onFftDataCapture(visualizer, fft, samplingRate);
+                        @Override
+                        public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+                            if (mOnDataCaptureListener != null) {
+                                mOnDataCaptureListener.onFftDataCapture(visualizer, fft, samplingRate);
+                            }
                         }
-                    }
-                }, Visualizer.getMaxCaptureRate() / 2, true, false);
-                mVisualizer.setEnabled(mOnDataCaptureListener != null);
+                    }, Visualizer.getMaxCaptureRate() / 2, true, false);
+                    mVisualizer.setEnabled(mOnDataCaptureListener != null);
+                }
                 if (mOnPlayStateChangeListener != null) {
                     mOnPlayStateChangeListener.onStartPlay();
                 }
             }
         });
-        mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+
+        try {
+            mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.e("Unsupported Visualizer");
+        }
     }
 
     private void reset() {
-        mVisualizer.setEnabled(false);
-        mVisualizer.setDataCaptureListener(null, Visualizer.getMaxCaptureRate() / 2, false, false);
+        if (mVisualizer != null) {
+            mVisualizer.setEnabled(false);
+            mVisualizer.setDataCaptureListener(null, Visualizer.getMaxCaptureRate() / 2, false, false);
+        }
         mMediaPlayer.reset();
         mOnDataCaptureListener = null;
         mOnPlayStateChangeListener = null;
@@ -118,6 +129,27 @@ public class VoicePlayer {
         setSpeaker(true);
         try {
             mMediaPlayer.setDataSource(path);
+            mMediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (mOnPlayStateChangeListener != null) {
+                mOnPlayStateChangeListener.onError(e.toString());
+                reset();
+            }
+        }
+    }
+
+    public void play(Context context, Uri uri, OnPlayStateChangeListener playStateChangeListener, Visualizer.OnDataCaptureListener dataCaptureListener) {
+        if (uri == null || TextUtils.isEmpty(uri.toString())) {
+            return;
+        }
+        stop();
+        mOnPlayStateChangeListener = playStateChangeListener;
+        mOnDataCaptureListener = dataCaptureListener;
+        mCurrentPlayPath = uri.toString();
+        setSpeaker(true);
+        try {
+            mMediaPlayer.setDataSource(context, uri);
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,7 +193,7 @@ public class VoicePlayer {
     }
 
     public void setOnDataCaptureListenerIfPlaying(Visualizer.OnDataCaptureListener listener) {
-        if (isPlaying()) {
+        if (mVisualizer != null && isPlaying()) {
             mOnDataCaptureListener = listener;
             mVisualizer.setEnabled(mOnDataCaptureListener != null);
         }

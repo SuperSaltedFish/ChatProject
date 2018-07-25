@@ -461,7 +461,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 }
                 voiceViewHolder.playVoice(path);
             }
-            if (!mMessage.getReceivedStatus().isListened()) {
+            if (mMessage.getMessageDirection() == Message.MessageDirection.RECEIVE && !mMessage.getReceivedStatus().isListened()) {
                 mMessageCallback.setVoiceMessageAsListened(mMessage);
                 voiceViewHolder.setVoiceListened();
             }
@@ -679,7 +679,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         void setVoiceListened() {
-            mIvListenedState.setVisibility(View.INVISIBLE);
+            if (mIvListenedState != null) {
+                mIvListenedState.setVisibility(View.INVISIBLE);
+            }
         }
 
         void playVoice(String path) {
@@ -773,7 +775,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         private final Visualizer.OnDataCaptureListener mOnDataCaptureListener = new Visualizer.OnDataCaptureListener() {
             @Override
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
-                mVisualizerView.updateVisualizer(waveform);
+                mVisualizerView.updateWaveform(waveform);
             }
 
             @Override
