@@ -17,7 +17,7 @@
         android:textColor="@android:color/white"
         android:textSize="12sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvAvatar"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvNickname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +27,7 @@
         android:layout_width="44dp"
         android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvNickname"
@@ -36,8 +36,9 @@
         android:layout_marginStart="8dp"
         android:textSize="12sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
 
 
     <com.yzx.chat.widget.view.RoundImageView

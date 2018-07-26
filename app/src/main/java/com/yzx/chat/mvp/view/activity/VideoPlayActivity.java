@@ -64,7 +64,6 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
         ViewCompat.setTransitionName(mIvThumbnail, TRANSITION_NAME_IMAGE);
@@ -153,6 +152,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
                     }
                 }
                 mVideoDecoder.start();
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
     }

@@ -56,10 +56,9 @@ public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonRe
     @Override
     public void onError(@NonNull Throwable e) {
         e.printStackTrace();
-        Class errorClass = e.getClass();
-        if (errorClass == NetworkUnavailableException.class) {
+        if (e instanceof NetworkUnavailableException) {
             onFailure(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
-        } else if (errorClass == SocketTimeoutException.class) {
+        } else if (e instanceof SocketTimeoutException) {
             onFailure(AndroidUtil.getString(R.string.Error_NetworkTimeout));
         } else {
             onFailure(AndroidUtil.getString(R.string.Error_Server));

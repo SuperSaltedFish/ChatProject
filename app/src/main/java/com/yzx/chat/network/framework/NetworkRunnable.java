@@ -120,7 +120,7 @@ public class NetworkRunnable implements Runnable {
 
     private static class UniformVelocityInterpolator implements DownloadCallback {
 
-        private static final int MIN_CALLBACK_INTERVAL_MS = 16;
+        private static final int MIN_CALLBACK_INTERVAL_MS = 32;
 
         private DownloadCallback mDownloadCallback;
         private Handler mHandler;

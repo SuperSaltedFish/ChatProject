@@ -353,7 +353,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                     mViewHolder = new VoiceViewHolder(itemView);
                     if (type == HOLDER_TYPE_RECEIVE_MESSAGE_VOICE) {
-                        ((VoiceViewHolder) mViewHolder).setVisualizerColor(AndroidUtil.getColor(R.color.colorAccent));
+                        ((VoiceViewHolder) mViewHolder).setVisualizerColor(AndroidUtil.getColor(R.color.colorAccentLight));
                     }
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_IMAGE:

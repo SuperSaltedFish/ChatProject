@@ -8,6 +8,7 @@
         android:id="@+id/ChatMessageAdapter_mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_chat_time_round"
         android:gravity="center"
@@ -15,9 +16,8 @@
         android:paddingStart="4dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvAvatar"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvNickname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +27,7 @@
         android:layout_width="44dp"
         android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvNickname"
@@ -36,8 +36,9 @@
         android:layout_marginStart="8dp"
         android:textSize="12sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
 
     <LinearLayout
         android:id="@+id/ChatMessageAdapter_mContentLayout"
@@ -48,8 +49,10 @@
         android:background="@drawable/bg_chat_message_receive"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
@@ -57,8 +60,8 @@
 
         <com.yzx.chat.widget.view.CircleImageView
             android:id="@+id/ChatMessageAdapter_mIvPlayIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:background="@color/colorAccent"
             android:padding="8dp"
             android:src="@drawable/selector_voice_play"
@@ -67,7 +70,7 @@
         <com.yzx.chat.widget.view.VisualizerView
             android:id="@+id/ChatMessageAdapter_mVisualizerView"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="44dp"
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -77,9 +80,10 @@
             android:id="@+id/ChatAdapter_mTvVoiceDuration"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorAccent"
             android:layout_gravity="start|center_vertical"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp" />
 
     </LinearLayout>
 

@@ -324,7 +324,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
         mRvChatView.setLayoutManager(layoutManager);
-        mRvChatView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(6)));
+        mRvChatView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(8), SpacesItemDecoration.VERTICAL, false, true));
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         ((DefaultItemAnimator) (mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
