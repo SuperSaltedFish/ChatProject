@@ -69,7 +69,7 @@ public class Http {
     private static void setDefaultAttribute(HttpURLConnection conn) {
         conn.setRequestProperty("Charset", "UTF-8");
         conn.setRequestProperty("Content-Type", "text/plain");
-       conn.setRequestProperty("Connection", "Keep-Alive");
+        conn.setRequestProperty("Connection", "Keep-Alive");
         conn.setConnectTimeout(CONNECT_TIMEOUT);
         conn.setReadTimeout(READ_TIMEOUT);
         conn.setDoInput(true);

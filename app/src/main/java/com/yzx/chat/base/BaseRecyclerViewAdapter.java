@@ -3,8 +3,6 @@ package com.yzx.chat.base;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.recyclerview.extensions.AsyncListDiffer;
-import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,8 +43,9 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return DEFAULT_HOLDER_TYPE_FOOTER;
     }
 
+    @NonNull
     @Override
-    public final BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (mContext == null) {
             mContext = parent.getContext();
         }
@@ -60,7 +59,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     }
 
     @Override
-    public final void onBindViewHolder(BaseViewHolder holder, int position) {
+    public final void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         if (mContext == null) {
             mContext = holder.itemView.getContext();
         }
