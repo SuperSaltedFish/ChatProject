@@ -41,7 +41,7 @@ public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonRe
         } else if (jsonResponse.getStatus() != 200) {
             onFailure(jsonResponse.getMessage());
         } else if (jsonResponse.getData() == null) {
-            ParameterizedType pType = (ParameterizedType) response.getClass().getGenericInterfaces()[0];
+            ParameterizedType pType = (ParameterizedType) this.getClass().getGenericSuperclass();
             Type type = pType.getActualTypeArguments()[0];
             if (type != Void.class) {
                 onFailure(AndroidUtil.getString(R.string.Error_Server));

@@ -5,10 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.huawei.android.hms.agent.common.BaseAgentActivity;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseFragment;
@@ -26,7 +23,7 @@ import com.yzx.chat.mvp.presenter.VerifyPresenter;
 import com.yzx.chat.mvp.view.activity.LoginActivity;
 import com.yzx.chat.mvp.view.activity.SplashActivity;
 import com.yzx.chat.util.AnimationUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.CountDownTimer;
 import com.yzx.chat.widget.view.VerifyEditView;
 
 import java.util.Locale;

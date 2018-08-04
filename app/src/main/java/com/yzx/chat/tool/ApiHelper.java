@@ -147,7 +147,7 @@ public class ApiHelper {
             }
             String strBody = new String(body);
             LogUtil.e("convertResponseBody:" + strBody);
-            return sGson.fromJson(new String(body), genericType);
+            return sGson.fromJson(strBody, genericType);
         }
     });
 
