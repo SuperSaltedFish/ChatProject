@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.support.annotation.ColorInt;
@@ -27,6 +28,9 @@ public class VisualizerView extends View {
     private static final float MODULATION_STRENGTH = 0.4f; // 0-1
     private static final float AGGRESIVE = 0.5f;
     private static final Matrix EMPTY_MATRIX = new Matrix();
+
+    private byte[] mDefaultPoint;
+    private Path mDefaultDisplayPath;
 
     private byte[] mWaveData;
     private byte[] mFFTData;
@@ -61,6 +65,7 @@ public class VisualizerView extends View {
 
     private void setDefault(DisplayMetrics metrics) {
         mVisualizerPaint.setAntiAlias(true);
+        mVisualizerPaint.setStyle(Paint.Style.STROKE);
         mFadePaint.setAntiAlias(true);
         mFadePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
         setStrokeWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, metrics));
@@ -83,6 +88,21 @@ public class VisualizerView extends View {
         invalidate();
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if(mDefaultDisplayPath==null){
+            mDefaultDisplayPath = new Path();
+        }
+        mDefaultDisplayPath.reset();
+        for (int i = 0; i < 61; i++) {
+            if (i == 0) {
+                mDefaultDisplayPath.moveTo(0, (float) (Math.random() * h/2.5f)+((h- h/2.5f)/2f));
+            } else {
+                mDefaultDisplayPath.lineTo(w * i / 60, (float) (Math.random() * h/2.5f)+((h- h/2.5f)/2f));
+            }
+        }
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -97,7 +117,8 @@ public class VisualizerView extends View {
                 mVisualizerCanvas = new Canvas(mVisualizerBitmap);
             }
         } else {
-            canvas.drawLine(0, height / 2f, width, height / 2f, mVisualizerPaint);
+          //  canvas.drawLine(0, height / 2f, width, height / 2f, mVisualizerPaint);
+            canvas.drawPath(mDefaultDisplayPath,mVisualizerPaint);
             return;
         }
 
@@ -186,7 +207,7 @@ public class VisualizerView extends View {
 
     public void setStrokeColor(@ColorInt int strokeColor) {
         mVisualizerPaint.setColor(strokeColor);
-        mFadePaint.setColor(Color.argb(225, ((strokeColor >> 16) & 0xff), ((strokeColor >> 8) & 0xff), (strokeColor & 0xff)));
+        mFadePaint.setColor(Color.argb(200, ((strokeColor >> 16) & 0xff), ((strokeColor >> 8) & 0xff), (strokeColor & 0xff)));
         invalidate();
     }
 }
