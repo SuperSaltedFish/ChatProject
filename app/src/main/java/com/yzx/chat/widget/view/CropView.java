@@ -73,7 +73,7 @@ public class CropView extends View {
         int paddingTop = getPaddingTop();
         int paddingRight = getPaddingRight();
         int paddingBottom = getPaddingBottom();
-        radius = Math.min(mViewWidth - paddingLeft - paddingRight, mViewHeight - paddingTop - paddingBottom) / 2 - mStrokeColor;
+        radius = Math.min(mViewWidth - paddingLeft - paddingRight, mViewHeight - paddingTop - paddingBottom) / 2 - mStrokeWidth;
         cx = (mViewWidth + paddingLeft - paddingRight) / 2;
         cy = (mViewHeight + paddingTop - paddingBottom) / 2;
         mPaint.setColor(Color.WHITE);

@@ -13,7 +13,6 @@ import com.yzx.chat.widget.view.VisualizerView;
 public class TestActivity extends BaseCompatActivity {
 
 
-    VisualizerView visualizerView;
 
     @Override
     protected int getLayoutID() {
@@ -22,8 +21,7 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        visualizerView = findViewById(R.id.ddd);
-        visualizerView.setStrokeColor(ContextCompat.getColor(this, R.color.colorAccent));
+
     }
 
     @Override

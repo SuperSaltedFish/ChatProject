@@ -39,6 +39,13 @@ public class LogUtil {
         }
     }
 
+    public static void v(Number number) {
+        if (isEnableE) {
+            String tag = generateTag();
+            Log.e(tag, number==null?"null":number.toString());
+        }
+    }
+
     public static void v(String msg, Throwable tr) {
         if(msg==null){
             msg="null";
@@ -56,6 +63,13 @@ public class LogUtil {
         if (isEnableD) {
             String tag = generateTag();
             Log.d(tag, msg);
+        }
+    }
+
+    public static void d(Number number) {
+        if (isEnableE) {
+            String tag = generateTag();
+            Log.e(tag, number==null?"null":number.toString());
         }
     }
 
@@ -79,6 +93,13 @@ public class LogUtil {
         }
     }
 
+    public static void i(Number number) {
+        if (isEnableE) {
+            String tag = generateTag();
+            Log.e(tag, number==null?"null":number.toString());
+        }
+    }
+
     public static void i(String msg, Throwable tr) {
         if(msg==null){
             msg="null";
@@ -99,6 +120,13 @@ public class LogUtil {
         }
     }
 
+    public static void w(Number number) {
+        if (isEnableE) {
+            String tag = generateTag();
+            Log.e(tag, number==null?"null":number.toString());
+        }
+    }
+
     public static void w(String msg, Throwable tr) {
         if(msg==null){
             msg="null";
@@ -116,6 +144,13 @@ public class LogUtil {
         if (isEnableE) {
             String tag = generateTag();
             Log.e(tag, msg);
+        }
+    }
+
+    public static void e(Number number) {
+        if (isEnableE) {
+            String tag = generateTag();
+            Log.e(tag, number==null?"null":number.toString());
         }
     }
 

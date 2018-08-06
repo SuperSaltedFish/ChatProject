@@ -14,7 +14,9 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
+import com.yzx.chat.util.LogUtil;
 
+import java.io.File;
 import java.util.UUID;
 
 /**
@@ -49,13 +51,14 @@ public class CropImagePresenter implements CropImageContract.Presenter {
         mSaveAvatarToLocalTask.execute(bitmap);
     }
 
-    private void saveComplete(String imagePath) {
+    private void saveComplete(final String imagePath) {
         IMClient.getInstance().getUserManager().uploadAvatar(imagePath, new ResultCallback<UploadAvatarBean>() {
             @Override
             public void onSuccess(UploadAvatarBean result) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        deleteFile(imagePath);
                         mCropImageView.goBack();
                     }
                 });
@@ -66,6 +69,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        deleteFile(imagePath);
                         mCropImageView.showError(error);
                     }
                 });
@@ -76,6 +80,13 @@ public class CropImagePresenter implements CropImageContract.Presenter {
 
     private void saveFail() {
         mCropImageView.showError(AndroidUtil.getString(R.string.CropImageActivity_SaveAvatarFail));
+    }
+
+    private static void deleteFile(String filePath) {
+        File file = new File(filePath);
+        if (!file.delete()) {
+            LogUtil.e("delete photo file fail.");
+        }
     }
 
     private static class SaveAvatarToLocalTask extends BackstageAsyncTask<CropImagePresenter, Bitmap, String> {

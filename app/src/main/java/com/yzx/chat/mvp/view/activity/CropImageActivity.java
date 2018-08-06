@@ -9,9 +9,12 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.CropImageContract;
 import com.yzx.chat.mvp.presenter.CropImagePresenter;
 import com.yzx.chat.util.GlideUtil;
@@ -56,7 +59,13 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
         }
 
         mCropView.setMaskColor(ContextCompat.getColor(this, R.color.maskColorBlack));
-        GlideUtil.loadFromUrl(this, mPhotoView, String.format("file://%s", imagePath));
+        GlideApp.with(this)
+                .load(String.format("file://%s", imagePath))
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .dontAnimate()
+                .format(DecodeFormat.PREFER_RGB_565)
+                .disallowHardwareConfig()
+                .into(mPhotoView);
     }
 
     @Override

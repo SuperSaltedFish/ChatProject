@@ -54,7 +54,6 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         requestPermissionsInCompatMode(new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE,

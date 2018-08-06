@@ -32,6 +32,8 @@
 
     <style name="SplashTheme" parent="DefaultLightTheme">
         <item name="android:windowBackground">@drawable/src_bg_splash</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
