@@ -36,6 +36,7 @@ public class UserBean implements Parcelable {
     private int sex;
     private String age;
 
+
     public static UserBean copy(UserBean user) {
         Parcel parcel = Parcel.obtain();
         user.writeToParcel(parcel, 0);

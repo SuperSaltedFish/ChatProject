@@ -8,8 +8,19 @@
     tools:context=".mvp.view.activity.TestActivity">
 
     <com.yzx.chat.widget.view.CropImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/aaa"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:padding="64dp"
+        android:src="@drawable/temp_share_image" />
+
+
+    <ImageView
+        android:id="@+id/bbb"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="100dp"
+        android:padding="64dp"
         android:src="@drawable/temp_share_image" />
 
 </LinearLayout>
