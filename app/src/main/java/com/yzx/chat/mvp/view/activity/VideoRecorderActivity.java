@@ -71,6 +71,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     protected void setup(Bundle savedInstanceState) {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
+        setBrightness(0.9f);
         mIvFlash.setOnClickListener(mOnViewClick);
         mIvClose.setOnClickListener(mOnViewClick);
         mIvConfirm.setOnClickListener(mOnViewClick);

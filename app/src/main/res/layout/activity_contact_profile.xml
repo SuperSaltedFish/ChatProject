@@ -160,8 +160,8 @@
 
     <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/ContactProfileActivity_mIvAvatar"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
         android:layout_marginEnd="32dp"
         android:padding="4dp"
         android:scaleType="centerCrop"

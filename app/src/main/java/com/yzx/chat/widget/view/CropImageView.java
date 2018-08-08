@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -24,6 +26,7 @@ import android.widget.ImageView;
  * Created by YZX on 2018年08月06日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
+@SuppressLint("AppCompatCustomView")
 public class CropImageView extends ImageView
         implements View.OnTouchListener,
         ScaleGestureDetector.OnScaleGestureListener {
@@ -268,12 +271,28 @@ public class CropImageView extends ImageView
     }
 
     public Bitmap crop() {
-        Bitmap bitmap = Bitmap.createBitmap(getWidth()/2, getHeight()/2, Bitmap.Config.RGB_565);
+        if (mCropRadius == 0) {
+            return null;
+        }
+        int width = getWidth();
+        int height = getHeight();
+        int cx = width / 2;
+        int cy = height / 2;
+        int radius = (int) mCropRadius;
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         isCropping = true;
         super.draw(new Canvas(bitmap));
         isCropping = false;
-        Bitmap.createBitmap()
-
-        return bitmap;
+        int size = (int) (mCropRadius * 2);
+        Bitmap crop = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(crop);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        canvas.drawCircle(size / 2f, size / 2f, mCropRadius, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, new Rect(cx - radius, cy - radius, cx + radius, cy + radius), new Rect(0, 0, size, size), paint);
+        bitmap.recycle();
+        return crop;
     }
 }

@@ -35,6 +35,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     @Override
     public void downloadVideo(Message message) {
         mCurrentDownloadMessage = message;
+        mVideoPlayView.setEnableProgressDialog(true);
         IMClient.getInstance().getChatManager().downloadMediaContent(message, new com.yzx.chat.network.chat.DownloadCallback() {
             @Override
             public void onSuccess(Message message, Uri localUri) {
@@ -49,7 +50,6 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
 
             @Override
             public void onProgress(Message message, int percentage) {
-                mVideoPlayView.setEnableProgressDialog(true);
                 mVideoPlayView.showProcess(percentage);
             }
 

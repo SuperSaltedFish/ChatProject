@@ -44,7 +44,7 @@ public class DirectoryHelper {
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(getPublicThumbnailPath());
+        file = new File(getPrivateThumbnailPath());
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -102,8 +102,8 @@ public class DirectoryHelper {
         return PUBLIC_DATA_BASE_PATH + PATH_TEMP;
     }
 
-    public static String getPublicThumbnailPath() {
-        return PUBLIC_DATA_BASE_PATH + PATH_THUMBNAIL;
+    public static String getPrivateThumbnailPath() {
+        return PROTECTED_DATA_BASE_PATH + PATH_THUMBNAIL;
     }
 
 }

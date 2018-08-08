@@ -15,6 +15,7 @@ import com.yzx.chat.util.MD5Util;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import io.rong.common.FileUtils;
 import io.rong.common.RLog;
@@ -29,10 +30,10 @@ import io.rong.message.MessageHandler;
 public class VideoMessageHandler extends MessageHandler<VideoMessage> {
     private final static String TAG = "VideoMessageHandler";
 
-    private static final int THUMB_COMPRESSED_WIDTH_SIZE = 158;
+    private static final int THUMB_COMPRESSED_WIDTH_SIZE = 280;
     private static final int THUMB_COMPRESSED_HEIGHT_SIZE = 280;
     private static final int THUMB_COMPRESSED_QUALITY = 50;
-    private static final String VIDEO_THUMBNAIL_PATH = DirectoryHelper.getPublicThumbnailPath();
+    private static final String VIDEO_THUMBNAIL_PATH = DirectoryHelper.getPrivateThumbnailPath();
 
     public VideoMessageHandler(Context context) {
         super(context);
@@ -40,6 +41,13 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
 
     @Override
     public void decodeMessage(Message message, VideoMessage model) {
+        Uri thumbUri = model.getThumbUri();
+        if (thumbUri != null && "file".equalsIgnoreCase(thumbUri.getScheme())) {
+            File file = new File(thumbUri.getPath());
+            if (file.exists()) {
+                return;
+            }
+        }
         if (!TextUtils.isEmpty(model.getBase64())) {
             byte[] data = null;
             try {
@@ -65,12 +73,14 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
     @Override
     public void encodeMessage(Message message) {
         VideoMessage model = (VideoMessage) message.getContent();
+        if (model.getSize() != 0 || !TextUtils.isEmpty(model.getName())) {
+            return;
+        }
         Uri localVideo = model.getLocalPath();
         VideoInfo videoInfo = getVideoInfoFromLocalFile(localVideo.getPath());
         if (videoInfo == null) {
             return;
         }
-        LogUtil.e(model.toString());
         if (videoInfo.thumbnail != null) {
             File file = new File(VIDEO_THUMBNAIL_PATH + MD5Util.encrypt32(message.getSenderUserId() + message.getTargetId() + message.getMessageId()) + ".jpeg");
             if (!file.exists()) {
@@ -78,18 +88,21 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
                 try {
                     videoInfo.thumbnail.compress(Bitmap.CompressFormat.JPEG, THUMB_COMPRESSED_QUALITY, outputStream);
                     byte[] data = outputStream.toByteArray();
-                    model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
-                    FileUtils.byte2File(data, file.getParent(), file.getName());
+                    outputStream.flush();
                     outputStream.close();
+                    FileUtils.byte2File(data, file.getParent(), file.getName());
+                    model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
+                    model.setThumbUri(Uri.fromFile(file));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else {
+            } else {
                 byte[] data = FileUtils.file2byte(file);
                 model.setBase64(Base64.encodeToString(data, Base64.NO_WRAP));
             }
             model.setThumbUri(Uri.fromFile(file));
             videoInfo.thumbnail.recycle();
+            videoInfo.thumbnail = null;
         }
         model.setDuration(videoInfo.duration);
         model.setName(videoInfo.name);
@@ -128,16 +141,21 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
             try {
                 retriever.release();
             } catch (RuntimeException ex) {
-                // Ignore failures while cleaning up.
+
             }
         }
         VideoInfo videoInfo = new VideoInfo();
-        if (bitmap != null && (bitmap.getWidth() > THUMB_COMPRESSED_WIDTH_SIZE || bitmap.getHeight() > THUMB_COMPRESSED_HEIGHT_SIZE)) {
-            Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap, THUMB_COMPRESSED_WIDTH_SIZE, THUMB_COMPRESSED_HEIGHT_SIZE, true);
-            if (bitmap != scaleBitmap && !bitmap.isRecycled()) {
-                bitmap.recycle();
+        if (bitmap != null) {
+            int srcWidth = bitmap.getWidth();
+            int srcHeight = bitmap.getHeight();
+            if (srcWidth > THUMB_COMPRESSED_WIDTH_SIZE || srcHeight > THUMB_COMPRESSED_HEIGHT_SIZE) {
+                float scale = Math.min(THUMB_COMPRESSED_WIDTH_SIZE * 1f / srcWidth, THUMB_COMPRESSED_HEIGHT_SIZE * 1f / srcHeight);
+                Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap, (int) (scale * srcWidth), (int) (scale * srcHeight), true);
+                if (bitmap != scaleBitmap && !bitmap.isRecycled()) {
+                    bitmap.recycle();
+                }
+                videoInfo.thumbnail = scaleBitmap;
             }
-            videoInfo.thumbnail = scaleBitmap;
         }
         if (!TextUtils.isEmpty(duration)) {
             videoInfo.duration = Integer.parseInt(duration);

@@ -79,7 +79,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         mSplashContent = getString(R.string.SplashActivity_Content);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
+        setSystemUiMode(SYSTEM_UI_MODE_LIGHT_BAR);
 
         setContentView(R.layout.activity_splash);
 

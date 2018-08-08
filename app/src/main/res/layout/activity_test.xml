@@ -17,10 +17,13 @@
 
     <ImageView
         android:id="@+id/bbb"
-        android:layout_width="300dp"
+        android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="100dp"
-        android:padding="64dp"
-        android:src="@drawable/temp_share_image" />
+        android:layout_marginTop="100dp" />
+
+    <Button
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -234,4 +234,5 @@
     <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="Error_NetworkTimeout">网络访问超时，请检查网络连接</string>
     <string name="StrangerProfileActivity_DefaultReason">添加理由：无</string>
+    <string name="CropImageActivity_CropFail">当前无法裁剪头像，请稍后再试！</string>
 </resources>

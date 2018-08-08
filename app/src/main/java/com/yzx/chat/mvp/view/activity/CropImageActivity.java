@@ -18,7 +18,7 @@ import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.CropImageContract;
 import com.yzx.chat.mvp.presenter.CropImagePresenter;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.widget.view.CropView;
+import com.yzx.chat.widget.view.CropImageView;
 import com.yzx.chat.widget.view.ProgressDialog;
 
 /**
@@ -30,8 +30,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
 
     public static final String INTENT_EXTRA_IMAGE_PATH = "ImagePath";
 
-    private CropView mCropView;
-    private PhotoView mPhotoView;
+    private CropImageView mCropImageView;
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -41,8 +40,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mCropView = findViewById(R.id.CropActivity_mCropView);
-        mPhotoView = findViewById(R.id.CropActivity_mPhotoView);
+        mCropImageView = findViewById(R.id.CropActivity_mCropImageView);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Upload));
     }
 
@@ -58,14 +56,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
             return;
         }
 
-        mCropView.setMaskColor(ContextCompat.getColor(this, R.color.maskColorBlack));
-        GlideApp.with(this)
-                .load(String.format("file://%s", imagePath))
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .dontAnimate()
-                .format(DecodeFormat.PREFER_RGB_565)
-                .disallowHardwareConfig()
-                .into(mPhotoView);
+        GlideUtil.loadFromUrl(this, mCropImageView, String.format("file://%s", imagePath));
     }
 
     @Override
@@ -78,17 +69,13 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.CropImageMenu_Confirm) {
+            Bitmap bitmap = mCropImageView.crop();
+            if (bitmap == null) {
+                showError(getString(R.string.CropImageActivity_CropFail));
+                return true;
+            }
             mProgressDialog.show();
-            mPhotoView.setDrawingCacheEnabled(true);
-            Bitmap bitmap = mPhotoView.getDrawingCache();
-            Rect rect = mCropView.getCircleRect();
-            int size = rect.width();
-            float scale = 200f / size;
-            Matrix matrix = new Matrix();
-            matrix.preScale(scale, scale);
-            bitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height(), matrix, false);
-            mPresenter.uploadAvatar(bitmap);
-            mPhotoView.setDrawingCacheEnabled(false);
+            mPresenter.uploadAvatar(mCropImageView.crop());
         } else {
             return super.onOptionsItemSelected(item);
         }

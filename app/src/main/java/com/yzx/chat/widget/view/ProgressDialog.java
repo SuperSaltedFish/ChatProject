@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -23,7 +25,6 @@ public class ProgressDialog extends Dialog {
 
     public ProgressDialog(@NonNull Context context, CharSequence hintText) {
         this(context, hintText, false);
-
     }
 
     public ProgressDialog(@NonNull Context context, CharSequence hintText, boolean isCancelable) {
@@ -49,7 +50,21 @@ public class ProgressDialog extends Dialog {
 
     @Override
     public void show() {
-        if(!isShowing()){
+        this.show(-1);
+    }
+
+    public void show(int systemUiVisibility) {
+        if (systemUiVisibility != -1) {
+            Window window = getWindow();
+            if (window != null) {
+                View decor = window.getDecorView();
+                if (decor != null) {
+                    decor.setSystemUiVisibility(systemUiVisibility);
+                }
+            }
+
+        }
+        if (!isShowing()) {
             super.show();
         }
     }

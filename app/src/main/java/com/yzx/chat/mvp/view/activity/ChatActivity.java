@@ -172,7 +172,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             hideMoreInput();
             return;
         }
-        mPresenter.saveMessageDraft(mEtContent.getText().toString());
+        String draft = mEtContent.getText().toString();
+        String oldDraft = mPresenter.getMessageDraft();
+        if(!(oldDraft==null&&TextUtils.isEmpty(draft))&&!TextUtils.equals(draft,mPresenter.getMessageDraft())){
+            mPresenter.saveMessageDraft(mEtContent.getText().toString());
+        }
         finish();
     }
 

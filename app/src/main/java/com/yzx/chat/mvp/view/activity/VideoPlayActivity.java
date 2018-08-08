@@ -165,7 +165,7 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     @Override
     public void setEnableProgressDialog(boolean isEnable) {
         if (isEnable) {
-            mProgressDialog.show();
+            mProgressDialog.show(getWindow().getDecorView().getSystemUiVisibility());
         } else {
             mProgressDialog.dismiss();
         }
