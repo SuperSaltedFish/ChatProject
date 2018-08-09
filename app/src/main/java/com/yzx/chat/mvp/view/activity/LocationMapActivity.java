@@ -2,13 +2,8 @@ package com.yzx.chat.mvp.view.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,9 +11,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.DrawableRes;
 import android.support.constraint.ConstraintLayout;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +44,7 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.mvp.contract.LocationMapActivityContract;
 import com.yzx.chat.mvp.presenter.LocationMapActivityPresenter;
+import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
@@ -97,8 +91,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private SensorManager mSensorManager;
     private List<PoiItem> mCurrentLocationList;
     private List<PoiItem> mSearchLocationList;
-    private LatLng mCurrentLatLng;
-    private LatLng mShareLatLng;
+    private LatLng mCurrentMarkerLatLng;
+    private LatLng mCurrentMyLocaionLatLng;
 
     private int mCurrentMode;
     private boolean isPositionComplete;
@@ -167,6 +161,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                 .strokeColor(Color.TRANSPARENT));
         mAMap.setMyLocationEnabled(true);
         mAMap.setOnMyLocationChangeListener(mOnMyLocationChangeListener);
+        mAMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
+
 
         UiSettings uiSettings = mAMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(false);
@@ -176,7 +172,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.draggable(false);//可拖放性
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getBitmapFromDrawable(this, R.drawable.ic_location_flag)));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(BitmapUtil.drawableResToBitmap(this, R.drawable.ic_location_flag)));
         mMapMarker = mAMap.addMarker(markerOptions);
 
         if (poiItem == null) {
@@ -190,7 +186,6 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                 }
             });
             mAMap.setOnCameraChangeListener(mOnCameraChangeListener);
-            mAMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
             mFlCurrentLocationLayout.setVisibility(View.VISIBLE);
             mClShareLayout.setVisibility(View.GONE);
 
@@ -198,8 +193,9 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
             mCurrentMode = MODE_SHARE;
             getSupportActionBar().setTitle(R.string.Location);
             LatLonPoint point = poiItem.getLatLonPoint();
-            mShareLatLng = new LatLng(point.getLatitude(), point.getLongitude());
-            mMapMarker.setPosition(mShareLatLng);
+            LatLng shareLatLng = new LatLng(point.getLatitude(), point.getLongitude());
+            mMapMarker.setPosition(shareLatLng);
+            mAMap.moveCamera(CameraUpdateFactory.newLatLng(shareLatLng));
             mFlCurrentLocationLayout.setVisibility(View.GONE);
             mClShareLayout.setVisibility(View.VISIBLE);
             mTvShareLocationTitle.setText(poiItem.getTitle());
@@ -210,21 +206,6 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
         mMapView.onCreate(savedInstanceState);
     }
 
-    public static Bitmap getBitmapFromDrawable(Context context, @DrawableRes int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        } else if (drawable instanceof VectorDrawable || drawable instanceof VectorDrawableCompat) {
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-
-            return bitmap;
-        } else {
-            throw new IllegalArgumentException("unsupported drawable type");
-        }
-    }
 
     private void setupSearchView() {
         mSearchView.setQueryHint(getString(R.string.LocationMapActivity_SearchHint));
@@ -286,8 +267,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     @Override
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(mGyroscopeEventListener,mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD));
-        mSensorManager.unregisterListener(mGyroscopeEventListener,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        mSensorManager.unregisterListener(mGyroscopeEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD));
+        mSensorManager.unregisterListener(mGyroscopeEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         mMapView.onPause();
     }
 
@@ -355,12 +336,13 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final AMap.OnMyLocationChangeListener mOnMyLocationChangeListener = new AMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
-            if (!isPositionComplete) {
-                if (mCurrentMode == MODE_SEND) {
-                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
-                } else {
-                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mShareLatLng, DEFAULT_ZOOM));
-                }
+            if (mCurrentMode == MODE_SHARE) {
+                return;
+            }
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            if (mCurrentMyLocaionLatLng == null || Math.abs(latLng.latitude - mCurrentMyLocaionLatLng.latitude) >= 0.3 || Math.abs(latLng.longitude - mCurrentMyLocaionLatLng.longitude) >= 0.3) {
+                mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+                mCurrentMyLocaionLatLng = latLng;
             }
             isPositionComplete = true;
         }
@@ -380,8 +362,8 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
                     @Override
                     public void run() {
                         mPbCurrentLocation.setVisibility(View.VISIBLE);
-                        mCurrentLatLng = cameraPosition.target;
-                        mPresenter.searchCurrentLocation(mCurrentLatLng.latitude, mCurrentLatLng.longitude);
+                        mCurrentMarkerLatLng = cameraPosition.target;
+                        mPresenter.searchCurrentLocation(mCurrentMarkerLatLng.latitude, mCurrentMarkerLatLng.longitude);
                     }
                 }, 200);
             }
@@ -430,7 +412,7 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     private final BaseRecyclerViewAdapter.OnScrollToBottomListener mOnCurrentLocationScrollToBottomListener = new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
         @Override
         public void OnScrollToBottom() {
-            mPresenter.searchCurrentMoreLocation(mCurrentLatLng.latitude, mCurrentLatLng.longitude);
+            mPresenter.searchCurrentMoreLocation(mCurrentMarkerLatLng.latitude, mCurrentMarkerLatLng.longitude);
         }
     };
 

@@ -2,9 +2,7 @@ package com.yzx.chat.mvp.contract;
 
 import android.content.Context;
 
-import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.services.core.PoiItem;
-import com.autonavi.amap.mapcore2d.Inner_3dMap_location;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
