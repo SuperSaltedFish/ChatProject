@@ -286,17 +286,19 @@ public class LocationMapActivity extends BaseCompatActivity<LocationMapActivityC
     @Override
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(mGyroscopeEventListener);
+        mSensorManager.unregisterListener(mGyroscopeEventListener,mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD));
+        mSensorManager.unregisterListener(mGyroscopeEventListener,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         mMapView.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+        mAMap.setMyLocationEnabled(false);
         mAMap.setOnMyLocationChangeListener(null);
         mAMap.setOnCameraChangeListener(null);
         mSearchHandler.removeCallbacksAndMessages(null);
         mMapView.onDestroy();
-        super.onDestroy();
     }
 
     @Override
