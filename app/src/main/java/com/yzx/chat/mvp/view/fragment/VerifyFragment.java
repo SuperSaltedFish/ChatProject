@@ -77,7 +77,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         Bundle args = getArguments();
         if (args != null) {
             mVerifyInfo = args.getParcelable(ARGUMENT);

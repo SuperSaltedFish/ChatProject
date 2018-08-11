@@ -33,7 +33,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     protected abstract void init(View parentView);
 
-    protected abstract void setup();
+    protected abstract void setup(Bundle savedInstanceState);
 
     protected P mPresenter;
 
@@ -61,7 +61,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
             mParentView = inflater.inflate(getLayoutID(), container, false);
             initPresenter();
             init(mParentView);
-            setup();
+            setup(savedInstanceState);
         }
         return mParentView;
     }

@@ -2,6 +2,7 @@ package com.yzx.chat.mvp.view.fragment;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -64,7 +65,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

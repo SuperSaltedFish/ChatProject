@@ -5,6 +5,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -127,7 +128,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         setSearchBar();
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();

@@ -11,6 +11,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleableRes;
 import android.support.v4.content.ContextCompat;
@@ -23,6 +24,10 @@ import android.widget.Toast;
 
 import com.yzx.chat.R;
 
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -213,5 +218,35 @@ public class AndroidUtil {
         toast.show();
     }
 
+    public static boolean rawResToLocalFile(@RawRes int resID, String savePath) {
+        InputStream inputStream = sAppContext.getResources().openRawResource(resID);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(savePath);
+            byte[] bytes = new byte[1024];
+            int len;
+            while ((len = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, len);
+            }
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
 
 }

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:context=".mvp.view.activity.ProfileEditActivity">
+
+
+    <ImageView
+        android:id="@+id/ProfileEditActivity_mIvAvatarBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:foreground="@drawable/fg_bg_gradual_mask"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileEditActivity_mSpace"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Space
+        android:id="@+id/ProfileEditActivity_mSpace"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mIvAvatar" />
+
+    <ImageView
+        android:id="@+id/ProfileEditActivity_mIvAvatar"
+        android:layout_width="112dp"
+        android:layout_height="112dp"
+        android:elevation="4dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/temp_head_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mFlToolbarLayout" />
+
+    <com.yzx.chat.widget.view.RoundImageView
+        android:id="@+id/ProfileEditActivity_mIvChangeAvatar"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginEnd="1dp"
+        android:background="@color/colorAccent"
+        android:elevation="4dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_camera"
+        android:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileEditActivity_mIvAvatar"
+        app:layout_constraintEnd_toEndOf="@id/ProfileEditActivity_mIvAvatar" />
+
+
+    <FrameLayout
+        android:id="@+id/ProfileEditActivity_mFlToolbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/Default_mToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="top"
+            app:theme="@style/ToolbarTheme"
+            app:title="@string/ProfileEditActivity_Title"
+            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvNicknameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/ProfileEditActivity_NicknameLabel"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/ProfileEditActivity_mEtNickname"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mIvAvatarBackground" />
+
+
+    <com.yzx.chat.widget.view.ClearEditText
+        android:id="@+id/ProfileEditActivity_mEtNickname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="26dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_edit_border"
+        android:gravity="center_vertical|start"
+        android:inputType="text"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/ProfileEditActivity_mGuideline2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mTvNicknameLabel" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/ProfileEditActivity_LocationLabel"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileEditActivity_mTvNicknameLabel"
+        app:layout_constraintStart_toStartOf="@id/ProfileEditActivity_mTvLocation"
+        app:layout_constraintTop_toTopOf="@id/ProfileEditActivity_mTvNicknameLabel" />
+
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/bg_edit_border"
+        android:drawableEnd="@drawable/ic_arrow_down"
+        android:gravity="center_vertical|start"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileEditActivity_mEtNickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ProfileEditActivity_mGuideline2"
+        app:layout_constraintTop_toTopOf="@id/ProfileEditActivity_mEtNickname" />
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/ProfileEditActivity_mGuideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvBirthdayLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/ProfileEditActivity_BirthdayLabel"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/ProfileEditActivity_mTvBirthday"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mEtNickname" />
+
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvBirthday"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="26dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_edit_border"
+        android:drawableEnd="@drawable/ic_arrow_down"
+        android:gravity="center_vertical|start"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/ProfileEditActivity_mGuideline2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mTvBirthdayLabel" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/ProfileEditActivity_SexLabel"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileEditActivity_mTvBirthdayLabel"
+        app:layout_constraintStart_toStartOf="@id/ProfileEditActivity_mTvSex"
+        app:layout_constraintTop_toTopOf="@id/ProfileEditActivity_mTvBirthdayLabel" />
+
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvSex"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/bg_edit_border"
+        android:drawableEnd="@drawable/ic_arrow_down"
+        android:gravity="center_vertical|start"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileEditActivity_mTvBirthday"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ProfileEditActivity_mGuideline2"
+        app:layout_constraintTop_toTopOf="@id/ProfileEditActivity_mTvBirthday" />
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvEmailLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/ProfileEditActivity_EmailLabel"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/ProfileEditActivity_mEtEmail"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mTvBirthday" />
+
+    <com.yzx.chat.widget.view.ClearEditText
+        android:id="@+id/ProfileEditActivity_mEtEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="26dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_edit_border"
+        android:gravity="center_vertical|start"
+        android:hint="@string/ProfileEditActivity_EmailHint"
+        android:inputType="textEmailAddress"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mTvEmailLabel" />
+
+    <TextView
+        android:id="@+id/ProfileEditActivity_mTvSignatureLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/ProfileEditActivity_SignatureLabel"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/ProfileEditActivity_mEtSignature"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mEtEmail" />
+
+    <EditText
+        android:id="@+id/ProfileEditActivity_mEtSignature"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_edit_border"
+        android:gravity="top|start"
+        android:hint="@string/ProfileEditActivity_SignatureHint"
+        android:inputType="text"
+        android:maxHeight="120dp"
+        android:paddingBottom="8dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ProfileEditActivity_mTvSignatureLabel" />
+
+</android.support.constraint.ConstraintLayout>

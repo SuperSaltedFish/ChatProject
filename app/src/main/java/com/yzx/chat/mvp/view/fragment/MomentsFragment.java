@@ -1,6 +1,7 @@
 package com.yzx.chat.mvp.view.fragment;
 
 
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -38,7 +39,7 @@ public class MomentsFragment extends BaseFragment {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

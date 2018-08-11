@@ -34,8 +34,7 @@ public class RoundLinearLayout extends LinearLayout {
     }
 
     private void setRound() {
-        mRoundRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                4, mContext.getResources().getDisplayMetrics());
+        mRoundRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
         this.setClipToOutline(true);
         this.setOutlineProvider(new RoundOutlineProvider(mRoundRadius));
     }
@@ -49,7 +48,16 @@ public class RoundLinearLayout extends LinearLayout {
 
         @Override
         public void getOutline(View view, Outline outline) {
-            outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), mRoundRadius);
+            int width = view.getWidth();
+            int height = view.getHeight();
+            if (mRoundRadius == 0 || width == 0 || height == 0) {
+                return;
+            }
+            if (mRoundRadius < 0) {
+                outline.setRoundRect(0, 0, width, height, Math.max(width, height) / 2f);
+            } else {
+                outline.setRoundRect(0, 0, width, height, mRoundRadius);
+            }
         }
     }
 

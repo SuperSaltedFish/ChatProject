@@ -50,7 +50,7 @@ public class ContactMomentsFragment extends BaseFragment {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
 
 
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);

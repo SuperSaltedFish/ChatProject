@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -68,7 +69,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mTvJumpToRegister.setOnClickListener(mOnViewClickListener);
         mBtnLogin.setOnClickListener(mOnViewClickListener);
         //  mBtnForgotPassword.setOnClickListener(mOnViewClickListener);

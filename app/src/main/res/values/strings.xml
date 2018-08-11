@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">尬聊</string>
 
-    <string-array name="EditProfileActivity_SexList">
+    <string-array name="ProfileEditActivity_SexList">
         <item name="Man">男</item>
         <item name="Woman">女</item>
     </string-array>
@@ -138,23 +138,23 @@
     <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
     <string name="FindNewContactActivity_SearchFail">搜索失败，请稍后再试</string>
     <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过！</string>
-    <string name="EditProfileActivity_Title">编辑资料</string>
-    <string name="EditProfileActivity_BirthdayDialogTitle">请选择生日日期</string>
-    <string name="EditProfileActivity_SexDialogTitle">性别</string>
-    <string name="EditProfileActivity_NoSet">未设置</string>
-    <string name="EditProfileActivity_DateFormat">%d年%02d月%02d日</string>
+    <string name="ProfileEditActivity_Title">编辑资料</string>
+    <string name="ProfileEditActivity_BirthdayDialogTitle">请选择生日日期</string>
+    <string name="ProfileEditActivity_SexDialogTitle">性别</string>
+    <string name="ProfileEditActivity_NoSet">未设置</string>
+    <string name="ProfileEditActivity_DateFormat">%d年%02d月%02d日</string>
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
     <string name="ImageSingleSelectorActivity_Title">选择头像</string>
     <string name="Man">男生</string>
     <string name="Woman">女生</string>
-    <string name="EditProfileActivity_NoneNickname">昵称不能为空</string>
+    <string name="ProfileEditActivity_NoneNickname">昵称不能为空</string>
     <string name="ChatActivity_ImageAlreadyOverdue">图片已经过期，无法查看</string>
     <string name="ChatActivity_VideoAlreadyOverdue">视频已经过期，无法播放</string>
     <string name="Profile_LabelNickname">昵称</string>
     <string name="Profile_LabelLocation">所在地区</string>
     <string name="Profile_LabelBirthday">出生日期</string>
-    <string name="EditProfileActivity_ReadCityInfoError">读取城市信息失败</string>
+    <string name="ProfileEditActivity_ReadCityInfoError">读取城市信息失败</string>
     <string name="ChatSetup_LabelSetTop">置顶</string>
     <string name="ChatSetup_HintSetTop">消息将始终显示在会话列表顶部</string>
     <string name="ChatSetup_LabelRemind">消息免打扰</string>
@@ -163,7 +163,7 @@
     <string name="ChatSetup_HintClearMessage">清空本地聊天记录（不可恢复）</string>
     <string name="ChatSetup_Title">聊天信息</string>
     <string name="GroupMembersAdapter_Add">添加</string>
-    <string name="EditProfileActivity_LocationDialogTitle">请选择省市</string>
+    <string name="ProfileEditActivity_LocationDialogTitle">请选择省市</string>
     <string name="Cancel">取消</string>
     <string name="GroupProfileActivity_MyGroupNicknameDialogTitle">我在本群的昵称</string>
     <string name="GroupProfileActivity_MyGroupNicknameDialogHint">设置你在群里的昵称，这个昵称只会在这个群内显示。</string>
@@ -205,18 +205,20 @@
     <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
     <string name="Unit_Age">岁</string>
     <string name="Unit_Second">秒</string>
+    <string name="Unit_Meters">米</string>
+    <string name="Unit_Kilometre">公里</string>
     <string name="StrangerProfileActivity_AllowViewMoment">允许查看我的动态</string>
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
     <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>
     <string name="None">无</string>
-    <string name="EditProfileActivity_SignatureHint">一句话介绍自己，个性签名会显示在个人主页上！</string>
-    <string name="EditProfileActivity_SignatureLabel">个性签名</string>
-    <string name="EditProfileActivity_EmailHint">请输入邮箱地址</string>
-    <string name="EditProfileActivity_EmailLabel">邮箱地址</string>
-    <string name="EditProfileActivity_SexLabel">性别</string>
-    <string name="EditProfileActivity_BirthdayLabel">出生日期</string>
-    <string name="EditProfileActivity_LocationLabel">所在地区</string>
-    <string name="EditProfileActivity_NicknameLabel">昵称</string>
+    <string name="ProfileEditActivity_SignatureHint">一句话介绍自己，个性签名会显示在个人主页上！</string>
+    <string name="ProfileEditActivity_SignatureLabel">个性签名</string>
+    <string name="ProfileEditActivity_EmailHint">请输入邮箱地址</string>
+    <string name="ProfileEditActivity_EmailLabel">邮箱地址</string>
+    <string name="ProfileEditActivity_SexLabel">性别</string>
+    <string name="ProfileEditActivity_BirthdayLabel">出生日期</string>
+    <string name="ProfileEditActivity_LocationLabel">所在地区</string>
+    <string name="ProfileEditActivity_NicknameLabel">昵称</string>
     <string name="Details">详情</string>
     <string name="QrCodeScanActivity_Title">二维码扫描</string>
     <string name="MyQRCodePresenter_GenerateQRCodeFail">获取二维码失败，请稍后再试</string>
@@ -235,4 +237,8 @@
     <string name="Error_NetworkTimeout">网络访问超时，请检查网络连接</string>
     <string name="StrangerProfileActivity_DefaultReason">添加理由：无</string>
     <string name="CropImageActivity_CropFail">当前无法裁剪头像，请稍后再试！</string>
+    <string name="LocationShareFragment_Navigation">到这里</string>
+    <string name="LocationShareFragment_MarkerLocation">标记位置</string>
+    <string name="LocationShareFragment_BeingCalculated">正在计算</string>
+    <string name="LocationShareFragment_MyLocation">我当前的位置</string>
 </resources>

@@ -74,7 +74,7 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mClClearMessage.setOnClickListener(mOnViewClickListener);
         mNicknameLayout.setOnClickListener(mOnViewClickListener);
         mTelephoneLayout.setOnClickListener(mOnViewClickListener);

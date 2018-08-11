@@ -33,7 +33,7 @@ public class ContactMotionFragment extends BaseFragment {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
 
     }
 }

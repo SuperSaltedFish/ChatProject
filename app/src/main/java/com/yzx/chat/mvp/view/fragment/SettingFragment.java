@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.fragment;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.yzx.chat.R;
@@ -44,7 +45,7 @@ public class SettingFragment extends BaseFragment {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
 
     }
 

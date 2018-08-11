@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1'
     implementation 'com.github.chrisbanes:PhotoView:2.1.4'
     implementation 'com.google.zxing:core:3.3.3'
-    implementation 'com.amap.api:map2d:latest.integration'
+    implementation 'com.amap.api:3dmap:latest.integration'
     implementation 'com.amap.api:search:latest.integration'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'

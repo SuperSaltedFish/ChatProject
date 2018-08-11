@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.fragment;
 
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,7 +33,7 @@ public class SystemMessageFragment extends BaseFragment {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

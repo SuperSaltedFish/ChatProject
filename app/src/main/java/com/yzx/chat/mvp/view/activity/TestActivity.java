@@ -1,31 +1,20 @@
 package com.yzx.chat.mvp.view.activity;
 
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Looper;
-import android.os.MessageQueue;
-import android.support.v4.content.ContextCompat;
-import android.util.Base64;
 import android.view.View;
-import android.widget.ImageView;
 
+import com.amap.api.maps.MapView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.widget.view.CropImageView;
-import com.yzx.chat.widget.view.VisualizerView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import io.rong.common.FileUtils;
+import com.yzx.chat.tool.DirectoryHelper;
+import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.widget.view.RoundLinearLayout;
 
 
 public class TestActivity extends BaseCompatActivity {
 
-    private CropImageView mCropImageView;
-    private ImageView mImageView;
+    private MapView mMapView;
+    private RoundLinearLayout mLlLine;
 
     @Override
     protected int getLayoutID() {
@@ -34,28 +23,37 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mCropImageView = findViewById(R.id.aaa);
-        mImageView = findViewById(R.id.bbb);
+        mMapView = findViewById(R.id.LocationMapActivity_mMapView);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
+        String path = DirectoryHelper.getPublicTempPath()+"map_style.data";
+        if(AndroidUtil.rawResToLocalFile(R.raw.map_style,path)){
+            mMapView.getMap().setCustomMapStylePath(path);
+            mMapView.getMap().setMapCustomEnable(true);
+        }
+
+
+        mMapView.onCreate(savedInstanceState);
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
 
     public void onClick(View v) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            Bitmap bitmap = mCropImageView.crop();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
-            byte[] data = outputStream.toByteArray();
-            outputStream.flush();
-            outputStream.close();
-            mImageView.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.length));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
     }
 

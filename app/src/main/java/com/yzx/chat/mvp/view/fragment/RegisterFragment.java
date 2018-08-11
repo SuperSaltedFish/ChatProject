@@ -3,6 +3,7 @@ package com.yzx.chat.mvp.view.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -69,7 +70,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mEtRegisterTelephone.addTextChangedListener(mTextWatcher);
         mEtRegisterNickname.addTextChangedListener(mTextWatcher);
         mEtRegisterPassword.addTextChangedListener(mTextWatcher);

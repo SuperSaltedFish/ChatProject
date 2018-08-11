@@ -1,5 +1,7 @@
 package com.yzx.chat.configure;
 
+import com.yzx.chat.tool.DirectoryHelper;
+
 /**
  * Created by yzx on 2017年03月12日
  * 当你将信心放在自己身上时，你将永远充满力量
@@ -24,5 +26,7 @@ public static final String URL_API_BASE = "http://www.orline.cn/superim/v1/api/"
     public static final int CHAT_MESSAGE_PAGE_SIZE = 16;
     public static final int SEARCH_LOCATION_PAGE_SIZE = 16;
 
+    public static final String LOCATION_STYLE_FILE_PATH=  DirectoryHelper.getPublicTempPath() + "map_style.data";
+    public static final int LOCATION_DEFAULT_ZOOM = 15;
     public static final int LOCATION_INTERVAL = 5000;
 }

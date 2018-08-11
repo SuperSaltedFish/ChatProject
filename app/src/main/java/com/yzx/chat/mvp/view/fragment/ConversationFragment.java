@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
@@ -81,7 +82,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mToolbar.setTitle(R.string.app_name);
 //        mToolbar.inflateMenu(R.menu.menu_conversation_overflow);
 //        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);

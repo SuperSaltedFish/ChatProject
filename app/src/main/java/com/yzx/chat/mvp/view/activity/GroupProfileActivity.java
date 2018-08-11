@@ -38,8 +38,6 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.rong.imlib.model.Conversation;
-
 /**
  * Created by YZX on 2018年02月18日.
  * 每一个不曾起舞的日子 都是对生命的辜负
@@ -295,7 +293,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                 Intent intent;
                 String userID = mGroupMemberList.get(position).getUserProfile().getUserID();
                 if (mPresenter.isMySelf(userID)) {
-                    intent = new Intent(GroupProfileActivity.this, EditProfileActivity.class);
+                    intent = new Intent(GroupProfileActivity.this, ProfileEditActivity.class);
                 } else {
                     intent = new Intent(GroupProfileActivity.this, ContactProfileActivity.class);
                     intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, userID);

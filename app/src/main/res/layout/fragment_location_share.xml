@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/LocationShareFragment_mMapView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/LocationShareFragment_mIvLocationIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/LocationShareFragment_mTvMyLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/LocationShareFragment_MyLocation"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/LocationShareFragment_mDivider2"
+        android:layout_width="1px"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/textSecondaryColorBlack"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mTvMyLocation"
+        app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mTvMyLocation"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mTvMyLocation" />
+
+
+    <TextView
+        android:id="@+id/LocationShareFragment_mTvMarkerLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/LocationShareFragment_MarkerLocation"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mTvMyLocation"
+        app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mDivider2"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mTvMyLocation" />
+
+    <ImageView
+        android:id="@+id/LocationShareFragment_mIvLocationIcon"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginBottom="6dp"
+        android:src="@drawable/ic_location2"
+        android:tint="@color/textSecondaryColorBlack"
+        app:layout_constraintBottom_toTopOf="@id/LocationShareFragment_mTvMyLocation"
+        app:layout_constraintStart_toStartOf="@id/LocationShareFragment_mTvMyLocation" />
+
+    <TextView
+        android:id="@+id/LocationShareFragment_mTvDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/LocationShareFragment_BeingCalculated"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mIvLocationIcon"
+        app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mIvLocationIcon"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mIvLocationIcon" />
+
+    <View
+        android:id="@+id/LocationShareFragment_mDivider1"
+        android:layout_width="1px"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/textSecondaryColorBlack"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mIvLocationIcon"
+        app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mTvDistance"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mIvLocationIcon" />
+
+    <TextView
+        android:id="@+id/LocationShareFragment_mTvShareLocationContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:singleLine="true"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mIvLocationIcon"
+        app:layout_constraintEnd_toStartOf="@id/LocationShareFragment_mLlNavigation"
+        app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mDivider1"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mIvLocationIcon" />
+
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_gradient_white_bottom_to_top"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mTvShareLocationTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mTvShareLocationTitle" />
+
+
+    <TextView
+        android:id="@+id/LocationShareFragment_mTvShareLocationTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:paddingBottom="6dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="16dp"
+        android:paddingTop="2dp"
+        android:singleLine="true"
+        android:textSize="18.5sp"
+        android:textStyle="bold"
+        android:textColor="@color/textPrimaryColorBlack2"
+        app:layout_constraintBottom_toTopOf="@id/LocationShareFragment_mIvLocationIcon"
+        app:layout_constraintEnd_toStartOf="@id/LocationShareFragment_mLlNavigation"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.yzx.chat.widget.view.RoundLinearLayout
+        android:id="@+id/LocationShareFragment_mLlNavigation"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="24dp"
+        android:background="@color/colorAccent"
+        android:elevation="4dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mTvShareLocationTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mTvShareLocationTitle">
+
+        <ImageView
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:src="@drawable/ic_navigation" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/LocationShareFragment_Navigation"
+            android:textColor="@android:color/white"
+            android:textSize="10.5sp" />
+
+    </com.yzx.chat.widget.view.RoundLinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/LocationShareFragment_mIvBack"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:padding="16dp"
+            android:src="@drawable/ic_back"
+            android:tint="@color/textPrimaryColorBlack2" />
+    </FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>

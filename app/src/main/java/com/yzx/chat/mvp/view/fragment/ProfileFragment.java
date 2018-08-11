@@ -2,6 +2,7 @@ package com.yzx.chat.mvp.view.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -20,9 +21,7 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.mvp.contract.ProfileModifyContract;
 import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
 import com.yzx.chat.mvp.view.activity.LoginActivity;
-import com.yzx.chat.mvp.view.activity.EditProfileActivity;
-import com.yzx.chat.mvp.view.activity.QrCodeScanActivity;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.mvp.view.activity.ProfileEditActivity;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
 
@@ -69,7 +68,7 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mVpAlbum.setAdapter(mAlbumAdapter);
         //     mVpAlbum.setPageMargin((int) AndroidUtil.dip2px(32));
         mVpAlbum.setPageTransformer(true, new ZoomPageTransformer());
@@ -128,7 +127,7 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(mContext, EditProfileActivity.class));
+            startActivity(new Intent(mContext, ProfileEditActivity.class));
 
         }
     };

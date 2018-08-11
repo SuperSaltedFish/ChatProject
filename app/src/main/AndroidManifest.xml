@@ -51,11 +51,11 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
@@ -82,7 +82,7 @@
         <activity android:name=".mvp.view.activity.RemarkInfoActivity" />
         <activity android:name=".mvp.view.activity.EditContactLabelActivity" />
         <activity android:name=".mvp.view.activity.StrangerProfileActivity" />
-        <activity android:name=".mvp.view.activity.EditProfileActivity" />
+        <activity android:name=".mvp.view.activity.ProfileEditActivity" />
         <activity
             android:name=".mvp.view.activity.ImageSingleSelectorActivity"
             android:theme="@style/DefaultDarkTheme" />
@@ -96,7 +96,13 @@
         <activity
             android:name=".mvp.view.activity.MyQRCodeActivity"
             android:theme="@style/NoBackgroundLightTheme" />
-        <activity android:name=".mvp.view.activity.LocationMapActivity" />
+        <activity android:name=".mvp.view.activity.LocationMapActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
             android:theme="@style/NoBackgroundLightTheme" />
@@ -118,11 +124,7 @@
         </receiver>
 
         <activity android:name=".mvp.view.activity.TestActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
         </activity>
         <activity android:name=".mvp.view.activity.MyTagListActivity"></activity>
     </application>
