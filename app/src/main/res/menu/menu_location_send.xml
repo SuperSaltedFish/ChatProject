@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/LocationMapMenu_Search"
+        android:id="@+id/LocationSendMenu_Search"
         android:title="@string/Search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/LocationMapMenu_Send"
+        android:id="@+id/LocationSendMenu_Send"
         android:title="@string/Send"
         app:showAsAction="always" />
 

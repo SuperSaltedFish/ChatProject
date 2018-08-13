@@ -32,6 +32,8 @@ public class LocationSendContract {
 
     public interface Presenter extends BasePresenter<View> {
 
+        boolean hasCityCode();
+
         void searchMarkerLocation(double latitude, double longitude, int pageNumber);
 
         void searchPOIByKeyword(String keyword, int pageNumber);

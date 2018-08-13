@@ -5,7 +5,7 @@
     android:layout_height="56dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:paddingEnd="8dp"
+    android:paddingEnd="12dp"
     android:paddingStart="12dp">
 
     <TextView
@@ -17,7 +17,7 @@
         android:textColor="@color/textPrimaryColorBlack"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/LocationAdapter_mTvAddress"
-        app:layout_constraintEnd_toStartOf="@id/LocationAdapter_mRBtnSelected"
+        app:layout_constraintEnd_toStartOf="@id/LocationAdapter_mIvSelectedIcon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
@@ -30,16 +30,17 @@
         android:maxLines="2"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/LocationAdapter_mRBtnSelected"
+        app:layout_constraintEnd_toStartOf="@id/LocationAdapter_mIvSelectedIcon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/LocationAdapter_mTvName" />
 
-    <RadioButton
+    <ImageView
+        android:id="@+id/LocationAdapter_mIvSelectedIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_selected"
+        android:tint="@color/colorAccent"
         android:visibility="invisible"
-        android:id="@+id/LocationAdapter_mRBtnSelected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

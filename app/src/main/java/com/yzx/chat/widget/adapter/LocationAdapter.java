@@ -3,12 +3,14 @@ package com.yzx.chat.widget.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.util.AndroidUtil;
 
 import java.util.List;
 
@@ -22,9 +24,13 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
 
     private List<PoiItem> mPOIList;
     private int mSelectedPosition;
+    private int mSelectedTextColor;
+    private int mUnselectedTextColor;
 
     public LocationAdapter(List<PoiItem> POIList) {
         mPOIList = POIList;
+        mSelectedTextColor = AndroidUtil.getColor(R.color.colorAccent);
+        mUnselectedTextColor = AndroidUtil.getColor(R.color.textPrimaryColorBlack);
     }
 
     @Override
@@ -37,7 +43,15 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
         PoiItem poi = mPOIList.get(position);
         holder.mTvName.setText(poi.getTitle());
         holder.mTvAddress.setText(poi.getSnippet());
-        holder.mRBtnSelected.setVisibility(position == mSelectedPosition ? View.VISIBLE : View.INVISIBLE);
+        if (position == mSelectedPosition) {
+            holder.mTvName.setTextColor(mSelectedTextColor);
+            holder.mTvAddress.setTextColor(mSelectedTextColor);
+            holder.mIvSelectedIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.mTvName.setTextColor(mUnselectedTextColor);
+            holder.mTvAddress.setTextColor(mUnselectedTextColor);
+            holder.mIvSelectedIcon.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -49,8 +63,12 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
         if (mSelectedPosition == selectedPosition) {
             return;
         }
-        notifyItemChangedEx(mSelectedPosition);
-        notifyItemChangedEx(selectedPosition);
+        if (mSelectedPosition < getViewHolderCount()) {
+            notifyItemChangedEx(mSelectedPosition);
+        }
+        if (selectedPosition < getViewHolderCount()) {
+            notifyItemChangedEx(selectedPosition);
+        }
         mSelectedPosition = selectedPosition;
     }
 
@@ -62,17 +80,17 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
 
         TextView mTvName;
         TextView mTvAddress;
-        RadioButton mRBtnSelected;
+        ImageView mIvSelectedIcon;
 
         LocationSearchHolder(View itemView) {
             super(itemView);
             mTvName = itemView.findViewById(R.id.LocationAdapter_mTvName);
             mTvAddress = itemView.findViewById(R.id.LocationAdapter_mTvAddress);
-            mRBtnSelected = itemView.findViewById(R.id.LocationAdapter_mRBtnSelected);
+            mIvSelectedIcon = itemView.findViewById(R.id.LocationAdapter_mIvSelectedIcon);
         }
 
         public void setSelected(boolean isSelected) {
-            mRBtnSelected.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
+            mIvSelectedIcon.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
         }
     }
 }

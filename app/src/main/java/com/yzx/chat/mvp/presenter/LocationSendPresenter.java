@@ -1,5 +1,7 @@
 package com.yzx.chat.mvp.presenter;
 
+import android.text.TextUtils;
+
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
@@ -51,6 +53,11 @@ public class LocationSendPresenter implements LocationSendContract.Presenter {
 
 
     @Override
+    public boolean hasCityCode() {
+        return !TextUtils.isEmpty(mCityCode);
+    }
+
+    @Override
     public void searchMarkerLocation(double latitude, double longitude, final int pageNumber) {
         if (isSearchingMoreCurrentLocation) {
             return;
@@ -82,7 +89,7 @@ public class LocationSendPresenter implements LocationSendContract.Presenter {
                     if (pageNumber == 0) {
                         mLocationMapActivityView.showNewMarkerLocation(poiItemList, hasMore);
                     } else {
-                        mLocationMapActivityView.showNewMarkerLocation(poiItemList, hasMore);
+                        mLocationMapActivityView.showMoreMarkerLocation(poiItemList, hasMore);
                     }
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {

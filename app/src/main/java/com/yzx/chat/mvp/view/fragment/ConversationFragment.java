@@ -194,9 +194,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_Top);
             }
             OverflowMenuShowHelper.show(viewHolder.itemView, mConversationMenu, mRecyclerView.getHeight(), (int) touchX, (int) touchY);
-
         }
-
     };
 
     @Override

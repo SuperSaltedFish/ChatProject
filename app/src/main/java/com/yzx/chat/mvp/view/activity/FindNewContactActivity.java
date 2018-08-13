@@ -122,8 +122,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     @Override
-    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
-        super.onRequestPermissionsResult(requestCode, isSuccess);
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
         if(isSuccess){
             Intent intent = new Intent(FindNewContactActivity.this, QrCodeScanActivity.class);
             startActivity(intent);

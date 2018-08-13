@@ -15,6 +15,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- 允许程序通知显示在状态栏 -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!-- 允许程序改变wifi的状态，开启后可以扫描wifi -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
 
     <!-- 以下为需要手动申请的权限 -->
     <!-- 允许程序可以读取设备外部存储空间 -->
@@ -51,11 +54,11 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
@@ -96,12 +99,8 @@
         <activity
             android:name=".mvp.view.activity.MyQRCodeActivity"
             android:theme="@style/NoBackgroundLightTheme" />
-        <activity android:name=".mvp.view.activity.LocationMapActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".mvp.view.activity.LocationMapActivity"
+            android:windowSoftInputMode="adjustNothing">
         </activity>
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
@@ -124,7 +123,11 @@
         </receiver>
 
         <activity android:name=".mvp.view.activity.TestActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity android:name=".mvp.view.activity.MyTagListActivity"></activity>
     </application>

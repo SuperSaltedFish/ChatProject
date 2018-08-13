@@ -39,13 +39,13 @@ public class BackPressedReceive {
         }
     }
 
-    public static synchronized boolean sendBackPressedEvent(String initiator) {
+    public static synchronized boolean sendBackPressedEvent(String eventName) {
         if (sListenerList == null) {
             return false;
         }
 
         for (BackPressedListener listener : sListenerList) {
-            if (listener.onBackPressed(initiator)) {
+            if (listener.onBackPressed(eventName)) {
                 return true;
             }
         }
@@ -54,6 +54,6 @@ public class BackPressedReceive {
 
 
     public interface BackPressedListener {
-        boolean onBackPressed(String initiator);
+        boolean onBackPressed(String eventName);
     }
 }

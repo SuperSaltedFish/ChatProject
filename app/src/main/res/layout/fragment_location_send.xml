@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <FrameLayout
+        android:id="@+id/LocationSendFragment_mFlToolbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/Default_mToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:elevation="0dp"
+            app:theme="@style/ToolbarTheme"
+            app:title="@string/LocationMapActivity_Title"
+            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+
+    </FrameLayout>
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/LocationSendFragment_mMapView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/LocationSendFragment_mFlToolbarLayout" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/LocationSendFragment_mCvMarkerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="264dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        app:cardBackgroundColor="#e4ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/LocationSendFragment_mRvMarkerLocation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/LocationSendFragment_mPbMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </android.support.v7.widget.CardView>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LocationSendFragment_mFlSearchLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/white"
+        android:elevation="3dp"
+        android:visibility="gone"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/LocationSendFragment_mFlToolbarLayout"
+        app:layout_constraintVertical_bias="0">
+
+        <TextView
+            android:id="@+id/LocationSendFragment_mTvSearchNoneHint"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/LocationSendFragment_SearchNone"
+            android:textColor="@color/textPrimaryColorBlack" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/LocationSendFragment_mRvSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+
+    </FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>

@@ -59,6 +59,7 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
@@ -174,14 +175,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
         String draft = mEtContent.getText().toString();
         String oldDraft = mPresenter.getMessageDraft();
-        if(!(oldDraft==null&&TextUtils.isEmpty(draft))&&!TextUtils.equals(draft,mPresenter.getMessageDraft())){
+        if (!(oldDraft == null && TextUtils.isEmpty(draft)) && !TextUtils.equals(draft, mPresenter.getMessageDraft())) {
             mPresenter.saveMessageDraft(mEtContent.getText().toString());
         }
         finish();
     }
 
     @Override
-    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
         if (isSuccess) {
             switch (requestCode) {
                 case REQUEST_PERMISSION_VOICE_RECORDER:
@@ -200,8 +201,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     startActivityForResult(new Intent(this, VideoRecorderActivity.class), 0);
                     break;
             }
-        } else {
-            showToast(getString(R.string.PermissionMiss));
         }
     }
 
@@ -483,7 +482,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CHANGE_WIFI_STATE}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
             }
         });
 

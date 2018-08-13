@@ -98,7 +98,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     }
 
     @Override
-    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
         if (isSuccess) {
             switch (requestCode) {
                 case REQUEST_PERMISSIONS_CAMERA:

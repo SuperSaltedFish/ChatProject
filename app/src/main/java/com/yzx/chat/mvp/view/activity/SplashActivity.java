@@ -64,7 +64,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
     }
 
     @Override
-    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
         if (isSuccess) {
             if (requestCode == PERMISSIONS_REQUEST_CODE) {
                 mPresenter.checkLogin();

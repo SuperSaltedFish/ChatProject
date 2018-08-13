@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.mvp.view.fragment.LocationSendFragment;
 import com.yzx.chat.mvp.view.fragment.LocationShareFragment;
 
@@ -36,10 +37,10 @@ public class LocationMapActivity extends BaseCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
 
         PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);
         if (poiItem != null) {
+            setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(android.R.id.content, LocationShareFragment.newInstance(poiItem))
@@ -47,10 +48,15 @@ public class LocationMapActivity extends BaseCompatActivity {
         } else {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(android.R.id.content,new LocationSendFragment())
+                    .replace(android.R.id.content, new LocationSendFragment())
                     .commit();
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (!BackPressedReceive.sendBackPressedEvent(LocationMapActivity.class.getName())) {
+            super.onBackPressed();
+        }
+    }
 }

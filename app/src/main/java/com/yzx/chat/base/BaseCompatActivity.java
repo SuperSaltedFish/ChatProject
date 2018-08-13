@@ -114,25 +114,29 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         boolean isNeedShowMissingPermissionDialog = false;
         boolean result = true;
+        ArrayList<String> deniedPermissions = null;
         for (int i = 0, length = permissions.length; i < length; i++) {
             if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                 result = false;
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
                     isNeedShowMissingPermissionDialog = true;
-                    break;
                 }
+                if (deniedPermissions == null) {
+                    deniedPermissions = new ArrayList<>();
+                }
+                deniedPermissions.add(permissions[i]);
             }
         }
         if (result) {
-            onRequestPermissionsResult(requestCode, true);
+            onRequestPermissionsResult(requestCode, true, null);
         } else if (isNeedShowMissingPermissionDialog) {
-            showMissingPermissionDialog(requestCode);
+            showMissingPermissionDialog(requestCode,deniedPermissions.toArray(new String[deniedPermissions.size()]));
         } else {
-            onRequestPermissionsResult(requestCode, false);
+            onRequestPermissionsResult(requestCode, false, deniedPermissions.toArray(new String[deniedPermissions.size()]));
         }
     }
 
-    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess) {
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
 
     }
 
@@ -148,25 +152,25 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (size != 0) {
             ActivityCompat.requestPermissions(this, permissionList.toArray(new String[size]), requestCode);
         } else {
-            onRequestPermissionsResult(requestCode, true);
+            onRequestPermissionsResult(requestCode, true,null);
         }
     }
 
-    private void showMissingPermissionDialog(final int requestCode) {
+    private void showMissingPermissionDialog(final int requestCode,final String[] deniedPermissions) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.PermissionDialog_Help);
         builder.setMessage(R.string.PermissionDialog_MissPermissionHint);
         builder.setNegativeButton(R.string.PermissionDialog_Cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                onRequestPermissionsResult(requestCode, false);
+                onRequestPermissionsResult(requestCode, false,deniedPermissions);
             }
         });
         builder.setPositiveButton(R.string.PermissionDialog_Setting, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startAppSettings();
-                onRequestPermissionsResult(requestCode, false);
+                onRequestPermissionsResult(requestCode, false,deniedPermissions);
             }
         });
         builder.setCancelable(true);
@@ -240,8 +244,8 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
                 window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 break;
             case SYSTEM_UI_MODE_LIGHT_BAR:
-                if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    window.getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 }
                 break;
         }

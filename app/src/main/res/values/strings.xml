@@ -241,4 +241,5 @@
     <string name="LocationShareFragment_MarkerLocation">标记位置</string>
     <string name="LocationShareFragment_BeingCalculated">正在计算</string>
     <string name="LocationShareFragment_MyLocation">我当前的位置</string>
+    <string name="LocationSendFragment_SearchNone">没有搜索到任何内容</string>
 </resources>
