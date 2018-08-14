@@ -23,7 +23,7 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mMapView = findViewById(R.id.LocationMapActivity_mMapView);
+      //  mMapView = findViewById(R.id.LocationMapActivity_mMapView);
     }
 
     @Override

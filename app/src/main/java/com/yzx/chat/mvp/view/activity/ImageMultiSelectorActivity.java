@@ -10,12 +10,15 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -47,9 +50,9 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     private RecyclerView mRvImage;
     private RecyclerView mRvImageDir;
-    private RadioButton mRBtnOriginal;
+    private Switch mOriginalSwitch;
     private Button mBtnPreview;
-    private Button mBtnConfirm;
+    private TextView mTvConfirm;
     private LocalMultiImageAdapter mLocalMultiImageAdapter;
     private BottomSheetBehavior mBottomBehavior;
     private ImageDirAdapter mImageDirAdapter;
@@ -73,12 +76,12 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     @Override
     protected void init(Bundle savedInstanceState) {
         mRvImage = findViewById(R.id.ImageMultiSelectorActivity_mRvImageList);
-        mRBtnOriginal = findViewById(R.id.ImageMultiSelectorActivity_mRBtnOriginal);
+        mOriginalSwitch = findViewById(R.id.ImageMultiSelectorActivity_mOriginalSwitch);
         mTvChooseDir = findViewById(R.id.ImageMultiSelectorActivity_mTvChooseDir);
         mRvImageDir = findViewById(R.id.ImageMultiSelectorActivity_mRvImageDirList);
         mBtnPreview = findViewById(R.id.ImageMultiSelectorActivity_mBtnPreview);
         mMaskView = findViewById(R.id.ImageMultiSelectorActivity_mMaskView);
-        mBtnConfirm = findViewById(R.id.ImageMultiSelectorActivity_mBtnConfirm);
+        mTvConfirm = findViewById(R.id.ImageMultiSelectorActivity_mTvConfirm);
 
         mCurrentImagePathList = new ArrayList<>(128);
         mImageDirPath = new ArrayList<>();
@@ -93,17 +96,17 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
+        getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.backgroundColorGrey)));
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);
         mRvImage.setAdapter(mLocalMultiImageAdapter);
         mRvImage.addOnScrollListener(new ImageAutoLoadScrollListener());
 
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
-        mRvImageDir.setHasFixedSize(true);
         mRvImageDir.setAdapter(mImageDirAdapter);
         mRvImageDir.addOnItemTouchListener(mOnBottomSheetItemClickListener);
         mRvImageDir.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12)));
@@ -117,9 +120,9 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
         mTvChooseDir.setOnClickListener(mOnChooseDirClickListener);
         mLocalMultiImageAdapter.setOnImageItemChangeListener(mOnImageItemChangeListener);
-        mRBtnOriginal.setOnClickListener(mOnOriginalClickListener);
+        mOriginalSwitch.setOnCheckedChangeListener(mOnOriginalSwitchChangeListener);
         mBtnPreview.setOnClickListener(mOnPreviewClickListener);
-        mBtnConfirm.setOnClickListener(mOnConfirmClickListener);
+        mTvConfirm.setOnClickListener(mOnConfirmClickListener);
 
         setData();
 
@@ -150,7 +153,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mCurrentShowDir = folder;
         mCurrentImagePathList.clear();
         mSelectedList.clear();
-        mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
+        mTvConfirm.setText(R.string.ImageSelectorActivity_Send);
         if (folder == null) {
             for (Map.Entry<String, List<String>> entry : mGroupingMap.entrySet()) {
                 mCurrentImagePathList.addAll(entry.getValue());
@@ -166,14 +169,14 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     private void updateCountText() {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
-            mBtnConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), MAX_SELECTED_COUNT));
+            mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), MAX_SELECTED_COUNT));
             mBtnPreview.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.ImageSelectorActivity_Preview), mSelectedList.size()));
-            mBtnConfirm.setEnabled(true);
+            mTvConfirm.setEnabled(true);
             mBtnPreview.setEnabled(true);
         } else {
-            mBtnConfirm.setText(R.string.ImageSelectorActivity_Send);
+            mTvConfirm.setText(R.string.ImageSelectorActivity_Send);
             mBtnPreview.setText(R.string.ImageSelectorActivity_Preview);
-            mBtnConfirm.setEnabled(false);
+            mTvConfirm.setEnabled(false);
             mBtnPreview.setEnabled(false);
         }
     }
@@ -184,7 +187,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         if (resultCode == ImageViewPagerActivity.RESULT_CODE && data != null) {
             ArrayList<String> selectList = data.getStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST);
             isOriginal = data.getBooleanExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_ORIGINAL, isOriginal);
-            mRBtnOriginal.setChecked(isOriginal);
+            mOriginalSwitch.setChecked(isOriginal);
             if (selectList != null) {
                 mSelectedList.clear();
                 mSelectedList.addAll(selectList);
@@ -227,13 +230,13 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         }
     };
 
-    private final View.OnClickListener mOnOriginalClickListener = new View.OnClickListener() {
+    private final CompoundButton.OnCheckedChangeListener mOnOriginalSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
-        public void onClick(View v) {
-            isOriginal = !isOriginal;
-            mRBtnOriginal.setChecked(isOriginal);
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            isOriginal = isChecked;
         }
     };
+
 
     private final View.OnClickListener mOnPreviewClickListener = new View.OnClickListener() {
         @Override

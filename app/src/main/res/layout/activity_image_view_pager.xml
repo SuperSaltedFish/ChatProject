@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,80 +10,87 @@
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_gravity="top"
-        android:background="?colorPrimary"
+        android:background="@color/colorAccent"
         android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:theme="@style/ToolbarTheme"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
 
-        <Button
-            android:id="@+id/ImageViewpagerActivity_mBtnConfirm"
+
+        <TextView
+            android:id="@+id/ImageViewpagerActivity_mTvConfirm"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/selector_radius_btn_default"
-            android:elevation="2dp"
-            android:minWidth="60dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:text="@string/ImageSelectorActivity_Send"
-            android:textColor="@color/selector_text_enable_change_light" />
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:text="@string/Send"
+            android:textColor="@color/selector_text_enable_change_light"
+            android:textSize="15sp" />
 
     </android.support.v7.widget.Toolbar>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/ImageViewpagerActivity_mViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginBottom="48dp"
-        android:layout_marginTop="48dp" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/ImageViewpagerActivity_mRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="48dp"
-        android:background="?colorPrimary"
-        android:overScrollMode="never"
-        android:paddingBottom="14dp"
-        android:paddingTop="14dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/ImageViewpagerActivity_mFlBottomLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
 
 
     <FrameLayout
+        android:id="@+id/ImageViewpagerActivity_mFlBottomLayout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_gravity="bottom"
-        android:background="?colorPrimary"
+        android:background="@android:color/white"
+        android:elevation="10dp"
         android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <RadioButton
-            android:id="@+id/ImageViewpagerActivity_mRBtnOriginal"
+        <Switch
+            android:id="@+id/ImageViewpagerActivity_mOriginalSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/ImageSelectorActivity_Original" />
+            android:text="@string/ImageSelectorActivity_Original"
+            android:textColor="@color/colorAccent" />
 
         <CheckBox
             android:id="@+id/ImageViewPagerActivity_mCbSelected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
+            android:button="@drawable/selector_checkbox"
             android:checked="false"
-            android:text="@string/ImageViewPagerActivity_Selected" />
+            android:paddingStart="8dp"
+            android:text="@string/ImageViewPagerActivity_Selected"
+            android:textColor="@color/colorAccent"
+            tools:ignore="RtlSymmetry" />
 
     </FrameLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/ImageViewpagerActivity_mRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:background="#c4ffffff"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@id/ImageViewpagerActivity_mFlBottomLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="48dp"
-        android:background="@color/dividerColorWhite" />
+        android:layout_height="1px"
+        android:background="@color/dividerColorBlack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ImageViewpagerActivity_mFlBottomLayout" />
 
-</merge>
+</android.support.constraint.ConstraintLayout>

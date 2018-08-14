@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorAccent">#0076fd</color>
+    <color name="colorAccent">#3f90fe</color>
     <color name="colorAccentLight">#bfd9fb</color>
     <color name="colorAccentDisable">#a83f90fe</color>
-    <color name="colorPrimary">#0076fd</color>
-    <color name="colorPrimaryDark">#0076fd</color>
+    <color name="colorPrimary">#3f90fe</color>
+    <color name="colorPrimaryDark">#3f90fe</color>
 
 
     <color name="textPrimaryColorBlack">#353535</color>

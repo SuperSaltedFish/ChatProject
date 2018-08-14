@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="56dp"
-    android:foreground="@drawable/selector_fg_image_select"
     android:layout_height="56dp"
+    android:layout_marginBottom="14dp"
+    android:layout_marginTop="14dp"
+    android:foreground="@drawable/selector_fg_image_select"
     android:scaleType="centerCrop">
 
 </ImageView>

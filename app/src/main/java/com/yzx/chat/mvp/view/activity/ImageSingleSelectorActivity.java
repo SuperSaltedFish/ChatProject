@@ -9,7 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -84,9 +86,11 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.backgroundColorGrey)));
 
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);
@@ -95,7 +99,6 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
         mRvImage.addOnScrollListener(new ImageAutoLoadScrollListener());
 
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
-        mRvImageDir.setHasFixedSize(true);
         mRvImageDir.setAdapter(mImageDirAdapter);
         mRvImageDir.addOnItemTouchListener(mOnBottomSheetItemClickListener);
         mRvImageDir.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12)));
@@ -174,8 +177,8 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
         @Override
         public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
             Intent intent = new Intent();
-            intent.putExtra(INTENT_EXTRA_IMAGE_PATH,mCurrentImagePathList.get(position));
-            setResult(RESULT_CODE,intent);
+            intent.putExtra(INTENT_EXTRA_IMAGE_PATH, mCurrentImagePathList.get(position));
+            setResult(RESULT_CODE, intent);
             finish();
         }
     };

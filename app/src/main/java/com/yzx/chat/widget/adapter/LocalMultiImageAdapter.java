@@ -120,7 +120,6 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
                     mCbSelected.setChecked(isChecked);
                     mCbSelected.setOnCheckedChangeListener(mOnCheckedChangeListener);
                 }
-                mOnImageItemChangeListener.onItemSelect(ItemView.this.getAdapterPosition(), isChecked);
                 if (isChecked) {
                     mIvImage.setImageTintList(mSelectColorTint);
                 } else {

@@ -4,11 +4,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -40,9 +40,11 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
     @Override
     public void bindDataToViewHolder(ItemView holder, int position) {
         if (mSelectedPosition == position) {
-            holder.mRBtnSelected.setChecked(true);
+            holder.mIvSelectedIcon.setVisibility(View.VISIBLE);
+            holder.mTvDirPath.setTextColor(AndroidUtil.getColor(R.color.colorAccent));
         } else {
-            holder.mRBtnSelected.setChecked(false);
+            holder.mIvSelectedIcon.setVisibility(View.INVISIBLE);
+            holder.mTvDirPath.setTextColor(AndroidUtil.getColor(R.color.textPrimaryColorBlack));
         }
         if (position == 0) {
             holder.mTvDirPath.setText(R.string.ImageSelectorActivity_AllImage);
@@ -73,7 +75,7 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
 
         TextView mTvDirPath;
         ImageView mIvLowSource;
-        RadioButton mRBtnSelected;
+        ImageView mIvSelectedIcon;
 
         ItemView(View itemView) {
             super(itemView);
@@ -83,7 +85,7 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
         private void initView() {
             mTvDirPath = itemView.findViewById(R.id.ImageDirAdapter_mTvDirPath);
             mIvLowSource = itemView.findViewById(R.id.ImageDirAdapter_mIvLowSource);
-            mRBtnSelected = itemView.findViewById(R.id.ImageDirAdapter_mRBtnSelected);
+            mIvSelectedIcon = itemView.findViewById(R.id.ImageDirAdapter_mIvSelectedIcon);
         }
     }
 }

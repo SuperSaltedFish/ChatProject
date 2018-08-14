@@ -145,7 +145,7 @@
     <string name="ProfileEditActivity_DateFormat">%d年%02d月%02d日</string>
     <string name="Save">保存</string>
     <string name="Confirm">确定</string>
-    <string name="ImageSingleSelectorActivity_Title">选择头像</string>
+    <string name="ImageSingleSelectorActivity_Title">选择一张图片</string>
     <string name="Man">男生</string>
     <string name="Woman">女生</string>
     <string name="ProfileEditActivity_NoneNickname">昵称不能为空</string>

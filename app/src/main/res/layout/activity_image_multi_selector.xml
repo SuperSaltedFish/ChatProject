@@ -12,32 +12,35 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/Default_mToolbar"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
             android:elevation="4dp"
-            app:theme="@style/ToolbarTheme"
-            app:title="@string/ImageSelectorActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
+            android:fitsSystemWindows="true">
 
-            <Button
-                android:id="@+id/ImageMultiSelectorActivity_mBtnConfirm"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|end"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/selector_radius_btn_default"
-                android:elevation="2dp"
-                android:minWidth="60dp"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:text="@string/Send"
-                android:textColor="@color/selector_text_enable_change_light" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/Default_mToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:theme="@style/ToolbarTheme"
+                app:title="@string/ImageSelectorActivity_Title"
+                app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
 
-        </android.support.v7.widget.Toolbar>
+                <TextView
+                    android:id="@+id/ImageMultiSelectorActivity_mTvConfirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="16dp"
+                    android:background="@null"
+                    android:textSize="15sp"
+                    android:text="@string/Send"
+                    android:textColor="@color/selector_text_enable_change_light" />
+
+            </android.support.v7.widget.Toolbar>
+        </FrameLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ImageMultiSelectorActivity_mRvImageList"
@@ -45,6 +48,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="48dp"
             android:layout_weight="1" />
+
 
     </LinearLayout>
 
@@ -59,29 +63,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingBottom="48dp"
+        android:elevation="10dp"
+        android:paddingBottom="44dp"
         app:behavior_hideable="true"
         app:behavior_peekHeight="0dp"
         app:layout_behavior="@string/bottom_sheet_behavior" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="44dp"
         android:layout_gravity="bottom"
-        android:background="?colorPrimary"
-        android:paddingBottom="8dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="8dp"
-        android:paddingTop="8dp">
+        android:background="@android:color/white"
+        android:elevation="10dp">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:background="@color/dividerColorBlack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/ImageMultiSelectorActivity_mTvChooseDir"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginStart="14dp"
+            android:ellipsize="end"
             android:gravity="center"
-            android:minWidth="81dp"
-            android:textColor="@color/textColorWhite"
-            android:textSize="16sp"
+            android:maxWidth="200dp"
+            android:minWidth="72dp"
+            android:singleLine="true"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -91,15 +105,17 @@
             android:layout_height="16dp"
             android:layout_gravity="bottom"
             android:src="@drawable/ic_drop_down_arrow"
+            android:tint="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="@+id/ImageMultiSelectorActivity_mTvChooseDir"
             app:layout_constraintStart_toEndOf="@+id/ImageMultiSelectorActivity_mTvChooseDir" />
 
-        <RadioButton
-            android:id="@+id/ImageMultiSelectorActivity_mRBtnOriginal"
+        <Switch
+            android:id="@+id/ImageMultiSelectorActivity_mOriginalSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/ImageSelectorActivity_Original"
+            android:textColor="@color/colorAccent"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -112,14 +128,16 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:minWidth="0dp"
+            android:layout_marginEnd="16dp"
             android:text="@string/ImageSelectorActivity_Preview"
-            android:textColor="@color/selector_text_enable_change_light"
-            android:textSize="16sp"
+            android:textColor="@color/selector_text_enable_change"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
     </android.support.constraint.ConstraintLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>
