@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -79,11 +80,13 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
     private TextView mTvSearchLocationLoadMoreHint;
     private TextView mTvMarkerLocationLoadMoreHint;
     private TextView mTvSearchNoneHint;
+    private ImageView mIvMyLocation;
     private LocationAdapter mSearchLocationAdapter;
     private LocationAdapter mMarkerLocationAdapter;
     private List<PoiItem> mMarkerLocationList;
     private List<PoiItem> mSearchLocationList;
     private LatLng mMarkerLocationLatLng;
+    private LatLng mMyLocationLatLng;
 
     private Handler mMarkerHandler;
     private Handler mSearchHandler;
@@ -108,6 +111,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         mRvSearch = parentView.findViewById(R.id.LocationSendFragment_mRvSearch);
         mTvSearchNoneHint = parentView.findViewById(R.id.LocationSendFragment_mTvSearchNoneHint);
         mCvMarkerLayout = parentView.findViewById(R.id.LocationSendFragment_mCvMarkerLayout);
+        mIvMyLocation = parentView.findViewById(R.id.LocationSendFragment_mIvMyLocation);
         mSearchLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mMarkerLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mTvSearchLocationLoadMoreHint = mSearchLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
@@ -175,6 +179,14 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
                             mPresenter.searchPOIByKeyword(mSearchView.getQuery().toString(), ++mSearchLocationPageNumber);
                         }
                     });
+                }
+            }
+        });
+        mIvMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMyLocationLatLng != null) {
+                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMyLocationLatLng, mAMap.getCameraPosition().zoom));
                 }
             }
         });
@@ -246,7 +258,6 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
             mAMap.setMapCustomEnable(true);
         }
         mAMap.setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() {
-            private LatLng mMyLocation;
 
             @Override
             public void onMyLocationChange(Location location) {
@@ -254,11 +265,11 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
                 if (latLng.latitude == 0 && latLng.longitude == 0) {
                     return;
                 }
-                if (mMyLocation == null || Math.abs(latLng.latitude - mMyLocation.latitude) >= 0.3 || Math.abs(latLng.longitude - mMyLocation.longitude) >= 0.3) {
-                    mMyLocation = latLng;
-                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMyLocation, Constants.LOCATION_DEFAULT_ZOOM));
+                if (mMyLocationLatLng == null || Math.abs(latLng.latitude - mMyLocationLatLng.latitude) >= 0.3 || Math.abs(latLng.longitude - mMyLocationLatLng.longitude) >= 0.3) {
+                    mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, Constants.LOCATION_DEFAULT_ZOOM));
                     isFirstLocateComplete = true;
                 }
+                mMyLocationLatLng = latLng;
             }
         });
         mAMap.moveCamera(CameraUpdateFactory.zoomTo(Constants.LOCATION_DEFAULT_ZOOM));
@@ -322,11 +333,13 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
     private void showSearchContent() {
         mFlSearchLayout.setVisibility(View.VISIBLE);
         mCvMarkerLayout.setVisibility(View.GONE);
+        mIvMyLocation.setVisibility(View.GONE);
     }
 
     private void dismissSearchContent() {
         mFlSearchLayout.setVisibility(View.GONE);
         mCvMarkerLayout.setVisibility(View.VISIBLE);
+        mIvMyLocation.setVisibility(View.VISIBLE);
     }
 
     private void resetInput() {

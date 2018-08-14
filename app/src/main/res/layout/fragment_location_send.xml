@@ -36,6 +36,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/LocationSendFragment_mFlToolbarLayout" />
 
+    <com.yzx.chat.widget.view.CircleImageView
+        android:id="@+id/LocationSendFragment_mIvMyLocation"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginBottom="8dp"
+        android:background="#e4ffffff"
+        android:elevation="3dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_my_location"
+        android:tint="@color/textPrimaryColorBlack2"
+        app:layout_constraintBottom_toTopOf="@id/LocationSendFragment_mCvMarkerLayout"
+        app:layout_constraintEnd_toEndOf="@id/LocationSendFragment_mCvMarkerLayout" />
+
     <android.support.v7.widget.CardView
         android:id="@+id/LocationSendFragment_mCvMarkerLayout"
         android:layout_width="match_parent"
