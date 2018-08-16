@@ -192,7 +192,7 @@ public class IMClient implements IManagerHelper {
                         }
                         mDBHelper = new DBHelper(sAppContext, MD5Util.encrypt32(userBean.getUserID()), Constants.DATABASE_VERSION);
                         boolean isUpdateSuccess = true;
-                        if (!UserManager.update(token, userBean, mDBHelper.getReadWriteHelper())) {
+                        if (!UserManager.updateLocal(token, userBean, mDBHelper.getReadWriteHelper())) {
                             isUpdateSuccess = false;
                             LogUtil.e("update token and user fail");
                         } else if (!CryptoManager.update(secretKey)) {

@@ -8,12 +8,14 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yzx.chat.util.GlideUtil;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +45,7 @@ public class CarouselView extends ViewPager {
         super(context, attrs);
         mContext = context;
         mHandler = new Handler();
+        mPicUrlList = new ArrayList<>();
         init();
     }
 
@@ -55,12 +58,22 @@ public class CarouselView extends ViewPager {
 
 
     private void refresh() {
-        if (mPicUrlList != null && mPicUrlList.size() > 0) {
+        if (mPicUrlList.size() > 0) {
             int picUrlCount = mPicUrlList.size();
             int pagerCount = mPagerAdapter.getCount();
-            setCurrentItem(pagerCount / 2 - (pagerCount / 2) % picUrlCount);
+            ViewParent parent = getParent();
+            if (parent != null && parent instanceof ViewGroup) {//必须这么做，不然setCurrentItem会arn
+                ViewGroup group = (ViewGroup) parent;
+                int index = group.indexOfChild(this);
+                group.removeViewAt(index);
+                setAdapter(mPagerAdapter);
+                setCurrentItem(pagerCount / 2 - (pagerCount / 2) % picUrlCount, false);
+                group.addView(this, index);
+            } else {
+                mPagerAdapter.notifyDataSetChanged();
+                setCurrentItem(pagerCount / 2 - (pagerCount / 2) % picUrlCount, false);
+            }
         }
-        mPagerAdapter.notifyDataSetChanged();
     }
 
     private void delayedShowNext() {
@@ -105,12 +118,11 @@ public class CarouselView extends ViewPager {
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            ViewGroup rootView = (ViewGroup) object;
-            ImageView itemView = (ImageView) rootView.getChildAt(0);
-            container.removeView(rootView);
+            PhotoView itemView = (PhotoView) object;
+            container.removeView(itemView);
             GlideUtil.clear(mContext, itemView);
             itemView.setImageBitmap(null);
-            mCacheViewQueue.offer(new WeakReference<>(rootView));
+            mCacheViewQueue.offer(new WeakReference<>(itemView));
         }
 
         @NonNull
@@ -172,7 +184,10 @@ public class CarouselView extends ViewPager {
     }
 
     public void setPicUrls(List<Object> picUrls) {
-        mPicUrlList = picUrls;
+        mPicUrlList.clear();
+        if (picUrls != null && picUrls.size() > 0) {
+            mPicUrlList.addAll(picUrls);
+        }
         refresh();
     }
 

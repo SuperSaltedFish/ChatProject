@@ -100,13 +100,24 @@
             android:name=".mvp.view.activity.VideoRecorderActivity"
             android:theme="@style/NoBackgroundLightTheme" />
         <activity android:name=".mvp.view.activity.GroupListActivity" />
-        <activity
-            android:name=".mvp.view.activity.CropImageActivity"
-            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".mvp.view.activity.CropImageActivity" />
         <activity
             android:name=".mvp.view.activity.VideoPlayActivity"
             android:theme="@style/DefaultDarkTheme" />
         <activity android:name=".mvp.view.activity.NotificationMessageActivity"></activity>
+
+
+        <activity android:name=".mvp.view.activity.TestActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".mvp.view.activity.MyTagListActivity"></activity>
+
+
+
 
         <receiver android:name=".broadcast.UninstallReceive">
             <intent-filter>
@@ -116,14 +127,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".mvp.view.activity.TestActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-        <activity android:name=".mvp.view.activity.MyTagListActivity"></activity>
     </application>
 
 </manifest>

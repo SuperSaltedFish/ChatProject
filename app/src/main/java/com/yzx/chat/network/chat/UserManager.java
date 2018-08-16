@@ -105,7 +105,7 @@ public class UserManager {
     }
 
 
-    public synchronized static boolean update(String token, UserBean user, AbstractDao.ReadWriteHelper readWriteHelper) {
+    public synchronized static boolean updateLocal(String token, UserBean user, AbstractDao.ReadWriteHelper readWriteHelper) {
         if (TextUtils.isEmpty(token) || user == null || user.isEmpty()) {
             return false;
         }
