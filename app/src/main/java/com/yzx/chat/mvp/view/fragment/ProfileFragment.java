@@ -22,6 +22,7 @@ import com.yzx.chat.mvp.contract.ProfileModifyContract;
 import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
 import com.yzx.chat.mvp.view.activity.LoginActivity;
 import com.yzx.chat.mvp.view.activity.ProfileEditActivity;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
 
@@ -135,6 +136,16 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
     @Override
     public ProfileModifyContract.Presenter getPresenter() {
         return new ProfileModifyPresenter();
+    }
+
+    @Override
+    public void showNewAvatar(String avatarPath) {
+
+    }
+
+    @Override
+    public void setEnableProgressDialog(boolean isEnable) {
+
     }
 
     @Override

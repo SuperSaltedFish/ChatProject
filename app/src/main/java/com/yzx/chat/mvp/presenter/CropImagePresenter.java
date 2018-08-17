@@ -27,66 +27,35 @@ import java.util.UUID;
 public class CropImagePresenter implements CropImageContract.Presenter {
 
     private CropImageContract.View mCropImageView;
-    private Handler mHandler;
     private SaveAvatarToLocalTask mSaveAvatarToLocalTask;
 
     @Override
     public void attachView(CropImageContract.View view) {
         mCropImageView = view;
-        mHandler = new Handler();
     }
 
     @Override
     public void detachView() {
         AsyncUtil.cancelTask(mSaveAvatarToLocalTask);
-        mHandler.removeCallbacksAndMessages(null);
-        mHandler = null;
         mCropImageView = null;
     }
 
     @Override
-    public void uploadAvatar(Bitmap bitmap) {
+    public void bitmapToFile(Bitmap bitmap) {
         AsyncUtil.cancelTask(mSaveAvatarToLocalTask);
         mSaveAvatarToLocalTask = new SaveAvatarToLocalTask(this);
         mSaveAvatarToLocalTask.execute(bitmap);
+        mCropImageView.setEnableProgressDialog(true);
     }
 
-    private void saveComplete(final String imagePath) {
-        IMClient.getInstance().getUserManager().uploadAvatar(imagePath, new ResultCallback<UploadAvatarBean>() {
-            @Override
-            public void onSuccess(UploadAvatarBean result) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        deleteFile(imagePath);
-                        mCropImageView.goBack();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(final String error) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        deleteFile(imagePath);
-                        mCropImageView.showError(error);
-                    }
-                });
-
-            }
-        });
+    private void saveComplete(String imagePath) {
+        mCropImageView.setEnableProgressDialog(false);
+        mCropImageView.returnSaveResult(imagePath);
     }
 
     private void saveFail() {
+        mCropImageView.setEnableProgressDialog(false);
         mCropImageView.showError(AndroidUtil.getString(R.string.CropImageActivity_SaveAvatarFail));
-    }
-
-    private static void deleteFile(String filePath) {
-        File file = new File(filePath);
-        if (!file.delete()) {
-            LogUtil.e("delete photo file fail.");
-        }
     }
 
     private static class SaveAvatarToLocalTask extends BackstageAsyncTask<CropImagePresenter, Bitmap, String> {
@@ -113,4 +82,5 @@ public class CropImagePresenter implements CropImageContract.Presenter {
             }
         }
     }
+
 }

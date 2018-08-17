@@ -42,7 +42,7 @@ import java.util.Map;
 
 public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
-    public static final int RESULT_CODE = 1;
+    public static final int RESULT_CODE = ImageSingleSelectorActivity.class.hashCode();
 
     public static final String INTENT_EXTRA_IMAGE_PATH = "ImagePath";
 

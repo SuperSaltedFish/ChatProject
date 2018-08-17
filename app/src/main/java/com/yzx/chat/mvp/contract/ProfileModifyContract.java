@@ -1,8 +1,8 @@
 package com.yzx.chat.mvp.contract;
 
-        import com.yzx.chat.base.BasePresenter;
-        import com.yzx.chat.base.BaseView;
-        import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.base.BasePresenter;
+import com.yzx.chat.base.BaseView;
+import com.yzx.chat.bean.UserBean;
 
 /**
  * Created by YZX on 2018年02月12日.
@@ -13,13 +13,21 @@ package com.yzx.chat.mvp.contract;
 public class ProfileModifyContract {
 
     public interface View extends BaseView<Presenter> {
+        void showNewAvatar(String avatarPath);
+
+        void setEnableProgressDialog(boolean isEnable);
+
         void showError(String error);
+
         void goBack();
     }
 
 
     public interface Presenter extends BasePresenter<View> {
         UserBean getUserInfo();
+
+        void uploadAvatar(String avatarPath);
+
         void updateProfile(UserBean user);
     }
 }

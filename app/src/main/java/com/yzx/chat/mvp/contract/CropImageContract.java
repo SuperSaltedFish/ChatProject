@@ -15,11 +15,15 @@ public class CropImageContract {
     public interface View extends BaseView<Presenter> {
         void goBack();
 
+        void setEnableProgressDialog(boolean isEnable);
+
+        void returnSaveResult(String imagePath);
+
         void showError(String error);
     }
 
     public interface Presenter extends BasePresenter<View> {
-        void uploadAvatar(Bitmap bitmap);
+        void bitmapToFile(Bitmap bitmap);
     }
 
 }

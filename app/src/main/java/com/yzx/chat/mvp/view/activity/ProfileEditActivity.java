@@ -49,12 +49,13 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
     private ProgressDialog mProgressDialog;
     private ImageView mIvAvatarBackground;
     private RoundImageView mIvChangeAvatar;
-    private ClearEditText mEtNickname;
+    private ImageView mIvAvatar;
+    private EditText mEtNickname;
     private TextView mTvBirthday;
     private TextView mTvLocation;
     private TextView mTvSex;
     private EditText mEtSignature;
-    private ClearEditText mEtEmail;
+    private EditText mEtEmail;
     private UserBean mUserBean;
 
     @Override
@@ -72,6 +73,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
         mTvSex = findViewById(R.id.ProfileEditActivity_mTvSex);
         mEtSignature = findViewById(R.id.ProfileEditActivity_mEtSignature);
         mEtEmail = findViewById(R.id.ProfileEditActivity_mEtEmail);
+        mIvAvatar = findViewById(R.id.ProfileEditActivity_mIvAvatar);
         mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Save));
     }
 
@@ -87,12 +89,8 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
         mTvBirthday.setOnClickListener(mOnBirthdayClickListener);
         mTvLocation.setOnClickListener(mOnLocationClickListener);
 
-
-        mEtNickname.setAutoShow(false);
-        mEtEmail.setAutoShow(false);
-
         mIvChangeAvatar.setRoundRadius(AndroidUtil.dip2px(16));
-        GlideUtil.loadBlurFromUrl(this, mIvAvatarBackground, R.drawable.temp_head_image, 4);
+
 
         setData();
     }
@@ -139,6 +137,13 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
         } else {
             mTvBirthday.setText(R.string.ProfileEditActivity_NoSet);
         }
+
+        setAvatar(mUserBean.getAvatar());
+    }
+
+    private void setAvatar(String url) {
+        GlideUtil.loadAvatarFromUrl(this, mIvAvatar, url);
+        GlideUtil.loadBlurFromUrl(this, mIvAvatarBackground, url, 4);
     }
 
     private void save() {
@@ -156,10 +161,10 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
             if (birthday == null) {
                 LogUtil.e("date formatToISO fail");
             }
-        }else {
-            birthday=null;
+        } else {
+            birthday = null;
         }
-        if(!strSex.equals(none)){
+        if (!strSex.equals(none)) {
             sex = mTvSex.getText().equals(getString(R.string.Woman)) ? UserBean.SEX_WOMAN : UserBean.SEX_MAN;
         }
 
@@ -173,7 +178,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
             isChange = true;
             mUserBean.setNickname(nickname);
         }
-        if (!none.equals(location)&&!location.equals(mUserBean.getLocation())) {
+        if (!none.equals(location) && !location.equals(mUserBean.getLocation())) {
             isChange = true;
             mUserBean.setLocation(location);
         }
@@ -186,13 +191,12 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
             mUserBean.setSex(sex);
         }
 
-        if (birthday!=null&&!birthday.equals(mUserBean.getBirthday())) {
+        if (birthday != null && !birthday.equals(mUserBean.getBirthday())) {
             isChange = true;
             mUserBean.setBirthday(birthday);
         }
 
         if (isChange) {
-            mProgressDialog.show();
             mPresenter.updateProfile(mUserBean);
         } else {
             finish();
@@ -228,6 +232,11 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
                 Intent intent = new Intent(this, CropImageActivity.class);
                 intent.putExtra(CropImageActivity.INTENT_EXTRA_IMAGE_PATH, imagePath);
                 startActivityForResult(intent, 0);
+            }
+        } else if (resultCode == CropImageActivity.RESULT_CODE) {
+            String imagePath = data.getStringExtra(CropImageActivity.INTENT_EXTRA_IMAGE_PATH);
+            if (!TextUtils.isEmpty(imagePath)) {
+                mPresenter.uploadAvatar(imagePath);
             }
         }
 
@@ -408,14 +417,27 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
     }
 
     @Override
+    public void showNewAvatar(String avatarPath) {
+        mUserBean.setAvatar(avatarPath);
+        setAvatar(avatarPath);
+    }
+
+    @Override
     public void showError(String error) {
-        mProgressDialog.dismiss();
         showToast(error);
     }
 
     @Override
+    public void setEnableProgressDialog(boolean isEnable) {
+        if (isEnable) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
     public void goBack() {
-        mProgressDialog.dismiss();
         finish();
     }
 }

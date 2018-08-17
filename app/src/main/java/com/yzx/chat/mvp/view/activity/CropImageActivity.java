@@ -1,20 +1,14 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.github.chrisbanes.photoview.PhotoView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.CropImageContract;
 import com.yzx.chat.mvp.presenter.CropImagePresenter;
 import com.yzx.chat.util.GlideUtil;
@@ -28,6 +22,7 @@ import com.yzx.chat.widget.view.ProgressDialog;
 
 public class CropImageActivity extends BaseCompatActivity<CropImageContract.Presenter> implements CropImageContract.View {
 
+    public static final int RESULT_CODE = CropImageActivity.class.hashCode();
     public static final String INTENT_EXTRA_IMAGE_PATH = "ImagePath";
 
     private CropImageView mCropImageView;
@@ -41,7 +36,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
     @Override
     protected void init(Bundle savedInstanceState) {
         mCropImageView = findViewById(R.id.CropActivity_mCropImageView);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Upload));
+        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Crop));
     }
 
     @Override
@@ -75,7 +70,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
                 return true;
             }
             mProgressDialog.show();
-            mPresenter.uploadAvatar(mCropImageView.crop());
+            mPresenter.bitmapToFile(mCropImageView.crop());
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -89,13 +84,28 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
 
     @Override
     public void goBack() {
-        mProgressDialog.dismiss();
+        finish();
+    }
+
+    @Override
+    public void setEnableProgressDialog(boolean isEnable) {
+        if (isEnable) {
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void returnSaveResult(String imagePath) {
+        Intent intent = new Intent();
+        intent.putExtra(INTENT_EXTRA_IMAGE_PATH, imagePath);
+        setResult(RESULT_CODE, intent);
         finish();
     }
 
     @Override
     public void showError(String error) {
-        mProgressDialog.dismiss();
         showToast(error);
     }
 }

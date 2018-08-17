@@ -81,7 +81,7 @@
     <string name="ProgressHint_Create">正在创建...</string>
     <string name="ProgressHint_Modify">正在修改...</string>
     <string name="ProgressHint_Quit">正在退出...</string>
-    <string name="ProgressHint_Upload">正在上传...</string>
+    <string name="ProgressHint_Crop">正在裁剪...</string>
     <string name="ProgressHint_Decode">正在解析...</string>
     <string name="ProgressHint_DownloadVideo">正在下载视频\n(%d%%)</string>
 
@@ -211,7 +211,7 @@
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
     <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>
     <string name="None">无</string>
-    <string name="ProfileEditActivity_SignatureHint">一句话介绍自己，个性签名会显示在个人主页上！</string>
+    <string name="ProfileEditActivity_SignatureHint">一句话介绍自己，签名会显示在个人主页上</string>
     <string name="ProfileEditActivity_SignatureLabel">个性签名</string>
     <string name="ProfileEditActivity_EmailHint">请输入邮箱地址</string>
     <string name="ProfileEditActivity_EmailLabel">邮箱地址</string>
