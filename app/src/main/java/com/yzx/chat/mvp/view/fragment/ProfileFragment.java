@@ -1,33 +1,27 @@
 package com.yzx.chat.mvp.view.fragment;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextSwitcher;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.mvp.contract.ProfileContract;
 import com.yzx.chat.mvp.contract.ProfileModifyContract;
 import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
-import com.yzx.chat.mvp.view.activity.LoginActivity;
-import com.yzx.chat.mvp.view.activity.ProfileEditActivity;
+import com.yzx.chat.mvp.presenter.ProfilePresenter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
-import com.yzx.chat.widget.animation.ZoomPageTransformer;
+import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
+import com.yzx.chat.widget.view.PageIndicator;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by YZX on 2017年09月01日.
@@ -35,16 +29,17 @@ import java.util.List;
  */
 
 
-public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presenter> implements ProfileModifyContract.View {
+public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> implements ProfileContract.View {
 
-    public static final String TAG = ProfileFragment.class.getSimpleName();
+    private ViewPager mVpBanner;
+    private PageIndicator mPageIndicator;
+    private ImageView mIvAvatar;
+    private TextView mTvNickname;
+    private ImageView mIvSexIcon;
+    private TextView mTvLocationAndAge;
+    private CenterCropImagePagerAdapter mCropImagePagerAdapter;
+    private ArrayList<Object> mPicUrlList;
 
-    private FrameLayout mPagerParentLayout;
-    private LinearLayout mLlEditProfile;
-    private ViewPager mVpAlbum;
-    private AlbumPagerAdapter mAlbumAdapter;
-    private TextSwitcher mTsAlbumName;
-    private List<Object> mObjects;
 
     @Override
     protected int getLayoutID() {
@@ -53,108 +48,53 @@ public class ProfileFragment extends BaseFragment<ProfileModifyContract.Presente
 
     @Override
     protected void init(View parentView) {
-        mPagerParentLayout = parentView.findViewById(R.id.ProfileFragment_mFlPagerParentLayout);
-        mVpAlbum = parentView.findViewById(R.id.ProfileFragment_mVpAlbum);
-        mTsAlbumName = parentView.findViewById(R.id.ProfileFragment_mTsAlbumName);
-        mLlEditProfile = parentView.findViewById(R.id.ProfileFragment_mLlEditProfile);
-
-        mObjects = new ArrayList<>();
-        mObjects.add(R.drawable.temp_share_image);
-        mObjects.add(R.drawable.temp_share_image);
-        mObjects.add(R.drawable.temp_share_image);
-        mObjects.add(R.drawable.temp_share_image);
-        mObjects.add(R.drawable.temp_share_image);
-        mObjects.add(R.drawable.temp_share_image);
-        mAlbumAdapter = new AlbumPagerAdapter(mObjects);
+        mVpBanner = parentView.findViewById(R.id.ProfileFragment_mVpBanner);
+        mPageIndicator = parentView.findViewById(R.id.ProfileFragment_mPageIndicator);
+        mIvAvatar = parentView.findViewById(R.id.ProfileFragment_mIvAvatar);
+        mTvNickname = parentView.findViewById(R.id.ProfileFragment_mTvNickname);
+        mIvSexIcon = parentView.findViewById(R.id.ProfileFragment_mIvSexIcon);
+        mTvLocationAndAge = parentView.findViewById(R.id.ProfileFragment_mTvLocationAndAge);
+        mPicUrlList = new ArrayList<>(6);
+        mCropImagePagerAdapter = new CenterCropImagePagerAdapter(mPicUrlList);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        mVpAlbum.setAdapter(mAlbumAdapter);
-        //     mVpAlbum.setPageMargin((int) AndroidUtil.dip2px(32));
-        mVpAlbum.setPageTransformer(true, new ZoomPageTransformer());
-        mVpAlbum.setOffscreenPageLimit(2);
-        mVpAlbum.addOnPageChangeListener(mOnAlbumPageChangeListener);
+        fillTestData();
 
-        mTsAlbumName.setFactory(mAlbumViewFactory);
+        mPageIndicator.setIndicatorColorSelected(Color.WHITE);
+        mPageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(mContext, R.color.backgroundColorWhiteLight));
+        mPageIndicator.setIndicatorRadius((int) AndroidUtil.dip2px(3));
+        mPageIndicator.setupWithViewPager(mVpBanner);
 
-        mTsAlbumName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
+        mVpBanner.setAdapter(mCropImagePagerAdapter);
 
-        mLlEditProfile.setOnClickListener(mOnEditProfileClickListener);
-
-        mPagerParentLayout.setOnTouchListener(mOnPagerParentLayoutTouchListener);
+        mPresenter.initUserInfo();
     }
 
-    int i = 0;
-    private final ViewPager.OnPageChangeListener mOnAlbumPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
-        @Override
-        public void onPageSelected(int position) {
-            String s = i + " " + i + " 但看完的空间那个" + i + " " + i + " " + i + " " + i + " " + i;
-            i++;
-            mTsAlbumName.setText(s);
+    private void fillTestData() {
+        mPicUrlList.add(R.drawable.temp_image_1);
+        mPicUrlList.add(R.drawable.temp_image_2);
+        mPicUrlList.add(R.drawable.temp_image_3);
+    }
+
+
+    @Override
+    public ProfileContract.Presenter getPresenter() {
+        return new ProfilePresenter();
+    }
+
+
+    @Override
+    public void showUserInfo(UserBean user) {
+        mTvNickname.setText(user.getNickname());
+        mIvSexIcon.setSelected(user.getSex() == UserBean.SEX_WOMAN);
+        StringBuilder locationAndAge = new StringBuilder();
+        locationAndAge.append(user.getAge());
+        if (!TextUtils.isEmpty(user.getLocation())) {
+            locationAndAge.append(" · ").append(user.getLocation());
         }
-    };
-
-    private final ViewSwitcher.ViewFactory mAlbumViewFactory = new ViewSwitcher.ViewFactory() {
-        @Override
-        public View makeView() {
-            TextView textView = new TextView(mContext);
-            textView.setTextSize(16);
-            textView.setTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
-            textView.setGravity(Gravity.CENTER_VERTICAL);
-            textView.setSingleLine();
-            textView.setEllipsize(TextUtils.TruncateAt.END);
-            textView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            return textView;
-        }
-    };
-
-    private final View.OnTouchListener mOnPagerParentLayoutTouchListener = new View.OnTouchListener() {
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            mVpAlbum.onTouchEvent(event);
-            return true;
-        }
-    };
-
-    private final View.OnClickListener mOnEditProfileClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(mContext, ProfileEditActivity.class));
-
-        }
-    };
-
-    @Override
-    public ProfileModifyContract.Presenter getPresenter() {
-        return new ProfileModifyPresenter();
-    }
-
-    @Override
-    public void showNewAvatar(String avatarPath) {
-
-    }
-
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-
-    }
-
-    @Override
-    public void showError(String error) {
-
-    }
-
-    @Override
-    public void goBack() {
-
+        mTvLocationAndAge.setText(locationAndAge.toString());
+        GlideUtil.loadAvatarFromUrl(mContext, mIvAvatar, user.getSignature());
     }
 }

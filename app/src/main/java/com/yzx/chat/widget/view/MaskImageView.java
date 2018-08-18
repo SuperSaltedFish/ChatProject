@@ -18,7 +18,8 @@ import android.widget.ImageView;
  */
 public class MaskImageView extends ImageView {
 
-    private RadialGradient mMaskGradient;
+    private RadialGradient mMaskRadiaGradient;
+
     private Paint mPaint;
 
     private int[] mMaskColors;
@@ -35,8 +36,9 @@ public class MaskImageView extends ImageView {
         super(context, attrs, defStyleAttr);
         mMaskColors = new int[]{
                 Color.TRANSPARENT,
+                Color.TRANSPARENT,
+                Color.TRANSPARENT,
                 Color.argb(24, 0, 0, 0),
-                Color.argb(72, 0, 0, 0),
                 Color.argb(148, 0, 0, 0)
         };
         mPaint = new Paint();
@@ -48,15 +50,14 @@ public class MaskImageView extends ImageView {
         super.onSizeChanged(w, h, oldw, oldh);
         float centerX = w / 2f;
         float centerY = h / 2f;
-        mMaskGradient = new RadialGradient(centerX, centerY, (float) Math.sqrt((centerX * centerX + centerY * centerY)*0.9f), mMaskColors, null, Shader.TileMode.CLAMP);
-        mPaint.setShader(mMaskGradient);
+        mMaskRadiaGradient = new RadialGradient(centerX, centerY, (float) Math.sqrt(centerX * centerX + centerY * centerY)*1.2f, mMaskColors, null, Shader.TileMode.CLAMP);
+        mPaint.setShader(mMaskRadiaGradient);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
-
     }
 
 

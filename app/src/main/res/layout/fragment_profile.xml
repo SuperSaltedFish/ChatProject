@@ -2,236 +2,90 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <android.support.constraint.Guideline
         android:id="@+id/ProfileFragment_mGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.34" />
+        app:layout_constraintGuide_percent="0.4" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/ProfileFragment_mGuideline2"
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/ProfileFragment_mVpBanner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/ProfileFragment_mGuideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.yzx.chat.widget.view.PageIndicator
+        android:id="@+id/ProfileFragment_mPageIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@id/ProfileFragment_mGuideline"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="2dp"
-        android:padding="12dp"
-        android:src="@drawable/ic_setting"
-        android:tint="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <Space
+        android:id="@+id/ProfileFragment_mAvatarSpace"
+        android:layout_width="wrap_content"
+        android:layout_height="88dp"
+        app:layout_constraintBottom_toTopOf="@id/ProfileFragment_mGuideline" />
 
     <ImageView
         android:id="@+id/ProfileFragment_mIvAvatar"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="32dp"
-        android:background="@android:color/white"
-        android:elevation="2dp"
-        android:padding="1dp"
-        android:src="@drawable/temp_head_image"
-        app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mGuideline2"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="22dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mGuideline2" />
-
+        app:layout_constraintTop_toTopOf="@id/ProfileFragment_mAvatarSpace" />
 
     <TextView
         android:id="@+id/ProfileFragment_mTvNickname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:gravity="center_vertical"
-        android:text="_________夜之星"
-        android:textColor="@color/textColorWhite"
-        android:textSize="17sp"
-        app:layout_constraintBottom_toTopOf="@+id/ProfileFragment_mGuideline2"
-        app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mIvAvatar" />
-
-    <LinearLayout
-        android:id="@+id/ProfileFragment_mLlEditProfile"
-        android:paddingStart="4dp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
         android:paddingEnd="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="@drawable/radius_btn_4dp_color_accent_light"
-        android:gravity="center"
-        android:layout_marginStart="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
-        app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mTvNickname"
-        app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mTvNickname">
+        android:paddingStart="4dp"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/ProfileFragment_mIvSexIcon"
+        app:layout_constraintEnd_toStartOf="@id/ProfileFragment_mPageIndicator"
+        app:layout_constraintStart_toEndOf="@id/ProfileFragment_mIvAvatar" />
 
-        <ImageView
-            android:padding="2dp"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/ic_edit" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ProfileEditActivity_Title"
-            android:textColor="@color/textColorWhite"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/ProfileFragment_mTvNickname"
-            app:layout_constraintStart_toEndOf="@+id/ProfileFragment_mTvNickname"
-            app:layout_constraintTop_toTopOf="@+id/ProfileFragment_mTvNickname" />
-
-    </LinearLayout>
-
+    <ImageView
+        android:id="@+id/ProfileFragment_mIvSexIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="4dp"
+        android:padding="1dp"
+        android:src="@drawable/selector_src_sex"
+        app:layout_constraintBottom_toTopOf="@id/ProfileFragment_mGuideline"
+        app:layout_constraintStart_toEndOf="@id/ProfileFragment_mIvAvatar" />
 
     <TextView
+        android:id="@+id/ProfileFragment_mTvLocationAndAge"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:gravity="center_vertical"
-        android:text="真想击倒你的不是敌人，而是你自甘落伍的内心。"
+        android:layout_marginStart="6dp"
+        android:ellipsize="end"
         android:textColor="@color/textColorWhiteAlpha"
-        android:textSize="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/ProfileFragment_mTvNickname"
-        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mGuideline2" />
-
-
-    <com.yzx.chat.widget.view.RoundLinearLayout
-        android:id="@+id/ProfileFragment_mILlProfileLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
-        android:background="@android:color/white"
-        android:elevation="2dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mIvAvatar">
-
-
-        <include layout="@layout/include_profile" />
-
-    </com.yzx.chat.widget.view.RoundLinearLayout>
-
-    <com.yzx.chat.widget.view.RoundLinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@android:color/white"
-        android:elevation="2dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/ProfileFragment_mILlProfileLayout">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_add" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="20dp"
-                    android:text="添加新的相册"
-                    android:textColor="@color/textSecondaryColorBlack"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingEnd="8dp"
-                android:paddingStart="16dp">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_image" />
-
-                <TextSwitcher
-                    android:id="@+id/ProfileFragment_mTsAlbumName"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:inAnimation="@anim/anim_fade_in"
-                    android:outAnimation="@anim/anim_fade_out"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="20dp"
-                    android:text="添加新的相册"
-                    android:textColor="@color/textSecondaryColorBlack"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:clickable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_more" />
-
-            </LinearLayout>
-
-
-        </FrameLayout>
-
-
-        <FrameLayout
-            android:id="@+id/ProfileFragment_mFlPagerParentLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:clipChildren="false">
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/ProfileFragment_mVpAlbum"
-                android:layout_width="116dp"
-                android:layout_height="88dp"
-                android:layout_gravity="center_horizontal"
-                android:clipChildren="false"
-                android:overScrollMode="never" />
-
-        </FrameLayout>
-
-
-    </com.yzx.chat.widget.view.RoundLinearLayout>
+        android:gravity="start|center_vertical"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/ProfileFragment_mIvSexIcon"
+        app:layout_constraintEnd_toStartOf="@id/ProfileFragment_mPageIndicator"
+        app:layout_constraintStart_toEndOf="@id/ProfileFragment_mIvSexIcon"
+        app:layout_constraintTop_toTopOf="@id/ProfileFragment_mIvSexIcon" />
 
 
 </android.support.constraint.ConstraintLayout>
