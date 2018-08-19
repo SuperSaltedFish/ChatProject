@@ -58,7 +58,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .add(R.id.HomeActivity_mClContent, mFragments[0], String.valueOf(0))
                 .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
                 .add(R.id.HomeActivity_mClContent, mFragments[2], String.valueOf(2))
-                .add(R.id.HomeActivity_mClContent, mFragments[3], String.valueOf(2))
+                .add(R.id.HomeActivity_mClContent, mFragments[3], String.valueOf(3))
                 .hide(mFragments[0])
                 .hide(mFragments[1])
                 .hide(mFragments[2])

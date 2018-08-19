@@ -176,11 +176,10 @@
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@android:color/white"
+        android:background="@color/colorAccent"
         android:elevation="4dp"
         android:padding="12dp"
-        android:src="@drawable/ic_chat"
-        android:tint="@color/colorAccent" />
+        android:src="@drawable/ic_chat" />
 
 
 </android.support.design.widget.CoordinatorLayout>

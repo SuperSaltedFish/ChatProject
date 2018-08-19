@@ -79,13 +79,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:ellipsize="end"
-        android:textColor="@color/textColorWhiteAlpha"
         android:gravity="start|center_vertical"
+        android:textColor="@color/textColorWhiteAlpha"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/ProfileFragment_mIvSexIcon"
         app:layout_constraintEnd_toStartOf="@id/ProfileFragment_mPageIndicator"
         app:layout_constraintStart_toEndOf="@id/ProfileFragment_mIvSexIcon"
         app:layout_constraintTop_toTopOf="@id/ProfileFragment_mIvSexIcon" />
+
+
 
 
 </android.support.constraint.ConstraintLayout>

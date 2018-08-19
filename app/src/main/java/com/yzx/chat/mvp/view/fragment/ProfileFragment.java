@@ -13,12 +13,11 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.ProfileContract;
-import com.yzx.chat.mvp.contract.ProfileModifyContract;
-import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
 import com.yzx.chat.mvp.presenter.ProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
+import com.yzx.chat.widget.view.MaskImageView;
 import com.yzx.chat.widget.view.PageIndicator;
 
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mPageIndicator.setIndicatorRadius((int) AndroidUtil.dip2px(3));
         mPageIndicator.setupWithViewPager(mVpBanner);
 
+        mCropImagePagerAdapter.setMaskType(MaskImageView.MASK_MODE_LINEAR);
         mVpBanner.setAdapter(mCropImagePagerAdapter);
 
         mPresenter.initUserInfo();
@@ -95,6 +95,6 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
             locationAndAge.append(" · ").append(user.getLocation());
         }
         mTvLocationAndAge.setText(locationAndAge.toString());
-        GlideUtil.loadAvatarFromUrl(mContext, mIvAvatar, user.getSignature());
+        GlideUtil.loadAvatarFromUrl(mContext, mIvAvatar, user.getAvatar());
     }
 }

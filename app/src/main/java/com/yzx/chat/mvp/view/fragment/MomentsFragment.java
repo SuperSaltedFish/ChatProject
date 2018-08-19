@@ -53,6 +53,4 @@ public class MomentsFragment extends BaseFragment {
     protected void onFirstVisible() {
 
     }
-
-
 }

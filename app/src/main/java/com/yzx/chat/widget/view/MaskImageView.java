@@ -4,13 +4,16 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by YZX on 2018年07月15日.
@@ -18,11 +21,36 @@ import android.widget.ImageView;
  */
 public class MaskImageView extends ImageView {
 
-    private RadialGradient mMaskRadiaGradient;
+    public static final int MASK_MODE_RADIAL = 0;
+    public static final int MASK_MODE_LINEAR = 1;
 
+    @IntDef({MASK_MODE_RADIAL, MASK_MODE_LINEAR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MaskType {
+    }
+
+    private @MaskType
+    int mCurrentMode;
+
+    private RadialGradient mMaskRadialGradient;
+    private LinearGradient mMaskLinearGradient;
     private Paint mPaint;
 
-    private int[] mMaskColors;
+    private final int[] mMaskRadialColors = new int[]{
+            Color.TRANSPARENT,
+            Color.TRANSPARENT,
+            Color.TRANSPARENT,
+            Color.argb(24, 0, 0, 0),
+            Color.argb(128, 0, 0, 0)
+    };
+
+    private final int[] mMaskLinearColors = new int[]{
+            Color.TRANSPARENT,
+            Color.TRANSPARENT,
+            Color.TRANSPARENT,
+            Color.TRANSPARENT,
+            Color.argb(72, 0, 0, 0)
+    };
 
     public MaskImageView(Context context) {
         this(context, null);
@@ -34,13 +62,6 @@ public class MaskImageView extends ImageView {
 
     public MaskImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mMaskColors = new int[]{
-                Color.TRANSPARENT,
-                Color.TRANSPARENT,
-                Color.TRANSPARENT,
-                Color.argb(24, 0, 0, 0),
-                Color.argb(148, 0, 0, 0)
-        };
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
     }
@@ -48,17 +69,48 @@ public class MaskImageView extends ImageView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        float centerX = w / 2f;
-        float centerY = h / 2f;
-        mMaskRadiaGradient = new RadialGradient(centerX, centerY, (float) Math.sqrt(centerX * centerX + centerY * centerY)*1.2f, mMaskColors, null, Shader.TileMode.CLAMP);
-        mPaint.setShader(mMaskRadiaGradient);
+        mMaskRadialGradient = null;
+        mMaskLinearGradient = null;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
+        switch (mCurrentMode) {
+            case MASK_MODE_RADIAL:
+                drawRadialMask(canvas, getWidth(), getHeight());
+                break;
+            case MASK_MODE_LINEAR:
+                drawLinearMask(canvas, getWidth(), getHeight());
+                break;
+        }
     }
 
+    private void drawRadialMask(Canvas canvas, int viewWidth, int viewHeight) {
+        float centerX = viewWidth / 2f;
+        float centerY = viewHeight / 2f;
+        if (mMaskRadialGradient == null) {
+            mMaskRadialGradient = new RadialGradient(centerX, centerY, (float) Math.sqrt(centerX * centerX + centerY * centerY) * 1.3f, mMaskRadialColors, null, Shader.TileMode.CLAMP);
+        }
+        mPaint.setShader(mMaskRadialGradient);
+        canvas.drawRect(0, 0, viewWidth, viewHeight, mPaint);
+    }
 
+    private void drawLinearMask(Canvas canvas, int viewWidth, int viewHeight) {
+        float centerX = viewWidth / 2f;
+        float centerY = viewHeight / 2f;
+        if (mMaskLinearGradient == null) {
+            mMaskLinearGradient = new LinearGradient(centerX, 0, centerX, viewHeight, mMaskLinearColors, null, Shader.TileMode.CLAMP);
+        }
+        mPaint.setShader(mMaskLinearGradient);
+        canvas.drawRect(0, 0, viewWidth, viewHeight, mPaint);
+    }
+
+    public void setCurrentMode(@MaskType int currentMode) {
+        if (mCurrentMode == currentMode) {
+            return;
+        }
+        mCurrentMode = currentMode;
+        invalidate();
+    }
 }

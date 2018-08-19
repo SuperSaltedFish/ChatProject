@@ -210,7 +210,7 @@ public class ConversationManager {
         return mUnreadChatMessageCount;
     }
 
-    public void updateChatUnreadCount() {
+    private void updateChatUnreadCount() {
         mRongIMClient.getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {

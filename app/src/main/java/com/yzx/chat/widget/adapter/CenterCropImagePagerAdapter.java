@@ -21,6 +21,7 @@ import java.util.List;
 public class CenterCropImagePagerAdapter extends PagerAdapter {
 
     private List<Object> mPicUrlList;
+    private int mCurrentMaskType;
 
     public CenterCropImagePagerAdapter(List<Object> picUrlList) {
         mPicUrlList = picUrlList;
@@ -49,8 +50,16 @@ public class CenterCropImagePagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         MaskImageView imageView = new MaskImageView(container.getContext());
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setCurrentMode(mCurrentMaskType);
         container.addView(imageView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         GlideUtil.loadFromUrl(container.getContext(), imageView, mPicUrlList.get(position));
         return imageView;
+    }
+
+    public void setMaskType(@MaskImageView.MaskType int currentMode){
+        if(mCurrentMaskType!=currentMode){
+            mCurrentMaskType = currentMode;
+            notifyDataSetChanged();
+        }
     }
 }
