@@ -409,7 +409,7 @@ public class ContactManager {
         return mContactOperationUnreadNumber;
     }
 
-    private void updateContactUnreadCount() {
+     void updateContactUnreadCount() {
         mManagerHelper.runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -266,7 +266,12 @@ public class IMClient implements IManagerHelper {
 
                     private void success(boolean isConnectedToServer) {
                         mChatManager = new ChatManager(IMClient.this);
+                        mContactManager = new ContactManager(IMClient.this);
+                        mGroupManager = new GroupManager(IMClient.this);
+                        mChatManager = new ChatManager(IMClient.this);
                         mConversationManager = new ConversationManager();
+                        mContactManager.updateContactUnreadCount();
+                        mConversationManager.updateChatUnreadCount();
                         latch.countDown();
                     }
 
@@ -309,10 +314,6 @@ public class IMClient implements IManagerHelper {
         if (mCryptoManager == null) {
             return false;
         }
-        mContactManager = new ContactManager(this);
-        mGroupManager = new GroupManager(this);
-        mChatManager = new ChatManager(this);
-        mConversationManager = new ConversationManager();
         return true;
     }
 

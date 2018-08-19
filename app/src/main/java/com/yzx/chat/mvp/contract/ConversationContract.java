@@ -31,6 +31,8 @@ public class ConversationContract {
 
 
     public interface Presenter extends BasePresenter<View> {
+        void refreshAllConversationsIfNeed();
+
         void refreshAllConversations();
 
         void setConversationTop(Conversation conversation, boolean isTop);

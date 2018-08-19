@@ -40,6 +40,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private IMClient mIMClient;
     private Handler mHandler;
 
+    private boolean isOnceSentMessage;
+
     @Override
     public void attachView(ConversationContract.View view) {
         mConversationView = view;
@@ -47,6 +49,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mHandler = new Handler();
         mIMClient = IMClient.getInstance();
         mIMClient.addConnectionListener(mOnConnectionStateChangeListener);
+        mIMClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, null);
         mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
         mIMClient.getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
@@ -56,6 +59,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
         mIMClient.removeConnectionListener(mOnConnectionStateChangeListener);
+        mIMClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mIMClient.getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
@@ -63,6 +67,15 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationList = null;
         mConversationView = null;
         AsyncUtil.cancelTask(mRefreshTask);
+    }
+
+    @Override
+    public void refreshAllConversationsIfNeed() {
+        if (isOnceSentMessage) {
+            LogUtil.e("Conversation change,code: OnceSentMessage");
+            isOnceSentMessage = false;
+            refreshAllConversations();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -76,18 +89,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void setConversationTop(Conversation conversation, boolean isTop) {
-        mIMClient.getConversationManager().setConversationTop(conversation.getConversationType(),conversation.getTargetId(), isTop);
+        mIMClient.getConversationManager().setConversationTop(conversation.getConversationType(), conversation.getTargetId(), isTop);
     }
 
 
     @Override
     public void deleteConversation(Conversation conversation) {
-        mIMClient.getConversationManager().removeConversation(conversation.getConversationType(),conversation.getTargetId());
+        mIMClient.getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId());
     }
 
     @Override
     public void clearConversationMessages(Conversation conversation) {
-        mIMClient.getConversationManager().clearAllConversationMessages(conversation.getConversationType(),conversation.getTargetId());
+        mIMClient.getConversationManager().clearAllConversationMessages(conversation.getConversationType(), conversation.getTargetId());
     }
 
     @Override
@@ -146,6 +159,33 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     refreshAllConversations();
                     break;
             }
+        }
+    };
+
+    private final ChatManager.OnMessageSendListener mOnMessageSendListener = new ChatManager.OnMessageSendListener() {
+        @Override
+        public void onAttached(Message message) {
+            isOnceSentMessage = true;
+        }
+
+        @Override
+        public void onProgress(Message message, int progress) {
+
+        }
+
+        @Override
+        public void onSuccess(Message message) {
+
+        }
+
+        @Override
+        public void onError(Message message) {
+
+        }
+
+        @Override
+        public void onCanceled(Message message) {
+
         }
     };
 
@@ -210,7 +250,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         Conversation conversation = it.next();
                         conversationID = conversation.getTargetId();
                         if (conversationID.equals(ChatPresenter.sConversationID) && conversation.getUnreadMessageCount() != 0) {
-                            chatManager.getConversationManager().clearConversationUnreadStatus(conversation.getConversationType(),conversation.getTargetId());
+                            chatManager.getConversationManager().clearConversationUnreadStatus(conversation.getConversationType(), conversation.getTargetId());
                             conversation.setUnreadMessageCount(0);
                         }
                         switch (conversation.getConversationType()) {
@@ -220,7 +260,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                                     conversation.setConversationTitle(contactBean.getName());
                                     conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
                                 } else {
-                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(),conversation.getTargetId(), false);
+                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;
@@ -230,7 +270,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                                     conversation.setConversationTitle(group.getName());
                                     conversation.setPortraitUrl(group.getAvatarUrlFromMember());
                                 } else {
-                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(),conversation.getTargetId(), false);
+                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;
