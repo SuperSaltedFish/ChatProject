@@ -16,6 +16,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.GlideApp;
+import com.yzx.chat.util.LogUtil;
 
 
 /**
@@ -40,14 +41,14 @@ public class ImageOriginalActivity extends BaseCompatActivity {
     @Override
     protected void init(Bundle savedInstanceState) {
         mPhotoView = findViewById(R.id.ImageOriginal_mPhotoView);
-        ViewCompat.setTransitionName(mPhotoView, TRANSITION_NAME_IMAGE);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
+        ViewCompat.setTransitionName(mPhotoView, TRANSITION_NAME_IMAGE);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
-        Uri imageUri = getIntent().getParcelableExtra(INTENT_EXTRA_IMAGE_URI);
+        final Uri imageUri = getIntent().getParcelableExtra(INTENT_EXTRA_IMAGE_URI);
         if (imageUri == null && thumbnailUri == null) {
             finish();
             return;
@@ -59,16 +60,14 @@ public class ImageOriginalActivity extends BaseCompatActivity {
                 thumbnail = new BitmapDrawable(getResources(), bitmap);
             }
         }
+        mPhotoView.setImageDrawable(thumbnail);
         if (imageUri != null && !TextUtils.isEmpty(imageUri.getPath())) {
-            GlideApp.with(this)
+            GlideApp.with(ImageOriginalActivity.this)
                     .load(imageUri)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .dontAnimate()
                     .format(DecodeFormat.PREFER_RGB_565)
-                    .placeholder(thumbnail)
                     .into(mPhotoView);
-        } else {
-            mPhotoView.setImageDrawable(thumbnail);
         }
     }
 

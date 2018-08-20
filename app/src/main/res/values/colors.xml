@@ -26,7 +26,7 @@
 
 
     <color name="textColorWhite">#ffffff</color>
-    <color name="textColorWhiteAlpha">#eeffffff</color>
+    <color name="textColorWhiteAlpha">#a8ffffff</color>
 
 
     <color name="maskColorBlack">#9c000000</color>

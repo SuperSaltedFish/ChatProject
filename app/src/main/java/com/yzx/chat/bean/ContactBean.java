@@ -30,7 +30,7 @@ public class ContactBean implements Parcelable,BasicInfoProvider {
     }
 
     @Override
-    public String getName(int position) {
+    public String getName(String userID) {
         return getName();
     }
 
@@ -40,7 +40,7 @@ public class ContactBean implements Parcelable,BasicInfoProvider {
     }
 
     @Override
-    public String getAvatar(int position) {
+    public String getAvatar(String userID) {
         return getAvatar();
     }
 

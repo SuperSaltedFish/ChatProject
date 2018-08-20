@@ -97,11 +97,10 @@ public class NotificationHelper {
         return builder;
     }
 
-
+    private Context mAppContext;
     private Notification.Builder mChatMessageTypeBuilder;
     private Notification.Builder mContactOperationTypeBuilder;
     private NotificationManager mNotificationMessage;
-    private Context mAppContext;
     private SparseArray<SimpleTarget<Bitmap>> mSimpleTargetMap;
 
     private NotificationHelper(Context appContext) {

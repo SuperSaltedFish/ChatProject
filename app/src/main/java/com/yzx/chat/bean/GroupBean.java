@@ -3,10 +3,12 @@ package com.yzx.chat.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -23,15 +25,16 @@ public class GroupBean implements Parcelable, BasicInfoProvider {
     private String notice;
     private String avatar;
     private ArrayList<GroupMemberBean> members;
-
-    private String avatarUrlFromMember;
+    private HashMap<String, GroupMemberBean> mMembersMap;
+    private String avatarUrlFromMembers;
 
     public String getNameAndMemberNumber() {
+
         return String.format(Locale.getDefault(), "%s(%d)", name, members == null ? 0 : members.size());
     }
 
-    public String getAvatarUrlFromMember() {
-        if (TextUtils.isEmpty(avatarUrlFromMember)) {
+    public String getAvatarUrlFromMembers() {
+        if (TextUtils.isEmpty(avatarUrlFromMembers)) {
             int size = members.size();
             if (size > 9) {
                 size = 9;
@@ -54,10 +57,10 @@ public class GroupBean implements Parcelable, BasicInfoProvider {
                 }
             }
             if (builder != null) {
-                avatarUrlFromMember = builder.toString();
+                avatarUrlFromMembers = builder.toString();
             }
         }
-        return avatarUrlFromMember;
+        return avatarUrlFromMembers;
     }
 
     @Override
@@ -75,6 +78,21 @@ public class GroupBean implements Parcelable, BasicInfoProvider {
         return groupID.equals(group.getGroupID());
     }
 
+    private void tryInitMembersMap() {
+        if (members == null || members.size() == 0) {
+            mMembersMap = null;
+            return;
+        }
+        if (mMembersMap == null) {
+            mMembersMap = new HashMap<>();
+        }
+        if (mMembersMap.size() != members.size()) {
+            mMembersMap.clear();
+            for (GroupMemberBean member : members) {
+                mMembersMap.put(member.getUserProfile().getUserID(), member);
+            }
+        }
+    }
 
     public String getGroupID() {
         return groupID;
@@ -89,11 +107,15 @@ public class GroupBean implements Parcelable, BasicInfoProvider {
     }
 
     @Override
-    public String getName(int position) {
-        if (members == null || members.size() <= position) {
-            return null;
+    public String getName(String userID) {
+        tryInitMembersMap();
+        if (mMembersMap != null) {
+            GroupMemberBean member = mMembersMap.get(userID);
+            if (member != null) {
+                return member.getAlias();
+            }
         }
-        return members.get(position).getNicknameInGroup();
+        return null;
     }
 
     public void setName(String name) {
@@ -121,11 +143,15 @@ public class GroupBean implements Parcelable, BasicInfoProvider {
     }
 
     @Override
-    public String getAvatar(int position) {
-        if (members == null || members.size() <= position) {
-            return null;
+    public String getAvatar(String userID) {
+        tryInitMembersMap();
+        if (mMembersMap != null) {
+            GroupMemberBean member = mMembersMap.get(userID);
+            if (member != null) {
+                return member.getUserProfile().getAvatar();
+            }
         }
-        return members.get(position).getUserProfile().getAvatar();
+        return null;
     }
 
     public void setAvatar(String avatar) {

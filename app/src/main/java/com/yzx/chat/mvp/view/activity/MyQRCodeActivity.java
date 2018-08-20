@@ -138,7 +138,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
                 finish();
                 return;
             }
-            String avatarUri = group.getAvatarUrlFromMember();
+            String avatarUri = group.getAvatarUrlFromMembers();
             Object[] avatarList;
             if (TextUtils.isEmpty(avatarUri)) {
                 avatarList = new Object[]{R.drawable.ic_avatar_default};

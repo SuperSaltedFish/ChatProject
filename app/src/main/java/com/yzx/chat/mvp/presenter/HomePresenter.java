@@ -140,7 +140,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
         @Override
         public void onContactOperationRemove(final ContactOperationBean contactOperation) {
-            NotificationHelper.getInstance().cancelNotification(contactOperation.getUserID().hashCode());
+
         }
     };
 

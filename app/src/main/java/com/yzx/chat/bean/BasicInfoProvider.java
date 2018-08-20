@@ -8,9 +8,9 @@ public interface BasicInfoProvider {
 
     String getName();
 
-    String getName(int position);
+    String getName(String userID);
 
     String getAvatar();
 
-    String getAvatar(int position);
+    String getAvatar(String userID);
 }

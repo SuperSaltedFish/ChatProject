@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingEnd="4dp"
+    android:clipToPadding="false"
+    android:paddingStart="4dp"
     android:gravity="center_vertical|end">
 
     <TextView
@@ -37,8 +40,8 @@
         android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="1dp"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

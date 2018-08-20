@@ -20,7 +20,7 @@
         app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvNickname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
@@ -33,20 +33,19 @@
         android:id="@+id/ChatMessageAdapter_mTvNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="7dp"
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime"  />
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
 
-    <android.support.v7.widget.CardView
+    <FrameLayout
         android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="1dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/bg_chat_item_recv"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -111,7 +110,7 @@
 
         </android.support.constraint.ConstraintLayout>
 
-    </android.support.v7.widget.CardView>
+    </FrameLayout>
 
 
 </android.support.constraint.ConstraintLayout>

@@ -52,8 +52,10 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
 
     @IntDef({SYSTEM_UI_MODE_NONE
             , SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS
+            , SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS
             , SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS_AND_NAVIGATION
-            , SYSTEM_UI_MODE_FULLSCREEN})
+            , SYSTEM_UI_MODE_FULLSCREEN
+            , SYSTEM_UI_MODE_LIGHT_BAR})
     @Retention(RetentionPolicy.SOURCE)
     private @interface SystemUiMode {
     }
@@ -130,7 +132,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (result) {
             onRequestPermissionsResult(requestCode, true, null);
         } else if (isNeedShowMissingPermissionDialog) {
-            showMissingPermissionDialog(requestCode,deniedPermissions.toArray(new String[deniedPermissions.size()]));
+            showMissingPermissionDialog(requestCode, deniedPermissions.toArray(new String[deniedPermissions.size()]));
         } else {
             onRequestPermissionsResult(requestCode, false, deniedPermissions.toArray(new String[deniedPermissions.size()]));
         }
@@ -152,25 +154,25 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (size != 0) {
             ActivityCompat.requestPermissions(this, permissionList.toArray(new String[size]), requestCode);
         } else {
-            onRequestPermissionsResult(requestCode, true,null);
+            onRequestPermissionsResult(requestCode, true, null);
         }
     }
 
-    private void showMissingPermissionDialog(final int requestCode,final String[] deniedPermissions) {
+    private void showMissingPermissionDialog(final int requestCode, final String[] deniedPermissions) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.PermissionDialog_Help);
         builder.setMessage(R.string.PermissionDialog_MissPermissionHint);
         builder.setNegativeButton(R.string.PermissionDialog_Cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                onRequestPermissionsResult(requestCode, false,deniedPermissions);
+                onRequestPermissionsResult(requestCode, false, deniedPermissions);
             }
         });
         builder.setPositiveButton(R.string.PermissionDialog_Setting, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startAppSettings();
-                onRequestPermissionsResult(requestCode, false,deniedPermissions);
+                onRequestPermissionsResult(requestCode, false, deniedPermissions);
             }
         });
         builder.setCancelable(true);
@@ -214,7 +216,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         }
     }
 
-    public void setSystemUiMode(int mode) {
+    public void setSystemUiMode(@SystemUiMode int mode) {
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         switch (mode) {

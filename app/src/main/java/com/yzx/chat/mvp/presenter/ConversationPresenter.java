@@ -268,7 +268,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                                 GroupBean group = chatManager.getGroupManager().getGroup(conversationID);
                                 if (group != null) {
                                     conversation.setConversationTitle(group.getName());
-                                    conversation.setPortraitUrl(group.getAvatarUrlFromMember());
+                                    conversation.setPortraitUrl(group.getAvatarUrlFromMembers());
                                 } else {
                                     IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
                                     it.remove();

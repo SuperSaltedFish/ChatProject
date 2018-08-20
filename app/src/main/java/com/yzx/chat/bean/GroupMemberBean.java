@@ -57,6 +57,9 @@ public class GroupMemberBean implements Parcelable {
     }
 
     public String getAlias() {
+        if(TextUtils.isEmpty(alias)){
+            return userProfile.getNickname();
+        }
         return alias;
     }
 

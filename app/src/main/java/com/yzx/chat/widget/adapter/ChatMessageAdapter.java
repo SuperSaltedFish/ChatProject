@@ -81,13 +81,14 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE = 12;
 
     private List<Message> mMessageList;
-    private SparseLongArray mTimeSparseLongArray;
+    private SparseLongArray mTimeDisplayPositionArray;
     private MessageCallback mMessageCallback;
     private BasicInfoProvider mBasicInfoProvider;
+    private boolean isEnableNameDisplay;
 
     public ChatMessageAdapter(List<Message> messageList) {
         mMessageList = messageList;
-        mTimeSparseLongArray = new SparseLongArray(64);
+        mTimeDisplayPositionArray = new SparseLongArray(64);
         registerAdapterDataObserver(mDataObserver);
     }
 
@@ -124,10 +125,12 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageHolder holder, int position) {
-        holder.isEnableTimeHint = mTimeSparseLongArray.get(mMessageList.get(position).getMessageId(), -1) > 0;
+        holder.isEnableTimeHint = mTimeDisplayPositionArray.get(mMessageList.get(position).getMessageId(), -1) > 0;
         holder.setMessageCallback(mMessageCallback);
         if (holder instanceof ReceiveMessageHolder) {
-            ((ReceiveMessageHolder) holder).setBasicInfoProvider(mBasicInfoProvider);
+            ReceiveMessageHolder receiveMessageHolder = (ReceiveMessageHolder) holder;
+            receiveMessageHolder.mBasicInfoProvider = mBasicInfoProvider;
+            receiveMessageHolder.isEnableNameDisplay = isEnableNameDisplay;
         }
         holder.setDate(mMessageList.get(position));
     }
@@ -180,49 +183,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
-            if (mMessageList == null || mMessageList.size() < positionStart + itemCount) {
-                return;
-            }
-            if (positionStart == 0) {
-                long newestTime;
-                if (mTimeSparseLongArray.size() > 0) {
-                    newestTime = mTimeSparseLongArray.get(mTimeSparseLongArray.keyAt(mTimeSparseLongArray.size() - 1), 0);
-                } else {
-                    newestTime = 0;
-                }
-                Message message;
-                for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
-                    message = mMessageList.get(i);
-                    long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
-                    if (messageTime - newestTime >= TIME_HINT_INTERVAL) {
-                        mTimeSparseLongArray.append(message.getMessageId(), messageTime);
-                        newestTime = messageTime;
-                    }
-                }
-            } else {
-                long oldestTime;
-                if (mTimeSparseLongArray.size() > 0) {
-                    oldestTime = mTimeSparseLongArray.get(mTimeSparseLongArray.keyAt(0), 0);
-                } else {
-                    oldestTime = 0;
-                }
-                long temp = oldestTime;
-                Message message;
-                for (int i = positionStart, count = positionStart + itemCount; i < count; i++) {
-                    message = mMessageList.get(i);
-                    long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
-                    if (oldestTime - messageTime >= TIME_HINT_INTERVAL) {
-                        mTimeSparseLongArray.put(message.getMessageId(), messageTime);
-                        oldestTime = messageTime;
-                    } else if (i == count - 1) {
-                        if (oldestTime != temp) {
-                            mTimeSparseLongArray.delete(mTimeSparseLongArray.keyAt(0));
-                        }
-                        mTimeSparseLongArray.put(message.getMessageId(), messageTime);
-                    }
-                }
-            }
-
+            calculateTimeDisplayPosition(positionStart, itemCount);
         }
 
         @Override
@@ -233,10 +194,40 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         @Override
         public void onChanged() {
             if (mMessageList == null || mMessageList.size() == 0) {
-                mTimeSparseLongArray.clear();
+                mTimeDisplayPositionArray.clear();
             }
         }
     };
+
+    private void calculateTimeDisplayPosition(int positionStart, int itemCount) {
+        if (mMessageList == null || mMessageList.size() == 0) {
+            mTimeDisplayPositionArray.clear();
+            return;
+        }
+        if (mMessageList.size() <= positionStart) {
+            return;
+        }
+        long latestTime;
+        if (positionStart == 0 && mTimeDisplayPositionArray.size() > 0) {
+            latestTime = mTimeDisplayPositionArray.get(mTimeDisplayPositionArray.keyAt(mTimeDisplayPositionArray.size() - 1), 0);
+        } else {
+            latestTime = 0;
+        }
+        Message message;
+        for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
+            message = mMessageList.get(i);
+            long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
+            if (Math.abs(latestTime - messageTime) >= TIME_HINT_INTERVAL) {
+                mTimeDisplayPositionArray.append(message.getMessageId(), messageTime);
+                latestTime = messageTime;
+            }
+        }
+    }
+
+
+    public void setEnableNameDisplay(boolean enableNameDisplay) {
+        isEnableNameDisplay = enableNameDisplay;
+    }
 
     public void setBasicInfoProvider(BasicInfoProvider basicInfoProvider) {
         mBasicInfoProvider = basicInfoProvider;
@@ -258,6 +249,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         ImageView mIvAvatar;
         TextView mTvNickname;
         BasicInfoProvider mBasicInfoProvider;
+        boolean isEnableNameDisplay;
 
         ReceiveMessageHolder(View itemView, int type) {
             super(itemView, type);
@@ -265,16 +257,17 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mTvNickname = itemView.findViewById(R.id.ChatMessageAdapter_mTvNickname);
         }
 
-        void setBasicInfoProvider(BasicInfoProvider basicInfoProvider) {
-            mBasicInfoProvider = basicInfoProvider;
-        }
-
         @Override
         protected void setDate(Message message) {
             super.setDate(message);
             if (mBasicInfoProvider != null) {
-                GlideUtil.loadAvatarFromUrl(itemView.getContext(), mIvAvatar, mBasicInfoProvider.getAvatar(getAdapterPosition()));
-                mTvNickname.setText(mBasicInfoProvider.getAvatar(getAdapterPosition()));
+                GlideUtil.loadAvatarFromUrl(itemView.getContext(), mIvAvatar, mBasicInfoProvider.getAvatar(message.getSenderUserId()));
+                if (isEnableNameDisplay) {
+                    mTvNickname.setText(mBasicInfoProvider.getName(message.getSenderUserId()));
+                    mTvNickname.setVisibility(View.VISIBLE);
+                } else {
+                    mTvNickname.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -574,7 +567,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mIvImageContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
             mContentLayout = mIvImageContent;
-            mIvImageContent.setRoundRadius(AndroidUtil.dip2px(10));
+            mIvImageContent.setRoundRadius(AndroidUtil.dip2px(3));
         }
 
         @Override
@@ -793,7 +786,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mIvVideoThumbnail = itemView.findViewById(R.id.ChatMessageAdapter_mIvVideoThumbnail);
             mTvVideoDuration = itemView.findViewById(R.id.ChatMessageAdapter_mTvVideoDuration);
-            mIvVideoThumbnail.setRoundRadius(AndroidUtil.dip2px(10));
+            mIvVideoThumbnail.setRoundRadius(AndroidUtil.dip2px(3));
             mContentLayout = mIvVideoThumbnail;
         }
 

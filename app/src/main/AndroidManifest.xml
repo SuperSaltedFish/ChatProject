@@ -95,7 +95,9 @@
             android:theme="@style/NoBackgroundLightTheme" />
         <activity
             android:name=".mvp.view.activity.LocationMapActivity"
-            android:windowSoftInputMode="adjustNothing"></activity>
+            android:windowSoftInputMode="adjustNothing">
+
+        </activity>
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
             android:theme="@style/NoBackgroundLightTheme" />

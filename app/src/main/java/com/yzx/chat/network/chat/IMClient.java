@@ -466,7 +466,7 @@ public class IMClient implements IManagerHelper {
                 default:
                     LogUtil.e("Unknown Message ObjectName:" + message.getObjectName());
             }
-            if (i == 0) {
+            if (i == 0&&mConversationManager!=null&&mContactManager!=null) {
                 mConversationManager.updateChatUnreadCount();
                 mContactManager.updateContactUnreadCount();
             }

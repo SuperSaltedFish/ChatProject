@@ -2,9 +2,10 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingEnd="8dp"
-    android:paddingStart="8dp">
+    android:paddingEnd="4dp"
+    android:clipToPadding="false"
+    android:paddingStart="4dp"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvTime"
@@ -40,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
+        android:elevation="2dp"
         android:foreground="@drawable/fg_video_gradual_mask"
         android:maxHeight="160dp"
         android:maxWidth="160dp"
@@ -56,6 +58,7 @@
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:elevation="2dp"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
         app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
@@ -68,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="8dp"
+        android:elevation="2dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
