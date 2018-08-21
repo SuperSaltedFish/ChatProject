@@ -42,9 +42,6 @@ public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemV
         }else {
             holder.mNineGridImageView.setVisibility(View.VISIBLE);
         }
-        if(position==7){
-            LogUtil.e("");
-        }
         holder.mNineGridImageView.setImageData(s);
 
     }

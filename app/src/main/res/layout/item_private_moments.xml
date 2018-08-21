@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:background="@drawable/bg_2round_white">
+
+
+    <LinearLayout
+        android:id="@+id/PrivateMomentsAdapter_mLlTimeLayout"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/PrivateMomentsAdapter_mTvTimeMonth"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Feb"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/PrivateMomentsAdapter_mTvTimeDay"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="16"
+            android:textColor="@color/textPrimaryColorBlack2"
+            android:textSize="21sp" />
+
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/PrivateMomentsAdapter_Divider"
+        android:layout_width="1.5px"
+        android:layout_height="0dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/dividerColorBlack"
+        app:layout_constraintBottom_toBottomOf="@id/PrivateMomentsAdapter_mLlTimeLayout"
+        app:layout_constraintStart_toEndOf="@id/PrivateMomentsAdapter_mLlTimeLayout"
+        app:layout_constraintTop_toTopOf="@id/PrivateMomentsAdapter_mLlTimeLayout" />
+
+    <TextView
+        android:id="@+id/PrivateMomentsAdapter_mTvTextContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:gravity="start|center_vertical"
+        android:maxLines="3"
+        android:text="每个不曾起舞的日子，都是对生命的辜负dwdwdwdwdww等你恩服务可能付款dwdwd!"
+        android:textColor="@color/textPrimaryColorBlack2"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/PrivateMomentsAdapter_Divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/PrivateMomentsAdapter_Divider"
+        app:layout_constraintTop_toTopOf="@id/PrivateMomentsAdapter_Divider" />
+
+    <com.yzx.chat.widget.view.NineGridImageView
+        android:id="@+id/PrivateMomentsAdapter_mNineGridImageContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/PrivateMomentsAdapter_mTvTextContent"
+        app:layout_constraintStart_toStartOf="@id/PrivateMomentsAdapter_mTvTextContent"
+        app:layout_constraintTop_toBottomOf="@id/PrivateMomentsAdapter_mTvTextContent"
+        app:layout_constraintVertical_bias="0" />
+
+</android.support.constraint.ConstraintLayout>

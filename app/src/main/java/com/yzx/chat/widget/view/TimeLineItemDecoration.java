@@ -22,7 +22,7 @@ public class TimeLineItemDecoration extends RecyclerView.ItemDecoration {
     private int mTimePointOffsetY;
     private int mTimePointSize;
     private int mTimeLineWidth;
-
+    private boolean hasFooterView;
 
     public TimeLineItemDecoration() {
         mPaint = new Paint();
@@ -37,21 +37,28 @@ public class TimeLineItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(c, parent, state);
+        RecyclerView.Adapter adapter = parent.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+        int itemCount = adapter.getItemCount();
+        if (itemCount == 0 || (itemCount == 1 && hasFooterView) || mTimePointDrawable == null) {
+            return;
+        }
         View view;
         float lineStartX = mTimeLineWidth / 2f;
         int pointStartX = (mTimeLineWidth - mTimePointSize) / 2;
-        RecyclerView.LayoutParams params;
         Rect pointRect = new Rect(pointStartX, 0, pointStartX + mTimePointSize, 0);
+        c.drawLine(lineStartX, 0, lineStartX, parent.getHeight(), mPaint);
         for (int i = 0, childCount = parent.getChildCount(); i < childCount; i++) {
             view = parent.getChildAt(i);
-            params = (RecyclerView.LayoutParams) view.getLayoutParams();
-            c.drawLine(lineStartX, view.getTop()-params.topMargin, lineStartX, view.getBottom()+params.bottomMargin, mPaint);
-            if (mTimePointDrawable != null) {
-                pointRect.top = view.getTop() + mTimePointOffsetY;
-                pointRect.bottom = pointRect.top + mTimePointSize;
-                mTimePointDrawable.setBounds(pointRect);
-                mTimePointDrawable.draw(c);
+            if (parent.getChildAdapterPosition(view) == itemCount-1 && hasFooterView) {
+                return;
             }
+            pointRect.top = view.getTop() + mTimePointOffsetY;
+            pointRect.bottom = pointRect.top + mTimePointSize;
+            mTimePointDrawable.setBounds(pointRect);
+            mTimePointDrawable.draw(c);
         }
     }
 
@@ -60,7 +67,7 @@ public class TimeLineItemDecoration extends RecyclerView.ItemDecoration {
         return this;
     }
 
-    public TimeLineItemDecoration setLineWidth(@Px int lineWidth) {
+    public TimeLineItemDecoration setLineWidth(float lineWidth) {
         mPaint.setStrokeWidth(lineWidth);
         return this;
     }
@@ -85,6 +92,10 @@ public class TimeLineItemDecoration extends RecyclerView.ItemDecoration {
         return this;
     }
 
+    public TimeLineItemDecoration setHasFooterView(boolean hasFooterView) {
+        this.hasFooterView = hasFooterView;
+        return this;
+    }
 
     public Paint getPaint() {
         return mPaint;

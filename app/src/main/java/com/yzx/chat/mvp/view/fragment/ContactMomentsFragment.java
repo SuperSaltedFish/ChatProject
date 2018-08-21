@@ -6,12 +6,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.MomentsAdapter;
+import com.yzx.chat.widget.adapter.PrivateMomentsAdapter;
+import com.yzx.chat.widget.view.SpacesItemDecoration;
 import com.yzx.chat.widget.view.TimeLineItemDecoration;
 
 /**
@@ -26,7 +31,7 @@ public class ContactMomentsFragment extends BaseFragment {
 
     public static ContactMomentsFragment newInstance(String contactID) {
         Bundle args = new Bundle();
-        args.putString(ARGUMENT_CONTENT_ID,contactID);
+        args.putString(ARGUMENT_CONTENT_ID, contactID);
         ContactMomentsFragment fragment = new ContactMomentsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -35,7 +40,9 @@ public class ContactMomentsFragment extends BaseFragment {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-    private MomentsAdapter mAdapter;
+    private PrivateMomentsAdapter mAdapter;
+    private View mFooterView;
+    private TextView mTvLoadMoreHint;
 
     @Override
     protected int getLayoutID() {
@@ -46,12 +53,15 @@ public class ContactMomentsFragment extends BaseFragment {
     protected void init(View parentView) {
         mRecyclerView = parentView.findViewById(R.id.ContactMomentsFragment_mRecyclerView);
         mSwipeRefreshLayout = parentView.findViewById(R.id.ContactMomentsFragment_mSwipeRefreshLayout);
-        mAdapter = new MomentsAdapter();
+        mFooterView = LayoutInflater.from(mContext).inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
+        mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
+        mAdapter = new PrivateMomentsAdapter();
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
 
+        mTvLoadMoreHint.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlackLight));
 
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
@@ -61,14 +71,18 @@ public class ContactMomentsFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(layoutManager);
         //  mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12)));
         mRecyclerView.addItemDecoration(
                 new TimeLineItemDecoration()
-                        .setTimeLineWidth((int) AndroidUtil.dip2px(32))
+                        .setTimeLineWidth((int) AndroidUtil.dip2px(56))
                         .setTimeLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack))
-                        .setLineWidth(1)
-                    //    .setTimePointDrawable(AndroidUtil.getDrawable(R.drawable.temp3))
-                        .setTimePointOffsetY((int) AndroidUtil.dip2px(16))
-                        .setTimePointSize((int) AndroidUtil.dip2px(24)));
+                        .setLineWidth(1.2f)
+                        .setTimePointDrawable(AndroidUtil.getDrawable(R.drawable.src_time_point))
+                        .setTimePointOffsetY((int) AndroidUtil.dip2px(4))
+                        .setHasFooterView(true)
+                        .setTimePointSize((int) AndroidUtil.dip2px(28)));
+
+        mAdapter.setFooterView(mFooterView);
     }
 
     @Override

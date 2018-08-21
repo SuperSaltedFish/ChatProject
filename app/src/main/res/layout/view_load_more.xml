@@ -20,6 +20,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="center"
+        android:text="@string/LoadMoreHint_LoadingMore"
         android:textColor="@color/dividerColorBlack"
         android:textSize="12sp" />
 
