@@ -19,7 +19,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.text.emoji.EmojiCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
@@ -36,6 +35,7 @@ import com.yzx.chat.mvp.view.activity.ChatActivity;
 import com.yzx.chat.mvp.view.activity.HomeActivity;
 import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.GlideHexagonTransform;
 
 import io.rong.imlib.model.Conversation;
@@ -102,10 +102,12 @@ public class NotificationHelper {
     private Notification.Builder mContactOperationTypeBuilder;
     private NotificationManager mNotificationMessage;
     private SparseArray<SimpleTarget<Bitmap>> mSimpleTargetMap;
+    private SparseArray<String> mNotificationTypeMap;
 
     private NotificationHelper(Context appContext) {
         mAppContext = appContext.getApplicationContext();
         mSimpleTargetMap = new SparseArray<>();
+        mNotificationTypeMap = new SparseArray<>();
         mNotificationMessage = (NotificationManager) mAppContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mChatMessageTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_CHAT_MESSAGE_TYPE);
         mContactOperationTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_CONTACT_OPERATION_TYPE);
@@ -130,6 +132,7 @@ public class NotificationHelper {
 
         showNotification(
                 mChatMessageTypeBuilder,
+                CHANNEL_ID_CHAT_MESSAGE_TYPE,
                 notificationID,
                 title,
                 content,
@@ -151,6 +154,7 @@ public class NotificationHelper {
 
         showNotification(
                 mChatMessageTypeBuilder,
+                CHANNEL_ID_CHAT_MESSAGE_TYPE,
                 notificationID,
                 title,
                 content,
@@ -175,6 +179,7 @@ public class NotificationHelper {
 
         showNotification(
                 mContactOperationTypeBuilder,
+                CHANNEL_ID_CONTACT_OPERATION_TYPE,
                 notificationID,
                 title,
                 content,
@@ -185,7 +190,7 @@ public class NotificationHelper {
     }
 
 
-    private void showNotification(final Notification.Builder builder, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFullScreen) {
+    private void showNotification(final Notification.Builder builder, final String channelID, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFullScreen) {
         final CharSequence compatStr = EmojiCompat.get().process(content);
         SimpleTarget<Bitmap> bitmapTarget = new SimpleTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
             @Override
@@ -203,13 +208,13 @@ public class NotificationHelper {
                 if (isFullScreen) {
                     builder.setFullScreenIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT), false);
                 }
+                if (mNotificationTypeMap.indexOfKey(notificationID) >= 0) {
+                    cancelNotification(notificationID);
+                }
+                mNotificationTypeMap.put(notificationID, channelID);
+                mSimpleTargetMap.put(notificationID, this);
                 mNotificationMessage.notify(notificationID, builder.build());
 
-                SimpleTarget<Bitmap> oldBitmapTarget = mSimpleTargetMap.get(notificationID);
-                if (oldBitmapTarget != null) {
-                    GlideApp.with(mAppContext).clear(oldBitmapTarget);
-                }
-                mSimpleTargetMap.put(notificationID, this);
             }
         };
 
@@ -227,23 +232,47 @@ public class NotificationHelper {
 
     public void cancelNotification(int notificationID) {
         mNotificationMessage.cancel(notificationID);
+        recycleNotification(notificationID);
+    }
+
+    private void recycleNotification(int notificationID){
+        mNotificationTypeMap.delete(notificationID);
         SimpleTarget<Bitmap> bitmapTarget = mSimpleTargetMap.get(notificationID);
         if (bitmapTarget != null) {
             GlideApp.with(mAppContext).clear(bitmapTarget);
             mSimpleTargetMap.delete(notificationID);
+        } else {
+            LogUtil.e("bitmapTarget==null");
         }
     }
+
+    public void cancelAllChatMessageNotification() {
+        for (int i = 0, size = mNotificationTypeMap.size(); i < size; i++) {
+            String channelID = mNotificationTypeMap.valueAt(i);
+            if (CHANNEL_ID_CHAT_MESSAGE_TYPE.equals(channelID)) {
+                cancelNotification(mNotificationTypeMap.keyAt(i));
+            }
+        }
+    }
+
+
+    public void cancelAllContactOperationNotification() {
+        for (int i = 0, size = mNotificationTypeMap.size(); i < size; i++) {
+            String channelID = mNotificationTypeMap.valueAt(i);
+            if (CHANNEL_ID_CONTACT_OPERATION_TYPE.equals(channelID)) {
+                cancelNotification(mNotificationTypeMap.keyAt(i));
+            }
+        }
+    }
+
 
     public void cancelAllNotification() {
         for (int i = 0, size = mSimpleTargetMap.size(); i < size; i++) {
             int notificationID = mSimpleTargetMap.keyAt(i);
-            mNotificationMessage.cancel(notificationID);
-            SimpleTarget<Bitmap> bitmapTarget = mSimpleTargetMap.get(notificationID);
-            if (bitmapTarget != null) {
-                GlideApp.with(mAppContext).clear(bitmapTarget);
-            }
+            cancelNotification(notificationID);
         }
         mSimpleTargetMap.clear();
+        mNotificationTypeMap.clear();
     }
 
     private static final String ACTION_RECYCLE = "NotificationHelper.Recycle";
@@ -251,11 +280,8 @@ public class NotificationHelper {
         @Override
         public void onReceive(Context context, Intent intent) {
             int id = intent.getIntExtra(ACTION_RECYCLE, -1);
-            SimpleTarget<Bitmap> oldBitmapTarget = mSimpleTargetMap.get(id);
-            if (oldBitmapTarget != null) {
-                mSimpleTargetMap.delete(id);
-                mNotificationMessage.cancel(id);
-                GlideApp.with(mAppContext).clear(oldBitmapTarget);
+            if (id != -1) {
+                recycleNotification(id);
             }
         }
     };
@@ -308,4 +334,3 @@ public class NotificationHelper {
 
 }
 
-// setFullScreenIntent(pendingIntent, false);

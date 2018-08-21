@@ -55,6 +55,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     public void init() {
         mIMClient.getContactManager().makeAllContactOperationAsRead();
         loadAllContactOperation();
+        NotificationHelper.getInstance().cancelAllContactOperationNotification();
     }
 
     @Override

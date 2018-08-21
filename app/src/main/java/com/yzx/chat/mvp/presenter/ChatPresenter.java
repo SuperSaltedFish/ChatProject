@@ -14,6 +14,7 @@ import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.extra.VideoMessage;
+import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
@@ -115,6 +116,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mIMClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
         mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        NotificationHelper.getInstance().cancelNotification(mConversationID.hashCode());
     }
 
     private void reset() {
