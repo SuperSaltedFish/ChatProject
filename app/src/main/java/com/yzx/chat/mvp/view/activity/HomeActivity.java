@@ -85,7 +85,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 } else {
                     mRect.set(0, 0, view.getWidth(), view.getHeight());
                 }
-                mRect.offset(0, (int) -AndroidUtil.dip2px(3f));
+                mRect.offset(0, (int) -AndroidUtil.dip2px(2));
                 outline.setRect(mRect);
             }
         });

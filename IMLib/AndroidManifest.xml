@@ -30,11 +30,6 @@
             android:exported="true"
             android:process=":ipc" />
 
-        <service
-            android:name=".ReConnectService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <receiver
             android:name="io.rong.imlib.ConnectChangeReceiver"
             android:exported="true" />
@@ -69,23 +64,18 @@
         <receiver
             android:name="io.rong.push.PushReceiver"
             android:process="io.rong.push">   <!-- 此处进程可以改名，名称需要和PushService所在进程统一 -->
-            <!-- 心跳事件 -->
+            <!-- 心跳事件和网络切换事件监听,必须 -->
             <intent-filter>
                 <action android:name="io.rong.push.intent.action.HEART_BEAT" />
-            </intent-filter>
-            <!-- 网络变动事件 -->
-            <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
-            <!-- 部分用户事件 -->
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
-            </intent-filter>
+
+            <!-- 部分用户事件监听, 用来提高推送拉活率; 可移除 -->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.USER_PRESENT" />-->
+                <!--<action android:name="android.intent.action.ACTION_POWER_CONNECTED" />-->
+                <!--<action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />-->
+            <!--</intent-filter>-->
         </receiver>
 
         <!--必选： SDK 核心功能-->

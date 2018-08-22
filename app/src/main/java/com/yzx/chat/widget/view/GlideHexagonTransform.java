@@ -32,7 +32,7 @@ public class GlideHexagonTransform extends BitmapTransformation {
         }
 
         int size = (int) (sideLength * 2);
-        Bitmap result = pool.get(size, size, toTransform.getConfig());
+        Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(result);
         Path path = new Path();
         Paint paint = new Paint();

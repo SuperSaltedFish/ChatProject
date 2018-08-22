@@ -79,7 +79,7 @@
         <activity android:name=".mvp.view.activity.ContactProfileActivity" />
         <activity android:name=".mvp.view.activity.FindNewContactActivity" />
         <activity android:name=".mvp.view.activity.RemarkInfoActivity" />
-        <activity android:name=".mvp.view.activity.EditContactLabelActivity" />
+        <activity android:name=".mvp.view.activity.EditContactTagsActivity" />
         <activity android:name=".mvp.view.activity.StrangerProfileActivity" />
         <activity android:name=".mvp.view.activity.ProfileEditActivity" />
         <activity android:name=".mvp.view.activity.ImageSingleSelectorActivity" />

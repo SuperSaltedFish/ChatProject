@@ -21,13 +21,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/MomentsAdapter_mIvAvatar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:layout_marginTop="12dp"
         android:elevation="4dp"
-        android:src="@drawable/temp_head_image"
         app:layout_constraintEnd_toEndOf="@id/MomentsAdapter_mGuideline"
         app:layout_constraintStart_toStartOf="@id/MomentsAdapter_mGuideline"
         app:layout_constraintTop_toTopOf="parent" />

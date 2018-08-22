@@ -209,8 +209,8 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == EditContactLabelActivity.RESULT_CODE && data != null) {
-            mTags = data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL);
+        if (resultCode == EditContactTagsActivity.RESULT_CODE && data != null) {
+            mTags = data.getStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL);
             setTags(mTags);
         }
     }
@@ -231,9 +231,9 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     private final View.OnClickListener mOnLabelFlowLayoutClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(RemarkInfoActivity.this, EditContactLabelActivity.class);
-            intent.putStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, mContactBean.getRemark().getTags());
-            intent.putStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
+            Intent intent = new Intent(RemarkInfoActivity.this, EditContactTagsActivity.class);
+            intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mContactBean.getRemark().getTags());
+            intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
             startActivityForResult(intent, 0);
 
         }

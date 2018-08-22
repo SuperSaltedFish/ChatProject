@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".mvp.view.activity.EditContactLabelActivity">
+    tools:context=".mvp.view.activity.EditContactTagsActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"
@@ -18,7 +18,7 @@
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
     <com.yzx.chat.widget.view.FlowLayout
-        android:id="@+id/EditContactLabelActivity_mFlowLayoutSelected"
+        android:id="@+id/EditContactTagsActivity_mFlowLayoutSelected"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -26,7 +26,7 @@
         android:paddingStart="12dp">
 
         <com.yzx.chat.widget.view.LabelEditText
-            android:id="@+id/EditContactLabelActivity_mEtInput"
+            android:id="@+id/EditContactTagsActivity_mEtInput"
             android:layout_width="wrap_content"
             android:layout_height="26dp"
             android:background="@drawable/bg_label_edit"
@@ -50,7 +50,7 @@
         android:background="@color/dividerColorBlack" />
 
     <TextView
-        android:id="@+id/EditContactLabelActivity_mTvSelectionLabelTitle"
+        android:id="@+id/EditContactTagsActivity_mTvSelectionLabelTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -62,7 +62,7 @@
 
 
     <com.yzx.chat.widget.view.FlowLayout
-        android:id="@+id/EditContactLabelActivity_mFlowLayoutSelectable"
+        android:id="@+id/EditContactTagsActivity_mFlowLayoutSelectable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

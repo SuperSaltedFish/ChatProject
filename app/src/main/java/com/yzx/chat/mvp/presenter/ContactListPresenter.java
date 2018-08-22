@@ -1,6 +1,5 @@
 package com.yzx.chat.mvp.presenter;
 
-import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
@@ -15,8 +14,8 @@ import com.yzx.chat.util.AsyncUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by YZX on 2017年11月19日.
@@ -39,13 +38,14 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         mContactList = new ArrayList<>(128);
         mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
-
+        mIMClient.getContactManager().addContactTagChangeListener(mOnContactTagChangeListener);
     }
 
     @Override
     public void detachView() {
         mIMClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
+        mIMClient.getContactManager().removeContactTagChangeListener(mOnContactTagChangeListener);
         AsyncUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mContactList.clear();
@@ -69,7 +69,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     @Override
     public void loadTagCount() {
-        HashSet<String> tags = mIMClient.getContactManager().getAllTags();
+        Set<String> tags = mIMClient.getContactManager().getAllTags();
         mContactView.showTagCount(tags == null ? 0 : tags.size());
     }
 
@@ -113,6 +113,17 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         }
     };
 
+    private final ContactManager.OnContactTagChangeListener mOnContactTagChangeListener = new ContactManager.OnContactTagChangeListener() {
+        @Override
+        public void onContactTagAdded(Set<String> newTags) {
+            loadTagCount();
+        }
+
+        @Override
+        public void onContactTagDeleted(Set<String> deleteTags) {
+            loadTagCount();
+        }
+    };
 
     private static class RefreshAllContactsTask extends BackstageAsyncTask<ContactListPresenter, List<ContactBean>, DiffUtil.DiffResult> {
 

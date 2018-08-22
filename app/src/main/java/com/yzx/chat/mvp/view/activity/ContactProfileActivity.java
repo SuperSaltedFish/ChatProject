@@ -171,9 +171,9 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == EditContactLabelActivity.RESULT_CODE) {
+        if (resultCode == EditContactTagsActivity.RESULT_CODE) {
             ContactBean contact = mPresenter.getContact();
-            ArrayList<String> newTags = data.getStringArrayListExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL);
+            ArrayList<String> newTags = data.getStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL);
             ArrayList<String> oldTags = contact.getRemark().getTags();
             if (!StringUtil.isEquals(newTags, oldTags, true)) {
                 contact.getRemark().setTags(newTags);
@@ -197,9 +197,9 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     private void startEditContactLabelActivity() {
-        Intent intent = new Intent(ContactProfileActivity.this, EditContactLabelActivity.class);
-        intent.putExtra(EditContactLabelActivity.INTENT_EXTRA_LABEL, mPresenter.getContact().getRemark().getTags());
-        intent.putExtra(EditContactLabelActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
+        Intent intent = new Intent(ContactProfileActivity.this, EditContactTagsActivity.class);
+        intent.putExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mPresenter.getContact().getRemark().getTags());
+        intent.putExtra(EditContactTagsActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
         startActivityForResult(intent, 0);
     }
 

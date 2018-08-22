@@ -6,6 +6,7 @@ import com.yzx.chat.network.chat.IMClient;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by YZX on 2018年01月24日.
@@ -33,10 +34,10 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
     @Override
     public ArrayList<String> getAllTags() {
-        HashSet<String> tags = IMClient.getInstance().getContactManager().getAllTags();
-        if(tags!=null&&tags.size()>0){
+        Set<String> tags = IMClient.getInstance().getContactManager().getAllTags();
+        if (tags != null && tags.size() > 0) {
             return new ArrayList<>(tags);
-        }else {
+        } else {
             return null;
         }
     }

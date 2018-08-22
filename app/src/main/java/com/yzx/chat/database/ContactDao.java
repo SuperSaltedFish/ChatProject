@@ -191,6 +191,8 @@ public class ContactDao extends AbstractDao<ContactBean> {
                     }
                 }
                 values.put(COLUMN_NAME_Tags, stringBuilder.toString());
+            }else {
+                values.put(COLUMN_NAME_Tags, "");
             }
         }
     }

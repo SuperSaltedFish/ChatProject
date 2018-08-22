@@ -9,6 +9,7 @@ import com.yzx.chat.network.chat.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by YZX on 2018年01月25日.
@@ -74,7 +75,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public ArrayList<String> getAllTags() {
-        HashSet<String> tags = IMClient.getInstance().getContactManager().getAllTags();
+        Set<String> tags = IMClient.getInstance().getContactManager().getAllTags();
         if (tags != null && tags.size() > 0) {
             return new ArrayList<>(tags);
         } else {

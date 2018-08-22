@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 2018061514
-        versionName "2.9.1 Stable"
+        versionCode 2018082118
+        versionName "2.9.4 Stable"
     }
 
     sourceSets {
@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:support-compat:27.1.1'
 }
 

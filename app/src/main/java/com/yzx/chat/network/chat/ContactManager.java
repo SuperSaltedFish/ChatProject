@@ -61,10 +61,12 @@ public class ContactManager {
     private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REJECT, CONTACT_OPERATION_DELETE));
 
     private Map<String, ContactBean> mContactsMap;
+    private Set<String> mContactTags;
     private IManagerHelper mManagerHelper;
     private List<OnContactChangeListener> mContactChangeListeners;
     private List<OnContactOperationListener> mContactOperationListeners;
     private List<OnContactOperationUnreadCountChangeListener> mContactOperationUnreadCountChangeListeners;
+    private List<OnContactTagChangeListener> mContactTagChangeListeners;
     private ContactOperationDao mContactOperationDao;
     private ContactDao mContactDao;
     private UserDao mUserDao;
@@ -88,10 +90,12 @@ public class ContactManager {
         mContactChangeListeners = Collections.synchronizedList(new LinkedList<OnContactChangeListener>());
         mContactOperationListeners = Collections.synchronizedList(new LinkedList<OnContactOperationListener>());
         mContactOperationUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnContactOperationUnreadCountChangeListener>());
+        mContactTagChangeListeners = Collections.synchronizedList(new LinkedList<OnContactTagChangeListener>());
         mGson = new GsonBuilder().serializeNulls().create();
         mContactApi = (ContactApi) ApiHelper.getProxyInstance(ContactApi.class);
         mNetworkExecutor = NetworkExecutor.getInstance();
         mContactsMap = new HashMap<>(256);
+        mContactTags = mContactDao.getAllTagsType();
         List<ContactBean> contacts = mContactDao.loadAllContacts();
         if (contacts != null) {
             for (ContactBean contact : contacts) {
@@ -331,6 +335,7 @@ public class ContactManager {
                     for (OnContactChangeListener listener : mContactChangeListeners) {
                         listener.onContactDeleted(contact);
                     }
+                    checkTagsChange();
                 }
             });
             return true;
@@ -355,6 +360,7 @@ public class ContactManager {
                             for (OnContactChangeListener listener : mContactChangeListeners) {
                                 listener.onContactUpdate(contact);
                             }
+                            checkTagsChange();
                             if (resultCallback != null) {
                                 resultCallback.onSuccess(null);
                             }
@@ -397,19 +403,44 @@ public class ContactManager {
         mNetworkExecutor.submit(mUpdateContact);
     }
 
-    public HashSet<String> getAllTags() {
-        return mContactDao.getAllTagsType();
+    public Set<String> getAllTags() {
+        return mContactTags;
     }
 
     public ArrayList<TagBean> getAllTagAndMemberCount() {
         return mContactDao.getAllTagAndMemberCount();
     }
 
+    private void checkTagsChange() {
+        Set<String> latestTags = mContactDao.getAllTagsType();
+        int oldCount = mContactTags.size();
+        int latestCount = latestTags.size();
+        if (oldCount == latestCount && mContactTags.containsAll(latestTags)) {
+            return;
+        }
+        Set<String> oldTags = new HashSet<>(mContactTags);
+        mContactTags.clear();
+        mContactTags.addAll(latestTags);
+        if (latestCount > oldCount) {
+            latestTags.removeAll(oldTags);
+            for (OnContactTagChangeListener listener : mContactTagChangeListeners) {
+                listener.onContactTagAdded(latestTags);
+            }
+        } else if (latestCount < oldCount) {
+            oldTags.removeAll(latestTags);
+            for (OnContactTagChangeListener listener : mContactTagChangeListeners) {
+                listener.onContactTagDeleted(oldTags);
+            }
+        } else {
+            throw new RuntimeException("Unknown tags state");
+        }
+    }
+
     public int getContactUnreadCount() {
         return mContactOperationUnreadNumber;
     }
 
-     void updateContactUnreadCount() {
+    void updateContactUnreadCount() {
         mManagerHelper.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -489,6 +520,16 @@ public class ContactManager {
 
     public void removeContactChangeListener(OnContactChangeListener listener) {
         mContactChangeListeners.remove(listener);
+    }
+
+    public void addContactTagChangeListener(OnContactTagChangeListener listener) {
+        if (!mContactTagChangeListeners.contains(listener)) {
+            mContactTagChangeListeners.add(listener);
+        }
+    }
+
+    public void removeContactTagChangeListener(OnContactTagChangeListener listener) {
+        mContactTagChangeListeners.remove(listener);
     }
 
     void destroy() {
@@ -587,7 +628,7 @@ public class ContactManager {
         }
 
         if (old != null) {
-            contactOperation.setRemind((!old.getType().equals(contactOperation.getType()))||old.isRemind());
+            contactOperation.setRemind((!old.getType().equals(contactOperation.getType())) || old.isRemind());
             if (!CONTACT_OPERATION_REQUEST.equals(operation)) {
                 contactOperation.setReason(old.getReason());
             }
@@ -654,6 +695,12 @@ public class ContactManager {
         void onContactDeleted(ContactBean contact);
 
         void onContactUpdate(ContactBean contact);
+    }
+
+    public interface OnContactTagChangeListener {
+        void onContactTagAdded(Set<String> newTags);
+
+        void onContactTagDeleted(Set<String> deleteTags);
     }
 
     public static final class ContactMessageExtra {

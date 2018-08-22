@@ -1,5 +1,6 @@
 package com.yzx.chat.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
@@ -63,6 +64,7 @@ public class GlideUtil {
                 .into(view);
     }
 
+    @SuppressLint("CheckResult")
     public static void loadAvatarFromUrl(Context context, ImageView view, Object url) {
         if (view == null) {
             return;
@@ -82,16 +84,14 @@ public class GlideUtil {
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
-                .format(DecodeFormat.PREFER_RGB_565);
+                .format(DecodeFormat.PREFER_ARGB_8888)
+                .transform(HEXAGON_TRANSFORM)
+                .error(R.drawable.ic_avatar_default);
 
-        if ((url instanceof Integer) && ((Integer) url == R.drawable.ic_avatar_default)) {
-            glideRequest.into(view);
-        } else {
-            glideRequest.transform(HEXAGON_TRANSFORM)
-                    .placeholder(R.drawable.ic_avatar_default)
-                    .error(R.drawable.ic_avatar_default)
-                    .into(view);
+        if (!(url instanceof Integer)) {
+            glideRequest.placeholder(R.drawable.ic_avatar_default);
         }
+        glideRequest.into(view);
     }
 
     public static void clear(Context context, ImageView view) {

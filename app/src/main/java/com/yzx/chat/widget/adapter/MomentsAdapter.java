@@ -3,10 +3,11 @@ package com.yzx.chat.widget.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.NineGridImageView;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemV
     public MomentsAdapter() {
 
     }
-
 
     @Override
     public ItemView getViewHolder(ViewGroup parent, int viewType) {
@@ -43,7 +43,7 @@ public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemV
             holder.mNineGridImageView.setVisibility(View.VISIBLE);
         }
         holder.mNineGridImageView.setImageData(s);
-
+        GlideUtil.loadAvatarFromUrl(mContext,holder.mIvAvatar,R.drawable.temp_head_image);
     }
 
     @Override
@@ -55,6 +55,7 @@ public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemV
     final static class ItemView extends BaseRecyclerViewAdapter.BaseViewHolder {
 
         NineGridImageView mNineGridImageView;
+        ImageView mIvAvatar;
 
         ItemView(View itemView) {
             super(itemView);
@@ -62,7 +63,8 @@ public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemV
         }
 
         private void initView() {
-            mNineGridImageView = (NineGridImageView) itemView.findViewById(R.id.MomentsAdapter_mNineGridImageContent);
+            mNineGridImageView = itemView.findViewById(R.id.MomentsAdapter_mNineGridImageContent);
+            mIvAvatar = itemView.findViewById(R.id.MomentsAdapter_mIvAvatar);
         }
 
     }

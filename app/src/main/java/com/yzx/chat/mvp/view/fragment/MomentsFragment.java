@@ -46,7 +46,7 @@ public class MomentsFragment extends BaseFragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12), SpacesItemDecoration.VERTICAL, true, true));
-        mRecyclerView.addOnScrollListener(new ImageAutoLoadScrollListener());
+       // mRecyclerView.addOnScrollListener(new ImageAutoLoadScrollListener());
     }
 
     @Override
