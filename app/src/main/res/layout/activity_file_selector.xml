@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".mvp.view.activity.FileSelectorActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/Default_mToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/colorPrimary"
+        android:elevation="3dp"
+        app:theme="@style/ToolbarTheme"
+        app:title="@string/FileSelectorActivity_Title"
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/FileSelectorActivity_mRvDirectoryPath"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@android:color/white"
+        android:elevation="3dp"
+        android:overScrollMode="never"
+        android:paddingEnd="24dp"
+        android:clipToPadding="false"
+        android:paddingStart="6dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/dividerColorBlack" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/FileSelectorActivity_mRvFileAndDirectory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

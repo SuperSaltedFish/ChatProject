@@ -203,6 +203,7 @@
     <string name="shoot">拍摄</string>
     <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
     <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
+    <string name="Unit_Term">项</string>
     <string name="Unit_Age">岁</string>
     <string name="Unit_Second">秒</string>
     <string name="Unit_Meters">米</string>
@@ -242,4 +243,7 @@
     <string name="LocationShareFragment_BeingCalculated">正在计算</string>
     <string name="LocationShareFragment_MyLocation">我当前的位置</string>
     <string name="LocationSendFragment_SearchNone">没有搜索到任何内容</string>
+    <string name="FileSelectorActivity_Title">文件选择</string>
+    <string name="FileAndDirectoryAdapter_FileSize">文件大小</string>
+    <string name="FileSelectorActivity_Storage">手机存储</string>
 </resources>

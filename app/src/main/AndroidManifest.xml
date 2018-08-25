@@ -53,11 +53,11 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
@@ -72,7 +72,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".mvp.view.activity.QrCodeScanActivity"
-            android:theme="@style/DefaultDarkTheme"></activity>
+            android:theme="@style/DefaultDarkTheme" />
         <activity android:name=".mvp.view.activity.ImageMultiSelectorActivity" />
         <activity android:name=".mvp.view.activity.ImageViewPagerActivity" />
         <activity android:name=".mvp.view.activity.ContactProfileActivity" />
@@ -94,9 +94,7 @@
             android:theme="@style/NoBackgroundLightTheme" />
         <activity
             android:name=".mvp.view.activity.LocationMapActivity"
-            android:windowSoftInputMode="adjustNothing">
-
-        </activity>
+            android:windowSoftInputMode="adjustNothing"></activity>
         <activity
             android:name=".mvp.view.activity.VideoRecorderActivity"
             android:theme="@style/NoBackgroundLightTheme" />
@@ -105,20 +103,12 @@
         <activity
             android:name=".mvp.view.activity.VideoPlayActivity"
             android:theme="@style/DefaultDarkTheme" />
-        <activity android:name=".mvp.view.activity.NotificationMessageActivity"></activity>
-
-
+        <activity android:name=".mvp.view.activity.NotificationMessageActivity" />
         <activity android:name=".mvp.view.activity.TestActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+
         </activity>
-        <activity android:name=".mvp.view.activity.MyTagListActivity"></activity>
-
-
-
+        <activity android:name=".mvp.view.activity.MyTagListActivity" />
 
         <receiver android:name=".broadcast.UninstallReceive">
             <intent-filter>
@@ -128,6 +118,14 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".mvp.view.activity.FileSelectorActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

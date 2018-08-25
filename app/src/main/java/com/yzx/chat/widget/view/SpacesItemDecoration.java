@@ -48,13 +48,15 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        int index = parent.getChildAdapterPosition(view);
+        int itemCount = parent.getAdapter().getItemCount();
         if (mOrientation == VERTICAL) {
-            if (parent.getChildAdapterPosition(view) == 0) {
+            if (index == 0) {
                 if (isFirstSpace) {
                     outRect.top = space;
                 }
                 outRect.bottom = space;
-            } else if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1) {
+            } else if (index == itemCount - 1) {
                 if (isLastSpace) {
                     outRect.bottom = space;
                 }
@@ -62,34 +64,19 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
                 outRect.bottom = space;
             }
         } else {
-            if (parent.getChildAdapterPosition(view) == 0) {
+            if (index == 0) {
                 if (isFirstSpace) {
                     outRect.left = space;
                 }
-                outRect.right = space;
-            } else if (parent.getChildAdapterPosition(view) == parent.getAdapter().getItemCount() - 1) {
-                if (isLastSpace) {
+                if (index == itemCount - 1) {
                     outRect.right = space;
                 }
             } else {
-                outRect.right = space;
+                outRect.left = space;
+                if (index == itemCount - 1 && isLastSpace) {
+                    outRect.right = space;
+                }
             }
         }
-    }
-
-    public boolean isFirstSpace() {
-        return isFirstSpace;
-    }
-
-    public void setFirstSpace(boolean firstSpace) {
-        isFirstSpace = firstSpace;
-    }
-
-    public boolean isLastSpace() {
-        return isLastSpace;
-    }
-
-    public void setLastSpace(boolean lastSpace) {
-        isLastSpace = lastSpace;
     }
 }
