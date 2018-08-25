@@ -5,8 +5,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -25,9 +27,12 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.FindNewContactContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.mvp.presenter.FindNewContactPresenter;
+import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
+import com.yzx.chat.widget.view.SpacesItemDecoration;
 
+import java.net.Socket;
 import java.util.Locale;
 
 
@@ -37,7 +42,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     private EditText mEtSearch;
     private RecyclerView mRecyclerView;
-    private LinearLayout mLlMoreOperation;
     private TextView mTvMyPhoneNumber;
     private ImageView mIvSearchIcon;
     private ImageView mIvEnterIcon;
@@ -54,7 +58,6 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mRecyclerView = findViewById(R.id.FindNewContactActivity_mRecyclerView);
         mEtSearch = findViewById(R.id.FindNewContactActivity_mEtSearch);
         mTvMyPhoneNumber = findViewById(R.id.FindNewContactActivity_mTvMyPhoneNumber);
-        mLlMoreOperation = findViewById(R.id.FindNewContactActivity_mLlMoreOperation);
         mClCreateGroup = findViewById(R.id.FindNewContactActivity_mClCreateGroup);
         mIvSearchIcon = findViewById(R.id.FindNewContactActivity_mIvSearchIcon);
         mIvEnterIcon = findViewById(R.id.FindNewContactActivity_mIvEnterIcon);
@@ -63,6 +66,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.colorAccent)));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -72,6 +76,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(8),SpacesItemDecoration.HORIZONTAL));
 
         mClScan.setOnClickListener(mOnScanLayoutClickListener);
         mClCreateGroup.setOnClickListener(mOnCreateGroupClickListener);
@@ -174,11 +179,22 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     public void searchNotExist() {
 //        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchNotExist);
 //        mPbSearch.setVisibility(View.GONE);
+
     }
 
     @Override
     public void searchFail() {
 //        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchFail);
 //        mPbSearch.setVisibility(View.GONE);
+
+    }
+
+
+    public  void sendData(){
+
+    }
+
+    public  void sendHeart(){
+
     }
 }

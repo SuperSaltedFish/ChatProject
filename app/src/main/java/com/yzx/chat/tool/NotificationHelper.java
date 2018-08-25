@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 
 import android.graphics.Color;
 
+import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -94,6 +95,7 @@ public class NotificationHelper {
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setSmallIcon(R.drawable.ic_notification);
+
         return builder;
     }
 
@@ -202,11 +204,12 @@ public class NotificationHelper {
                         .setContentText(compatStr)
                         .setTicker(title + "：" + compatStr)
                         .setWhen(timestamp)
-                        .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-                        .setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+                        .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT));
 
                 if (isFullScreen) {
                     builder.setFullScreenIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT), false);
+                } else {
+                    builder.setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
                 }
                 if (mNotificationTypeMap.indexOfKey(notificationID) >= 0) {
                     cancelNotification(notificationID);
@@ -235,14 +238,12 @@ public class NotificationHelper {
         recycleNotification(notificationID);
     }
 
-    private void recycleNotification(int notificationID){
+    private void recycleNotification(int notificationID) {
         mNotificationTypeMap.delete(notificationID);
         SimpleTarget<Bitmap> bitmapTarget = mSimpleTargetMap.get(notificationID);
         if (bitmapTarget != null) {
             GlideApp.with(mAppContext).clear(bitmapTarget);
             mSimpleTargetMap.delete(notificationID);
-        } else {
-            LogUtil.e("bitmapTarget==null");
         }
     }
 
@@ -296,6 +297,7 @@ public class NotificationHelper {
                 Conversation.ConversationType type = message.getConversationType();
                 HomeActivity homeActivity = AndroidUtil.getLaunchActivity(HomeActivity.class);
                 if (!TextUtils.isEmpty(conversationID) && homeActivity != null) {
+                    recycleNotification(conversationID.hashCode());
                     if (AndroidUtil.getStackTopActivityClass() != ChatActivity.class) {
                         AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
                     }
@@ -322,10 +324,11 @@ public class NotificationHelper {
         @Override
         public void onReceive(Context context, Intent intent) {
             ContactOperationBean contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
-            if (contactOperation != null) {
+            if (contactOperation != null && TextUtils.isEmpty(contactOperation.getUserID())) {
+                recycleNotification(contactOperation.getUserID().hashCode());
                 Activity topActivity = AndroidUtil.getStackTopActivityInstance();
                 if (topActivity != null) {
-                    topActivity.startActivity(new Intent(topActivity, NotificationMessageActivity.class));
+
                 }
             }
         }

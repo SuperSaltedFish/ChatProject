@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="88dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/temp_head_image" />
+        android:id="@+id/MaybeKnowAdapter_mIvAvatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Touch魅"
-        android:textSize="14sp"
-        android:textColor="@color/textPrimaryColorBlack" />
+        android:textColor="@color/textPrimaryColorBlack"
+        android:textSize="13sp" />
 
     <Button
-        android:layout_marginTop="4dp"
         android:layout_width="56dp"
-        android:layout_height="32dp"
-        android:text="添加"
+        android:layout_height="28dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/border_btn_black"
-        android:textSize="12dp" />
+        android:text="添加"
+        android:textSize="12sp" />
 
 
 </LinearLayout>

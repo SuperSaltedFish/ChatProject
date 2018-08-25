@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.mvp.contract.VideoPlayContract;
+import com.yzx.chat.network.chat.DownloadCallback;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -36,7 +37,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     public void downloadVideo(Message message) {
         mCurrentDownloadMessage = message;
         mVideoPlayView.setEnableProgressDialog(true);
-        IMClient.getInstance().getChatManager().downloadMediaContent(message, new com.yzx.chat.network.chat.DownloadCallback() {
+        IMClient.getInstance().getChatManager().downloadMediaContent(message, new DownloadCallback() {
             @Override
             public void onSuccess(Message message, Uri localUri) {
                 mCurrentDownloadMessage = null;
@@ -44,6 +45,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
                 if (localUri != null && !TextUtils.isEmpty(localUri.getPath())) {
                     mVideoPlayView.playVideo(localUri.getPath());
                 } else {
+                    LogUtil.e("localUri==" + (localUri == null ? "null" : localUri.getPath()));
                     mVideoPlayView.showError(AndroidUtil.getString(R.string.VideoPlayActivity_DownloadVideoFail));
                 }
             }

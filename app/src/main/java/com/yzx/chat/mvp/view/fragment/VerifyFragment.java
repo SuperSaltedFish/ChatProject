@@ -45,7 +45,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         return fragment;
     }
 
-    private TextView mTvBack;
     private TextView mTvErrorHint;
     private TextView mTvTelephone;
     private Button mBtnVerify;
@@ -66,7 +65,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
 
     @Override
     protected void init(View parentView) {
-        mTvBack = parentView.findViewById(R.id.VerifyFragment_mTvBack);
         mBtnVerify = parentView.findViewById(R.id.VerifyFragment_mBtnVerify);
         mVerifyEditView = parentView.findViewById(R.id.VerifyFragment_mVerifyEditView);
         mPbLoginProgress = parentView.findViewById(R.id.VerifyFragment_mPbLoginProgress);
@@ -87,7 +85,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             return;
         }
 
-        mTvBack.setOnClickListener(mOnViewClickListener);
         mBtnVerify.setOnClickListener(mOnViewClickListener);
         mBtnResend.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
@@ -142,7 +139,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
 
     private void setDisableInputState(boolean isDisable) {
         mBtnVerify.setEnabled(!isDisable);
-        mTvBack.setEnabled(!isDisable);
         mVerifyEditView.setEnabled(!isDisable);
         mIvBack.setEnabled(!isDisable);
         mBtnResend.setEnabled((!isDisable) && isAllowResendVerifyCode);
@@ -214,7 +210,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         public void onClick(View v) {
             if (!isDisableInput) {
                 switch (v.getId()) {
-                    case R.id.VerifyFragment_mTvBack:
                     case R.id.VerifyFragment_mIvBack:
                         backPressed();
                         break;

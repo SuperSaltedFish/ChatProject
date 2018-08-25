@@ -51,7 +51,9 @@ public class VoicePlayer {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                mVisualizer.setEnabled(false);
+                if (mVisualizer != null) {
+                    mVisualizer.setEnabled(false);
+                }
                 if (mOnPlayStateChangeListener != null) {
                     mOnPlayStateChangeListener.onCompletion(mp, false);
                 }
@@ -61,7 +63,9 @@ public class VoicePlayer {
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                mVisualizer.setEnabled(false);
+                if (mVisualizer != null) {
+                    mVisualizer.setEnabled(false);
+                }
                 if (mOnPlayStateChangeListener != null) {
                     mOnPlayStateChangeListener.onError("MediaPlayerError, what=" + what + ",extra=" + extra);
                 }
@@ -74,6 +78,14 @@ public class VoicePlayer {
             public void onPrepared(MediaPlayer mp) {
                 mMediaPlayer.start();
                 mAlreadyPlayTime = System.currentTimeMillis();
+                if (mVisualizer == null && mOnDataCaptureListener != null) {
+                    try {
+                        mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LogUtil.e("Unsupported Visualizer");
+                    }
+                }
                 if (mVisualizer != null) {
                     mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
                         @Override
@@ -98,18 +110,13 @@ public class VoicePlayer {
             }
         });
 
-        try {
-            mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
-        } catch (Exception e) {
-            e.printStackTrace();
-            LogUtil.e("Unsupported Visualizer");
-        }
+
     }
 
     private void reset() {
         if (mVisualizer != null) {
-            mVisualizer.setEnabled(false);
-            mVisualizer.setDataCaptureListener(null, Visualizer.getMaxCaptureRate() / 2, false, false);
+            mVisualizer.release();
+            mVisualizer = null;
         }
         mMediaPlayer.reset();
         mOnDataCaptureListener = null;
@@ -132,9 +139,9 @@ public class VoicePlayer {
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
+            reset();
             if (mOnPlayStateChangeListener != null) {
                 mOnPlayStateChangeListener.onError(e.toString());
-                reset();
             }
         }
     }
@@ -153,22 +160,19 @@ public class VoicePlayer {
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
+            reset();
             if (mOnPlayStateChangeListener != null) {
                 mOnPlayStateChangeListener.onError(e.toString());
-                reset();
             }
         }
     }
 
     public void stop() {
         boolean isNeedStop = mMediaPlayer.isPlaying();
-        if (isNeedStop) {
-            mMediaPlayer.stop();
-        }
+        reset();
         if (mOnPlayStateChangeListener != null) {
             mOnPlayStateChangeListener.onCompletion(mMediaPlayer, isNeedStop);
         }
-        reset();
     }
 
     public boolean isPlaying() {

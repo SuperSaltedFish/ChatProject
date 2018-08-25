@@ -2,20 +2,21 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@color/backgroundColorWhiteLight"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColorWhiteLight">
 
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/MomentsFragment_mAppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="144dp"
         android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="@color/colorAccent"
+            app:title="朋友圈"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@color/colorAccent"
             app:toolbarId="@+id/Default_mToolbar">
@@ -25,7 +26,7 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/temp_share_image"
+
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.7" />
 
@@ -42,11 +43,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/MomentsFragment_mSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:srlEnablePureScrollMode="true">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/MomentsFragment_mRecyclerView"
@@ -54,7 +55,7 @@
             android:layout_height="match_parent"
             android:overScrollMode="never" />
 
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

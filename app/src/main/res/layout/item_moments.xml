@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:layout_marginEnd="12dp"
     android:layout_height="wrap_content">
 
     <android.support.constraint.Guideline
@@ -23,8 +24,8 @@
 
     <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/MomentsAdapter_mIvAvatar"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="12dp"
         android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="@id/MomentsAdapter_mGuideline"
@@ -38,12 +39,12 @@
         android:layout_marginStart="8dp"
         android:gravity="start|center_vertical"
         android:singleLine="true"
+        android:layout_marginTop="20dp"
         android:text="叶智星"
         android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvAvatar"
         app:layout_constraintEnd_toStartOf="@id/MomentsAdapter_mTvTime"
         app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvAvatar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/MomentsAdapter_mTvTime"
@@ -52,9 +53,9 @@
         android:layout_marginEnd="16dp"
         android:text="16:58"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mIvAvatar"
+        app:layout_constraintBottom_toBottomOf="@id/MomentsAdapter_mTvName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mIvAvatar" />
+        app:layout_constraintTop_toTopOf="@id/MomentsAdapter_mTvName" />
 
     <TextView
         android:id="@+id/MomentsAdapter_mTvTextContent"

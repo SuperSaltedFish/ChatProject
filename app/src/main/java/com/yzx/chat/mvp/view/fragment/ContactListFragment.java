@@ -3,8 +3,10 @@ package com.yzx.chat.mvp.view.fragment;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -204,7 +206,8 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mSearchView = (SearchView) searchItem.getActionView();
         ImageView searchButton = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_button);
         if (searchButton != null) {
-            searchButton.setImageResource(R.drawable.ic_search_list);
+            searchButton.setImageResource(R.drawable.ic_search);
+            searchButton.setImageTintList(ColorStateList.valueOf(Color.WHITE));
         }
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -284,8 +287,8 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         BackPressedReceive.unregisterBackPressedListener(mBackPressedListener);
         mSearchHandler.removeCallbacksAndMessages(null);
     }
@@ -351,22 +354,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         @Override
         public void onSelected(int position, String text) {
             final int scrollPosition = mContactAdapter.findPositionByLetter(text);
-            if (scrollPosition >= 0) {
-                mRvContact.scrollToPosition(scrollPosition);
-                mRvContact.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int firstPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
-                        if (scrollPosition > firstPosition) {
-                            View childView = mRvContact.getChildAt(scrollPosition - firstPosition);
-                            int scrollY = childView.getTop() - mLetterSegmentationItemDecoration.getSpace();
-                            mRvContact.scrollBy(0, scrollY);
-                        }
-                    }
-                });
-            } else if (position == 0) {
-                mRvContact.scrollToPosition(0);
-            }
+            mLinearLayoutManager.scrollToPositionWithOffset(scrollPosition, 0);
             if (mFBtnAdd.getTag() == null) {
                 AnimationUtil.scaleAnim(mFBtnAdd, 0, 0, 300);
                 AnimationUtil.scaleAnim(mTvIndexBarHint, 1f, 1f, 300);
@@ -434,3 +422,4 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mTvTags.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.MyTagListActivity_Title), count));
     }
 }
+

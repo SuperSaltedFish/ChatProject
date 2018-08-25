@@ -18,7 +18,6 @@
     <!-- 允许程序改变wifi的状态，开启后可以扫描wifi -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-
     <!-- 以下为需要手动申请的权限 -->
     <!-- 允许程序可以读取设备外部存储空间 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

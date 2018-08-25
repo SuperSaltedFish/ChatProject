@@ -27,6 +27,8 @@
         android:layout_width="44dp"
         android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="3.3dp"
+        android:background="#000000"
         app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
 
     <TextView
