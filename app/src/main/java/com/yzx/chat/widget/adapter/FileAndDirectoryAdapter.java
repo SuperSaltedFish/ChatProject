@@ -3,6 +3,7 @@ package com.yzx.chat.widget.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,11 +24,13 @@ public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDire
     private static final double BYTE_SIZE_GB = 1024 * 1024;
 
     private List<File> mFileList;
+    private List<String> mSelectedFilePathList;
     private final String UNIT_TERM;
     private final String SIZE_LABEL;
 
-    public FileAndDirectoryAdapter(List<File> fileList) {
+    public FileAndDirectoryAdapter(List<File> fileList, List<String> selectedFilePathList) {
         mFileList = fileList;
+        mSelectedFilePathList = selectedFilePathList;
         UNIT_TERM = AndroidUtil.getString(R.string.Unit_Term);
         SIZE_LABEL = AndroidUtil.getString(R.string.FileAndDirectoryAdapter_FileSize);
     }
@@ -41,10 +44,13 @@ public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDire
     public void bindDataToViewHolder(FileAndDirectoryHolder holder, int position) {
         File file = mFileList.get(position);
         if (file.isDirectory()) {
+            holder.mCbSelected.setVisibility(View.GONE);
             holder.mIvFileTypeIcon.setSelected(true);
             String[] fileNames = file.list();
             holder.mTvFileInfo.setText(String.format(Locale.getDefault(), "%d %s", fileNames == null ? 0 : fileNames.length, UNIT_TERM));
         } else {
+            holder.mCbSelected.setVisibility(View.VISIBLE);
+            holder.mCbSelected.setChecked(mSelectedFilePathList.contains(file.getPath()));
             holder.mIvFileTypeIcon.setSelected(false);
             holder.mTvFileInfo.setText(String.format(Locale.getDefault(), "%s：%s", SIZE_LABEL, fileSizeFormat(file.length())));
         }
@@ -56,16 +62,26 @@ public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDire
         return mFileList == null ? 0 : mFileList.size();
     }
 
-    final static class FileAndDirectoryHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
+    public final static class FileAndDirectoryHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         ImageView mIvFileTypeIcon;
         TextView mTvFileName;
         TextView mTvFileInfo;
+        CheckBox mCbSelected;
 
         FileAndDirectoryHolder(View itemView) {
             super(itemView);
             mIvFileTypeIcon = itemView.findViewById(R.id.FileAndDirectoryAdapter_mIvFileTypeIcon);
             mTvFileName = itemView.findViewById(R.id.FileAndDirectoryAdapter_mTvFileName);
             mTvFileInfo = itemView.findViewById(R.id.FileAndDirectoryAdapter_mTvFileInfo);
+            mCbSelected = itemView.findViewById(R.id.FileAndDirectoryAdapter_mCbSelected);
+        }
+
+        public void setSelected(boolean isSelect) {
+            mCbSelected.setChecked(isSelect);
+        }
+
+        public boolean isSelected() {
+            return mCbSelected.isChecked();
         }
     }
 

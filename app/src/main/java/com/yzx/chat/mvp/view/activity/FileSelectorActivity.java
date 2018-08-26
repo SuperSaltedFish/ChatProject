@@ -6,6 +6,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -23,12 +25,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class FileSelectorActivity extends BaseCompatActivity {
     private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
+    private static final int MAX_SELECTED_COUNT = 3;
 
     private RecyclerView mRvFileAndDirectory;
     private RecyclerView mRvDirectoryPath;
+    private TextView mTvConfirm;
     private LinearLayoutManager mDirectoryPathLayoutManager;
     private FileAndDirectoryAdapter mFileAndDirectoryAdapter;
     private DirectoryPathAdapter mDirectoryPathAdapter;
@@ -36,6 +41,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
     private String mCurrentPaht;
     private List<File> mCurrentFileList;
     private List<String> mDirectoryNameList;
+    private List<String> mSelectedFilePathList;
 
     @Override
     protected int getLayoutID() {
@@ -46,9 +52,11 @@ public class FileSelectorActivity extends BaseCompatActivity {
     protected void init(Bundle savedInstanceState) {
         mRvFileAndDirectory = findViewById(R.id.FileSelectorActivity_mRvFileAndDirectory);
         mRvDirectoryPath = findViewById(R.id.FileSelectorActivity_mRvDirectoryPath);
+        mTvConfirm = findViewById(R.id.FileSelectorActivity_mTvConfirm);
         mCurrentFileList = new ArrayList<>();
         mDirectoryNameList = new ArrayList<>();
-        mFileAndDirectoryAdapter = new FileAndDirectoryAdapter(mCurrentFileList);
+        mSelectedFilePathList = new ArrayList<>();
+        mFileAndDirectoryAdapter = new FileAndDirectoryAdapter(mCurrentFileList, mSelectedFilePathList);
         mDirectoryPathAdapter = new DirectoryPathAdapter(mDirectoryNameList);
     }
 
@@ -69,6 +77,9 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mRvFileAndDirectory.setHasFixedSize(true);
         mRvFileAndDirectory.addOnItemTouchListener(mOnFileOrDirectoryItemClickListener);
         mRvFileAndDirectory.setAdapter(mFileAndDirectoryAdapter);
+
+        mTvConfirm.setOnClickListener(mOnViewClickListener);
+        mTvConfirm.setEnabled(false);
 
         mDirectoryNameList.add(getString(R.string.FileSelectorActivity_Storage));
         mOnPathItemClickListener.onItemClick(0, null);
@@ -94,6 +105,10 @@ public class FileSelectorActivity extends BaseCompatActivity {
             deleteDirectoryNameBehindOf(mDirectoryNameList.get(mDirectoryNameList.size() - 2));
             updateCurrentDirectoryContent();
         }
+    }
+
+    private void confirmSelectedResult() {
+
     }
 
     private void updateCurrentDirectoryContent() {
@@ -132,7 +147,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
     private void addDirectoryName(String directoryName) {
         mDirectoryPathAdapter.notifyItemInserted(mDirectoryNameList.size());
         mDirectoryNameList.add(directoryName);
-        mDirectoryPathLayoutManager.scrollToPositionWithOffset(mDirectoryNameList.size() - 1, 0);
+        mDirectoryPathLayoutManager.scrollToPosition(mDirectoryNameList.size() - 1);
     }
 
     private void deleteDirectoryNameBehindOf(String directoryName) {
@@ -159,8 +174,32 @@ public class FileSelectorActivity extends BaseCompatActivity {
             }
         }
         mDirectoryPathAdapter.notifyItemRangeRemovedEx(mDirectoryNameList.size(), deleteCount);
+    }
+
+    private void addSelectedFile(String path) {
+        mSelectedFilePathList.add(path);
+        mTvConfirm.setEnabled(true);
+        mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedFilePathList.size(), MAX_SELECTED_COUNT));
 
     }
+
+    private void removeSelectedFile(String path) {
+        mSelectedFilePathList.remove(path);
+        mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedFilePathList.size(), MAX_SELECTED_COUNT));
+        mTvConfirm.setEnabled(mSelectedFilePathList.size() > 0);
+    }
+
+    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.FileSelectorActivity_mTvConfirm:
+                    confirmSelectedResult();
+                    break;
+            }
+        }
+    };
+
 
     private final OnRecyclerViewItemClickListener mOnPathItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
@@ -178,8 +217,22 @@ public class FileSelectorActivity extends BaseCompatActivity {
     private final OnRecyclerViewItemClickListener mOnFileOrDirectoryItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
         public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
-            addDirectoryName(mCurrentFileList.get(position).getName());
-            updateCurrentDirectoryContent();
+            File file = mCurrentFileList.get(position);
+            if (file.isDirectory()) {
+                addDirectoryName(mCurrentFileList.get(position).getName());
+                updateCurrentDirectoryContent();
+            } else {
+                FileAndDirectoryAdapter.FileAndDirectoryHolder holder = (FileAndDirectoryAdapter.FileAndDirectoryHolder) viewHolder;
+                if (holder.isSelected()) {
+                    holder.setSelected(false);
+                    removeSelectedFile(file.getPath());
+                } else if (mSelectedFilePathList.size() < MAX_SELECTED_COUNT) {
+                    holder.setSelected(true);
+                    addSelectedFile(file.getPath());
+                } else {
+                    showToast(String.format(Locale.getDefault(), getString(R.string.FileSelectorActivity_MaxSelectedCountHint), MAX_SELECTED_COUNT));
+                }
+            }
         }
     };
 }

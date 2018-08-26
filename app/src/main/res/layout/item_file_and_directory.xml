@@ -2,7 +2,9 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="64dp">
+    android:layout_height="64dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true">
 
     <ImageView
         android:id="@+id/FileAndDirectoryAdapter_mIvFileTypeIcon"
@@ -23,7 +25,7 @@
         android:singleLine="true"
         android:textColor="@color/textPrimaryColorBlack"
         app:layout_constraintBottom_toTopOf="@id/FileAndDirectoryAdapter_mTvFileInfo"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/FileAndDirectoryAdapter_mCbSelected"
         app:layout_constraintStart_toEndOf="@id/FileAndDirectoryAdapter_mIvFileTypeIcon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
@@ -36,8 +38,18 @@
         android:layout_marginStart="16dp"
         android:singleLine="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/FileAndDirectoryAdapter_mCbSelected"
         app:layout_constraintStart_toEndOf="@id/FileAndDirectoryAdapter_mIvFileTypeIcon"
         app:layout_constraintTop_toBottomOf="@id/FileAndDirectoryAdapter_mTvFileName" />
+
+    <CheckBox
+        android:id="@+id/FileAndDirectoryAdapter_mCbSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

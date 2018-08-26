@@ -246,4 +246,5 @@
     <string name="FileSelectorActivity_Title">文件选择</string>
     <string name="FileAndDirectoryAdapter_FileSize">文件大小</string>
     <string name="FileSelectorActivity_Storage">手机存储</string>
+    <string name="FileSelectorActivity_MaxSelectedCountHint">最多选择%d个文件</string>
 </resources>
