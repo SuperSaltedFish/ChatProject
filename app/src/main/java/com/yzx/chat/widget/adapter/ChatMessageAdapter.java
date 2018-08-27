@@ -27,6 +27,7 @@ import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.BasicInfoProvider;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.mvp.view.activity.VideoPlayActivity;
 import com.yzx.chat.network.chat.extra.VideoMessage;
 import com.yzx.chat.tool.IMMessageHelper;
@@ -34,6 +35,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.util.CountDownTimer;
 import com.yzx.chat.util.DateUtil;
+import com.yzx.chat.util.FileUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
@@ -50,6 +52,7 @@ import java.util.NoSuchElementException;
 
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;
+import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
@@ -77,8 +80,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION = 8;
     private static final int HOLDER_TYPE_SEND_MESSAGE_VIDEO = 9;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO = 10;
-    private static final int HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE = 11;
-    private static final int HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE = 12;
+    private static final int HOLDER_TYPE_SEND_MESSAGE_FILE = 11;
+    private static final int HOLDER_TYPE_RECEIVE_MESSAGE_FILE = 12;
+    private static final int HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE = 13;
+    private static final int HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE = 14;
 
     private List<Message> mMessageList;
     private SparseLongArray mTimeDisplayPositionArray;
@@ -115,6 +120,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_video, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                 return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_video, parent, false), viewType);
+            case HOLDER_TYPE_SEND_MESSAGE_FILE:
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_file, parent, false), viewType);
+            case HOLDER_TYPE_RECEIVE_MESSAGE_FILE:
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_file, parent, false), viewType);
             case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
             case HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE:
                 return new NotificationMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_notification_message, parent, false), viewType);
@@ -152,6 +161,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_IMAGE : HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE;
             case "RC:LBSMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_LOCATION : HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION;
+            case "RC:FileMsg":
+                return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_FILE : HOLDER_TYPE_RECEIVE_MESSAGE_FILE;
             case "Custom:VideoMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
             case "RC:GrpNtf":
@@ -167,7 +178,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     @Override
     public void onViewRecycled(@NonNull BaseViewHolder holder) {
         super.onViewRecycled(holder);
-
         if (holder instanceof SendMessageHolder) {
             SendMessageHolder sendMessageHolder = (SendMessageHolder) holder;
             if (sendMessageHolder.mProgressDrawable != null) {
@@ -360,6 +370,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 case HOLDER_TYPE_SEND_MESSAGE_VIDEO:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
                     mViewHolder = new VideoViewHolder(itemView);
+                    break;
+                case HOLDER_TYPE_SEND_MESSAGE_FILE:
+                case HOLDER_TYPE_RECEIVE_MESSAGE_FILE:
+                    mViewHolder = new FileViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
                     mViewHolder = new GroupNotificationViewHolder(itemView);
@@ -701,10 +715,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mDurationMs = voiceMessage.getDuration();
             setCurrentDuration(mDurationMs);
             int rowWidth = mVisualizerView.getMinimumWidth();
-            if (mDurationMs >= ChatActivity.MAX_VOICE_RECORDER_DURATION / 2) {
+            if (mDurationMs >= Constants.MAX_VOICE_RECORDER_DURATION / 2) {
                 rowWidth = 2 * rowWidth;
             } else {
-                rowWidth = (int) (rowWidth * (1 + mDurationMs * 2.0 / ChatActivity.MAX_VOICE_RECORDER_DURATION));
+                rowWidth = (int) (rowWidth * (1 + mDurationMs * 2.0 / Constants.MAX_VOICE_RECORDER_DURATION));
             }
             ViewGroup.LayoutParams layoutParams = mVisualizerView.getLayoutParams();
             layoutParams.width = rowWidth;
@@ -829,6 +843,26 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             int second = (int) (millisecond / 1000);
             return String.format(Locale.getDefault(), "%d:%02d", second / 60, second % 60);
         }
+    }
+
+    static final class FileViewHolder extends ItemViewHolder {
+        TextView mTvFileName;
+        TextView mTvFileSize;
+
+        FileViewHolder(View itemView) {
+            super(itemView);
+            mTvFileName = itemView.findViewById(R.id.ChatMessageAdapter_mTvFileName);
+            mTvFileSize = itemView.findViewById(R.id.ChatMessageAdapter_mTvFileSize);
+        }
+
+        @Override
+        public void parseMessageContent(Message message) {
+            FileMessage fileMessage = (FileMessage) message.getContent();
+            LogUtil.e(fileMessage.toString());
+            mTvFileName.setText(fileMessage.getName());
+            mTvFileSize.setText(FileUtil.fileSizeFormat(fileMessage.getSize()));
+        }
+
     }
 
 

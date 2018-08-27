@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalMultiImageAdapter;
@@ -46,7 +47,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     public static final String INTENT_EXTRA_IS_ORIGINAL = "IsOriginal";
 
     private static final int HORIZONTAL_ITEM_COUNT = 4;
-    private static final int MAX_SELECTED_COUNT = 9;
+    private static final int MAX_SELECTED_COUNT = Constants.MAX_ONCE_IMAGE_SEND_COUNT;
 
     private RecyclerView mRvImage;
     private RecyclerView mRvImageDir;

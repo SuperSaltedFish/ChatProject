@@ -35,8 +35,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.BasicInfoProvider;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.mvp.contract.ChatContract;
 import com.yzx.chat.mvp.presenter.ChatPresenter;
 import com.yzx.chat.tool.DirectoryHelper;
@@ -59,10 +58,8 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
 /**
@@ -72,18 +69,19 @@ import io.rong.imlib.model.Message;
 
 public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> implements ChatContract.View {
 
-    public static final int MAX_VOICE_RECORDER_DURATION = 60 * 999;
-    private static final int MIN_VOICE_RECORDER_DURATION = 800;
+    private static final int MAX_VOICE_RECORDER_DURATION = Constants.MAX_VOICE_RECORDER_DURATION;
+    private static final int MIN_VOICE_RECORDER_DURATION = Constants.MIN_VOICE_RECORDER_DURATION;
 
     private static final int MORE_INPUT_TYPE_NONE = 0;
     private static final int MORE_INPUT_TYPE_EMOTICONS = 1;
     private static final int MORE_INPUT_TYPE_MICROPHONE = 2;
     private static final int MORE_INPUT_TYPE_OTHER = 3;
 
-    private static final int REQUEST_PERMISSION_VOICE_RECORDER = 1;
-    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 2;
-    private static final int REQUEST_PERMISSION_ACCESS_COARSE_LOCATION = 3;
+    private static final int REQUEST_PERMISSION_VOICE = 1;
+    private static final int REQUEST_PERMISSION_IMAGE = 2;
+    private static final int REQUEST_PERMISSION_LOCATION = 3;
     private static final int REQUEST_PERMISSION_CAMERA = 4;
+    private static final int REQUEST_PERMISSION_FILE = 5;
 
     public static final String INTENT_EXTRA_CONVERSATION_ID = "ConversationID";
     public static final String INTENT_EXTRA_CONVERSATION_TYPE_CODE = "ConversationTypeCode";
@@ -109,6 +107,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private ImageView mIvSendImage;
     private ImageView mIvSendLocation;
     private ImageView mIvSendVideo;
+    private ImageView mIvSendFile;
     private VoiceRecorder mVoiceRecorder;
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
@@ -185,20 +184,23 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
         if (isSuccess) {
             switch (requestCode) {
-                case REQUEST_PERMISSION_VOICE_RECORDER:
+                case REQUEST_PERMISSION_VOICE:
                     if (!isHasVoiceRecorderPermission) {
                         isHasVoiceRecorderPermission = true;
                         toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
                     }
                     break;
-                case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
+                case REQUEST_PERMISSION_IMAGE:
                     startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
                     break;
-                case REQUEST_PERMISSION_ACCESS_COARSE_LOCATION:
+                case REQUEST_PERMISSION_LOCATION:
                     startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
                     break;
                 case REQUEST_PERMISSION_CAMERA:
                     startActivityForResult(new Intent(this, VideoRecorderActivity.class), 0);
+                    break;
+                case REQUEST_PERMISSION_FILE:
+                    startActivityForResult(new Intent(this, FileSelectorActivity.class), 0);
                     break;
             }
         }
@@ -233,6 +235,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             if (message != null) {
                 updateMessage(message);
             }
+        } else if (resultCode == FileSelectorActivity.RESULT_CODE) {
+            ArrayList<String> filePathList = data.getStringArrayListExtra(FileSelectorActivity.INTENT_EXTRA_SELECTED_FILE_PATH);
+            if (filePathList != null&&filePathList.size()>0) {
+                for(String path:filePathList){
+                    mPresenter.sendFileMessage(path);
+                }
+            }
         }
     }
 
@@ -263,6 +272,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendImage = findViewById(R.id.ChatActivity_mIvSendImage);
         mIvSendLocation = findViewById(R.id.ChatActivity_mIvSendLocation);
         mIvSendVideo = findViewById(R.id.ChatActivity_mIvSendVideo);
+        mIvSendFile = findViewById(R.id.ChatActivity_mIvSendFile);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
@@ -476,14 +486,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_IMAGE);
             }
         });
 
         mIvSendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CHANGE_WIFI_STATE}, REQUEST_PERMISSION_ACCESS_COARSE_LOCATION);
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CHANGE_WIFI_STATE}, REQUEST_PERMISSION_LOCATION);
             }
         });
 
@@ -491,6 +501,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             @Override
             public void onClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA);
+            }
+        });
+
+        mIvSendFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_FILE);
             }
         });
     }
@@ -652,7 +669,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void toggleMoreInput(int mode) {
         if (!isHasVoiceRecorderPermission && mode == MORE_INPUT_TYPE_MICROPHONE) {
-            requestPermissionsInCompatMode(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_VOICE_RECORDER);
+            requestPermissionsInCompatMode(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_VOICE);
             return;
         }
         if (isShowMoreInput()) {

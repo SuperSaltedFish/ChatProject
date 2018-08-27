@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
+import android.transition.Transition;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
@@ -21,6 +22,7 @@ import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.mvp.contract.VideoPlayContract;
 import com.yzx.chat.mvp.presenter.VideoPlayPresenter;
 import com.yzx.chat.util.VideoDecoder;
+import com.yzx.chat.widget.listener.SimpleTransitionListener;
 import com.yzx.chat.widget.view.AutoFitTextureView;
 import com.yzx.chat.widget.view.MediaControllerPopupWindow;
 import com.yzx.chat.widget.view.ProgressDialog;
@@ -66,15 +68,8 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         Uri thumbnailUri = getIntent().getParcelableExtra(INTENT_EXTRA_THUMBNAIL_URI);
+        mIvThumbnail.setImageURI(thumbnailUri);
         ViewCompat.setTransitionName(mIvThumbnail, TRANSITION_NAME_IMAGE);
-        if (thumbnailUri != null && !TextUtils.isEmpty(thumbnailUri.getPath())) {
-            GlideApp.with(this)
-                    .load(thumbnailUri)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .dontAnimate()
-                    .format(DecodeFormat.PREFER_RGB_565)
-                    .into(mIvThumbnail);
-        }
 
         mMediaControllerPopupWindow.setAnchorView(mTextureView);
         mMediaControllerPopupWindow.setOnCloseClickListener(mOnCloseClickListener);
@@ -82,16 +77,21 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
         mVideoPath = getIntent().getStringExtra(INTENT_EXTRA_VIDEO_PATH);
         mMessage = getIntent().getParcelableExtra(INTENT_EXTRA_MESSAGE);
-        if (TextUtils.isEmpty(mVideoPath)) {
-            mMessage = getIntent().getParcelableExtra(INTENT_EXTRA_MESSAGE);
-            if (mMessage == null) {
-                finish();
-            } else {
-                mPresenter.downloadVideo(mMessage);
-            }
-        } else {
-            playVideo(mVideoPath);
+        if (mMessage == null && TextUtils.isEmpty(mVideoPath)) {
+            finish();
+            return;
         }
+        getWindow().getSharedElementEnterTransition().addListener(new SimpleTransitionListener() {
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                getWindow().getSharedElementEnterTransition().removeListener(this);
+                if (TextUtils.isEmpty(mVideoPath)) {
+                    mPresenter.downloadVideo(mMessage);
+                } else {
+                    playVideo(mVideoPath);
+                }
+            }
+        });
     }
 
 

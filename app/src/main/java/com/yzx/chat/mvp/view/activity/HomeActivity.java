@@ -68,8 +68,8 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         mBottomTabLayout
                 .addTab(R.drawable.ic_conversation_focus, R.drawable.ic_conversation_unfocus, getString(R.string.HomeBottomNavigationTitle_Chat))
                 .addTab(R.drawable.ic_contacts_focus, R.drawable.ic_contacts_unfocus, getString(R.string.HomeBottomNavigationTitle_Contact))
-                .addTab(R.drawable.ic_moments_focus,R.drawable.ic_moments_unfocus, getString(R.string.HomeBottomNavigationTitle_Moments))
-                .addTab(R.drawable.ic_personal_focus,R.drawable.ic_personal_unfocus ,getString(R.string.HomeBottomNavigationTitle_Profile))
+                .addTab(R.drawable.ic_moments_focus, R.drawable.ic_moments_unfocus, getString(R.string.HomeBottomNavigationTitle_Moments))
+                .addTab(R.drawable.ic_personal_focus, R.drawable.ic_personal_unfocus, getString(R.string.HomeBottomNavigationTitle_Profile))
                 .setTitleTextSize(AndroidUtil.sp2px(11))
                 .addOnTabItemSelectedListener(mOnTabSelectedListener)
                 .setSelectPosition(0, false, true);

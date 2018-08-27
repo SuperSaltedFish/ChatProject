@@ -25,6 +25,7 @@ import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
+import io.rong.message.FileMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
 import io.rong.message.TextMessage;
@@ -169,6 +170,12 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void sendVideoMessage(String filePath) {
         Uri uri = Uri.parse("file://" + filePath);
         sendMessage(VideoMessage.obtain(uri));
+    }
+
+    @Override
+    public void sendFileMessage(String filePath) {
+        Uri uri = Uri.parse("file://" + filePath);
+        sendMessage(FileMessage.obtain(uri));
     }
 
     @Override

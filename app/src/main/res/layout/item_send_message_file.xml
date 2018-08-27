@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:gravity="center_vertical|end"
+    android:paddingEnd="4dp"
+    android:paddingStart="4dp">
+
+    <TextView
+        android:id="@+id/ChatMessageAdapter_mTvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_chat_time_round"
+        android:gravity="center"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ChatMessageAdapter_mIvMessageState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:padding="2dp"
+        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mContentLayout"
+        app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mContentLayout"
+        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mContentLayout" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/ChatMessageAdapter_mContentLayout"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="2dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="64dp"
+            android:paddingBottom="12dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="12dp"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:id="@+id/ChatMessageAdapter_mTvFileName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:maxLines="2"
+                android:textColor="@color/textPrimaryColorBlack"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvFileSize"
+                app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mTvFileIcon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ChatMessageAdapter_mTvFileSize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:singleLine="true"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mTvFileIcon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvFileName" />
+
+            <ImageView
+                android:id="@+id/ChatMessageAdapter_mTvFileIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_file"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+</android.support.constraint.ConstraintLayout>

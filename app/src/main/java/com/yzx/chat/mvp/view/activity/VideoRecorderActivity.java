@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.MD5Util;
 import com.yzx.chat.util.VideoDecoder;
@@ -33,7 +34,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     private static final int CURRENT_STATE_RECORDER = 2;
     private static final int CURRENT_STATE_PLAY = 3;
 
-    private static final int MAX_RECORDER_DURATION = 10 * 1000 + 300;
+    private static final int MAX_RECORDER_DURATION = Constants.MAX_VIDEO_RECORDER_DURATION;
     private static final int MIN_TRIGGER_RECORDER_TIME = 300;
 
     private ImageView mIvClose;
@@ -218,7 +219,6 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
 
     private final RecorderButton.OnRecorderTouchListener mOnRecorderTouchListener = new RecorderButton.OnRecorderTouchListener() {
-
         @Override
         public void onDown() {
             mRecorderButton

@@ -277,40 +277,43 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         }
                     }
                 }
-                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<Conversation>(oldConversationList, newConversationList) {
-                    @Override
-                    public boolean isItemEquals(Conversation oldItem, Conversation newItem) {
-                        return oldItem.getTargetId().equals(newItem.getTargetId());
-                    }
+                DiffUtil.DiffResult diffResult = null;
+                if (oldConversationList.size() > 0 && newConversationList != null && newConversationList.size() > 0) {
+                    diffResult = DiffUtil.calculateDiff(new DiffCalculate<Conversation>(oldConversationList, newConversationList) {
+                        @Override
+                        public boolean isItemEquals(Conversation oldItem, Conversation newItem) {
+                            return oldItem.getTargetId().equals(newItem.getTargetId());
+                        }
 
-                    @Override
-                    public boolean isContentsEquals(Conversation oldItem, Conversation newItem) {
-                        if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
-                            return false;
+                        @Override
+                        public boolean isContentsEquals(Conversation oldItem, Conversation newItem) {
+                            if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
+                                return false;
+                            }
+                            if (oldItem.getUnreadMessageCount() != newItem.getUnreadMessageCount()) {
+                                return false;
+                            }
+                            if (oldItem.getSentTime() != newItem.getSentTime()) {
+                                return false;
+                            }
+                            if (!oldItem.getConversationTitle().equals(newItem.getConversationTitle())) {
+                                return false;
+                            }
+                            if (!oldItem.getNotificationStatus().equals(newItem.getNotificationStatus())) {
+                                return false;
+                            }
+                            String oldDraft = oldItem.getDraft();
+                            String newDraft = newItem.getDraft();
+                            if ((TextUtils.isEmpty(oldDraft) && !TextUtils.isEmpty(newDraft)) || (!TextUtils.isEmpty(oldDraft) && TextUtils.isEmpty(newDraft))) {
+                                return false;
+                            }
+                            if ((!TextUtils.isEmpty(oldDraft) && !TextUtils.isEmpty(newDraft)) && !oldDraft.equals(newDraft)) {
+                                return false;
+                            }
+                            return true;
                         }
-                        if (oldItem.getUnreadMessageCount() != newItem.getUnreadMessageCount()) {
-                            return false;
-                        }
-                        if (oldItem.getSentTime() != newItem.getSentTime()) {
-                            return false;
-                        }
-                        if (!oldItem.getConversationTitle().equals(newItem.getConversationTitle())) {
-                            return false;
-                        }
-                        if (!oldItem.getNotificationStatus().equals(newItem.getNotificationStatus())) {
-                            return false;
-                        }
-                        String oldDraft = oldItem.getDraft();
-                        String newDraft = newItem.getDraft();
-                        if ((TextUtils.isEmpty(oldDraft) && !TextUtils.isEmpty(newDraft)) || (!TextUtils.isEmpty(oldDraft) && TextUtils.isEmpty(newDraft))) {
-                            return false;
-                        }
-                        if ((!TextUtils.isEmpty(oldDraft) && !TextUtils.isEmpty(newDraft)) && !oldDraft.equals(newDraft)) {
-                            return false;
-                        }
-                        return true;
-                    }
-                }, true);
+                    }, true);
+                }
                 oldConversationList.clear();
                 if (newConversationList != null && newConversationList.size() > 0) {
                     oldConversationList.addAll(newConversationList);
@@ -322,9 +325,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         @Override
         protected void onPostExecute(DiffUtil.DiffResult diffResult, ConversationPresenter lifeDependentObject) {
             super.onPostExecute(diffResult, lifeDependentObject);
-            if (diffResult != null) {
-                lifeDependentObject.refreshComplete(diffResult);
-            }
+            lifeDependentObject.refreshComplete(diffResult);
         }
     }
 

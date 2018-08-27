@@ -55,6 +55,8 @@ public class ChatContract {
 
         void sendVideoMessage(String filePath);
 
+        void sendFileMessage(String filePath);
+
         void loadMoreMessage(int lastMessageID);
 
         boolean isLoadingMore();

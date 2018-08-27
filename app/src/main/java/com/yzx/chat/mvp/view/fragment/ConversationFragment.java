@@ -212,13 +212,18 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     public void updateConversationsFromUI(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
+        int oldSize = mConversationList.size();
         mConversationList.clear();
-        if(newConversationList==null||newConversationList.size()==0){
+        if (newConversationList == null || newConversationList.size() == 0) {
             enableEmptyListHint(true);
             mAdapter.notifyDataSetChanged();
-        }else {
+        } else {
             enableEmptyListHint(false);
-            diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
+            if (oldSize == 0) {
+                mAdapter.notifyDataSetChanged();
+            } else {
+                diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
+            }
             mConversationList.addAll(newConversationList);
         }
         mConversationMenu.dismiss();

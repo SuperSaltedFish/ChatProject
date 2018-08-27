@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.DirectoryPathAdapter;
 import com.yzx.chat.widget.adapter.FileAndDirectoryAdapter;
@@ -28,8 +30,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class FileSelectorActivity extends BaseCompatActivity {
+
+    public static final int RESULT_CODE = FileSelectorActivity.class.hashCode();
+    public static final String INTENT_EXTRA_SELECTED_FILE_PATH = "SelectedFilePath";
+
     private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
-    private static final int MAX_SELECTED_COUNT = 3;
+    private static final int MAX_SELECTED_COUNT = Constants.MAX_ONCE_FILE_SEND_COUNT;
+    private static final int MAX_FILE_SEND_SIZE = Constants.MAX_FILE_SEND_SIZE;
 
     private RecyclerView mRvFileAndDirectory;
     private RecyclerView mRvDirectoryPath;
@@ -41,7 +48,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
     private String mCurrentPaht;
     private List<File> mCurrentFileList;
     private List<String> mDirectoryNameList;
-    private List<String> mSelectedFilePathList;
+    private ArrayList<String> mSelectedFilePathList;
 
     @Override
     protected int getLayoutID() {
@@ -108,7 +115,10 @@ public class FileSelectorActivity extends BaseCompatActivity {
     }
 
     private void confirmSelectedResult() {
-
+        Intent intent = new Intent();
+        intent.putStringArrayListExtra(INTENT_EXTRA_SELECTED_FILE_PATH,mSelectedFilePathList);
+        setResult(RESULT_CODE,intent);
+        finish();
     }
 
     private void updateCurrentDirectoryContent() {
@@ -227,8 +237,12 @@ public class FileSelectorActivity extends BaseCompatActivity {
                     holder.setSelected(false);
                     removeSelectedFile(file.getPath());
                 } else if (mSelectedFilePathList.size() < MAX_SELECTED_COUNT) {
-                    holder.setSelected(true);
-                    addSelectedFile(file.getPath());
+                    if (file.length() <= MAX_FILE_SEND_SIZE) {
+                        holder.setSelected(true);
+                        addSelectedFile(file.getPath());
+                    } else {
+                        showToast(String.format(Locale.getDefault(), getString(R.string.FileSelectorActivity_MaxSelectedFileSize), MAX_FILE_SEND_SIZE / 1024 / 1024));
+                    }
                 } else {
                     showToast(String.format(Locale.getDefault(), getString(R.string.FileSelectorActivity_MaxSelectedCountHint), MAX_SELECTED_COUNT));
                 }

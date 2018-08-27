@@ -26,7 +26,6 @@
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_marginTop="3dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
 
@@ -43,7 +42,7 @@
 
     <FrameLayout
         android:id="@+id/ChatMessageAdapter_mContentLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="224dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:background="@drawable/bg_chat_item_recv"
@@ -56,58 +55,50 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:minHeight="64dp"
+            android:paddingBottom="12dp"
+            android:paddingEnd="12dp"
+            android:paddingStart="8dp"
+            android:paddingTop="12dp">
 
             <TextView
-                android:id="@+id/ChatMessageAdapter_mTvTitle"
+                android:id="@+id/ChatMessageAdapter_mTvFileName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp"
-                android:singleLine="true"
+                android:gravity="start|center_vertical"
+                android:maxLines="2"
                 android:textColor="@color/textPrimaryColorBlack"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvAddress"
-                app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvMapImage"
-                app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvMapImage"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvFileSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mTvFileIcon"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/ChatMessageAdapter_mTvAddress"
+                android:id="@+id/ChatMessageAdapter_mTvFileSize"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:paddingBottom="4dp"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
+                android:gravity="start|center_vertical"
                 android:singleLine="true"
-                android:textColor="@color/textSecondaryColorBlack"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvMapImage"
-                app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvMapImage"
-                app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTitle" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1px"
-                android:background="@color/dividerColorBlack"
-                app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvMapImage"
-                app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvMapImage"
-                app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvMapImage" />
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mTvFileIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvFileName" />
 
             <ImageView
-                android:id="@+id/ChatMessageAdapter_mIvMapImage"
-                android:layout_width="200dp"
-                android:layout_height="80dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/ChatMessageAdapter_mTvFileIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_file"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvAddress" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 

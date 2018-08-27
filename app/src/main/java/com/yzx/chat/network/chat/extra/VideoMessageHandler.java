@@ -133,7 +133,7 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
         String duration;
         try {
             retriever.setDataSource(videoPath);
-            bitmap = retriever.getFrameAtTime(-1); //取得指定时间的Bitmap，即可以实现抓图（缩略图）功能
+            bitmap = retriever.getFrameAtTime(0); //取得指定时间的Bitmap，即可以实现抓图（缩略图）功能
             duration = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
         } catch (RuntimeException ex) {
             return null;

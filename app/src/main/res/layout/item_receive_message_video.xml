@@ -26,6 +26,7 @@
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
+        android:layout_marginTop="3dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
 

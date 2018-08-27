@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.FileUtil;
 
 import java.io.File;
 import java.util.List;
@@ -20,8 +21,6 @@ import java.util.Locale;
  * 如果你不给自己设限，世界上便没有限制你发挥的篱笆。
  */
 public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDirectoryAdapter.FileAndDirectoryHolder> {
-
-    private static final double BYTE_SIZE_GB = 1024 * 1024;
 
     private List<File> mFileList;
     private List<String> mSelectedFilePathList;
@@ -52,7 +51,7 @@ public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDire
             holder.mCbSelected.setVisibility(View.VISIBLE);
             holder.mCbSelected.setChecked(mSelectedFilePathList.contains(file.getPath()));
             holder.mIvFileTypeIcon.setSelected(false);
-            holder.mTvFileInfo.setText(String.format(Locale.getDefault(), "%s：%s", SIZE_LABEL, fileSizeFormat(file.length())));
+            holder.mTvFileInfo.setText(String.format(Locale.getDefault(), "%s：%s", SIZE_LABEL, FileUtil.fileSizeFormat(file.length())));
         }
         holder.mTvFileName.setText(file.getName());
     }
@@ -85,13 +84,4 @@ public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDire
         }
     }
 
-    private static String fileSizeFormat(long size) {
-        if (size < 1024) {
-            return String.format(Locale.getDefault(), "%d KB", size);
-        } else if (size < BYTE_SIZE_GB) {
-            return String.format(Locale.getDefault(), "%d MB", size / 1024);
-        } else {
-            return String.format(Locale.getDefault(), "%.02f GB", size / BYTE_SIZE_GB);
-        }
-    }
 }

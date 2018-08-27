@@ -23,7 +23,12 @@ import com.yzx.chat.widget.view.GlideHexagonTransform;
 
 
 public class GlideUtil {
-    private static final GlideHexagonTransform HEXAGON_TRANSFORM = new GlideHexagonTransform();
+
+    public static void clear(Context context, ImageView view) {
+        GlideApp.with(context).clear(view);
+
+    }
+
 
     public static void loadFromUrl(Context context, ImageView view, Object url) {
         if (url == null || view == null) {
@@ -32,7 +37,7 @@ public class GlideUtil {
         GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
                 .format(DecodeFormat.PREFER_RGB_565)
                 .into(view);
@@ -64,6 +69,8 @@ public class GlideUtil {
                 .into(view);
     }
 
+    private static final GlideHexagonTransform HEXAGON_TRANSFORM = new GlideHexagonTransform();
+
     @SuppressLint("CheckResult")
     public static void loadAvatarFromUrl(Context context, ImageView view, Object url) {
         if (view == null) {
@@ -92,11 +99,6 @@ public class GlideUtil {
             glideRequest.placeholder(R.drawable.ic_avatar_default);
         }
         glideRequest.into(view);
-    }
-
-    public static void clear(Context context, ImageView view) {
-        GlideApp.with(context).clear(view);
-
     }
 
 
