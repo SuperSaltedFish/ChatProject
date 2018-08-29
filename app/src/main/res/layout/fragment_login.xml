@@ -45,7 +45,6 @@
             android:imeOptions="actionNext"
             android:inputType="phone"
             android:singleLine="true"
-            android:text="13631232530"
             android:textSize="13sp" />
 
 
@@ -83,7 +82,6 @@
             android:imeOptions="actionNext"
             android:inputType="textPassword"
             android:maxLength="16"
-            android:text="12345678"
             android:singleLine="true"
             android:textSize="13sp" />
 

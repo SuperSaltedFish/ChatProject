@@ -6,10 +6,9 @@ import android.content.Context;
 import android.support.text.emoji.EmojiCompat;
 import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 
-import com.squareup.leakcanary.LeakCanary;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.framework.NetworkExecutor;
-import com.yzx.chat.tool.NotificationHelper;
+
 import com.yzx.chat.util.AndroidUtil;
 
 import java.util.List;
@@ -45,7 +44,6 @@ public class AppApplication extends Application {
             NetworkExecutor.init(this);
             NetworkExecutor.getNetworkConfigure().setEnableNetworkStateCheck(true);
 
-            LeakCanary.install(this);
         }
     }
 
