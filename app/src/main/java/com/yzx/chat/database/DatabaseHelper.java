@@ -1,6 +1,7 @@
 package com.yzx.chat.database;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -20,14 +21,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
-        db.execSQL(UserDao.CREATE_TABLE_SQL);
-        db.execSQL(ContactOperationDao.CREATE_TABLE_SQL);
-        db.execSQL(ContactDao.CREATE_TABLE_SQL);
-        db.execSQL(GroupDao.CREATE_TABLE_SQL);
-        db.execSQL(GroupMemberDao.CREATE_TABLE_SQL);
-//        db.execSQL(ConversationDao.CREATE_TABLE_SQL);
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        try {
+            db.execSQL(UserDao.CREATE_TABLE_SQL);
+            db.execSQL(ContactOperationDao.CREATE_TABLE_SQL);
+            db.execSQL(ContactDao.CREATE_TABLE_SQL);
+            db.execSQL(GroupDao.CREATE_TABLE_SQL);
+            db.execSQL(GroupMemberDao.CREATE_TABLE_SQL);
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
