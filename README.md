@@ -16,7 +16,7 @@
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/conversation_3.png)
 
 聊天界面
-![image](https://github.com/SuperSaltedFish/TempImage/blob/master/chat_0.png)
+![image](https://github.com/SuperSaltedFish/TempImage/blob/master/chat_0.jpg)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/chat_1.png)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/chat_2.png)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/chat_6.png)
