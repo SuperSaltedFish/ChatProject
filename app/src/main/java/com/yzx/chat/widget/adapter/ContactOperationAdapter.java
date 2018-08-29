@@ -85,6 +85,11 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 holder.mTvAccept.setBackgroundColor(ContextCompat.getColor(mContext, R.color.grey));
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
                 break;
+            case ContactManager.CONTACT_OPERATION_DELETE_ACTIVE:
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_Delete);
+                holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_refused);
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
+                break;
         }
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUser().getAvatar());
 

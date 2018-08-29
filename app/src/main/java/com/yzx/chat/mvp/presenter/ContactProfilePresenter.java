@@ -58,11 +58,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         mIMClient.getContactManager().deleteContact(mContactBean, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                if (mContactBean.getUserProfile().getUserID().equals(ChatPresenter.sConversationID)) {
-                    mContactProfileView.finishChatActivity();
-                }
-                mContactProfileView.setEnableProgressDialog(false);
-                mContactProfileView.goBack();
+
             }
 
             @Override
@@ -97,7 +93,10 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
         @Override
         public void onContactDeleted(ContactBean contact) {
-
+            if (contact.equals(mContactBean)) {
+                mContactProfileView.setEnableProgressDialog(false);
+                mContactProfileView.goBack();
+            }
         }
 
         @Override

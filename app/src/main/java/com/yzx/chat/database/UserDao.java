@@ -40,8 +40,6 @@ public class UserDao extends AbstractDao<UserBean> {
     private static final int COLUMN_INDEX_Email = 8;
     private static final int COLUMN_INDEX_Profession = 9;
     private static final int COLUMN_INDEX_School = 10;
-    private static final int COLUMN_INDEX_Age = 11;
-
 
     public static final String CREATE_TABLE_SQL =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("

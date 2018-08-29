@@ -61,7 +61,7 @@
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"/>
         <activity
             android:name=".mvp.view.activity.HomeActivity"
             android:theme="@style/NoBackgroundLightTheme"
@@ -107,9 +107,9 @@
         <activity android:name=".mvp.view.activity.NotificationMessageActivity" />
         <activity android:name=".mvp.view.activity.TestActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".mvp.view.activity.MyTagListActivity" />

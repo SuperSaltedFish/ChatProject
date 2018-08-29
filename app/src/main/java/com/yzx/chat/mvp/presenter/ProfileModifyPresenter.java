@@ -1,7 +1,7 @@
 package com.yzx.chat.mvp.presenter;
 
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.mvp.contract.ProfileModifyContract;
+import com.yzx.chat.mvp.contract.ProfileModifyEdit;
 import com.yzx.chat.network.api.user.UploadAvatarBean;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;
@@ -16,11 +16,11 @@ import java.io.File;
  */
 
 
-public class ProfileModifyPresenter implements ProfileModifyContract.Presenter {
-    private ProfileModifyContract.View mProfileModifyView;
+public class ProfileModifyPresenter implements ProfileModifyEdit.Presenter {
+    private ProfileModifyEdit.View mProfileModifyView;
 
     @Override
-    public void attachView(ProfileModifyContract.View view) {
+    public void attachView(ProfileModifyEdit.View view) {
         mProfileModifyView = view;
     }
 

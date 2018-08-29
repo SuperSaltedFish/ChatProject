@@ -78,7 +78,13 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginTelephone.addTextChangedListener(mTextWatcher);
         mEtLoginPassword.addTextChangedListener(mTextWatcher);
 
-        ViewUtil.autoScrollAtInput(mParentView, mBtnLogin);
+        ViewUtil.registerAutoScrollAtInput(mParentView, mBtnLogin);
+    }
+
+    @Override
+    public void onDestroyView() {
+        ViewUtil.unregisterAutoScrollAtInput(mParentView);
+        super.onDestroyView();
     }
 
     private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {

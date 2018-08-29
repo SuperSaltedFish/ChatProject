@@ -57,6 +57,7 @@ public class ContactManager {
     public static final String CONTACT_OPERATION_REQUEST_ACTIVE = "ActiveRequest";//主动请求
     public static final String CONTACT_OPERATION_ACCEPT_ACTIVE = "ActiveAccept";//主动同意添加
     public static final String CONTACT_OPERATION_REJECT_ACTIVE = "ActiveReject";//主动拒绝添加
+    public static final String CONTACT_OPERATION_DELETE_ACTIVE = "ActiveDelete";//主动删除好友
 
     private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REJECT, CONTACT_OPERATION_DELETE));
 
@@ -329,6 +330,16 @@ public class ContactManager {
             mContactsMap.remove(user.getUserID());
             mManagerHelper.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.PRIVATE, user.getUserID());
             mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, user.getUserID());
+            ContactOperationBean contactOperation = mContactOperationDao.loadByKey(user.getUserID());
+            if (contactOperation != null) {
+                boolean needUpdate = contactOperation.isRemind();
+                contactOperation.setRemind(false);
+                contactOperation.setType(CONTACT_OPERATION_DELETE_ACTIVE);
+                mContactOperationDao.update(contactOperation);
+                if (needUpdate) {
+                    updateContactUnreadCount();
+                }
+            }
             mManagerHelper.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -628,7 +639,9 @@ public class ContactManager {
         }
 
         if (old != null) {
-            contactOperation.setRemind((!old.getType().equals(contactOperation.getType())) || old.isRemind());
+            if (!TextUtils.equals(operation, CONTACT_OPERATION_DELETE)) {
+                contactOperation.setRemind((!old.getType().equals(contactOperation.getType())) || old.isRemind());
+            }
             if (!CONTACT_OPERATION_REQUEST.equals(operation)) {
                 contactOperation.setReason(old.getReason());
             }

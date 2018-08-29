@@ -1,5 +1,6 @@
 package com.yzx.chat.mvp.view.fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +15,7 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.ProfileContract;
 import com.yzx.chat.mvp.presenter.ProfilePresenter;
+import com.yzx.chat.mvp.view.activity.ProfileEditActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
@@ -69,6 +71,8 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mCropImagePagerAdapter.setMaskType(MaskImageView.MASK_MODE_LINEAR);
         mVpBanner.setAdapter(mCropImagePagerAdapter);
 
+        mIvAvatar.setOnClickListener(mOnViewClickListener);
+
         mPresenter.initUserInfo();
     }
 
@@ -77,6 +81,17 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mPicUrlList.add(R.drawable.temp_image_2);
         mPicUrlList.add(R.drawable.temp_image_3);
     }
+
+    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.ProfileFragment_mIvAvatar:
+                    startActivity(new Intent(mContext, ProfileEditActivity.class));
+                    break;
+            }
+        }
+    };
 
 
     @Override

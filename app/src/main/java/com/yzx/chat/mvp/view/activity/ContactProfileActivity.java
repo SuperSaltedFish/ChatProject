@@ -278,13 +278,6 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mLabelFlowLayout.addView(mTvLastLabel);
     }
 
-    @Override
-    public void finishChatActivity() {
-        Activity activity = AndroidUtil.getLaunchActivity(ChatActivity.class);
-        if (activity != null) {
-            activity.finish();
-        }
-    }
 
     @Override
     public void showError(String error) {

@@ -21,14 +21,13 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.CityBean;
 import com.yzx.chat.bean.ProvinceBean;
 import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.mvp.contract.ProfileModifyContract;
+import com.yzx.chat.mvp.contract.ProfileModifyEdit;
 import com.yzx.chat.mvp.presenter.ProfileModifyPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.GsonUtil;
 import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.RoundImageView;
 
@@ -44,7 +43,7 @@ import java.util.Map;
  */
 
 
-public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContract.Presenter> implements ProfileModifyContract.View {
+public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyEdit.Presenter> implements ProfileModifyEdit.View {
 
     private ProgressDialog mProgressDialog;
     private ImageView mIvAvatarBackground;
@@ -412,7 +411,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyContrac
     };
 
     @Override
-    public ProfileModifyContract.Presenter getPresenter() {
+    public ProfileModifyEdit.Presenter getPresenter() {
         return new ProfileModifyPresenter();
     }
 

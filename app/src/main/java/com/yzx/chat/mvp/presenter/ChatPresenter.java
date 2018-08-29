@@ -11,6 +11,7 @@ import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.mvp.contract.ChatContract;
 import com.yzx.chat.network.chat.ChatManager;
+import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.ConversationManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.extra.VideoMessage;
@@ -72,6 +73,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (contact != null) {
             mConversationID = conversationID;
             mConversationType = Conversation.ConversationType.PRIVATE;
+            mChatView.showChatTitle(contact.getName());
             init();
             return contact;
         }
@@ -84,6 +86,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (group != null) {
             mConversationID = conversationID;
             mConversationType = Conversation.ConversationType.GROUP;
+            mChatView.showChatTitle(group.getName());
             init();
             return group;
         }
@@ -113,9 +116,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
         mChatView.enableLoadMoreHint(mHasMoreMessage);
         mChatView.addNewMessage(messageList);
-
         mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mIMClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
+        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
         mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
         NotificationHelper.getInstance().cancelNotification(mConversationID.hashCode());
     }
@@ -123,6 +126,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private void reset() {
         mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mIMClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
+        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mIMClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         sConversationID = null;
@@ -319,6 +323,27 @@ public class ChatPresenter implements ChatContract.Presenter {
                         });
                         break;
                 }
+            }
+        }
+    };
+
+    private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
+        @Override
+        public void onContactAdded(ContactBean contact) {
+
+        }
+
+        @Override
+        public void onContactDeleted(ContactBean contact) {
+            if (TextUtils.equals(mConversationID, contact.getUserProfile().getUserID())) {
+                mChatView.goBack();
+            }
+        }
+
+        @Override
+        public void onContactUpdate(ContactBean contact) {
+            if (TextUtils.equals(mConversationID, contact.getUserProfile().getUserID())) {
+                mChatView.showChatTitle(contact.getName());
             }
         }
     };

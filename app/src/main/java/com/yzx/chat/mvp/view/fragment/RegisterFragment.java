@@ -83,7 +83,13 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mTvJumpToLogin.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
 
-        ViewUtil.autoScrollAtInput( mParentView, mBtnRegister);
+        ViewUtil.registerAutoScrollAtInput( mParentView, mBtnRegister);
+    }
+
+    @Override
+    public void onDestroyView() {
+        ViewUtil.registerAutoScrollAtInput( mParentView, mBtnRegister);
+        super.onDestroyView();
     }
 
     private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {

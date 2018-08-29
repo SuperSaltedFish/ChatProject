@@ -19,6 +19,8 @@ import io.rong.imlib.model.Message;
 
 public class ChatContract {
     public interface View extends BaseView<Presenter> {
+        void showChatTitle(String title);
+
         void addNewMessage(Message message);
 
         void addNewMessage(List<Message> messageList);

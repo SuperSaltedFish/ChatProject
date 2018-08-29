@@ -118,6 +118,7 @@
     <string name="ContactMessageAdapter_Refused">拒绝</string>
     <string name="ContactMessageAdapter_Requesting">同意</string>
     <string name="ContactMessageAdapter_Verifying">等待对方同意</string>
+    <string name="ContactMessageAdapter_Delete">已删除</string>
     <string name="ContactMessageMenu_Delete">删除</string>
     <string name="EditContactLabelActivity_Title">添加标签</string>
     <string name="RemarkInfoActivity_RemarkNameLabel">备注名称</string>

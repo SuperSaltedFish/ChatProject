@@ -328,7 +328,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
         mAdapter.setBasicInfoProvider(basicInfoProvider);
         mAdapter.setEnableNameDisplay(mCurrentConversationType == CONVERSATION_GROUP);
-        setTitle(basicInfoProvider.getName());
+
         mEtContent.setText(mPresenter.getMessageDraft());
     }
 
@@ -738,6 +738,11 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     public ChatContract.Presenter getPresenter() {
         return new ChatPresenter();
+    }
+
+    @Override
+    public void showChatTitle(String title) {
+        setTitle(title);
     }
 
     @Override

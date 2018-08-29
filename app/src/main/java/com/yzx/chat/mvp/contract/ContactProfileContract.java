@@ -17,8 +17,6 @@ public class ContactProfileContract {
     public interface View extends BaseView<Presenter> {
         void updateContactInfo(ContactBean contact);
 
-        void finishChatActivity();
-
         void showError(String error);
 
         void goBack();

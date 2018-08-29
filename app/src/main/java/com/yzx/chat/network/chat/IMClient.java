@@ -15,7 +15,7 @@ import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.database.AbstractDao;
-import com.yzx.chat.database.DBHelper;
+import com.yzx.chat.tool.DBHelper;
 import com.yzx.chat.network.api.JsonRequest;
 import com.yzx.chat.network.api.JsonResponse;
 import com.yzx.chat.network.api.auth.UserInfoBean;
