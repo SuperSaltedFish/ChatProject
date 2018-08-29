@@ -40,13 +40,12 @@
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/contactProfile_0.jpg)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/contactProfile_1.jpg)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/contactProfile_2.jpg)
-![image](https://github.com/SuperSaltedFish/TempImage/blob/master/contactProfile_3.jpg)
+![image](https://github.com/SuperSaltedFish/TempImage/blob/master/contactPfofile_3.jpg)
 <br><br><br>
 ## 群组信息<br>
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/group_1.jpg)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/group_2.jpg)
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/group_0.jpg)
-![image](https://github.com/SuperSaltedFish/TempImage/blob/master/contactPfofile_3.jpg)
 <br><br><br>
 ## 信息修改<br>
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/profile.jpg)
