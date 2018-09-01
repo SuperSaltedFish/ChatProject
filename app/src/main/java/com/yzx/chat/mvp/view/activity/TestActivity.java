@@ -36,6 +36,7 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
+
     }
 
     @Override
@@ -61,11 +62,6 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-    }
-
-    public void onClick(View v) {
-
 
     }
 

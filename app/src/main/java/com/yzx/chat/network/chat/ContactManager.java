@@ -147,6 +147,7 @@ public class ContactManager {
                             }
                             if (resultCallback != null) {
                                 resultCallback.onSuccess(null);
+                                int i = 100;
                             }
                         }
                     });
