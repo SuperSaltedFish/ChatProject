@@ -1,5 +1,5 @@
 # 闲聊(Sealtalk)
-闲聊是一款效仿于微信的社交APP，UI风格采用Google推荐的Material Design风格，IM用的是融云的SDK（只用到通信层IMLib）。所有界面和框架自行编写，目前已经完成基本的登录注册，聊天（包括发送文字、图片、音视频、文件、位置），项目还自行实现了好友体系，后续会继续完成朋友圈等功能的编写，待项目完成后会完善各个模块的代码注释。
+闲聊(最近更名为尬聊)是一款效仿于微信的社交APP，UI风格采用Google推荐的Material Design风格，IM用的是融云的SDK（只用到通信层IMLib）。所有界面和框架自行编写，目前已经完成基本的登录注册，聊天（包括发送文字、图片、音视频、文件、位置），项目还自行实现了好友体系，后续会继续完成朋友圈等功能的编写，待项目完成后会完善各个模块的代码注释。
 <br><br><br>
 ## 欢迎界面和Splash<br>
 ![image](https://github.com/SuperSaltedFish/TempImage/blob/master/splash.jpg)
