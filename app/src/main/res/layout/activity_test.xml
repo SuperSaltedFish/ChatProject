@@ -8,8 +8,7 @@
     tools:context=".mvp.view.activity.TestActivity">
 
     <Button
-        android:id="@+id/sss"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:onClick="onClick" />
+        android:onClick="onClick1" />
 </LinearLayout>

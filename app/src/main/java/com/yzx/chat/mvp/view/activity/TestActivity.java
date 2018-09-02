@@ -17,12 +17,18 @@ import com.yzx.chat.configure.GlideRequest;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.CarouselView;
 import com.yzx.chat.widget.view.GlideHexagonTransform;
 import com.yzx.chat.widget.view.MaskImageView;
 import com.yzx.chat.widget.view.RoundLinearLayout;
 
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -41,15 +47,7 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        ImageView s = findViewById(R.id.sss);
-        GlideApp.with(this)
-                .load(R.drawable.temp_head_image)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .dontAnimate()
-                .format(DecodeFormat.PREFER_RGB_565)
-                .transform(new GlideHexagonTransform())
-                .error(R.drawable.ic_avatar_default)
-                .into(s);
+
 
     }
 
@@ -66,7 +64,20 @@ public class TestActivity extends BaseCompatActivity {
     }
 
     public void onClick1(View v) {
+        int[] array = {5, 8, 7, 3, 0, 1, 2, 9, 4, 6};
 
+    }
+
+    private void maopao(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array.length - 1 - i; j++) {
+                if (array[j] > array[j + 1]) {
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                }
+            }
+        }
     }
 }
 

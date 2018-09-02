@@ -42,7 +42,9 @@ public class SettingFragment extends BaseFragment {
 //
 //            }
 //        });
+
     }
+
 
     @Override
     protected void setup(Bundle savedInstanceState) {

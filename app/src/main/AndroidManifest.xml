@@ -53,11 +53,11 @@
         <activity
             android:name=".mvp.view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".mvp.view.activity.LoginActivity"
@@ -115,11 +115,11 @@
         <activity android:name=".mvp.view.activity.MyTagListActivity" />
 
         <receiver android:name=".broadcast.UninstallReceive">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />-->
 
-                <data android:scheme="package" />
-            </intent-filter>
+                <!--<data android:scheme="package" />-->
+            <!--</intent-filter>-->
         </receiver>
 
     </application>
