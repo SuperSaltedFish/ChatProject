@@ -1,11 +1,9 @@
 package com.yzx.chat.widget.view;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -14,11 +12,7 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Space;
 
-import com.yzx.chat.util.LogUtil;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Created by YZX on 2017年12月16日.

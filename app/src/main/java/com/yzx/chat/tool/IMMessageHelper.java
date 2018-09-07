@@ -35,7 +35,6 @@ import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
-import io.rong.message.StickerMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -72,8 +71,6 @@ public class IMMessageHelper {
             return AndroidUtil.getString(R.string.MessageSummary_ImageInfo);
         } else if (messageContent instanceof LocationMessage) {
             return AndroidUtil.getString(R.string.MessageSummary_LocationInfo);
-        } else if (messageContent instanceof StickerMessage) {
-            return AndroidUtil.getString(R.string.MessageSummary_EmotionInfo);
         } else if (messageContent instanceof FileMessage) {
             return AndroidUtil.getString(R.string.MessageSummary_FileInfo);
         } else if (messageContent instanceof VideoMessage) {
