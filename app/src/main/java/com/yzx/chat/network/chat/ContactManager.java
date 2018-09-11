@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.rong.common.ParcelUtils;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;

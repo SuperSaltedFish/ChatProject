@@ -24,9 +24,6 @@ public class FlowLayout extends ViewGroup {
     private int mLineSpace;
     private int mMaxLine;
 
-    private View mMoreHintView;
-    private boolean isEnableMoreHint;
-
     public FlowLayout(Context context) {
         this(context, null);
     }
@@ -97,10 +94,6 @@ public class FlowLayout extends ViewGroup {
                 (widthMode == MeasureSpec.EXACTLY) ? maxWidth : layoutWidth,
                 (heightMode == MeasureSpec.EXACTLY) ? maxHeight : layoutHeight + getPaddingTop() + getPaddingBottom()
         );
-    }
-
-    private void addMoreHintViewIfNeed(){
-
     }
 
     @Override
