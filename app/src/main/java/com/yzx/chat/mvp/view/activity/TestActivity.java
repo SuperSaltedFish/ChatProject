@@ -1,9 +1,13 @@
 package com.yzx.chat.mvp.view.activity;
 
+import android.Manifest;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.MessageQueue;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -30,6 +34,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 
 public class TestActivity extends BaseCompatActivity {
@@ -48,6 +53,11 @@ public class TestActivity extends BaseCompatActivity {
     @Override
     protected void setup(Bundle savedInstanceState) {
 
+        Resources resources = getResources();
+        DisplayMetrics dm = resources.getDisplayMetrics();
+        Configuration config = resources.getConfiguration();
+        config.locale = Locale.ENGLISH; //设置语言
+        resources.updateConfiguration(config, dm);
 
     }
 
@@ -64,21 +74,11 @@ public class TestActivity extends BaseCompatActivity {
     }
 
     public void onClick1(View v) {
-        int[] array = {5, 8, 7, 3, 0, 1, 2, 9, 4, 6};
+        requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA}, 100);
 
     }
 
-    private void maopao(int[] array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length - 1 - i; j++) {
-                if (array[j] > array[j + 1]) {
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
-                }
-            }
-        }
-    }
+
 }
 
 

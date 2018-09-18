@@ -12,7 +12,6 @@ import android.view.ViewGroup;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
-
 public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter.BaseViewHolder>
         extends RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseViewHolder> {
 
