@@ -56,7 +56,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mContext = getActivity();
+        mContext = inflater.getContext();
         if (mParentView == null||!isSaveFragmentView()) {
             mParentView = inflater.inflate(getLayoutID(), container, false);
             initPresenter();
