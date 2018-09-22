@@ -88,6 +88,58 @@
         app:layout_constraintTop_toTopOf="@id/ProfileFragment_mIvSexIcon" />
 
 
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ProfileFragment_mIvAvatar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="我的相册"
+                android:textColor="@color/textPrimaryColorBlack"
+                android:textSize="16sp" />
+
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/ProfileFragment_mVpAlbum"
+                android:layout_width="116dp"
+                android:layout_height="88dp"
+                android:layout_gravity="center_horizontal"
+                android:clipChildren="false"
+                android:overScrollMode="never" />
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+    <ImageView
+        android:id="@+id/ProfileFragment_mIvSetting"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_setting"
+        android:tint="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

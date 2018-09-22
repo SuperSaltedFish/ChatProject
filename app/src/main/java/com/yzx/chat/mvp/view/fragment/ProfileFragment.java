@@ -15,10 +15,14 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.ProfileContract;
 import com.yzx.chat.mvp.presenter.ProfilePresenter;
+import com.yzx.chat.mvp.view.activity.LoginActivity;
 import com.yzx.chat.mvp.view.activity.ProfileEditActivity;
+import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
+import com.yzx.chat.widget.animation.ZoomPageTransformer;
 import com.yzx.chat.widget.view.MaskImageView;
 import com.yzx.chat.widget.view.PageIndicator;
 
@@ -37,10 +41,14 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
     private ImageView mIvAvatar;
     private TextView mTvNickname;
     private ImageView mIvSexIcon;
+    private ImageView mIvSetting;
     private TextView mTvLocationAndAge;
     private CenterCropImagePagerAdapter mCropImagePagerAdapter;
     private ArrayList<Object> mPicUrlList;
 
+    private ViewPager mVpAlbum;
+    private AlbumPagerAdapter mAlbumAdapter;
+    private ArrayList<Object> mObjects;
 
     @Override
     protected int getLayoutID() {
@@ -55,6 +63,8 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mTvNickname = parentView.findViewById(R.id.ProfileFragment_mTvNickname);
         mIvSexIcon = parentView.findViewById(R.id.ProfileFragment_mIvSexIcon);
         mTvLocationAndAge = parentView.findViewById(R.id.ProfileFragment_mTvLocationAndAge);
+        mIvSetting = parentView.findViewById(R.id.ProfileFragment_mIvSetting);
+        mVpAlbum = parentView.findViewById(R.id.ProfileFragment_mVpAlbum);
         mPicUrlList = new ArrayList<>(6);
         mCropImagePagerAdapter = new CenterCropImagePagerAdapter(mPicUrlList);
     }
@@ -72,6 +82,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mVpBanner.setAdapter(mCropImagePagerAdapter);
 
         mIvAvatar.setOnClickListener(mOnViewClickListener);
+        mIvSetting.setOnClickListener(mOnViewClickListener);
 
         mPresenter.initUserInfo();
     }
@@ -80,14 +91,34 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mPicUrlList.add(R.drawable.temp_image_1);
         mPicUrlList.add(R.drawable.temp_image_2);
         mPicUrlList.add(R.drawable.temp_image_3);
+
+        mObjects = new ArrayList<>();
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_image_2);
+        mObjects.add(R.drawable.temp_image_3);
+        mObjects.add(R.drawable.temp_image_1);
+        mObjects.add(R.drawable.temp_share_image);
+        mObjects.add(R.drawable.temp_share_image);
+        mAlbumAdapter = new AlbumPagerAdapter(mObjects);
+
+        mVpAlbum.setAdapter(mAlbumAdapter);
+        //     mVpAlbum.setPageMargin((int) AndroidUtil.dip2px(32));
+        mVpAlbum.setPageTransformer(true, new ZoomPageTransformer());
+        mVpAlbum.setOffscreenPageLimit(2);
+        mVpAlbum.setCurrentItem(1);
     }
 
     private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.ProfileFragment_mIvAvatar:
                     startActivity(new Intent(mContext, ProfileEditActivity.class));
+                    break;
+                case R.id.ProfileFragment_mIvSetting:
+                    SharePreferenceManager.getConfigurePreferences().putFirstGuide(true);
+                    startActivity(new Intent(mContext, LoginActivity.class));
+                    getActivity().finish();
                     break;
             }
         }
