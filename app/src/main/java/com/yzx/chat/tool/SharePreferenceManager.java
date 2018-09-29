@@ -117,7 +117,7 @@ public class SharePreferenceManager {
         }
 
         public void putFirstGuide(boolean value) {
-            mPreferences.edit().putBoolean(CONFIGURE_KEY_IS_FIRST_GUIDE, value).apply();
+            mPreferences.edit().putBoolean(CONFIGURE_KEY_IS_FIRST_GUIDE, value).commit();
         }
 
         public boolean isFirstGuide() {
