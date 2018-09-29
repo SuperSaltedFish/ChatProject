@@ -6,7 +6,7 @@
     tools:context=".mvp.view.activity.HomeActivity">
 
 
-    <FrameLayout
+    <com.yzx.chat.widget.view.WindowInsetsFrameLayout
         android:id="@+id/HomeActivity_mClContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
