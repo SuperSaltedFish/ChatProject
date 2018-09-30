@@ -130,7 +130,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
 
     @Override
     public void refreshGroup(GroupBean group, int position) {
-        mGroupList.set(position,group);
+        mGroupList.set(position, group);
         mGroupAdapter.notifyItemChangedEx(position);
     }
 }

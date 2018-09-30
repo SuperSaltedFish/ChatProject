@@ -40,7 +40,7 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
     public void bindDataToViewHolder(ContactHolder holder, int position) {
         ContactBean contactBean = mSearchContactList.get(position);
         holder.mTvName.setText(contactBean.getName());
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvHeadImage,contactBean.getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvHeadImage, contactBean.getAvatar());
     }
 
     @Override
@@ -63,7 +63,6 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
             return mSearchContactList.size();
         }
         return 0;
-
     }
 
 
