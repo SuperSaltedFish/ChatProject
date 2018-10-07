@@ -356,6 +356,8 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileModifyEdit.Pr
                 View view = mLocationSelectorDialog.getCustomView();
                 mProvincePicker = view.findViewById(R.id.LocationSelectorDialog_mNpProvince);
                 mCityPicker = view.findViewById(R.id.LocationSelectorDialog_mNpCity);
+                mProvincePicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
+                mCityPicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
 
                 mProvincePicker.setDisplayedValues(mProvinceArray);//设置需要显示的数组
                 mProvincePicker.setMinValue(0);
