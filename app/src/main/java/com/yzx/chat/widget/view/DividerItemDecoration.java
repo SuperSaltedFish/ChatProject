@@ -9,8 +9,6 @@ import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.yzx.chat.util.LogUtil;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -45,7 +43,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private int mDividerWidth;
     private int mDividerColor;
-    private int mOrientationtMode;
+    private int mOrientationMode;
     private int mPaddingLeft;
     private int mPaddingTop;
     private int mPaddingRight;
@@ -57,7 +55,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public DividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor, @OrientationMode int orientationMode) {
         mDividerWidth = dividerWidth;
         mDividerColor = dividerColor;
-        mOrientationtMode = orientationMode;
+        mOrientationMode = orientationMode;
         mPaint = new Paint();
         mPaint.setStrokeWidth(mDividerWidth);
         mPaint.setColor(mDividerColor);
@@ -66,7 +64,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         mRecyclerView = parent;
-        switch (mOrientationtMode) {
+        switch (mOrientationMode) {
             case ORIENTATION_HORIZONTAL:
                 outRect.bottom = mDividerWidth;
                 break;
@@ -82,7 +80,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         View view;
         int childCount = parent.getChildCount();
         float[] lines = new float[childCount * 4];
-        switch (mOrientationtMode) {
+        switch (mOrientationMode) {
             case ORIENTATION_HORIZONTAL:
                 for (int i = 0, j = 0; i < childCount; i++, j += 4) {
                     view = parent.getChildAt(i);
