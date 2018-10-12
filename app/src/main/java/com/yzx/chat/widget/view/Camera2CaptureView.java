@@ -152,7 +152,7 @@ public class Camera2CaptureView extends Camera2PreviewView {
             mImageReader.close();
             mImageReader = null;
         }
-        isCapturePrepared = true;
+        isCapturePrepared = false;
         return true;
     }
 

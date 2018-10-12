@@ -30,6 +30,7 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.multi.qrcode.QRCodeMultiReader;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -149,7 +150,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     }
 
     private final Camera2CaptureView.CaptureCallback mCaptureCallback = new Camera2CaptureView.CaptureCallback() {
-        private QRCodeReader mQRCodeReader;
+        private QRCodeMultiReader mQRCodeReader;
         private Hashtable<DecodeHintType, Object> mHints;
         private byte[] mDataBuff;
         private Rect mRect = new Rect();
@@ -280,7 +281,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     @Override
     public void startGroupChatActivity(String groupID) {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE,ChatActivity.CONVERSATION_GROUP);
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, groupID);
         startActivity(intent);
         finish();

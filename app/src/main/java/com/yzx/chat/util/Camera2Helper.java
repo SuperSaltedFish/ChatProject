@@ -382,12 +382,25 @@ public class Camera2Helper {
         }
     }
 
+    public Size chooseOptimalSize(int format, int expectedWidth, int expectedHeight, int maxWidth, int maxHeight, Size aspectRatio) {
+        Size[] choices = mStreamConfMap.getOutputSizes(format);
+        if (choices == null || choices.length == 0) {
+            LogUtil.e("Couldn't find any supported size based on format:" +format);
+            return null;
+        }
+        return chooseOptimalSize(choices,expectedWidth,expectedHeight,maxWidth,maxHeight,aspectRatio);
+    }
+
     public Size chooseOptimalSize(Class outTypeClass, int expectedWidth, int expectedHeight, int maxWidth, int maxHeight, Size aspectRatio) {
         Size[] choices = mStreamConfMap.getOutputSizes(outTypeClass);
         if (choices == null || choices.length == 0) {
-            LogUtil.e("Couldn't find any supported size based on" + outTypeClass.getName());
+            LogUtil.e("Couldn't find any supported size based on " + outTypeClass.getName());
             return null;
         }
+        return chooseOptimalSize(choices,expectedWidth,expectedHeight,maxWidth,maxHeight,aspectRatio);
+    }
+
+    private Size chooseOptimalSize(Size[] choices, int expectedWidth, int expectedHeight, int maxWidth, int maxHeight, Size aspectRatio){
         List<Size> bigEnough = new ArrayList<>();
         List<Size> notBigEnough = new ArrayList<>();
         int w = aspectRatio.getWidth();
@@ -412,6 +425,7 @@ public class Camera2Helper {
             return choices[0];
         }
     }
+
 
     public void focus(int x, int y, int previewWidth, int previewHeight) {
         if (!isPreviewing) {
