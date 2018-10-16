@@ -28,7 +28,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
 
-
 public class AESUtil {
 
     private final static String AES = "AES";
@@ -36,7 +35,7 @@ public class AESUtil {
     private final static String ALGORITHM = "AES/CBC/PKCS7Padding";
     private final static String CERTIFICATE_SUBJECT = "CN=YeZhiXing";
     private final static int DEFAULT_KEY_SIZE = 192;
-    private final static byte[] IV_BYTES =new byte[16];
+    private final static byte[] IV_BYTES = new byte[16];
 
     private static KeyStore sKeyStore;
 

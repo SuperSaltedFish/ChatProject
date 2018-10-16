@@ -306,6 +306,29 @@ public class RSAUtil {
         return null;
     }
 
+    public static PublicKey loadPublicKey(byte[] publicKey) {
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance(RSA);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKey);
+            return keyFactory.generatePublic(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public static PrivateKey loadPrivateKey(byte[] privateKey) {
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance(RSA);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKey);
+            return keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     private static boolean initKeyStore() {
         try {
             sKeyStore = KeyStore.getInstance(PROVIDER);

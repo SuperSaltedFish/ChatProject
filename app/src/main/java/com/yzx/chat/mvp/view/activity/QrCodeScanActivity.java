@@ -150,7 +150,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     }
 
     private final Camera2CaptureView.CaptureCallback mCaptureCallback = new Camera2CaptureView.CaptureCallback() {
-        private QRCodeMultiReader mQRCodeReader;
+        private QRCodeReader mQRCodeReader;
         private Hashtable<DecodeHintType, Object> mHints;
         private byte[] mDataBuff;
         private Rect mRect = new Rect();

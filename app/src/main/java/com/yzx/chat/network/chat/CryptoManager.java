@@ -78,11 +78,11 @@ public class CryptoManager {
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         String deviceID = idPref.getDeviceID();
         if (TextUtils.isEmpty(deviceID)) {
-            deviceID = String.format(Locale.getDefault(), "%s.%d.Api%s(%s)",
-                    UUID.randomUUID(),
+            deviceID = String.format(Locale.getDefault(), "Api%d.%s(%s).%s",
                     Build.VERSION.SDK_INT,
                     Build.BRAND,
-                    Build.MODEL);
+                    Build.MODEL,
+                    UUID.randomUUID());
             byte enDeviceID[] = RSAUtil.encryptByPublicKey(deviceID.getBytes(), sRSAKeyPair.getPublic());
             if (enDeviceID != null && enDeviceID.length != 0) {
                 String tmpDeviceID = Base64Util.encodeToString(enDeviceID);
