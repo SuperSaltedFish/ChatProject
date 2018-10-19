@@ -45,7 +45,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
         mRvTags.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvTags.setAdapter(mAdapter);
         mRvTags.setHasFixedSize(true);
-        mRvTags.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRvTags.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRvTags.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mRvTags.addOnScrollListener(new ImageAutoLoadScrollListener());
 

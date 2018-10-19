@@ -246,6 +246,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
                 mClipRect.right = mClipRect.left + mScanLayout.getWidth();
                 mClipRect.bottom = mClipRect.top + mScanLayout.getHeight();
             }
+            mScaleAnimation.setAnimationListener(null);
         }
 
         @Override

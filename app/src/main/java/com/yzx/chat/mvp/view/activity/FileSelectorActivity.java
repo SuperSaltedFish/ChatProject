@@ -22,7 +22,6 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -80,7 +79,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mRvDirectoryPath.setAdapter(mDirectoryPathAdapter);
 
         mRvFileAndDirectory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRvFileAndDirectory.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRvFileAndDirectory.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRvFileAndDirectory.setHasFixedSize(true);
         mRvFileAndDirectory.addOnItemTouchListener(mOnFileOrDirectoryItemClickListener);
         mRvFileAndDirectory.setAdapter(mFileAndDirectoryAdapter);

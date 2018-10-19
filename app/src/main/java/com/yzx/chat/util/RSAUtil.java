@@ -328,7 +328,7 @@ public class RSAUtil {
             return null;
         }
     }
-    
+
     private static boolean initKeyStore() {
         try {
             sKeyStore = KeyStore.getInstance(PROVIDER);

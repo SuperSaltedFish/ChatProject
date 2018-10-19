@@ -21,22 +21,22 @@ import java.lang.annotation.RetentionPolicy;
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
 
-    public static final int ORIENTATION_HORIZONTAL = 0;
-    public static final int ORIENTATION_VERTICAL = 1;
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ORIENTATION_HORIZONTAL, ORIENTATION_VERTICAL})
+    @IntDef({HORIZONTAL, VERTICAL})
     public @interface OrientationMode {
     }
 
     public static DividerItemDecoration createHorizontalDividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor, int paddingLeft, int paddingRight) {
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(dividerWidth, dividerColor, ORIENTATION_HORIZONTAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(dividerWidth, dividerColor, HORIZONTAL);
         itemDecoration.setHorizontalPadding(paddingLeft, paddingRight);
         return itemDecoration;
     }
 
     public static DividerItemDecoration createVerticalDividerItemDecoration(@Px int dividerWidth, @ColorInt int dividerColor, int paddingTop, int paddingBottom) {
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(dividerWidth, dividerColor, ORIENTATION_VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(dividerWidth, dividerColor, VERTICAL);
         itemDecoration.setVerticalPadding(paddingTop, paddingBottom);
         return itemDecoration;
     }
@@ -65,10 +65,10 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         mRecyclerView = parent;
         switch (mOrientationMode) {
-            case ORIENTATION_HORIZONTAL:
+            case HORIZONTAL:
                 outRect.bottom = mDividerWidth;
                 break;
-            case ORIENTATION_VERTICAL:
+            case VERTICAL:
                 outRect.right = mDividerWidth;
                 break;
         }
@@ -81,7 +81,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         int childCount = parent.getChildCount();
         float[] lines = new float[childCount * 4];
         switch (mOrientationMode) {
-            case ORIENTATION_HORIZONTAL:
+            case HORIZONTAL:
                 for (int i = 0, j = 0; i < childCount; i++, j += 4) {
                     view = parent.getChildAt(i);
                     lines[j] = mPaddingLeft;
@@ -90,7 +90,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
                     lines[j + 3] = lines[j + 1];
                 }
                 break;
-            case ORIENTATION_VERTICAL:
+            case VERTICAL:
                 for (int i = 0, j = 0; i < childCount; i++, j += 4) {
                     view = parent.getChildAt(i);
                     lines[j] = view.getRight() + mDividerWidth / 2;

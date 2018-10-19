@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -12,11 +11,9 @@ import android.view.MenuItem;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.mvp.contract.GroupListContract;
 import com.yzx.chat.mvp.presenter.GroupListPresenter;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.GroupAdapter;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
@@ -59,7 +56,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
         mRvGroup.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvGroup.setAdapter(mGroupAdapter);
         mRvGroup.setHasFixedSize(true);
-        mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.ORIENTATION_HORIZONTAL));
+        mRvGroup.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRvGroup.addOnItemTouchListener(mOnRvGroupItemClickListener);
         mRvGroup.addOnScrollListener(new ImageAutoLoadScrollListener());
 
