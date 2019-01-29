@@ -5,7 +5,6 @@ import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ConversationBean;
 
 import java.util.List;
 

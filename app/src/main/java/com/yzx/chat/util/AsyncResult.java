@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
 
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.listener.ResultCallback;
 
 import java.lang.ref.WeakReference;
 

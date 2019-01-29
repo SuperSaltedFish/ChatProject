@@ -6,15 +6,15 @@ import android.text.TextUtils;
 
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.module.conversation.contract.ChatContract;
-import com.yzx.chat.network.chat.ChatManager;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.ConversationManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.extra.VideoMessage;
+import com.yzx.chat.core.manager.ChatManager;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.manager.ConversationManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.LogUtil;
 
@@ -68,8 +68,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public ContactBean initPrivateChat(String conversationID) {
-        ContactBean contact = mIMClient.getContactManager().getContact(conversationID);
+    public ContactEntity initPrivateChat(String conversationID) {
+        ContactEntity contact = mIMClient.getContactManager().getContact(conversationID);
         if (contact != null) {
             mConversationID = conversationID;
             mConversationType = Conversation.ConversationType.PRIVATE;
@@ -81,8 +81,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
-    public GroupBean initGroupChat(String conversationID) {
-        GroupBean group = mIMClient.getGroupManager().getGroup(conversationID);
+    public GroupEntity initGroupChat(String conversationID) {
+        GroupEntity group = mIMClient.getGroupManager().getGroup(conversationID);
         if (group != null) {
             mConversationID = conversationID;
             mConversationType = Conversation.ConversationType.GROUP;
@@ -329,19 +329,19 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
-        public void onContactAdded(ContactBean contact) {
+        public void onContactAdded(ContactEntity contact) {
 
         }
 
         @Override
-        public void onContactDeleted(ContactBean contact) {
+        public void onContactDeleted(ContactEntity contact) {
             if (TextUtils.equals(mConversationID, contact.getUserProfile().getUserID())) {
                 mChatView.goBack();
             }
         }
 
         @Override
-        public void onContactUpdate(ContactBean contact) {
+        public void onContactUpdate(ContactEntity contact) {
             if (TextUtils.equals(mConversationID, contact.getUserProfile().getUserID())) {
                 mChatView.showChatTitle(contact.getName());
             }

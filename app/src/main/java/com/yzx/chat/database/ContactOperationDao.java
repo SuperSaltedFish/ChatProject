@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.core.entity.ContactOperationEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 
-public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
+public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
 
     static final String TABLE_NAME = "ContactOperation";
 
@@ -46,10 +46,10 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
     }
 
 
-    public synchronized List<ContactOperationBean> loadAllContactOperation() {
+    public synchronized List<ContactOperationEntity> loadAllContactOperation() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + COLUMN_NAME_ContactID + "=" + UserDao.COLUMN_NAME_UserID + " ORDER BY " + COLUMN_NAME_IsRemind + " DESC," + COLUMN_NAME_Time + " DESC", null);
-        List<ContactOperationBean> contactList = new ArrayList<>(cursor.getCount());
+        List<ContactOperationEntity> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
@@ -82,13 +82,13 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
     }
 
     @Override
-    public ContactOperationBean loadByKey(String... keyValues) {
+    public ContactOperationEntity loadByKey(String... keyValues) {
         if (keyValues == null || keyValues.length == 0) {
             return null;
         }
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + COLUMN_NAME_ContactID + "=" + UserDao.COLUMN_NAME_UserID + " AND " + COLUMN_NAME_ContactID + "=?", keyValues);
-        ContactOperationBean entity = null;
+        ContactOperationEntity entity = null;
         if (cursor.moveToFirst()) {
             entity = toEntity(cursor);
         }
@@ -108,12 +108,12 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
     }
 
     @Override
-    protected String[] toWhereArgsOfKey(ContactOperationBean entity) {
+    protected String[] toWhereArgsOfKey(ContactOperationEntity entity) {
         return new String[]{entity.getUserID()};
     }
 
     @Override
-    protected void parseToContentValues(ContactOperationBean entity, ContentValues values) {
+    protected void parseToContentValues(ContactOperationEntity entity, ContentValues values) {
         values.put(ContactOperationDao.COLUMN_NAME_ContactID, entity.getUserID());
         values.put(ContactOperationDao.COLUMN_NAME_Type, entity.getType());
         values.put(ContactOperationDao.COLUMN_NAME_Reason, entity.getReason());
@@ -122,8 +122,8 @@ public class ContactOperationDao extends AbstractDao<ContactOperationBean> {
     }
 
     @Override
-    protected ContactOperationBean toEntity(Cursor cursor) {
-        ContactOperationBean bean = new ContactOperationBean();
+    protected ContactOperationEntity toEntity(Cursor cursor) {
+        ContactOperationEntity bean = new ContactOperationEntity();
         bean.setType(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Type)));
         bean.setReason(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Reason)));
         bean.setRemind(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_IsRemind)) == 1);

@@ -15,8 +15,8 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
 import com.yzx.chat.module.contact.presenter.ContactOperationPresenter;
 import com.yzx.chat.util.AndroidUtil;
@@ -44,7 +44,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     private OverflowPopupMenu mContactOperationMenu;
     private ProgressDialog mProgressDialog;
     private ContactOperationAdapter mAdapter;
-    private List<ContactOperationBean> mContactOperationList;
+    private List<ContactOperationEntity> mContactOperationList;
 
     @Override
     protected int getLayoutID() {
@@ -138,8 +138,8 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
 
         @Override
         public void enterDetails(int position) {
-            ContactOperationBean contactOperation = mContactOperationList.get(position);
-            ContactBean contact = mPresenter.findContact(contactOperation.getUserID());
+            ContactOperationEntity contactOperation = mContactOperationList.get(position);
+            ContactEntity contact = mPresenter.findContact(contactOperation.getUserID());
             Intent intent;
             if (contact == null) {
                 intent = new Intent(mContext, StrangerProfileActivity.class);
@@ -158,14 +158,14 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     }
 
     @Override
-    public void addContactOperationToList(ContactOperationBean ContactOperation) {
+    public void addContactOperationToList(ContactOperationEntity ContactOperation) {
         mAdapter.notifyItemInsertedEx(0);
         mContactOperationList.add(0, ContactOperation);
         enableLoadMoreHint(mContactOperationList.size() > 12);
     }
 
     @Override
-    public void removeContactOperationFromList(ContactOperationBean ContactOperation) {
+    public void removeContactOperationFromList(ContactOperationEntity ContactOperation) {
         int removePosition = mContactOperationList.indexOf(ContactOperation);
         if (removePosition >= 0) {
             mAdapter.notifyItemRemovedEx(removePosition);
@@ -177,7 +177,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     }
 
     @Override
-    public void updateContactOperationFromList(ContactOperationBean ContactOperation) {
+    public void updateContactOperationFromList(ContactOperationEntity ContactOperation) {
         int index = mContactOperationList.indexOf(ContactOperation);
         if (index < 0) {
             LogUtil.e("update fail from ContactOperationList");
@@ -188,7 +188,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     }
 
     @Override
-    public void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationBean> newDataList) {
+    public void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationEntity> newDataList) {
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
         mContactOperationList.clear();
         mContactOperationList.addAll(newDataList);

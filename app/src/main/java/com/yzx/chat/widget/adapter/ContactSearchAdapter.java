@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -22,10 +22,10 @@ import java.util.List;
 
 public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchAdapter.ContactHolder> {
 
-    private List<ContactBean> mContactList;
-    private List<ContactBean> mSearchContactList;
+    private List<ContactEntity> mContactList;
+    private List<ContactEntity> mSearchContactList;
 
-    public ContactSearchAdapter(List<ContactBean> contactList, List<ContactBean> searchContactList) {
+    public ContactSearchAdapter(List<ContactEntity> contactList, List<ContactEntity> searchContactList) {
         mContactList = contactList;
         mSearchContactList = searchContactList;
     }
@@ -38,9 +38,9 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
 
     @Override
     public void bindDataToViewHolder(ContactHolder holder, int position) {
-        ContactBean contactBean = mSearchContactList.get(position);
-        holder.mTvName.setText(contactBean.getName());
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvHeadImage, contactBean.getAvatar());
+        ContactEntity contactEntity = mSearchContactList.get(position);
+        holder.mTvName.setText(contactEntity.getName());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvHeadImage, contactEntity.getAvatar());
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
             mSearchContactList.clear();
             if (!TextUtils.isEmpty(text)) {
                 text = text.toLowerCase();
-                for (ContactBean contact : mContactList) {
+                for (ContactEntity contact : mContactList) {
                     if (contact.getName().contains(text) || contact.getAbbreviation().contains(text)) {
                         mSearchContactList.add(contact);
                     }

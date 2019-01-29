@@ -4,12 +4,12 @@ import android.os.Handler;
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
@@ -28,7 +28,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     private ContactOperationContract.View mContactOperationContractView;
     private LoadAllContactOperationTask mLoadAllContactOperationTask;
-    private List<ContactOperationBean> mContactOperationList;
+    private List<ContactOperationEntity> mContactOperationList;
     private IMClient mIMClient;
     private Handler mHandler;
 
@@ -59,7 +59,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
-    public void acceptContactRequest(final ContactOperationBean contactOperation) {
+    public void acceptContactRequest(final ContactOperationEntity contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
         mIMClient.getContactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
             @Override
@@ -76,7 +76,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
-    public void refusedContactRequest(ContactOperationBean contactOperation) {
+    public void refusedContactRequest(ContactOperationEntity contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
         mIMClient.getContactManager().refusedContact(contactOperation, "", new ResultCallback<Void>() {
             @Override
@@ -93,7 +93,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
-    public void removeContactOperation(ContactOperationBean ContactOperation) {
+    public void removeContactOperation(ContactOperationEntity ContactOperation) {
         mIMClient.getContactManager().removeContactOperationAsync(ContactOperation);
     }
 
@@ -106,7 +106,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     }
 
     @Override
-    public ContactBean findContact(String userID) {
+    public ContactEntity findContact(String userID) {
         return mIMClient.getContactManager().getContact(userID);
     }
 
@@ -118,7 +118,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
 
         @Override
-        public void onContactOperationReceive(final ContactOperationBean message) {
+        public void onContactOperationReceive(final ContactOperationEntity message) {
             mIMClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
@@ -136,7 +136,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         }
 
         @Override
-        public void onContactOperationUpdate(final ContactOperationBean message) {
+        public void onContactOperationUpdate(final ContactOperationEntity message) {
             mIMClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
@@ -153,7 +153,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         }
 
         @Override
-        public void onContactOperationRemove(final ContactOperationBean message) {
+        public void onContactOperationRemove(final ContactOperationEntity message) {
             mIMClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
@@ -168,24 +168,24 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     };
 
 
-    private static class LoadAllContactOperationTask extends BackstageAsyncTask<ContactOperationPresenter, List<ContactOperationBean>, DiffUtil.DiffResult> {
+    private static class LoadAllContactOperationTask extends BackstageAsyncTask<ContactOperationPresenter, List<ContactOperationEntity>, DiffUtil.DiffResult> {
 
         LoadAllContactOperationTask(ContactOperationPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
         @Override
-        protected DiffUtil.DiffResult doInBackground(List<ContactOperationBean>[] lists) {
-            List<ContactOperationBean> oldList = lists[0];
-            List<ContactOperationBean> newList = IMClient.getInstance().getContactManager().loadAllContactOperation();
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactOperationBean>(lists[0], newList) {
+        protected DiffUtil.DiffResult doInBackground(List<ContactOperationEntity>[] lists) {
+            List<ContactOperationEntity> oldList = lists[0];
+            List<ContactOperationEntity> newList = IMClient.getInstance().getContactManager().loadAllContactOperation();
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactOperationEntity>(lists[0], newList) {
                 @Override
-                public boolean isItemEquals(ContactOperationBean oldItem, ContactOperationBean newItem) {
+                public boolean isItemEquals(ContactOperationEntity oldItem, ContactOperationEntity newItem) {
                     return oldItem.getUserID().equals(newItem.getUserID());
                 }
 
                 @Override
-                public boolean isContentsEquals(ContactOperationBean oldItem, ContactOperationBean newItem) {
+                public boolean isContentsEquals(ContactOperationEntity oldItem, ContactOperationEntity newItem) {
                     return oldItem.getType().equals(newItem.getType()) && oldItem.getReason().equals(newItem.getReason());
                 }
             });

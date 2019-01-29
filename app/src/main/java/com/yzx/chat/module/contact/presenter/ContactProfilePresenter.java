@@ -1,11 +1,11 @@
 package com.yzx.chat.module.contact.presenter;
 
 
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -19,7 +19,7 @@ import java.util.Set;
 public class ContactProfilePresenter implements ContactProfileContract.Presenter {
 
     private ContactProfileContract.View mContactProfileView;
-    private ContactBean mContactBean;
+    private ContactEntity mContactEntity;
     private IMClient mIMClient;
 
     @Override
@@ -38,23 +38,23 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void init(String contactID) {
-        mContactBean = mIMClient.getContactManager().getContact(contactID);
-        if (mContactBean == null) {
+        mContactEntity = mIMClient.getContactManager().getContact(contactID);
+        if (mContactEntity == null) {
             mContactProfileView.goBack();
             return;
         }
-        mContactProfileView.updateContactInfo(mContactBean);
+        mContactProfileView.updateContactInfo(mContactEntity);
     }
 
     @Override
-    public ContactBean getContact() {
-        return mContactBean;
+    public ContactEntity getContact() {
+        return mContactEntity;
     }
 
     @Override
     public void deleteContact() {
         mContactProfileView.setEnableProgressDialog(true);
-        mIMClient.getContactManager().deleteContact(mContactBean, new ResultCallback<Void>() {
+        mIMClient.getContactManager().deleteContact(mContactEntity, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
 
@@ -79,30 +79,30 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     }
 
     @Override
-    public void saveRemarkInfo(ContactBean contact) {
+    public void saveRemarkInfo(ContactEntity contact) {
         IMClient.getInstance().getContactManager().updateContactRemark(contact, null);
     }
 
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
-        public void onContactAdded(ContactBean contact) {
+        public void onContactAdded(ContactEntity contact) {
 
         }
 
         @Override
-        public void onContactDeleted(ContactBean contact) {
-            if (contact.equals(mContactBean)) {
+        public void onContactDeleted(ContactEntity contact) {
+            if (contact.equals(mContactEntity)) {
                 mContactProfileView.setEnableProgressDialog(false);
                 mContactProfileView.goBack();
             }
         }
 
         @Override
-        public void onContactUpdate(ContactBean contact) {
-            if (contact.equals(mContactBean)) {
-                mContactBean = contact;
-                mContactProfileView.updateContactInfo(mContactBean);
+        public void onContactUpdate(ContactEntity contact) {
+            if (contact.equals(mContactEntity)) {
+                mContactEntity = contact;
+                mContactProfileView.updateContactInfo(mContactEntity);
             }
         }
     };

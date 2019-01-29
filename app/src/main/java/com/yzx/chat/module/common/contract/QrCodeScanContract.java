@@ -2,7 +2,7 @@ package com.yzx.chat.module.common.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 
 /**
  * Created by YZX on 2018年06月12日.
@@ -12,7 +12,7 @@ public class QrCodeScanContract {
 
     public interface View extends BaseView<Presenter> {
 
-        void startStrangerProfileActivity(UserBean user);
+        void startStrangerProfileActivity(UserEntity user);
 
         void startContactProfileActivity(String contactID);
 

@@ -2,7 +2,7 @@ package com.yzx.chat.module.contact.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 
 /**
  * Created by YZX on 2017年11月27日.
@@ -14,7 +14,7 @@ public class FindNewContactContract {
 
 
     public interface View extends BaseView<Presenter> {
-        void searchSuccess(UserBean user,boolean isContact);
+        void searchSuccess(UserEntity user, boolean isContact);
         void searchNotExist();
         void searchFail();
     }

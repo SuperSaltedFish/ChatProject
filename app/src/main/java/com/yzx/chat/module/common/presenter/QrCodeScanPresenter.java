@@ -7,18 +7,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseResponseCallback;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
-import com.yzx.chat.bean.QRCodeContentBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
+import com.yzx.chat.core.entity.QRCodeContentEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.common.contract.QrCodeScanContract;
-import com.yzx.chat.network.api.Group.GroupApi;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
-import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.core.net.api.Group.GroupApi;
+import com.yzx.chat.core.net.api.JsonResponse;
+import com.yzx.chat.core.net.api.user.UserApi;
+import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
@@ -33,7 +33,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
     private QrCodeScanContract.View mQrCodeView;
     private BackstageAsyncTask<QrCodeScanPresenter, String, String> mDecodeQRCodeFileTask;
-    private Call<JsonResponse<UserBean>> GetUserProfileCall;
+    private Call<JsonResponse<UserEntity>> GetUserProfileCall;
     private GroupManager mGroupManager;
     private Gson mGson;
     private UserApi mUserApi;
@@ -73,9 +73,9 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
         if (TextUtils.isEmpty(content)) {
             decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));
         } else {
-            QRCodeContentBean qrCodeContent = null;
+            QRCodeContentEntity qrCodeContent = null;
             try {
-                qrCodeContent = mGson.fromJson(content, QRCodeContentBean.class);
+                qrCodeContent = mGson.fromJson(content, QRCodeContentEntity.class);
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }
@@ -83,10 +83,10 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
                 decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));
             } else {
                 switch (qrCodeContent.getType()) {
-                    case QRCodeContentBean.TYPE_USER:
+                    case QRCodeContentEntity.TYPE_USER:
                         findUserInfo(qrCodeContent.getId());
                         break;
-                    case QRCodeContentBean.TYPE_GROUP:
+                    case QRCodeContentEntity.TYPE_GROUP:
                         joinGroup(qrCodeContent.getId());
                         break;
                     default:
@@ -133,9 +133,9 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     private void findUserInfo(String tempUserID) {
         AsyncUtil.cancelCall(GetUserProfileCall);
         GetUserProfileCall = mUserApi.getUserProfileByTempUserID(tempUserID);
-        GetUserProfileCall.setResponseCallback(new BaseResponseCallback<UserBean>() {
+        GetUserProfileCall.setResponseCallback(new BaseResponseCallback<UserEntity>() {
             @Override
-            protected void onSuccess(UserBean response) {
+            protected void onSuccess(UserEntity response) {
                 mQrCodeView.setEnableProgressDialog(false);
                 if (IMClient.getInstance().getContactManager().getContact(response.getUserID()) != null) {
                     mQrCodeView.startContactProfileActivity(response.getUserID());
@@ -160,32 +160,32 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
 
         @Override
-        public void onCreatedGroup(GroupBean group) {
+        public void onCreatedGroup(GroupEntity group) {
 
         }
 
         @Override
-        public void onQuitGroup(GroupBean group) {
+        public void onQuitGroup(GroupEntity group) {
 
         }
 
         @Override
-        public void onBulletinChange(GroupBean group) {
+        public void onBulletinChange(GroupEntity group) {
 
         }
 
         @Override
-        public void onNameChange(GroupBean group) {
+        public void onNameChange(GroupEntity group) {
 
         }
 
         @Override
-        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+        public void onMemberAdded(GroupEntity group, String[] newMembersID) {
 
         }
 
         @Override
-        public void onMemberJoin(GroupBean group, String memberID) {
+        public void onMemberJoin(GroupEntity group, String memberID) {
             if (memberID.equals(IMClient.getInstance().getUserManager().getUserID()) && isWaitJoiningPush) {
                 isWaitJoiningPush = false;
                 mHandler.removeCallbacksAndMessages(null);
@@ -195,12 +195,12 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
         }
 
         @Override
-        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+        public void onMemberQuit(GroupEntity group, GroupMemberEntity quitMember) {
 
         }
 
         @Override
-        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+        public void onMemberAliasChange(GroupEntity group, GroupMemberEntity member, String newAlias) {
 
         }
     };

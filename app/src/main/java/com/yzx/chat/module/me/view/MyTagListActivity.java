@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.TagBean;
+import com.yzx.chat.core.entity.TagEntity;
 import com.yzx.chat.module.me.contract.MyTagListContract;
 import com.yzx.chat.module.me.presenter.MyTagListPresenter;
 import com.yzx.chat.widget.adapter.MyTagsListAdapter;
@@ -22,7 +22,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
 
     private RecyclerView mRvTags;
     private MyTagsListAdapter mAdapter;
-    private List<TagBean> mTagList;
+    private List<TagEntity> mTagList;
 
     @Override
     protected int getLayoutID() {
@@ -65,7 +65,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
     }
 
     @Override
-    public void showAllTags(List<TagBean> tagList) {
+    public void showAllTags(List<TagEntity> tagList) {
         mTagList.clear();
         if(tagList!=null&&tagList.size()>0){
             mTagList.addAll(tagList);

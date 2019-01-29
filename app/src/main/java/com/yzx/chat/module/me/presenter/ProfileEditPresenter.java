@@ -1,10 +1,10 @@
 package com.yzx.chat.module.me.presenter;
 
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.ProfileEditContract;
-import com.yzx.chat.network.api.user.UploadAvatarBean;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.net.api.user.UploadAvatarBean;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.LogUtil;
 
 import java.io.File;
@@ -30,12 +30,12 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
     }
 
     @Override
-    public UserBean getUserInfo() {
+    public UserEntity getUserInfo() {
         return IMClient.getInstance().getUserManager().getUser();
     }
 
     @Override
-    public void updateProfile(final UserBean user) {
+    public void updateProfile(final UserEntity user) {
         mProfileModifyView.setEnableProgressDialog(true);
         IMClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new ResultCallback<Void>() {
             @Override

@@ -3,14 +3,14 @@ package com.yzx.chat.module.group.presenter;
 import android.os.Handler;
 
 import com.yzx.chat.R;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.AndroidUtil;
 
 import java.util.Arrays;
@@ -51,14 +51,14 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     }
 
     @Override
-    public void createGroup(List<ContactBean> members) {
+    public void createGroup(List<ContactEntity> members) {
         if (isCreating) {
             return;
         }
         mCreateGroupView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Create));
         StringBuilder stringBuilder = new StringBuilder(64);
         String[] membersID = new String[members.size()];
-        UserBean user;
+        UserEntity user;
         for (int i = 0, count = members.size(); i < count; i++) {
             user = members.get(i).getUserProfile();
             stringBuilder.append(user.getNickname());
@@ -89,7 +89,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     }
 
     @Override
-    public void addMembers(String groupID, List<ContactBean> members) {
+    public void addMembers(String groupID, List<ContactEntity> members) {
         if (isAdding) {
             return;
         }
@@ -121,7 +121,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
-        public void onCreatedGroup(GroupBean group) {
+        public void onCreatedGroup(GroupEntity group) {
             if (group.getOwner().equals(IMClient.getInstance().getUserManager().getUserID())) {
                 mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
@@ -130,22 +130,22 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
 
         @Override
-        public void onQuitGroup(GroupBean group) {
+        public void onQuitGroup(GroupEntity group) {
 
         }
 
         @Override
-        public void onBulletinChange(GroupBean group) {
+        public void onBulletinChange(GroupEntity group) {
 
         }
 
         @Override
-        public void onNameChange(GroupBean group) {
+        public void onNameChange(GroupEntity group) {
 
         }
 
         @Override
-        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+        public void onMemberAdded(GroupEntity group, String[] newMembersID) {
             if (Arrays.equals(mAddingMembersID, newMembersID)) {
                 mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
@@ -154,17 +154,17 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
 
         @Override
-        public void onMemberJoin(GroupBean group, String memberID) {
+        public void onMemberJoin(GroupEntity group, String memberID) {
 
         }
 
         @Override
-        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+        public void onMemberQuit(GroupEntity group, GroupMemberEntity quitMember) {
 
         }
 
         @Override
-        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+        public void onMemberAliasChange(GroupEntity group, GroupMemberEntity member, String newAlias) {
 
         }
     };

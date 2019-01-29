@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.FlowLayout;
@@ -29,10 +29,10 @@ import java.util.List;
 
 public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ContactHolder> {
 
-    private List<ContactBean> mContactList;
+    private List<ContactEntity> mContactList;
     private SparseArray<String> mIdentitySparseArray;
 
-    public ContactAdapter(List<ContactBean> contactList) {
+    public ContactAdapter(List<ContactEntity> contactList) {
         mContactList = contactList;
         mIdentitySparseArray = new SparseArray<>(32);
         registerAdapterDataObserver(mDataObserver);
@@ -52,10 +52,10 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         } else {
             holder.itemView.setTag(null);
         }
-        ContactBean contactBean = mContactList.get(position);
-        UserBean user = contactBean.getUserProfile();
-        holder.mTvName.setText(contactBean.getName());
-        holder.mIvSex.setSelected(user.getSex() == UserBean.SEX_WOMAN);
+        ContactEntity contactEntity = mContactList.get(position);
+        UserEntity user = contactEntity.getUserProfile();
+        holder.mTvName.setText(contactEntity.getName());
+        holder.mIvSex.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
         holder.mTvAge.setText(user.getAge());
 
         if (TextUtils.isEmpty(user.getSignature())) {
@@ -67,7 +67,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         }
 
         holder.mTagsFlowLayout.removeAllViews();
-        ArrayList<String> tags = contactBean.getRemark().getTags();
+        ArrayList<String> tags = contactEntity.getRemark().getTags();
         if (tags != null && tags.size() != 0) {
             TextView label;
             for (String tag : tags) {
@@ -76,7 +76,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
                 holder.mTagsFlowLayout.addView(label);
             }
         }
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactBean.getUserProfile().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getUserProfile().getAvatar());
     }
 
     @Override

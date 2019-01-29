@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -25,9 +25,9 @@ public class GroupMembersAdapter extends BaseRecyclerViewAdapter<GroupMembersAda
 
     private final int mMaxVisibilityCount;
 
-    private List<GroupMemberBean> mGroupMembers;
+    private List<GroupMemberEntity> mGroupMembers;
 
-    public GroupMembersAdapter(List<GroupMemberBean> groupMembers, int maxVisibilityCount) {
+    public GroupMembersAdapter(List<GroupMemberEntity> groupMembers, int maxVisibilityCount) {
         mGroupMembers = groupMembers;
         mMaxVisibilityCount = maxVisibilityCount;
     }
@@ -39,7 +39,7 @@ public class GroupMembersAdapter extends BaseRecyclerViewAdapter<GroupMembersAda
 
     @Override
     public void bindDataToViewHolder(GroupMembersHolder holder, int position) {
-        GroupMemberBean groupMember = mGroupMembers.get(position);
+        GroupMemberEntity groupMember = mGroupMembers.get(position);
         holder.mTvMemberName.setText(groupMember.getNicknameInGroup());
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, groupMember.getUserProfile().getAvatar());
     }

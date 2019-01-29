@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.MyQRCodeContract;
 import com.yzx.chat.module.me.presenter.MyQRCodePresenter;
 import com.yzx.chat.module.common.view.QrCodeScanActivity;
@@ -104,7 +104,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
         }
         if (mCurrentQRCodeType == QR_CODE_TYPE_USER) {
             setTitle(R.string.MyQRCodeActivity_Title);
-            UserBean user = mPresenter.getUserInfo();
+            UserEntity user = mPresenter.getUserInfo();
             if (user == null) {
                 finish();
                 return;
@@ -117,7 +117,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
                 avatarList = avatarUri.split(",");
             }
             mIvUserInfoIcon.setImageResource(R.drawable.selector_src_sex);
-            if (user.getSex() == UserBean.SEX_WOMAN) {
+            if (user.getSex() == UserEntity.SEX_WOMAN) {
                 mIvUserInfoIcon.setSelected(true);
                 mTvUserInfo.setText(R.string.Woman);
             } else {
@@ -134,7 +134,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
         } else {
             setTitle(R.string.MyQRCodeActivity_Title2);
             mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
-            GroupBean group = mPresenter.getGroupInfo(mGroupID);
+            GroupEntity group = mPresenter.getGroupInfo(mGroupID);
             if (group == null) {
                 finish();
                 return;

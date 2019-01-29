@@ -2,7 +2,7 @@ package com.yzx.chat.module.me.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.TagBean;
+import com.yzx.chat.core.entity.TagEntity;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class MyTagListContract {
 
     public interface View extends BaseView<Presenter> {
-       void showAllTags(List<TagBean> tagList);
+       void showAllTags(List<TagEntity> tagList);
     }
 
 

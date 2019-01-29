@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 
 /**
  * Created by YZX on 2017年11月17日.
@@ -12,7 +12,7 @@ import com.yzx.chat.bean.UserBean;
  */
 
 
-public class UserDao extends AbstractDao<UserBean> {
+public class UserDao extends AbstractDao<UserEntity> {
 
     public static final String TABLE_NAME = "Account";
 
@@ -73,12 +73,12 @@ public class UserDao extends AbstractDao<UserBean> {
     }
 
     @Override
-    protected String[] toWhereArgsOfKey(UserBean entity) {
+    protected String[] toWhereArgsOfKey(UserEntity entity) {
         return new String[]{entity.getUserID()};
     }
 
     @Override
-    protected void parseToContentValues(UserBean entity, ContentValues values) {
+    protected void parseToContentValues(UserEntity entity, ContentValues values) {
         values.put(COLUMN_NAME_Telephone, entity.getTelephone());
         values.put(COLUMN_NAME_UserID, entity.getUserID());
         values.put(COLUMN_NAME_Nickname, entity.getNickname());
@@ -93,8 +93,8 @@ public class UserDao extends AbstractDao<UserBean> {
     }
 
     @Override
-    protected UserBean toEntity(Cursor cursor) {
-        UserBean bean = new UserBean();
+    protected UserEntity toEntity(Cursor cursor) {
+        UserEntity bean = new UserEntity();
         bean.setTelephone(cursor.getString(COLUMN_INDEX_Telephone));
         bean.setUserID(cursor.getString(COLUMN_INDEX_UserID));
         bean.setNickname(cursor.getString(COLUMN_INDEX_Nickname));
@@ -109,8 +109,8 @@ public class UserDao extends AbstractDao<UserBean> {
         return bean;
     }
 
-    static UserBean toEntityFromCursor(Cursor cursor) {
-        UserBean bean = new UserBean();
+    static UserEntity toEntityFromCursor(Cursor cursor) {
+        UserEntity bean = new UserEntity();
         bean.setTelephone(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Telephone)));
         bean.setUserID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_UserID)));
         bean.setNickname(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Nickname)));
@@ -125,7 +125,7 @@ public class UserDao extends AbstractDao<UserBean> {
         return bean;
     }
 
-    static boolean replaceUser(SQLiteDatabase Write, UserBean entity, ContentValues values) {
+    static boolean replaceUser(SQLiteDatabase Write, UserEntity entity, ContentValues values) {
         if (entity == null) {
             return false;
         }

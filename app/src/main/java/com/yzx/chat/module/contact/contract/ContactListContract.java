@@ -4,7 +4,7 @@ import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ public class ContactListContract {
     public interface View extends BaseView<Presenter> {
         void updateUnreadBadge(int unreadCount);
 
-        void updateContactItem(ContactBean contactBean);
+        void updateContactItem(ContactEntity contactEntity);
 
-        void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList);
+        void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactEntity> newFriendList);
 
         void showTagCount(int count);
     }

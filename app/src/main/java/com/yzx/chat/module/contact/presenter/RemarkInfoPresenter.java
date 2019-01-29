@@ -1,8 +1,8 @@
 package com.yzx.chat.module.contact.presenter;
 
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.IMClient;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -27,7 +27,7 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
     }
 
     @Override
-    public void save(ContactBean contact) {
+    public void save(ContactEntity contact) {
         IMClient.getInstance().getContactManager().updateContactRemark(contact, null);
     }
 

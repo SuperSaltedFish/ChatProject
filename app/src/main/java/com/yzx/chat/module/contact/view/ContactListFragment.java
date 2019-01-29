@@ -30,7 +30,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.module.contact.contract.ContactListContract;
 import com.yzx.chat.module.contact.presenter.ContactListPresenter;
@@ -88,8 +88,8 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
     private OverflowPopupMenu mContactMenu;
     private Handler mSearchHandler;
-    private List<ContactBean> mContactList;
-    private List<ContactBean> mContactSearchList;
+    private List<ContactEntity> mContactList;
+    private List<ContactEntity> mContactSearchList;
 
 
     @Override
@@ -395,16 +395,16 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     @Override
-    public void updateContactItem(ContactBean contactBean) {
-        int updatePosition = mContactList.indexOf(contactBean);
+    public void updateContactItem(ContactEntity contactEntity) {
+        int updatePosition = mContactList.indexOf(contactEntity);
         if (updatePosition != -1) {
-            mContactList.set(updatePosition, contactBean);
+            mContactList.set(updatePosition, contactEntity);
             mContactAdapter.notifyItemChangedEx(updatePosition);
         }
     }
 
     @Override
-    public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactBean> newFriendList) {
+    public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactEntity> newFriendList) {
         mContactList.clear();
         mContactList.addAll(newFriendList);
         diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));

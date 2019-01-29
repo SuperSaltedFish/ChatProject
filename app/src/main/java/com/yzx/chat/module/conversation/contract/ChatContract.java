@@ -3,12 +3,11 @@ package com.yzx.chat.module.conversation.contract;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 
 import java.util.List;
 
-import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
 /**
@@ -39,9 +38,9 @@ public class ChatContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        ContactBean initPrivateChat( String conversationID);
+        ContactEntity initPrivateChat(String conversationID);
 
-        GroupBean initGroupChat( String conversationID);
+        GroupEntity initGroupChat(String conversationID);
 
         String getConversationID();
 

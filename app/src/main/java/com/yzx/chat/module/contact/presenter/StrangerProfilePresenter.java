@@ -1,10 +1,10 @@
 package com.yzx.chat.module.contact.presenter;
 
-import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -28,12 +28,12 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
     }
 
     @Override
-    public void requestContact(final UserBean user, final String verifyContent) {
+    public void requestContact(final UserEntity user, final String verifyContent) {
         IMClient.getInstance().getContactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
     }
 
     @Override
-    public void acceptContactRequest(ContactOperationBean contactOperation) {
+    public void acceptContactRequest(ContactOperationEntity contactOperation) {
         mStrangerProfileView.setEnableProgressDialog(true);
         IMClient.getInstance().getContactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
     }

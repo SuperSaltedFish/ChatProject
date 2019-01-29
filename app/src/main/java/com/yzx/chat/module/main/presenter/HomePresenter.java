@@ -2,18 +2,18 @@ package com.yzx.chat.module.main.presenter;
 
 import android.os.Handler;
 
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.module.main.contract.HomeContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.contact.view.NotificationMessageActivity;
-import com.yzx.chat.network.chat.ChatManager;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.ConversationManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
+import com.yzx.chat.core.manager.ChatManager;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.manager.ConversationManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.extra.ContactNotificationMessageEx;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
 
@@ -89,13 +89,13 @@ public class HomePresenter implements HomeContract.Presenter {
                 public void run() {
                     switch (message.getConversationType()) {
                         case PRIVATE:
-                            ContactBean contact = IMClient.getInstance().getContactManager().getContact(message.getTargetId());
+                            ContactEntity contact = IMClient.getInstance().getContactManager().getContact(message.getTargetId());
                             if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
                                 NotificationHelper.getInstance().showPrivateMessageNotification(message, contact,!AndroidUtil.isAppForeground());
                             }
                             break;
                         case GROUP:
-                            GroupBean group = IMClient.getInstance().getGroupManager().getGroup(message.getTargetId());
+                            GroupEntity group = IMClient.getInstance().getGroupManager().getGroup(message.getTargetId());
                             if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
                                 NotificationHelper.getInstance().showGroupMessageNotification(message, group,!AndroidUtil.isAppForeground());
                             }
@@ -108,24 +108,24 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
-        public void onContactAdded(ContactBean contact) {
+        public void onContactAdded(ContactEntity contact) {
 
         }
 
         @Override
-        public void onContactDeleted(ContactBean contact) {
+        public void onContactDeleted(ContactEntity contact) {
 
         }
 
         @Override
-        public void onContactUpdate(ContactBean contact) {
+        public void onContactUpdate(ContactEntity contact) {
 
         }
     };
 
     private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
         @Override
-        public void onContactOperationReceive(final ContactOperationBean contactOperation) {
+        public void onContactOperationReceive(final ContactOperationEntity contactOperation) {
             Class activityClass = AndroidUtil.getStackTopActivityClass();
             if ( activityClass == NotificationMessageActivity.class) {
                 return;
@@ -134,12 +134,12 @@ public class HomePresenter implements HomeContract.Presenter {
         }
 
         @Override
-        public void onContactOperationUpdate(ContactOperationBean contactOperation) {
+        public void onContactOperationUpdate(ContactOperationEntity contactOperation) {
 
         }
 
         @Override
-        public void onContactOperationRemove(final ContactOperationBean contactOperation) {
+        public void onContactOperationRemove(final ContactOperationEntity contactOperation) {
 
         }
     };

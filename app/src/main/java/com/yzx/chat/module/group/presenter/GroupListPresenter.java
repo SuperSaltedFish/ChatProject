@@ -1,10 +1,10 @@
 package com.yzx.chat.module.group.presenter;
 
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.group.contract.GroupListContract;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.IMClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.PinYinUtil;
 
@@ -21,7 +21,7 @@ import java.util.List;
 public class GroupListPresenter implements GroupListContract.Presenter {
 
     private GroupListContract.View mGroupListView;
-    private List<GroupBean> mGroupList;
+    private List<GroupEntity> mGroupList;
 
     @Override
     public void attachView(GroupListContract.View view) {
@@ -39,7 +39,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
     @SuppressWarnings("unchecked")
     @Override
     public void loadAllGroup() {
-        List<GroupBean> groupList = IMClient.getInstance().getGroupManager().getAllGroup();
+        List<GroupEntity> groupList = IMClient.getInstance().getGroupManager().getAllGroup();
         if (groupList == null) {
             mGroupList = new ArrayList<>(2);
         } else {
@@ -51,14 +51,14 @@ public class GroupListPresenter implements GroupListContract.Presenter {
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
-        public void onCreatedGroup(GroupBean group) {
+        public void onCreatedGroup(GroupEntity group) {
             mGroupList.add(group);
             sortGroup(mGroupList);
             mGroupListView.showNewGroup(group, mGroupList.indexOf(group));
         }
 
         @Override
-        public void onQuitGroup(final GroupBean group) {
+        public void onQuitGroup(final GroupEntity group) {
             int position = mGroupList.indexOf(group);
             if (position >= 0) {
                 mGroupList.remove(position);
@@ -69,12 +69,12 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onBulletinChange(GroupBean group) {
+        public void onBulletinChange(GroupEntity group) {
 
         }
 
         @Override
-        public void onNameChange(GroupBean group) {
+        public void onNameChange(GroupEntity group) {
             int oldPosition = mGroupList.indexOf(group);
             if (oldPosition >= 0) {
                 mGroupList.set(oldPosition, group);
@@ -86,7 +86,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+        public void onMemberAdded(GroupEntity group, String[] newMembersID) {
             int oldPosition = mGroupList.indexOf(group);
             if (oldPosition >= 0) {
                 mGroupList.set(oldPosition, group);
@@ -97,12 +97,12 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onMemberJoin(GroupBean group, String memberID) {
+        public void onMemberJoin(GroupEntity group, String memberID) {
 
         }
 
         @Override
-        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+        public void onMemberQuit(GroupEntity group, GroupMemberEntity quitMember) {
             int oldPosition = mGroupList.indexOf(group);
             if (oldPosition >= 0) {
                 mGroupList.set(oldPosition, group);
@@ -113,15 +113,15 @@ public class GroupListPresenter implements GroupListContract.Presenter {
         }
 
         @Override
-        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+        public void onMemberAliasChange(GroupEntity group, GroupMemberEntity member, String newAlias) {
 
         }
     };
 
-    private static void sortGroup(List<GroupBean> groupList) {
-        Collections.sort(groupList, new Comparator<GroupBean>() {
+    private static void sortGroup(List<GroupEntity> groupList) {
+        Collections.sort(groupList, new Comparator<GroupEntity>() {
             @Override
-            public int compare(GroupBean o1, GroupBean o2) {
+            public int compare(GroupEntity o1, GroupEntity o2) {
                 if (o1 == null || o2 == null) {
                     return 0;
                 }

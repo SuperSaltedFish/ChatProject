@@ -2,7 +2,7 @@ package com.yzx.chat.module.contact.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ContactProfileContract {
 
     public interface View extends BaseView<Presenter> {
-        void updateContactInfo(ContactBean contact);
+        void updateContactInfo(ContactEntity contact);
 
         void showError(String error);
 
@@ -29,12 +29,12 @@ public class ContactProfileContract {
     public interface Presenter extends BasePresenter<View> {
         void init(String contactID);
 
-        ContactBean getContact();
+        ContactEntity getContact();
 
         void deleteContact();
 
         ArrayList<String> getAllTags();
 
-        void saveRemarkInfo(ContactBean contact);
+        void saveRemarkInfo(ContactEntity contact);
     }
 }

@@ -4,14 +4,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 
 /**
  * Created by YZX on 2018年03月08日.
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
+public class GroupMemberDao extends AbstractDao<GroupMemberEntity> {
 
     static final String TABLE_NAME = "GroupMember";
 
@@ -42,7 +42,7 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
     }
 
     @Override
-    public boolean replaceAll(Iterable<GroupMemberBean> entityIterable) {
+    public boolean replaceAll(Iterable<GroupMemberEntity> entityIterable) {
         if (entityIterable == null) {
             return false;
         }
@@ -73,32 +73,32 @@ public class GroupMemberDao extends AbstractDao<GroupMemberBean> {
     }
 
     @Override
-    protected String[] toWhereArgsOfKey(GroupMemberBean entity) {
+    protected String[] toWhereArgsOfKey(GroupMemberEntity entity) {
         return new String[]{entity.getUserProfile().getUserID(), entity.getGroupID()};
     }
 
     @Override
-    protected void parseToContentValues(GroupMemberBean entity, ContentValues values) {
+    protected void parseToContentValues(GroupMemberEntity entity, ContentValues values) {
         values.put(COLUMN_NAME_UserID, entity.getUserProfile().getUserID());
         values.put(COLUMN_NAME_GroupID, entity.getGroupID());
         values.put(COLUMN_NAME_Alias, entity.getAlias());
     }
 
     @Override
-    protected GroupMemberBean toEntity(Cursor cursor) {
+    protected GroupMemberEntity toEntity(Cursor cursor) {
         return null;
     }
 
-    static GroupMemberBean toEntityFromCursor(Cursor cursor) {
-        GroupMemberBean groupMember = new GroupMemberBean();
+    static GroupMemberEntity toEntityFromCursor(Cursor cursor) {
+        GroupMemberEntity groupMember = new GroupMemberEntity();
         groupMember.setUserProfile(UserDao.toEntityFromCursor(cursor));
         groupMember.setAlias(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Alias)));
         return groupMember;
     }
 
-    static boolean insertAllGroupMember(SQLiteDatabase Write, Iterable<GroupMemberBean> groupMemberList, ContentValues values) {
+    static boolean insertAllGroupMember(SQLiteDatabase Write, Iterable<GroupMemberEntity> groupMemberList, ContentValues values) {
         boolean result = true;
-        for (GroupMemberBean groupMember : groupMemberList) {
+        for (GroupMemberEntity groupMember : groupMemberList) {
             values.clear();
             values.put(COLUMN_NAME_UserID, groupMember.getUserProfile().getUserID());
             values.put(COLUMN_NAME_GroupID, groupMember.getGroupID());

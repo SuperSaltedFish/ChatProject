@@ -18,9 +18,9 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactRemarkBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactRemarkEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
 import com.yzx.chat.module.contact.presenter.ContactProfilePresenter;
@@ -172,7 +172,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == EditContactTagsActivity.RESULT_CODE) {
-            ContactBean contact = mPresenter.getContact();
+            ContactEntity contact = mPresenter.getContact();
             ArrayList<String> newTags = data.getStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL);
             ArrayList<String> oldTags = contact.getRemark().getTags();
             if (!StringUtil.isEquals(newTags, oldTags, true)) {
@@ -245,11 +245,11 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     @Override
-    public void updateContactInfo(ContactBean contact) {
+    public void updateContactInfo(ContactEntity contact) {
         mTvTitle.setText(contact.getName());
         mTvNickname.setText(contact.getUserProfile().getNickname());
-        UserBean user = contact.getUserProfile();
-        mIvSexIcon.setSelected(user.getSex() == UserBean.SEX_WOMAN);
+        UserEntity user = contact.getUserProfile();
+        mIvSexIcon.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
         StringBuilder locationAndAge = new StringBuilder();
         locationAndAge.append(user.getAge());
         if (!TextUtils.isEmpty(user.getLocation())) {
@@ -266,7 +266,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         GlideUtil.loadAvatarFromUrl(this, mIvAvatar, user.getAvatar());
         mLabelFlowLayout.removeAllViews();
 
-        ContactRemarkBean contactRemark = contact.getRemark();
+        ContactRemarkEntity contactRemark = contact.getRemark();
         List<String> tags = contactRemark.getTags();
         if (tags != null && tags.size() != 0) {
             for (String tag : tags) {

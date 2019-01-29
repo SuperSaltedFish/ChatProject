@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -24,13 +24,13 @@ import java.util.List;
 public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapter.CreateGroupHolder> {
 
     private OnItemSelectedChangeListener mOnItemSelectedChangeListener;
-    private List<ContactBean> mContactList;
-    private List<ContactBean> mSelectedList;
-    private List<ContactBean> mAlreadySelectedContactList;
+    private List<ContactEntity> mContactList;
+    private List<ContactEntity> mSelectedList;
+    private List<ContactEntity> mAlreadySelectedContactList;
     private SparseArray<String> mIdentitySparseArray;
 
 
-    public CreateGroupAdapter(List<ContactBean> contactList, List<ContactBean> selectedList) {
+    public CreateGroupAdapter(List<ContactEntity> contactList, List<ContactEntity> selectedList) {
         mContactList = contactList;
         mSelectedList = selectedList;
         mIdentitySparseArray = new SparseArray<>(32);
@@ -50,7 +50,7 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
         } else {
             holder.itemView.setTag(null);
         }
-        ContactBean contact = mContactList.get(position);
+        ContactEntity contact = mContactList.get(position);
         holder.mTvName.setText(contact.getName());
         if (mAlreadySelectedContactList != null && mAlreadySelectedContactList.contains(mContactList.get(position))) {
             holder.itemView.setEnabled(false);
@@ -109,7 +109,7 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
         }
     };
 
-    public void setDisableSelectedList(List<ContactBean> alreadySelectedContactList) {
+    public void setDisableSelectedList(List<ContactEntity> alreadySelectedContactList) {
         mAlreadySelectedContactList = alreadySelectedContactList;
     }
 

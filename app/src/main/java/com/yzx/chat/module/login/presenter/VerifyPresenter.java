@@ -5,14 +5,14 @@ import android.os.Looper;
 
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.module.login.contract.VerifyContract;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.auth.AuthApi;
-import com.yzx.chat.network.api.auth.ObtainSMSCode;
-import com.yzx.chat.network.api.auth.UserInfoBean;
-import com.yzx.chat.network.chat.CryptoManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
-import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.core.net.api.JsonResponse;
+import com.yzx.chat.core.net.api.auth.AuthApi;
+import com.yzx.chat.core.net.api.auth.ObtainSMSCode;
+import com.yzx.chat.core.net.api.auth.UserInfoBean;
+import com.yzx.chat.core.manager.CryptoManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
 

@@ -1,7 +1,7 @@
 package com.yzx.chat.module.me.presenter;
 
 import com.yzx.chat.module.me.contract.MyTagListContract;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.IMClient;
 
 /**
  * Created by YZX on 2018年06月26日.

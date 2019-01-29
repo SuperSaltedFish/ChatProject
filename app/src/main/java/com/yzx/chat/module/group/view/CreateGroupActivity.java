@@ -16,13 +16,13 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.IMClient;
 import com.yzx.chat.module.group.presenter.CreateGroupPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
@@ -58,10 +58,10 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private MenuItem mConfirmMenuItem;
     private SearchView mSearchView;
     private ProgressDialog mProgressDialog;
-    private List<ContactBean> mAllContactList;
-    private List<ContactBean> mFilterContactList;
-    private List<ContactBean> mSelectedContactList;
-    private List<ContactBean> mAlreadyJoinContactList;
+    private List<ContactEntity> mAllContactList;
+    private List<ContactEntity> mFilterContactList;
+    private List<ContactEntity> mSelectedContactList;
+    private List<ContactEntity> mAlreadyJoinContactList;
     private String mGroupID;
 
     @Override
@@ -125,11 +125,11 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
         mGroupID = getIntent().getStringExtra(INTENT_EXTRA_GROUP_ID);
         if (!TextUtils.isEmpty(mGroupID)) {
-            List<GroupMemberBean> groupMemberList = getIntent().getParcelableArrayListExtra(INTENT_EXTRA_ALREADY_JOIN_MEMBER);
+            List<GroupMemberEntity> groupMemberList = getIntent().getParcelableArrayListExtra(INTENT_EXTRA_ALREADY_JOIN_MEMBER);
             mAlreadyJoinContactList = new ArrayList<>(groupMemberList.size());
-            ContactBean contact;
-            for (GroupMemberBean member : groupMemberList) {
-                contact = new ContactBean();
+            ContactEntity contact;
+            for (GroupMemberEntity member : groupMemberList) {
+                contact = new ContactEntity();
                 contact.setUserProfile(member.getUserProfile());
                 mAlreadyJoinContactList.add(contact);
             }
@@ -155,7 +155,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                     mFilterContactList.addAll(mAllContactList);
                 } else {
                     newText = newText.toLowerCase();
-                    for (ContactBean contact : mAllContactList) {
+                    for (ContactEntity contact : mAllContactList) {
                         if (contact.getName().contains(newText) || contact.getAbbreviation().contains(newText)) {
                             mFilterContactList.add(contact);
                         }
@@ -283,7 +283,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     }
 
     @Override
-    public void launchChatActivity(GroupBean group) {
+    public void launchChatActivity(GroupEntity group) {
         AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
         mProgressDialog.dismiss();
         Intent intent = new Intent(this, ChatActivity.class);

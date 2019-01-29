@@ -20,7 +20,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
 import com.yzx.chat.module.contact.presenter.ContactChatSettingPresenter;
 
@@ -153,7 +153,7 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
     }
 
     @Override
-    public void updateContactInfo(ContactRemarkBean contactRemark) {
+    public void updateContactInfo(ContactRemarkEntity contactRemark) {
         boolean isShowRemarkTitle = false;
         if (!TextUtils.isEmpty(contactRemark.getRemarkName())) {
             mNicknameLayout.setVisibility(View.VISIBLE);

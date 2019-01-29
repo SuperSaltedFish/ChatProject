@@ -1,7 +1,7 @@
 package com.yzx.chat.base;
 
 
-import com.yzx.chat.network.framework.NetworkExecutor;
+import com.yzx.chat.core.net.framework.NetworkExecutor;
 
 /**
  * Created by YZX on 2017年10月18日.

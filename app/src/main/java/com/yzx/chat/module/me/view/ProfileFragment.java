@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.ProfileContract;
 import com.yzx.chat.module.me.presenter.ProfilePresenter;
 import com.yzx.chat.module.login.view.LoginActivity;
@@ -131,9 +131,9 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
 
 
     @Override
-    public void showUserInfo(UserBean user) {
+    public void showUserInfo(UserEntity user) {
         mTvNickname.setText(user.getNickname());
-        mIvSexIcon.setSelected(user.getSex() == UserBean.SEX_WOMAN);
+        mIvSexIcon.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
         StringBuilder locationAndAge = new StringBuilder();
         locationAndAge.append(user.getAge());
         if (!TextUtils.isEmpty(user.getLocation())) {

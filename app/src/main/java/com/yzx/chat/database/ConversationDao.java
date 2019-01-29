@@ -5,7 +5,7 @@
 //import android.database.sqlite.SQLiteDatabase;
 //import android.text.TextUtils;
 //
-//import com.yzx.chat.bean.ConversationBean;
+//import com.yzx.chat.bean.ConversationEntity;
 //
 //import java.util.List;
 //
@@ -14,7 +14,7 @@
 // * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
 // */
 //
-//public class ConversationDao extends AbstractDao<ConversationBean> {
+//public class ConversationDao extends AbstractDao<ConversationEntity> {
 //
 //    private static final String TABLE_NAME = "Conversation";
 //
@@ -58,13 +58,13 @@
 //            ContactRemarkDao.TABLE_NAME, ContactRemarkDao.COLUMN_NAME_ContactOf,
 //            TABLE_NAME, COLUMN_NAME_UserID);
 //
-//    public ConversationBean loadSingleConversation(String userID, String conversation) {
+//    public ConversationEntity loadSingleConversation(String userID, String conversation) {
 //        if (TextUtils.isEmpty(userID) || TextUtils.isEmpty(conversation)) {
 //            return null;
 //        }
 //        SQLiteDatabase database = mHelper.openReadableDatabase();
 //        Cursor cursor = database.rawQuery(INNER_JOIN_SELECT_SQL + " WHERE " + COLUMN_NAME_ConversationID + "=?", new String[]{userID,conversation});
-//        ConversationBean bean=null;
+//        ConversationEntity bean=null;
 //        if (cursor.moveToFirst()) {
 //            bean = toEntity(cursor);
 //            bean.setNickname(cursor.getString(6));
@@ -75,14 +75,14 @@
 //        return bean;
 //    }
 //
-//    public void loadAllConversationToList(String userID, List<ConversationBean> container) {
+//    public void loadAllConversationToList(String userID, List<ConversationEntity> container) {
 //        if (TextUtils.isEmpty(userID) || container == null) {
 //            return;
 //        }
 //        SQLiteDatabase database = mHelper.openReadableDatabase();
 //        Cursor cursor = database.rawQuery(INNER_JOIN_SELECT_SQL , new String[]{userID});
 //        while (cursor.moveToNext()) {
-//            ConversationBean bean = toEntity(cursor);
+//            ConversationEntity bean = toEntity(cursor);
 //            bean.setNickname(cursor.getString(6));
 //            bean.setRemarkName(cursor.getString(7));
 //            container.add(bean);
@@ -117,12 +117,12 @@
 //    }
 //
 //    @Override
-//    protected String[] toWhereArgsOfKey(ConversationBean entity) {
+//    protected String[] toWhereArgsOfKey(ConversationEntity entity) {
 //        return new String[]{entity.getUserID(), entity.getConversationID()};
 //    }
 //
 //    @Override
-//    protected ContentValues toContentValues(ConversationBean entity, ContentValues values) {
+//    protected ContentValues toContentValues(ConversationEntity entity, ContentValues values) {
 //        values.put(COLUMN_NAME_UserID, entity.getUserID());
 //        values.put(COLUMN_NAME_ConversationID, entity.getConversationID());
 //        values.put(COLUMN_NAME_ConversationType, entity.getConversationType());
@@ -133,8 +133,8 @@
 //    }
 //
 //    @Override
-//    protected ConversationBean toEntity(Cursor cursor) {
-//        ConversationBean bean = new ConversationBean(cursor.getInt(COLUMN_INDEX_ConversationType));
+//    protected ConversationEntity toEntity(Cursor cursor) {
+//        ConversationEntity bean = new ConversationEntity(cursor.getInt(COLUMN_INDEX_ConversationType));
 //        bean.setUserID(cursor.getString(COLUMN_INDEX_UserID));
 //        bean.setConversationID(cursor.getString(COLUMN_INDEX_ConversationID));
 //        bean.setLastMsgContent(cursor.getString(COLUMN_INDEX_LastMsgContent));

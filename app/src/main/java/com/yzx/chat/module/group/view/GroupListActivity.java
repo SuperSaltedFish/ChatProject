@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.module.group.contract.GroupListContract;
 import com.yzx.chat.module.group.presenter.GroupListPresenter;
 import com.yzx.chat.widget.adapter.GroupAdapter;
@@ -32,7 +32,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
     private RecyclerView mRvGroup;
     private GroupAdapter mGroupAdapter;
 
-    private List<GroupBean> mGroupList;
+    private List<GroupEntity> mGroupList;
 
     @Override
     protected int getLayoutID() {
@@ -107,14 +107,14 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
     }
 
     @Override
-    public void showAllGroupList(List<GroupBean> groupList) {
+    public void showAllGroupList(List<GroupEntity> groupList) {
         mGroupList.clear();
         mGroupList.addAll(groupList);
         mGroupAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void showNewGroup(GroupBean group, int position) {
+    public void showNewGroup(GroupEntity group, int position) {
         mGroupList.add(position, group);
         mGroupAdapter.notifyItemInsertedEx(position);
     }
@@ -126,7 +126,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
     }
 
     @Override
-    public void refreshGroup(GroupBean group, int position) {
+    public void refreshGroup(GroupEntity group, int position) {
         mGroupList.set(position, group);
         mGroupAdapter.notifyItemChangedEx(position);
     }

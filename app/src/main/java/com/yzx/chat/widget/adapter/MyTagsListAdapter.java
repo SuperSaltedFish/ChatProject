@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.TagBean;
+import com.yzx.chat.core.entity.TagEntity;
 
 import java.util.List;
 import java.util.Locale;
@@ -18,9 +18,9 @@ import java.util.Locale;
  */
 public class MyTagsListAdapter extends BaseRecyclerViewAdapter<MyTagsListAdapter.MyTagsListHolder> {
 
-    private List<TagBean> mTagList;
+    private List<TagEntity> mTagList;
 
-    public MyTagsListAdapter(List<TagBean> tagList) {
+    public MyTagsListAdapter(List<TagEntity> tagList) {
         mTagList = tagList;
     }
 
@@ -31,7 +31,7 @@ public class MyTagsListAdapter extends BaseRecyclerViewAdapter<MyTagsListAdapter
 
     @Override
     public void bindDataToViewHolder(MyTagsListHolder holder, int position) {
-        TagBean tag = mTagList.get(position);
+        TagEntity tag = mTagList.get(position);
         holder.mTvItemTitle.setText(String.format(Locale.getDefault(), "%s(%d)", tag.getName(), tag.getMemberCount()));
     }
 

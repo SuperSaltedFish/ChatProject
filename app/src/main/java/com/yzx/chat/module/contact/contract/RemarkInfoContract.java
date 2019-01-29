@@ -2,8 +2,7 @@ package com.yzx.chat.module.contact.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.core.entity.ContactEntity;
 
 import java.util.ArrayList;
 
@@ -21,7 +20,7 @@ public class RemarkInfoContract {
 
 
     public interface Presenter extends BasePresenter<View> {
-        void save(ContactBean contact);
+        void save(ContactEntity contact);
 
         ArrayList<String> getAllTags();
     }

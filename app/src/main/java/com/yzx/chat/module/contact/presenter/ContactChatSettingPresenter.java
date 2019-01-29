@@ -1,10 +1,10 @@
 package com.yzx.chat.module.contact.presenter;
 
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 
 import io.rong.imlib.model.Conversation;
 
@@ -59,7 +59,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
     }
 
     @Override
-    public ContactBean getContact() {
+    public ContactEntity getContact() {
         return mIMClient.getContactManager().getContact(mContactID);
     }
 
@@ -81,17 +81,17 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
-        public void onContactAdded(ContactBean contact) {
+        public void onContactAdded(ContactEntity contact) {
 
         }
 
         @Override
-        public void onContactDeleted(ContactBean contact) {
+        public void onContactDeleted(ContactEntity contact) {
 
         }
 
         @Override
-        public void onContactUpdate(ContactBean contact) {
+        public void onContactUpdate(ContactEntity contact) {
             if (mContactID.equals(contact.getUserProfile().getUserID())) {
                 mContactChatSettingView.updateContactInfo(contact.getRemark());
             }

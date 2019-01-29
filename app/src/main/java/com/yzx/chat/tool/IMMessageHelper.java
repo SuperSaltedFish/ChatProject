@@ -10,14 +10,13 @@ import android.text.style.ForegroundColorSpan;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
-import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.extra.ContactNotificationMessageEx;
-import com.yzx.chat.network.chat.extra.VideoMessage;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
+import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 
@@ -107,9 +106,9 @@ public class IMMessageHelper {
     }
 
     public static CharSequence groupNotificationMessageToString(GroupNotificationMessage message) {
-        GroupBean group;
+        GroupEntity group;
         StringBuilder builder;
-        UserBean user;
+        UserEntity user;
         boolean isFirst = true;
         try {
             switch (message.getOperation()) {
@@ -120,7 +119,7 @@ public class IMMessageHelper {
                     }
                     group = createExtra.group;
                     builder = new StringBuilder(group.getMembers().size() * 18);
-                    for (GroupMemberBean groupMember : group.getMembers()) {
+                    for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(group.getOwner())) {
                             if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
@@ -147,7 +146,7 @@ public class IMMessageHelper {
                     group = addExtra.group;
                     builder = new StringBuilder(addExtra.membersID.length * 18);
                     List<String> memberIDList = Arrays.asList(addExtra.membersID);
-                    for (GroupMemberBean groupMember : group.getMembers()) {
+                    for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(addExtra.operatorUserID)) {
                             if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
@@ -172,7 +171,7 @@ public class IMMessageHelper {
                         break;
                     }
                     group = joinExtra.group;
-                    for (GroupMemberBean groupMember : group.getMembers()) {
+                    for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(joinExtra.memberID)) {
                             return user.getNickname() + "通过扫描二维码加入了群组";
@@ -190,7 +189,7 @@ public class IMMessageHelper {
                         break;
                     }
                     group = renameExtra.group;
-                    for (GroupMemberBean groupMember : group.getMembers()) {
+                    for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(renameExtra.operatorUserID)) {
                             if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
@@ -207,7 +206,7 @@ public class IMMessageHelper {
                         break;
                     }
                     group = bulletinExtra.group;
-                    for (GroupMemberBean groupMember : group.getMembers()) {
+                    for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(bulletinExtra.operatorUserID)) {
                             if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {

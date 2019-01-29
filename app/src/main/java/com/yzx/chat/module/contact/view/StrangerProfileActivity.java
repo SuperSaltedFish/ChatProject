@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
 import com.yzx.chat.module.contact.presenter.StrangerProfilePresenter;
-import com.yzx.chat.network.chat.ContactManager;
+import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
@@ -51,8 +51,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     private ArrayList<Object> mPicUrlList;
 
-    private UserBean mUser;
-    private ContactOperationBean mContactOperationBean;
+    private UserEntity mUser;
+    private ContactOperationEntity mContactOperationEntity;
 
     @Override
     protected int getLayoutID() {
@@ -107,15 +107,15 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     private void setData() {
         mUser = getIntent().getParcelableExtra(INTENT_EXTRA_USER);
-        mContactOperationBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTENT_OPERATION);
-        if (mUser == null && mContactOperationBean == null) {
+        mContactOperationEntity = getIntent().getParcelableExtra(INTENT_EXTRA_CONTENT_OPERATION);
+        if (mUser == null && mContactOperationEntity == null) {
             return;
         }
 
-        if (mContactOperationBean != null) {
-            mUser = mContactOperationBean.getUser();
+        if (mContactOperationEntity != null) {
+            mUser = mContactOperationEntity.getUser();
             boolean isOperable = true;
-            switch (mContactOperationBean.getType()) {
+            switch (mContactOperationEntity.getType()) {
                 case ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE:
                     mBtnConfirm.setText(R.string.ContactMessageAdapter_Verifying);
                     isOperable = false;
@@ -143,17 +143,17 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
             mEtReason.setEnabled(false);
             mBtnConfirm.setEnabled(isOperable);
-            if(TextUtils.isEmpty(mContactOperationBean.getReason())){
+            if(TextUtils.isEmpty(mContactOperationEntity.getReason())){
                 mEtReason.setText(R.string.StrangerProfileActivity_DefaultReason);
             }else {
-                mEtReason.setText(mContactOperationBean.getReason());
+                mEtReason.setText(mContactOperationEntity.getReason());
             }
         } else {
             mBtnConfirm.setText(R.string.StrangerProfileActivity_RequestAddContact);
         }
 
         mTvNickname.setText(mUser.getNickname());
-        mIvSexIcon.setSelected(mUser.getSex() == UserBean.SEX_WOMAN);
+        mIvSexIcon.setSelected(mUser.getSex() == UserEntity.SEX_WOMAN);
         StringBuilder locationAndAge = new StringBuilder();
         locationAndAge.append(mUser.getAge());
         if (!TextUtils.isEmpty(mUser.getLocation())) {
@@ -174,8 +174,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (mContactOperationBean != null) {
-                mPresenter.acceptContactRequest(mContactOperationBean);
+            if (mContactOperationEntity != null) {
+                mPresenter.acceptContactRequest(mContactOperationEntity);
             } else if (mUser != null) {
                 mPresenter.requestContact(mUser, mEtReason.getText().toString());
             }

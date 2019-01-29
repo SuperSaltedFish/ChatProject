@@ -4,8 +4,8 @@ import android.graphics.Bitmap;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.UserEntity;
 
 /**
  * Created by YZX on 2018年02月26日.
@@ -28,9 +28,9 @@ public class MyQRCodeContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        UserBean getUserInfo();
+        UserEntity getUserInfo();
 
-        GroupBean getGroupInfo(String groupID);
+        GroupEntity getGroupInfo(String groupID);
 
         void updateUserQRCode();
 

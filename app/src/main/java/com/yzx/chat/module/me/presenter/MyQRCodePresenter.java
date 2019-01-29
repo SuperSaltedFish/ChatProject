@@ -6,17 +6,17 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseResponseCallback;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.QRCodeContentBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.QRCodeContentEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.MyQRCodeContract;
-import com.yzx.chat.network.api.Group.GetTempGroupID;
-import com.yzx.chat.network.api.Group.GroupApi;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.api.user.GetTempUserID;
-import com.yzx.chat.network.api.user.UserApi;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.core.net.api.Group.GetTempGroupID;
+import com.yzx.chat.core.net.api.Group.GroupApi;
+import com.yzx.chat.core.net.api.JsonResponse;
+import com.yzx.chat.core.net.api.user.GetTempUserID;
+import com.yzx.chat.core.net.api.user.UserApi;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.tool.ApiHelper;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
@@ -57,12 +57,12 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
     }
 
     @Override
-    public UserBean getUserInfo() {
+    public UserEntity getUserInfo() {
         return IMClient.getInstance().getUserManager().getUser();
     }
 
     @Override
-    public GroupBean getGroupInfo(String groupID) {
+    public GroupEntity getGroupInfo(String groupID) {
         if (TextUtils.isEmpty(groupID)) {
             return null;
         }
@@ -87,9 +87,9 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                 if (!TextUtils.isEmpty(id)) {
                     id = IMClient.getInstance().getCryptoManager().aesEncryptToBase64(id.getBytes());
                     if (!TextUtils.isEmpty(id)) {
-                        QRCodeContentBean qrCodeContent = new QRCodeContentBean();
+                        QRCodeContentEntity qrCodeContent = new QRCodeContentEntity();
                         qrCodeContent.setId(id);
-                        qrCodeContent.setType(QRCodeContentBean.TYPE_USER);
+                        qrCodeContent.setType(QRCodeContentEntity.TYPE_USER);
                         mMyQRCodeActivityView.showQRCode(mGson.toJson(qrCodeContent));
                         return;
                     }
@@ -134,9 +134,9 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                 isUpdating = false;
                 String id = response.getTempGroupID();
                 if (!TextUtils.isEmpty(id)) {
-                    QRCodeContentBean qrCodeContent = new QRCodeContentBean();
+                    QRCodeContentEntity qrCodeContent = new QRCodeContentEntity();
                     qrCodeContent.setId(id);
-                    qrCodeContent.setType(QRCodeContentBean.TYPE_GROUP);
+                    qrCodeContent.setType(QRCodeContentEntity.TYPE_GROUP);
                     String content = mGson.toJson(qrCodeContent);
                     content = IMClient.getInstance().getCryptoManager().aesEncryptToBase64(content.getBytes());
                     if (!TextUtils.isEmpty(content)) {

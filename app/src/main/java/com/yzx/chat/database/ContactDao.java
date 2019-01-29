@@ -3,20 +3,16 @@ package com.yzx.chat.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.util.SparseArrayCompat;
 import android.text.TextUtils;
-import android.util.SparseArray;
 
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactRemarkBean;
-import com.yzx.chat.bean.TagBean;
-import com.yzx.chat.bean.UserBean;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactRemarkEntity;
+import com.yzx.chat.core.entity.TagEntity;
+import com.yzx.chat.core.entity.UserEntity;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,7 +25,7 @@ import java.util.Map;
  */
 
 
-public class ContactDao extends AbstractDao<ContactBean> {
+public class ContactDao extends AbstractDao<ContactEntity> {
 
     static final String TABLE_NAME = "Contact";
 
@@ -63,13 +59,13 @@ public class ContactDao extends AbstractDao<ContactBean> {
         super(helper);
     }
 
-    public ContactBean getContact(String contactID) {
+    public ContactEntity getContact(String contactID) {
         if (TextUtils.isEmpty(contactID)) {
             return null;
         }
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID + " AND " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=?", new String[]{contactID});
-        ContactBean contact = null;
+        ContactEntity contact = null;
         while (cursor.moveToNext()) {
             contact = toEntity(cursor);
         }
@@ -78,10 +74,10 @@ public class ContactDao extends AbstractDao<ContactBean> {
         return contact;
     }
 
-    public ArrayList<ContactBean> loadAllContacts() {
+    public ArrayList<ContactEntity> loadAllContacts() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME + " INNER JOIN " + UserDao.TABLE_NAME + " ON " + TABLE_NAME + "." + COLUMN_NAME_ContactID + "=" + UserDao.TABLE_NAME + "." + UserDao.COLUMN_NAME_UserID, null);
-        ArrayList<ContactBean> contactList = new ArrayList<>(cursor.getCount());
+        ArrayList<ContactEntity> contactList = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             contactList.add(toEntity(cursor));
         }
@@ -90,12 +86,12 @@ public class ContactDao extends AbstractDao<ContactBean> {
         return contactList;
     }
 
-    public boolean insertAllContacts(List<ContactBean> contactList) {
+    public boolean insertAllContacts(List<ContactEntity> contactList) {
         if (contactList == null || contactList.size() == 0) {
             return true;
         }
-        List<UserBean> userList = new LinkedList<>();
-        for (ContactBean contact : contactList) {
+        List<UserEntity> userList = new LinkedList<>();
+        for (ContactEntity contact : contactList) {
             userList.add(contact.getUserProfile());
         }
         return new UserDao(mReadWriteHelper).replaceAll(userList) && insertAll(contactList);
@@ -117,7 +113,7 @@ public class ContactDao extends AbstractDao<ContactBean> {
         return tagsSet;
     }
 
-    public ArrayList<TagBean> getAllTagAndMemberCount() {
+    public ArrayList<TagEntity> getAllTagAndMemberCount() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.query(false, TABLE_NAME, new String[]{COLUMN_NAME_Tags}, COLUMN_NAME_Tags + " IS NOT NULL", null, null, null, null, null);
         HashMap<String, Integer> tagsMap = new HashMap<>(16);
@@ -138,9 +134,9 @@ public class ContactDao extends AbstractDao<ContactBean> {
         }
         cursor.close();
         mReadWriteHelper.closeReadableDatabase();
-        ArrayList<TagBean> tagList = new ArrayList<>(tagsMap.size());
+        ArrayList<TagEntity> tagList = new ArrayList<>(tagsMap.size());
         for (Map.Entry<String, Integer> entry : tagsMap.entrySet()) {
-            tagList.add(new TagBean(entry.getKey(), entry.getValue()));
+            tagList.add(new TagEntity(entry.getKey(), entry.getValue()));
         }
         return tagList;
     }
@@ -156,14 +152,14 @@ public class ContactDao extends AbstractDao<ContactBean> {
     }
 
     @Override
-    protected String[] toWhereArgsOfKey(ContactBean entity) {
+    protected String[] toWhereArgsOfKey(ContactEntity entity) {
         return new String[]{entity.getUserProfile().getUserID()};
     }
 
     @Override
-    protected void parseToContentValues(ContactBean entity, ContentValues values) {
+    protected void parseToContentValues(ContactEntity entity, ContentValues values) {
         values.put(COLUMN_NAME_ContactID, entity.getUserProfile().getUserID());
-        ContactRemarkBean remark = entity.getRemark();
+        ContactRemarkEntity remark = entity.getRemark();
         if (remark != null) {
             values.put(COLUMN_NAME_RemarkName, remark.getRemarkName());
             values.put(COLUMN_NAME_Description, remark.getDescription());
@@ -198,9 +194,9 @@ public class ContactDao extends AbstractDao<ContactBean> {
     }
 
     @Override
-    protected ContactBean toEntity(Cursor cursor) {
-        ContactBean contact = new ContactBean();
-        ContactRemarkBean remark = new ContactRemarkBean();
+    protected ContactEntity toEntity(Cursor cursor) {
+        ContactEntity contact = new ContactEntity();
+        ContactRemarkEntity remark = new ContactRemarkEntity();
 
         remark.setRemarkName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_RemarkName)));
         remark.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Description)));

@@ -1,6 +1,6 @@
 package com.yzx.chat.util;
 
-import com.yzx.chat.network.framework.Call;
+import com.yzx.chat.core.net.framework.Call;
 
 /**
  * Created by YZX on 2017年11月10日.

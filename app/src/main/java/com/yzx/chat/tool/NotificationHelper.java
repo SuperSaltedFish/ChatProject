@@ -25,9 +25,9 @@ import android.util.SparseArray;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yzx.chat.R;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
@@ -119,7 +119,7 @@ public class NotificationHelper {
         appContext.registerReceiver(mContactOperationReceiver, new IntentFilter(ACTION_CONTACT_OPERATION));
     }
 
-    public void showPrivateMessageNotification(Message message, ContactBean contact, boolean isFullScreen) {
+    public void showPrivateMessageNotification(Message message, ContactEntity contact, boolean isFullScreen) {
         String conversationID = contact.getUserProfile().getUserID();
         String title = contact.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -141,7 +141,7 @@ public class NotificationHelper {
                 isFullScreen);
     }
 
-    public void showGroupMessageNotification(Message message, GroupBean group, boolean isFullScreen) {
+    public void showGroupMessageNotification(Message message, GroupEntity group, boolean isFullScreen) {
         String conversationID = group.getGroupID();
         String title = group.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -163,7 +163,7 @@ public class NotificationHelper {
                 isFullScreen);
     }
 
-    public void showContactOperationNotification(ContactOperationBean contactOperation, boolean isFullScreen) {
+    public void showContactOperationNotification(ContactOperationEntity contactOperation, boolean isFullScreen) {
         String id = contactOperation.getUserID();
         String title = contactOperation.getUser().getNickname();
         String content = contactOperation.getReason();
@@ -320,7 +320,7 @@ public class NotificationHelper {
     private final BroadcastReceiver mContactOperationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ContactOperationBean contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
+            ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
             if (contactOperation != null && TextUtils.isEmpty(contactOperation.getUserID())) {
                 recycleNotification(contactOperation.getUserID().hashCode());
                 Activity topActivity = AndroidUtil.getStackTopActivityInstance();

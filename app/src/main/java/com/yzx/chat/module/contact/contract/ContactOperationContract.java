@@ -5,8 +5,8 @@ import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactOperationBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
 
 import java.util.List;
 
@@ -19,13 +19,13 @@ import java.util.List;
 public class ContactOperationContract {
 
     public interface View extends BaseView<Presenter> {
-        void addContactOperationToList(ContactOperationBean ContactOperation);
+        void addContactOperationToList(ContactOperationEntity ContactOperation);
 
-        void removeContactOperationFromList(ContactOperationBean ContactOperation);
+        void removeContactOperationFromList(ContactOperationEntity ContactOperation);
 
-        void updateContactOperationFromList(ContactOperationBean ContactOperation);
+        void updateContactOperationFromList(ContactOperationEntity ContactOperation);
 
-        void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationBean> newDataList);
+        void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationEntity> newDataList);
 
         void setEnableProgressDialog(boolean isEnable);
 
@@ -38,15 +38,15 @@ public class ContactOperationContract {
 
         void init();
 
-        void acceptContactRequest(ContactOperationBean contactOperation);
+        void acceptContactRequest(ContactOperationEntity contactOperation);
 
-        void refusedContactRequest(ContactOperationBean contactOperation);
+        void refusedContactRequest(ContactOperationEntity contactOperation);
 
-        void removeContactOperation(ContactOperationBean ContactOperation);
+        void removeContactOperation(ContactOperationEntity ContactOperation);
 
         void loadAllContactOperation();
 
-        ContactBean findContact(String userID);
+        ContactEntity findContact(String userID);
 
     }
 

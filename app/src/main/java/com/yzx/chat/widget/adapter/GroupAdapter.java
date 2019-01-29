@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import java.util.List;
@@ -20,10 +20,10 @@ import java.util.List;
 
 public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHolder> {
 
-    private List<GroupBean> mGroupList;
+    private List<GroupEntity> mGroupList;
 
 
-    public GroupAdapter(List<GroupBean> groupList) {
+    public GroupAdapter(List<GroupEntity> groupList) {
         mGroupList = groupList;
     }
 
@@ -35,7 +35,7 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
 
     @Override
     public void bindDataToViewHolder(GroupHolder holder, int position) {
-        GroupBean group = mGroupList.get(position);
+        GroupEntity group = mGroupList.get(position);
         holder.mTvGroupName.setText(group.getNameAndMemberNumber());
         String avatarUrl = group.getAvatarUrlFromMembers();
         Object[] avatarList;

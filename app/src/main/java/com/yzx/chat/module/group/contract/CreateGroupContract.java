@@ -2,8 +2,8 @@ package com.yzx.chat.module.group.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 
 import java.util.List;
 
@@ -19,12 +19,12 @@ public class CreateGroupContract {
 
         void showError(String error);
 
-        void launchChatActivity(GroupBean group);
+        void launchChatActivity(GroupEntity group);
     }
 
     public interface Presenter extends BasePresenter<View> {
-        void createGroup(List<ContactBean> members);
+        void createGroup(List<ContactEntity> members);
 
-        void addMembers(String groupID, List<ContactBean> members);
+        void addMembers(String groupID, List<ContactEntity> members);
     }
 }

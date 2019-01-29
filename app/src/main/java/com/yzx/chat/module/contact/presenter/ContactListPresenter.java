@@ -3,10 +3,10 @@ package com.yzx.chat.module.contact.presenter;
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.bean.ContactBean;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
-import com.yzx.chat.network.chat.ContactManager;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.IMClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.AsyncUtil;
@@ -26,7 +26,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     private ContactListContract.View mContactView;
     private RefreshAllContactsTask mRefreshContactsTask;
-    private List<ContactBean> mContactList;
+    private List<ContactEntity> mContactList;
 
     private IMClient mIMClient;
 
@@ -87,20 +87,20 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
         @Override
-        public void onContactAdded(final ContactBean contact) {
+        public void onContactAdded(final ContactEntity contact) {
             loadAllContact();
         }
 
         @Override
-        public void onContactDeleted(final ContactBean contact) {
+        public void onContactDeleted(final ContactEntity contact) {
             loadAllContact();
         }
 
         @Override
-        public void onContactUpdate(final ContactBean contact) {
+        public void onContactUpdate(final ContactEntity contact) {
             int index = mContactList.indexOf(contact);
             if (index >= 0) {
-                ContactBean old = mContactList.get(index);
+                ContactEntity old = mContactList.get(index);
                 if (!old.getName().equals(contact.getName())) {
                     loadAllContact();
                 } else {
@@ -125,20 +125,20 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         }
     };
 
-    private static class RefreshAllContactsTask extends BackstageAsyncTask<ContactListPresenter, List<ContactBean>, DiffUtil.DiffResult> {
+    private static class RefreshAllContactsTask extends BackstageAsyncTask<ContactListPresenter, List<ContactEntity>, DiffUtil.DiffResult> {
 
         RefreshAllContactsTask(ContactListPresenter lifeCycleDependence) {
             super(lifeCycleDependence);
         }
 
         @Override
-        protected DiffUtil.DiffResult doInBackground(List<ContactBean>[] lists) {
-            List<ContactBean> newList = IMClient.getInstance().getContactManager().getAllContacts();
-            List<ContactBean> oldList = lists[0];
+        protected DiffUtil.DiffResult doInBackground(List<ContactEntity>[] lists) {
+            List<ContactEntity> newList = IMClient.getInstance().getContactManager().getAllContacts();
+            List<ContactEntity> oldList = lists[0];
 
-            Collections.sort(newList, new Comparator<ContactBean>() {
+            Collections.sort(newList, new Comparator<ContactEntity>() {
                 @Override
-                public int compare(ContactBean o1, ContactBean o2) {
+                public int compare(ContactEntity o1, ContactEntity o2) {
                     if (o2 != null && o1 != null) {
                         return o1.getAbbreviation().compareTo(o2.getAbbreviation());
                     } else {
@@ -147,14 +147,14 @@ public class ContactListPresenter implements ContactListContract.Presenter {
                 }
             });
 
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactBean>(oldList, newList) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactEntity>(oldList, newList) {
                 @Override
-                public boolean isItemEquals(ContactBean oldItem, ContactBean newItem) {
+                public boolean isItemEquals(ContactEntity oldItem, ContactEntity newItem) {
                     return oldItem.equals(newItem);
                 }
 
                 @Override
-                public boolean isContentsEquals(ContactBean oldItem, ContactBean newItem) {
+                public boolean isContentsEquals(ContactEntity oldItem, ContactEntity newItem) {
                     if (!oldItem.getName().equals(newItem.getName())) {
                         return false;
                     }

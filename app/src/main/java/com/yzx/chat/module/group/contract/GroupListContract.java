@@ -2,7 +2,7 @@ package com.yzx.chat.module.group.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.GroupBean;
+import com.yzx.chat.core.entity.GroupEntity;
 
 import java.util.List;
 
@@ -15,13 +15,13 @@ public class GroupListContract {
 
     public interface View extends BaseView<GroupListContract.Presenter> {
 
-        void showAllGroupList(List<GroupBean> groupList);
+        void showAllGroupList(List<GroupEntity> groupList);
 
-        void showNewGroup(GroupBean group, int position);
+        void showNewGroup(GroupEntity group, int position);
 
         void hideGroup(int position);
 
-        void refreshGroup(GroupBean group, int position);
+        void refreshGroup(GroupEntity group, int position);
     }
 
 

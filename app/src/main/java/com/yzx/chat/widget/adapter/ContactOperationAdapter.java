@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.network.chat.ContactManager;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -25,10 +25,10 @@ import java.util.List;
 
 public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOperationAdapter.ContactMessageHolder> {
 
-    private List<ContactOperationBean> mContactOperationList;
+    private List<ContactOperationEntity> mContactOperationList;
     private OnContactRequestListener mOnContactRequestListener;
 
-    public ContactOperationAdapter(List<ContactOperationBean> contactOperationList) {
+    public ContactOperationAdapter(List<ContactOperationEntity> contactOperationList) {
         mContactOperationList = contactOperationList;
     }
 
@@ -39,7 +39,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
 
     @Override
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
-        ContactOperationBean contactMessage = mContactOperationList.get(position);
+        ContactOperationEntity contactMessage = mContactOperationList.get(position);
         holder.setOnContactRequestListener(mOnContactRequestListener);
         holder.mTvName.setText(contactMessage.getUser().getNickname());
         String reason = contactMessage.getReason();

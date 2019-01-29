@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.List;
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
  */
 
-public class GroupDao extends AbstractDao<GroupBean> {
+public class GroupDao extends AbstractDao<GroupEntity> {
     static final String TABLE_NAME = "ContactGroup";
 
     private static final String COLUMN_NAME_GroupID = "GroupID";
@@ -46,13 +46,13 @@ public class GroupDao extends AbstractDao<GroupBean> {
                     + "PRIMARY KEY (" + COLUMN_NAME_GroupID + ")"
                     + ")";
 
-    public List<GroupBean> loadAllGroup() {
+    public List<GroupEntity> loadAllGroup() {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM " + GroupMemberDao.TABLE_NAME + " INNER JOIN " + TABLE_NAME + " USING (" + COLUMN_NAME_GroupID + ") INNER JOIN " + UserDao.TABLE_NAME + " USING(" + UserDao.COLUMN_NAME_UserID + ")", null);
-        HashMap<String, GroupBean> groupMap = new HashMap<>();
-        GroupBean group;
+        HashMap<String, GroupEntity> groupMap = new HashMap<>();
+        GroupEntity group;
         String groupID;
-        ArrayList<GroupMemberBean> groupMemberList;
+        ArrayList<GroupMemberEntity> groupMemberList;
         while (cursor.moveToNext()) {
             groupID = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GroupID));
             group = groupMap.get(groupID);
@@ -72,7 +72,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
         return new ArrayList<>(groupMap.values());
     }
 
-    public boolean insertGroupAndMember(GroupBean group) {
+    public boolean insertGroupAndMember(GroupEntity group) {
         if (group == null) {
             return false;
         }
@@ -82,7 +82,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
         try {
             do {
                 ContentValues values = new ContentValues();
-                List<GroupMemberBean> groupMemberList;
+                List<GroupMemberEntity> groupMemberList;
                 groupMemberList = group.getMembers();
                 if (groupMemberList == null || groupMemberList.size() == 0) {
                     result = false;
@@ -94,7 +94,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
                     result = false;
                     break;
                 }
-                for (GroupMemberBean groupMember : groupMemberList) {
+                for (GroupMemberEntity groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
                 if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
@@ -113,7 +113,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
         return result;
     }
 
-    public boolean insertAllGroupAndMember(Iterable<GroupBean> entityIterable) {
+    public boolean insertAllGroupAndMember(Iterable<GroupEntity> entityIterable) {
         if (entityIterable == null) {
             return false;
         }
@@ -122,8 +122,8 @@ public class GroupDao extends AbstractDao<GroupBean> {
         database.beginTransactionNonExclusive();
         try {
             ContentValues values = new ContentValues();
-            List<GroupMemberBean> groupMemberList;
-            for (GroupBean group : entityIterable) {
+            List<GroupMemberEntity> groupMemberList;
+            for (GroupEntity group : entityIterable) {
                 groupMemberList = group.getMembers();
                 if (groupMemberList == null || groupMemberList.size() == 0) {
                     result = false;
@@ -135,7 +135,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
                     result = false;
                     break;
                 }
-                for (GroupMemberBean groupMember : groupMemberList) {
+                for (GroupMemberEntity groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
                 if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
@@ -155,7 +155,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
 
     }
 
-    public boolean replaceGroupAndMember(GroupBean group) {
+    public boolean replaceGroupAndMember(GroupEntity group) {
         if (group == null) {
             return false;
         }
@@ -165,7 +165,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
         try {
             do {
                 ContentValues values = new ContentValues();
-                List<GroupMemberBean> groupMemberList;
+                List<GroupMemberEntity> groupMemberList;
                 groupMemberList = group.getMembers();
                 if (groupMemberList == null || groupMemberList.size() == 0) {
                     result = false;
@@ -181,7 +181,7 @@ public class GroupDao extends AbstractDao<GroupBean> {
                     result = false;
                     break;
                 }
-                for (GroupMemberBean groupMember : groupMemberList) {
+                for (GroupMemberEntity groupMember : groupMemberList) {
                     groupMember.setGroupID(group.getGroupID());
                 }
                 if (!GroupMemberDao.insertAllGroupMember(database, groupMemberList, values)) {
@@ -256,12 +256,12 @@ public class GroupDao extends AbstractDao<GroupBean> {
     }
 
     @Override
-    protected String[] toWhereArgsOfKey(GroupBean entity) {
+    protected String[] toWhereArgsOfKey(GroupEntity entity) {
         return new String[]{entity.getGroupID()};
     }
 
     @Override
-    protected void parseToContentValues(GroupBean entity, ContentValues values) {
+    protected void parseToContentValues(GroupEntity entity, ContentValues values) {
         values.put(COLUMN_NAME_GroupID, entity.getGroupID());
         values.put(COLUMN_NAME_Name, entity.getName());
         values.put(COLUMN_NAME_CreateTime, entity.getCreateTime());
@@ -271,8 +271,8 @@ public class GroupDao extends AbstractDao<GroupBean> {
     }
 
     @Override
-    protected GroupBean toEntity(Cursor cursor) {
-        GroupBean group = new GroupBean();
+    protected GroupEntity toEntity(Cursor cursor) {
+        GroupEntity group = new GroupEntity();
         group.setGroupID(cursor.getString(COLUMN_INDEX_GroupID));
         group.setName(cursor.getString(COLUMN_INDEX_Name));
         group.setCreateTime(cursor.getString(COLUMN_INDEX_CreateTime));
@@ -282,8 +282,8 @@ public class GroupDao extends AbstractDao<GroupBean> {
         return group;
     }
 
-    public static GroupBean toEntityFromCursor(Cursor cursor) {
-        GroupBean group = new GroupBean();
+    public static GroupEntity toEntityFromCursor(Cursor cursor) {
+        GroupEntity group = new GroupEntity();
         group.setGroupID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_GroupID)));
         group.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Name)));
         group.setCreateTime(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_CreateTime)));

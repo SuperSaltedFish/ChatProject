@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
 import com.yzx.chat.module.contact.presenter.RemarkInfoPresenter;
 import com.yzx.chat.util.AndroidUtil;
@@ -38,7 +38,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     public static final String INTENT_EXTRA_CONTACT = "Contact";
 
-    private ContactBean mContactBean;
+    private ContactEntity mContactEntity;
     private EditText mEtRemarkName;
     private EditText mEtTelephone;
     private EditText mEtDescription;
@@ -76,13 +76,13 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
 
     private void setData() {
-        mContactBean = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-        if (mContactBean == null || mContactBean.getRemark() == null || mContactBean.getUserProfile() == null) {
-            LogUtil.e("mContactBean == null");
+        mContactEntity = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
+        if (mContactEntity == null || mContactEntity.getRemark() == null || mContactEntity.getUserProfile() == null) {
+            LogUtil.e("mContactEntity == null");
             finish();
         } else {
-            ContactRemarkBean contactRemark = mContactBean.getRemark();
-            mEtRemarkName.setText(mContactBean.getName());
+            ContactRemarkEntity contactRemark = mContactEntity.getRemark();
+            mEtRemarkName.setText(mContactEntity.getName());
             mEtDescription.setText(contactRemark.getDescription());
             setTelephones(contactRemark.getTelephone());
             mTags = contactRemark.getTags();
@@ -152,7 +152,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     }
 
     private void confirm() {
-        ContactRemarkBean contactRemark = mContactBean.getRemark();
+        ContactRemarkEntity contactRemark = mContactEntity.getRemark();
         String remarkName = mEtRemarkName.getText().toString();
         String description = mEtDescription.getText().toString();
         ArrayList<String> newTelephones = getTelephones();
@@ -162,7 +162,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         boolean isChanged = false;
 
         if (!remarkName.equals(contactRemark.getRemarkName())) {
-            if (!remarkName.equals(mContactBean.getUserProfile().getNickname())) {
+            if (!remarkName.equals(mContactEntity.getUserProfile().getNickname())) {
                 isChanged = true;
                 contactRemark.setRemarkName(remarkName);
             } else if (!TextUtils.isEmpty(contactRemark.getRemarkName())) {
@@ -183,7 +183,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
             contactRemark.setTags(newTags);
         }
         if (isChanged) {
-            mPresenter.save(mContactBean);
+            mPresenter.save(mContactEntity);
         }
 
         finish();
@@ -232,7 +232,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(RemarkInfoActivity.this, EditContactTagsActivity.class);
-            intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mContactBean.getRemark().getTags());
+            intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mContactEntity.getRemark().getTags());
             intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
             startActivityForResult(intent, 0);
 

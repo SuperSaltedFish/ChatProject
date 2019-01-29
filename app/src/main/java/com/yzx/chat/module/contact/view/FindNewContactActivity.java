@@ -22,12 +22,12 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.group.view.CreateGroupActivity;
 import com.yzx.chat.module.contact.contract.FindNewContactContract;
 import com.yzx.chat.module.me.view.MyQRCodeActivity;
 import com.yzx.chat.module.common.view.QrCodeScanActivity;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.IMClient;
 import com.yzx.chat.module.contact.presenter.FindNewContactPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
@@ -123,7 +123,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     private void setData() {
-        UserBean user = IMClient.getInstance().getUserManager().getUser();
+        UserEntity user = IMClient.getInstance().getUserManager().getUser();
         mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
     }
 
@@ -164,7 +164,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     @Override
-    public void searchSuccess(UserBean user, boolean isContact) {
+    public void searchSuccess(UserEntity user, boolean isContact) {
         if (isContact) {
             Intent intent = new Intent(this, ContactProfileActivity.class);
             intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, user.getUserID());

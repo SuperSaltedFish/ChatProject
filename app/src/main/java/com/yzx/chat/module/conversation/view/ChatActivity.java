@@ -34,7 +34,7 @@ import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.bean.BasicInfoProvider;
+import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.module.conversation.contract.ChatContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;

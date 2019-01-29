@@ -25,8 +25,8 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.contact.view.ContactProfileActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.group.contract.GroupProfileContract;
@@ -72,7 +72,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private GroupMembersAdapter mAdapter;
 
     private String mGroupID;
-    private ArrayList<GroupMemberBean> mGroupMemberList;
+    private ArrayList<GroupMemberEntity> mGroupMemberList;
 
     @Override
     protected int getLayoutID() {
@@ -166,7 +166,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(GroupProfileActivity.this, ChatActivity.class);
-            GroupBean group = mPresenter.getGroup();
+            GroupEntity group = mPresenter.getGroup();
             intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
             intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
             startActivity(intent);
@@ -346,7 +346,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     }
 
     @Override
-    public void showGroupInfo(GroupBean group, GroupMemberBean mySelf) {
+    public void showGroupInfo(GroupEntity group, GroupMemberEntity mySelf) {
         if (TextUtils.isEmpty(group.getOwner())) {
             finish();
             return;
@@ -362,7 +362,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     }
 
     @Override
-    public void showMembers(List<GroupMemberBean> groupMemberList) {
+    public void showMembers(List<GroupMemberEntity> groupMemberList) {
         mGroupMemberList.clear();
         if(groupMemberList!=null&&groupMemberList.size()>0){
             mGroupMemberList.addAll(groupMemberList);

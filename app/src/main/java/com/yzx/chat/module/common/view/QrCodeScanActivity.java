@@ -33,7 +33,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.view.StrangerProfileActivity;
 import com.yzx.chat.module.contact.view.ContactProfileActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
@@ -262,7 +262,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     }
 
     @Override
-    public void startStrangerProfileActivity(UserBean user) {
+    public void startStrangerProfileActivity(UserEntity user) {
         Intent intent = new Intent(this, StrangerProfileActivity.class);
         intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
         startActivity(intent);

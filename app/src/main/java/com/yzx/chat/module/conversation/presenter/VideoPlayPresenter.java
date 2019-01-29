@@ -5,8 +5,8 @@ import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.module.conversation.contract.VideoPlayContract;
-import com.yzx.chat.network.chat.DownloadCallback;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.listener.DownloadCallback;
+import com.yzx.chat.core.IMClient;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 

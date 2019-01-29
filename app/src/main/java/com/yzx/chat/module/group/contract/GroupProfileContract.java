@@ -2,8 +2,8 @@ package com.yzx.chat.module.group.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ import java.util.List;
 public class GroupProfileContract {
 
     public interface View extends BaseView<Presenter> {
-        void showGroupInfo(GroupBean group, GroupMemberBean mySelf);
+        void showGroupInfo(GroupEntity group, GroupMemberEntity mySelf);
 
-        void showMembers(List<GroupMemberBean> groupMemberList);
+        void showMembers(List<GroupMemberEntity> groupMemberList);
 
         void showNewGroupName(String newGroupName);
 
@@ -42,7 +42,7 @@ public class GroupProfileContract {
     public interface Presenter extends BasePresenter<View> {
         void init(String groupID);
 
-        GroupBean getGroup();
+        GroupEntity getGroup();
 
         String getCurrentUserID();
 

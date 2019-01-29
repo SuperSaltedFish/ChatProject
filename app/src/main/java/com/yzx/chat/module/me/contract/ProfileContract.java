@@ -2,7 +2,7 @@ package com.yzx.chat.module.me.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.UserEntity;
 
 /**
  * Created by YZX on 2018年08月18日.
@@ -10,7 +10,7 @@ import com.yzx.chat.bean.UserBean;
  */
 public class ProfileContract {
     public interface View extends BaseView<Presenter> {
-        void showUserInfo(UserBean user);
+        void showUserInfo(UserEntity user);
     }
 
 

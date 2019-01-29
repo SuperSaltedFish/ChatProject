@@ -3,7 +3,7 @@ package com.yzx.chat.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.yzx.chat.bean.ProvinceBean;
+import com.yzx.chat.core.entity.ProvinceEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 
 public class GsonUtil {
-    public static ArrayList<ProvinceBean> readJsonStream(InputStream in) {
+    public static ArrayList<ProvinceEntity> readJsonStream(InputStream in) {
         JsonReader reader;
         try {
             reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
@@ -26,12 +26,12 @@ public class GsonUtil {
             e.printStackTrace();
             return null;
         }
-        ArrayList<ProvinceBean> messages = new ArrayList<>();
+        ArrayList<ProvinceEntity> messages = new ArrayList<>();
         try {
             reader.beginArray();
             Gson gson = new GsonBuilder().create();
             while (reader.hasNext()) {
-                ProvinceBean message = gson.fromJson(reader, ProvinceBean.class);
+                ProvinceEntity message = gson.fromJson(reader, ProvinceEntity.class);
                 messages.add(message);
             }
             reader.endArray();

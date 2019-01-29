@@ -3,11 +3,11 @@ package com.yzx.chat.base;
 import android.support.annotation.NonNull;
 
 import com.yzx.chat.R;
-import com.yzx.chat.network.api.JsonResponse;
-import com.yzx.chat.network.framework.HttpRequest;
-import com.yzx.chat.network.framework.NetworkUnavailableException;
-import com.yzx.chat.network.framework.ResponseCallback;
-import com.yzx.chat.network.framework.HttpResponse;
+import com.yzx.chat.core.net.api.JsonResponse;
+import com.yzx.chat.core.net.framework.HttpRequest;
+import com.yzx.chat.core.net.framework.NetworkUnavailableException;
+import com.yzx.chat.core.net.framework.ResponseCallback;
+import com.yzx.chat.core.net.framework.HttpResponse;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 

@@ -6,14 +6,14 @@ import android.support.v7.util.DiffUtil;
 import android.text.TextUtils;
 
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.conversation.contract.ConversationContract;
-import com.yzx.chat.network.chat.ChatManager;
-import com.yzx.chat.network.chat.ConversationManager;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.IMClient;
+import com.yzx.chat.core.manager.ChatManager;
+import com.yzx.chat.core.manager.ConversationManager;
+import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.IMClient;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
@@ -191,42 +191,42 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
-        public void onCreatedGroup(GroupBean group) {
+        public void onCreatedGroup(GroupEntity group) {
             refreshAllConversations();
         }
 
         @Override
-        public void onQuitGroup(GroupBean group) {
+        public void onQuitGroup(GroupEntity group) {
             refreshAllConversations();
         }
 
         @Override
-        public void onBulletinChange(GroupBean group) {
+        public void onBulletinChange(GroupEntity group) {
             refreshAllConversations();
         }
 
         @Override
-        public void onNameChange(GroupBean group) {
+        public void onNameChange(GroupEntity group) {
             refreshAllConversations();
         }
 
         @Override
-        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+        public void onMemberAdded(GroupEntity group, String[] newMembersID) {
             refreshAllConversations();
         }
 
         @Override
-        public void onMemberJoin(GroupBean group, String memberID) {
+        public void onMemberJoin(GroupEntity group, String memberID) {
             refreshAllConversations();
         }
 
         @Override
-        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+        public void onMemberQuit(GroupEntity group, GroupMemberEntity quitMember) {
             refreshAllConversations();
         }
 
         @Override
-        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+        public void onMemberAliasChange(GroupEntity group, GroupMemberEntity member, String newAlias) {
 
         }
     };
@@ -255,17 +255,17 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         }
                         switch (conversation.getConversationType()) {
                             case PRIVATE:
-                                ContactBean contactBean = chatManager.getContactManager().getContact(conversationID);
-                                if (contactBean != null) {
-                                    conversation.setConversationTitle(contactBean.getName());
-                                    conversation.setPortraitUrl(contactBean.getUserProfile().getAvatar());
+                                ContactEntity contactEntity = chatManager.getContactManager().getContact(conversationID);
+                                if (contactEntity != null) {
+                                    conversation.setConversationTitle(contactEntity.getName());
+                                    conversation.setPortraitUrl(contactEntity.getUserProfile().getAvatar());
                                 } else {
                                     IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;
                             case GROUP:
-                                GroupBean group = chatManager.getGroupManager().getGroup(conversationID);
+                                GroupEntity group = chatManager.getGroupManager().getGroup(conversationID);
                                 if (group != null) {
                                     conversation.setConversationTitle(group.getName());
                                     conversation.setPortraitUrl(group.getAvatarUrlFromMembers());

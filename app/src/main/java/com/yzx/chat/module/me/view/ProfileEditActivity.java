@@ -18,9 +18,9 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.bean.CityBean;
-import com.yzx.chat.bean.ProvinceBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.CityEntity;
+import com.yzx.chat.core.entity.ProvinceEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.ProfileEditContract;
 import com.yzx.chat.module.me.presenter.ProfileEditPresenter;
 import com.yzx.chat.module.common.view.ImageSingleSelectorActivity;
@@ -56,7 +56,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
     private TextView mTvSex;
     private EditText mEtSignature;
     private EditText mEtEmail;
-    private UserBean mUserBean;
+    private UserEntity mUserEntity;
 
     @Override
     protected int getLayoutID() {
@@ -96,26 +96,26 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
     }
 
     private void setData() {
-        mUserBean = mPresenter.getUserInfo();
-        if (mUserBean == null || mUserBean.isEmpty()) {
+        mUserEntity = mPresenter.getUserInfo();
+        if (mUserEntity == null || mUserEntity.isEmpty()) {
             finish();
             return;
         }
 
-        mEtNickname.setText(mUserBean.getNickname());
-        if (TextUtils.isEmpty(mUserBean.getLocation())) {
+        mEtNickname.setText(mUserEntity.getNickname());
+        if (TextUtils.isEmpty(mUserEntity.getLocation())) {
             mTvLocation.setText(R.string.ProfileEditActivity_NoSet);
         } else {
-            mTvLocation.setText(mUserBean.getLocation());
+            mTvLocation.setText(mUserEntity.getLocation());
         }
 
-        if (TextUtils.isEmpty(mUserBean.getSignature())) {
+        if (TextUtils.isEmpty(mUserEntity.getSignature())) {
             mEtSignature.setText(null);
         } else {
-            mEtSignature.setText(mUserBean.getSignature());
+            mEtSignature.setText(mUserEntity.getSignature());
         }
 
-        switch (mUserBean.getSex()) {
+        switch (mUserEntity.getSex()) {
             case 1:
                 mTvSex.setText(R.string.Man);
                 break;
@@ -126,8 +126,8 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
                 mTvSex.setText(R.string.ProfileEditActivity_NoSet);
         }
 
-        String birthday = mUserBean.getBirthday();
-        if (!TextUtils.isEmpty(mUserBean.getBirthday())) {
+        String birthday = mUserEntity.getBirthday();
+        if (!TextUtils.isEmpty(mUserEntity.getBirthday())) {
             birthday = DateUtil.isoFormatTo(getString(R.string.DateFormat_yyyyMMdd), birthday);
             if (!TextUtils.isEmpty(birthday)) {
                 mTvBirthday.setText(birthday);
@@ -138,7 +138,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
             mTvBirthday.setText(R.string.ProfileEditActivity_NoSet);
         }
 
-        setAvatar(mUserBean.getAvatar());
+        setAvatar(mUserEntity.getAvatar());
     }
 
     private void setAvatar(String url) {
@@ -154,7 +154,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
 
         String birthday = mTvBirthday.getText().toString();
         String strSex = mTvSex.getText().toString();
-        int sex = mUserBean.getSex();
+        int sex = mUserEntity.getSex();
 
         if (!none.equals(birthday)) {
             birthday = DateUtil.formatToISO(getString(R.string.DateFormat_yyyyMMdd), birthday);
@@ -165,7 +165,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
             birthday = null;
         }
         if (!strSex.equals(none)) {
-            sex = mTvSex.getText().equals(getString(R.string.Woman)) ? UserBean.SEX_WOMAN : UserBean.SEX_MAN;
+            sex = mTvSex.getText().equals(getString(R.string.Woman)) ? UserEntity.SEX_WOMAN : UserEntity.SEX_MAN;
         }
 
 
@@ -174,30 +174,30 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
             return;
         }
         boolean isChange = false;
-        if (!nickname.equals(mUserBean.getNickname())) {
+        if (!nickname.equals(mUserEntity.getNickname())) {
             isChange = true;
-            mUserBean.setNickname(nickname);
+            mUserEntity.setNickname(nickname);
         }
-        if (!none.equals(location) && !location.equals(mUserBean.getLocation())) {
+        if (!none.equals(location) && !location.equals(mUserEntity.getLocation())) {
             isChange = true;
-            mUserBean.setLocation(location);
+            mUserEntity.setLocation(location);
         }
-        if (!signature.equals(mUserBean.getSignature())) {
+        if (!signature.equals(mUserEntity.getSignature())) {
             isChange = true;
-            mUserBean.setSignature(signature);
+            mUserEntity.setSignature(signature);
         }
-        if (sex != mUserBean.getSex()) {
+        if (sex != mUserEntity.getSex()) {
             isChange = true;
-            mUserBean.setSex(sex);
+            mUserEntity.setSex(sex);
         }
 
-        if (birthday != null && !birthday.equals(mUserBean.getBirthday())) {
+        if (birthday != null && !birthday.equals(mUserEntity.getBirthday())) {
             isChange = true;
-            mUserBean.setBirthday(birthday);
+            mUserEntity.setBirthday(birthday);
         }
 
         if (isChange) {
-            mPresenter.updateProfile(mUserBean);
+            mPresenter.updateProfile(mUserEntity);
         } else {
             finish();
         }
@@ -255,12 +255,12 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
             new MaterialDialog.Builder(ProfileEditActivity.this)
                     .title(R.string.ProfileEditActivity_SexDialogTitle)
                     .items(R.array.ProfileEditActivity_SexList)
-                    .itemsCallbackSingleChoice(mUserBean.getSex() - 1, new MaterialDialog.ListCallbackSingleChoice() {
+                    .itemsCallbackSingleChoice(mUserEntity.getSex() - 1, new MaterialDialog.ListCallbackSingleChoice() {
                         @Override
                         public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                             if (!TextUtils.isEmpty(text)) {
                                 mTvSex.setText(text);
-                                mUserBean.setSex(which + 1);
+                                mUserEntity.setSex(which + 1);
                                 return true;
                             }
                             return false;
@@ -280,10 +280,10 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         @Override
         public void onClick(View v) {
             if (mCalendar == null) {
-                if (TextUtils.isEmpty(mUserBean.getBirthday())) {
+                if (TextUtils.isEmpty(mUserEntity.getBirthday())) {
                     mCalendar = Calendar.getInstance();
                 } else {
-                    mCalendar = DateUtil.isoToCalendar(mUserBean.getBirthday());
+                    mCalendar = DateUtil.isoToCalendar(mUserEntity.getBirthday());
                 }
             }
             if (mDatePickerDialog == null) {
@@ -294,7 +294,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
                         mCalendar.set(Calendar.YEAR, year);
                         mCalendar.set(Calendar.MONTH, month);
                         mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        mUserBean.setBirthday(DateUtil.msecToISO(mCalendar.getTimeInMillis()));
+                        mUserEntity.setBirthday(DateUtil.msecToISO(mCalendar.getTimeInMillis()));
                     }
                 }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
             }
@@ -315,17 +315,17 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         @Override
         public void onClick(View v) {
             if (mLocationSelectorDialog == null) {
-                List<ProvinceBean> provinceList = GsonUtil.readJsonStream(getResources().openRawResource(R.raw.city));
+                List<ProvinceEntity> provinceList = GsonUtil.readJsonStream(getResources().openRawResource(R.raw.city));
                 if (provinceList == null || provinceList.size() == 0) {
                     showToast(getString(R.string.ProfileEditActivity_ReadCityInfoError));
                     return;
                 }
                 mProvinceCityMap = new HashMap<>(provinceList.size() * 2);
-                ProvinceBean province;
+                ProvinceEntity province;
                 mProvinceArray = new String[provinceList.size()];
                 for (int n = 0, count = provinceList.size(); n < count; n++) {
                     province = provinceList.get(n);
-                    ArrayList<CityBean> cityList = province.getCity();
+                    ArrayList<CityEntity> cityList = province.getCity();
                     if (cityList != null && cityList.size() > 0) {
                         mProvinceArray[n] = province.getProvince();
                         String[] strCityArray = new String[cityList.size()];
@@ -348,8 +348,8 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 int provinceIndex = mProvincePicker.getValue();
                                 int cityIndex = mCityPicker.getValue();
-                                mUserBean.setLocation(mProvinceArray[provinceIndex] + " " + mProvinceCityMap.get(mProvinceArray[provinceIndex])[cityIndex]);
-                                mTvLocation.setText(mUserBean.getLocation());
+                                mUserEntity.setLocation(mProvinceArray[provinceIndex] + " " + mProvinceCityMap.get(mProvinceArray[provinceIndex])[cityIndex]);
+                                mTvLocation.setText(mUserEntity.getLocation());
                             }
                         })
                         .build();
@@ -383,8 +383,8 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
 
             int provinceIndex = 0;
             int cityIndex = 0;
-            if (!TextUtils.isEmpty(mUserBean.getLocation())) {
-                String[] location = mUserBean.getLocation().split(" ");
+            if (!TextUtils.isEmpty(mUserEntity.getLocation())) {
+                String[] location = mUserEntity.getLocation().split(" ");
                 if (location.length == 2) {
                     for (int i = 0, size = mProvinceArray.length; i < size; i++) {
                         if (location[0].equals(mProvinceArray[i])) {
@@ -420,7 +420,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
 
     @Override
     public void showNewAvatar(String avatarPath) {
-        mUserBean.setAvatar(avatarPath);
+        mUserEntity.setAvatar(avatarPath);
         setAvatar(avatarPath);
     }
 

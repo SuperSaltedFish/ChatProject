@@ -2,8 +2,8 @@ package com.yzx.chat.module.contact.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.bean.ContactOperationBean;
-import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.UserEntity;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -22,8 +22,8 @@ public class StrangerProfileContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        void requestContact(UserBean user, String verifyContent);
+        void requestContact(UserEntity user, String verifyContent);
 
-        void acceptContactRequest(ContactOperationBean contactOperation);
+        void acceptContactRequest(ContactOperationEntity contactOperation);
     }
 }

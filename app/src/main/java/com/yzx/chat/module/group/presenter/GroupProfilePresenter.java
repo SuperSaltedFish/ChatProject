@@ -4,14 +4,14 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
-import com.yzx.chat.bean.GroupBean;
-import com.yzx.chat.bean.GroupMemberBean;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.group.contract.GroupProfileContract;
-import com.yzx.chat.network.chat.ConversationManager;
-import com.yzx.chat.network.chat.GroupManager;
-import com.yzx.chat.network.chat.IMClient;
-import com.yzx.chat.network.chat.ResultCallback;
+import com.yzx.chat.core.manager.ConversationManager;
+import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 
@@ -50,14 +50,14 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void init(String groupID) {
-        GroupBean group = mGroupManager.getGroup(groupID);
+        GroupEntity group = mGroupManager.getGroup(groupID);
         String mySelfMemberID = IMClient.getInstance().getUserManager().getUserID();
         if (group == null || TextUtils.isEmpty(mySelfMemberID)) {
             mGroupProfileView.goBack();
             return;
         }
 
-        GroupMemberBean mySelf = mGroupManager.getGroupMember(groupID, mySelfMemberID);
+        GroupMemberEntity mySelf = mGroupManager.getGroupMember(groupID, mySelfMemberID);
         if (mySelf == null) {
             mGroupProfileView.goBack();
             return;
@@ -85,7 +85,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     }
 
     @Override
-    public GroupBean getGroup() {
+    public GroupEntity getGroup() {
         return mGroupManager.getGroup(mConversation.getTargetId());
     }
 
@@ -201,12 +201,12 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
-        public void onCreatedGroup(GroupBean group) {
+        public void onCreatedGroup(GroupEntity group) {
 
         }
 
         @Override
-        public void onQuitGroup(GroupBean group) {
+        public void onQuitGroup(GroupEntity group) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
                 if (mConversation.getTargetId().equals(ChatPresenter.sConversationID)) {
@@ -217,7 +217,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         }
 
         @Override
-        public void onBulletinChange(GroupBean group) {
+        public void onBulletinChange(GroupEntity group) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showNewGroupNotice(group.getNotice());
@@ -225,7 +225,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         }
 
         @Override
-        public void onNameChange(GroupBean group) {
+        public void onNameChange(GroupEntity group) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showNewGroupName(group.getName());
@@ -233,7 +233,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         }
 
         @Override
-        public void onMemberAdded(GroupBean group, String[] newMembersID) {
+        public void onMemberAdded(GroupEntity group, String[] newMembersID) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showMembers(group.getMembers());
@@ -241,12 +241,12 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         }
 
         @Override
-        public void onMemberJoin(GroupBean group, String memberID) {
+        public void onMemberJoin(GroupEntity group, String memberID) {
 
         }
 
         @Override
-        public void onMemberQuit(GroupBean group, GroupMemberBean quitMember) {
+        public void onMemberQuit(GroupEntity group, GroupMemberEntity quitMember) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showMembers(group.getMembers());
@@ -254,7 +254,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         }
 
         @Override
-        public void onMemberAliasChange(GroupBean group, GroupMemberBean member, String newAlias) {
+        public void onMemberAliasChange(GroupEntity group, GroupMemberEntity member, String newAlias) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 if (member.getUserProfile().getUserID().equals(getCurrentUserID())) {
                     mGroupProfileView.setEnableProgressDialog(false, null);
