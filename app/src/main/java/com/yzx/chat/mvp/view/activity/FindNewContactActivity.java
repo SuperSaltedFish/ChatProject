@@ -18,12 +18,13 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.UserBean;
+import com.yzx.chat.module.contact.view.ContactProfileActivity;
+import com.yzx.chat.module.group.view.CreateGroupActivity;
 import com.yzx.chat.mvp.contract.FindNewContactContract;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.mvp.presenter.FindNewContactPresenter;
@@ -32,7 +33,6 @@ import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
-import java.net.Socket;
 import java.util.Locale;
 
 

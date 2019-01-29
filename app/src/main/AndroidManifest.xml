@@ -51,7 +51,7 @@
             android:value="2.2" />
 
         <activity
-            android:name=".mvp.view.activity.SplashActivity"
+            android:name=".module.main.view.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,14 +60,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".mvp.view.activity.LoginActivity"
+            android:name=".module.login.view.LoginActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".mvp.view.activity.HomeActivity"
+            android:name=".module.main.view.HomeActivity"
             android:theme="@style/NoBackgroundLightTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".mvp.view.activity.ChatActivity"
+            android:name=".module.conversation.view.ChatActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -75,19 +75,19 @@
             android:theme="@style/DefaultDarkTheme" />
         <activity android:name=".mvp.view.activity.ImageMultiSelectorActivity" />
         <activity android:name=".mvp.view.activity.ImageViewPagerActivity" />
-        <activity android:name=".mvp.view.activity.ContactProfileActivity" />
+        <activity android:name=".module.contact.view.ContactProfileActivity" />
         <activity android:name=".mvp.view.activity.FindNewContactActivity" />
         <activity android:name=".mvp.view.activity.RemarkInfoActivity" />
-        <activity android:name=".mvp.view.activity.EditContactTagsActivity" />
+        <activity android:name=".module.contact.view.EditContactTagsActivity" />
         <activity android:name=".mvp.view.activity.StrangerProfileActivity" />
         <activity android:name=".mvp.view.activity.ProfileEditActivity" />
         <activity android:name=".mvp.view.activity.ImageSingleSelectorActivity" />
         <activity
             android:name=".mvp.view.activity.ImageOriginalActivity"
             android:theme="@style/DefaultDarkTheme" />
-        <activity android:name=".mvp.view.activity.GroupProfileActivity" />
+        <activity android:name=".module.group.view.GroupProfileActivity" />
         <activity
-            android:name=".mvp.view.activity.CreateGroupActivity"
+            android:name=".module.group.view.CreateGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".mvp.view.activity.MyQRCodeActivity"
@@ -96,13 +96,13 @@
             android:name=".mvp.view.activity.LocationMapActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".mvp.view.activity.VideoRecorderActivity"
+            android:name=".module.conversation.view.VideoRecorderActivity"
             android:theme="@style/NoBackgroundLightTheme" />
-        <activity android:name=".mvp.view.activity.GroupListActivity" />
+        <activity android:name=".module.group.view.GroupListActivity" />
         <activity android:name=".mvp.view.activity.CropImageActivity" />
         <activity android:name=".mvp.view.activity.FileSelectorActivity" />
         <activity
-            android:name=".mvp.view.activity.VideoPlayActivity"
+            android:name=".module.conversation.view.VideoPlayActivity"
             android:theme="@style/DefaultDarkTheme" />
         <activity android:name=".mvp.view.activity.NotificationMessageActivity" />
         <activity android:name=".mvp.view.activity.TestActivity">

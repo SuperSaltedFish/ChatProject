@@ -15,7 +15,7 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.mvp.contract.ProfileContract;
 import com.yzx.chat.mvp.presenter.ProfilePresenter;
-import com.yzx.chat.mvp.view.activity.LoginActivity;
+import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.mvp.view.activity.ProfileEditActivity;
 import com.yzx.chat.tool.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;

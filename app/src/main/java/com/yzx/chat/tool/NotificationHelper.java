@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 
 import android.graphics.Color;
 
-import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -32,11 +31,9 @@ import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
-import com.yzx.chat.mvp.view.activity.ChatActivity;
-import com.yzx.chat.mvp.view.activity.HomeActivity;
-import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
+import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.view.GlideHexagonTransform;
 
 import io.rong.imlib.model.Conversation;
