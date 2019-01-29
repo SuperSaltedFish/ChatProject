@@ -1,14 +1,9 @@
-package com.yzx.chat.tool;
+package com.yzx.chat.core.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yzx.chat.database.AbstractDao;
-import com.yzx.chat.database.DatabaseHelper;
-import com.yzx.chat.util.LogUtil;
-
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 

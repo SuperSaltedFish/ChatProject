@@ -1,10 +1,9 @@
-package com.yzx.chat.tool;
+package com.yzx.chat.core.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.yzx.chat.configure.AppApplication;
-import com.yzx.chat.util.AndroidUtil;
 
 /**
  * Created by YZX on 2017年11月24日.

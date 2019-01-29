@@ -1,4 +1,4 @@
-package com.yzx.chat.database;
+package com.yzx.chat.core.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;

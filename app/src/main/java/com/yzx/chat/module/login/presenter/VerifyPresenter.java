@@ -13,7 +13,7 @@ import com.yzx.chat.core.manager.CryptoManager;
 import com.yzx.chat.core.IMClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.core.net.api.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
 
 import java.util.HashMap;

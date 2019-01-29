@@ -17,7 +17,7 @@ import com.yzx.chat.core.net.api.user.GetTempUserID;
 import com.yzx.chat.core.net.api.user.UserApi;
 import com.yzx.chat.core.IMClient;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.core.net.api.ApiHelper;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;

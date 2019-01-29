@@ -17,6 +17,7 @@ import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.core.manager.GroupManager;
 import com.yzx.chat.core.IMClient;
 import com.yzx.chat.core.extra.VideoMessage;
+import com.yzx.chat.core.net.api.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 

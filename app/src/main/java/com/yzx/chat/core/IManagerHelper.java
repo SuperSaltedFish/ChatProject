@@ -6,7 +6,7 @@ import com.yzx.chat.core.manager.ConversationManager;
 import com.yzx.chat.core.manager.CryptoManager;
 import com.yzx.chat.core.manager.GroupManager;
 import com.yzx.chat.core.manager.UserManager;
-import com.yzx.chat.database.AbstractDao;
+import com.yzx.chat.core.database.AbstractDao;
 
 /**
  * Created by YZX on 2018年07月02日.

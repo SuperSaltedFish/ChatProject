@@ -22,7 +22,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.module.main.presenter.SplashPresenter;
 import com.yzx.chat.module.login.view.LoginActivity;
-import com.yzx.chat.tool.SharePreferenceManager;
+import com.yzx.chat.core.manager.SharePreferenceManager;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.PageIndicator;
 

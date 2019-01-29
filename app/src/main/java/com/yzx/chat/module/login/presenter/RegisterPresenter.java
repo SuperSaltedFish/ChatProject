@@ -14,7 +14,7 @@ import com.yzx.chat.core.net.api.auth.ObtainSMSCode;
 import com.yzx.chat.core.manager.CryptoManager;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.HttpConverter;
-import com.yzx.chat.tool.ApiHelper;
+import com.yzx.chat.core.net.api.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;

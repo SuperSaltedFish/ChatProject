@@ -1,4 +1,4 @@
-package com.yzx.chat.tool;
+package com.yzx.chat.core.net.api;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;

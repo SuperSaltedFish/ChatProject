@@ -44,7 +44,7 @@ import com.yzx.chat.module.group.view.GroupProfileActivity;
 import com.yzx.chat.module.common.view.ImageMultiSelectorActivity;
 import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.tool.SharePreferenceManager;
+import com.yzx.chat.core.manager.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.util.LogUtil;
