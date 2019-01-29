@@ -7,7 +7,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".mvp.view.activity.ProfileEditActivity">
+    tools:context=".module.me.view.ProfileEditActivity">
 
 
     <ImageView

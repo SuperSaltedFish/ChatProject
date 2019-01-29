@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:orientation="vertical"
-    tools:context=".mvp.view.activity.FindNewContactActivity">
+    tools:context=".module.contact.view.FindNewContactActivity">
 
 
     <android.support.v7.widget.Toolbar

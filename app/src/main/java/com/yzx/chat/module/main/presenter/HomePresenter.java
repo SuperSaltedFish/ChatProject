@@ -8,7 +8,7 @@ import com.yzx.chat.bean.GroupBean;
 import com.yzx.chat.module.main.contract.HomeContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.mvp.view.activity.NotificationMessageActivity;
+import com.yzx.chat.module.contact.view.NotificationMessageActivity;
 import com.yzx.chat.network.chat.ChatManager;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.ConversationManager;

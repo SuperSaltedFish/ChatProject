@@ -45,7 +45,7 @@ import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.module.conversation.contract.LocationSendContract;
 import com.yzx.chat.module.conversation.presenter.LocationSendPresenter;
-import com.yzx.chat.mvp.view.activity.LocationMapActivity;
+import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;

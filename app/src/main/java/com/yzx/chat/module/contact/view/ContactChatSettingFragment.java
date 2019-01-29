@@ -23,7 +23,6 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactRemarkBean;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
 import com.yzx.chat.module.contact.presenter.ContactChatSettingPresenter;
-import com.yzx.chat.mvp.view.activity.RemarkInfoActivity;
 
 import java.util.List;
 

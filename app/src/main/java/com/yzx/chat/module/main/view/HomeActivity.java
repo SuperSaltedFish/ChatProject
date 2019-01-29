@@ -16,11 +16,11 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.module.main.contract.HomeContract;
 import com.yzx.chat.module.main.presenter.HomePresenter;
-import com.yzx.chat.mvp.view.activity.QrCodeScanActivity;
+import com.yzx.chat.module.common.view.QrCodeScanActivity;
 import com.yzx.chat.module.conversation.view.ConversationFragment;
 import com.yzx.chat.module.contact.view.ContactListFragment;
-import com.yzx.chat.mvp.view.fragment.MomentsFragment;
-import com.yzx.chat.mvp.view.fragment.ProfileFragment;
+import com.yzx.chat.module.moments.view.MomentsFragment;
+import com.yzx.chat.module.me.view.ProfileFragment;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.view.BottomTabLayout;
 

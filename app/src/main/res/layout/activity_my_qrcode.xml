@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
     android:orientation="vertical"
-    tools:context=".mvp.view.activity.MyQRCodeActivity">
+    tools:context=".module.me.view.MyQRCodeActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/Default_mToolbar"

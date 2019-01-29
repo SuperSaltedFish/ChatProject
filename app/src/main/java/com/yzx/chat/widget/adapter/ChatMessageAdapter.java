@@ -40,8 +40,8 @@ import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.mvp.view.activity.ImageOriginalActivity;
-import com.yzx.chat.mvp.view.activity.LocationMapActivity;
+import com.yzx.chat.module.common.view.ImageOriginalActivity;
+import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.widget.view.RoundImageView;
 import com.yzx.chat.widget.view.VisualizerView;
 

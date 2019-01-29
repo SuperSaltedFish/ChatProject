@@ -71,48 +71,48 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".mvp.view.activity.QrCodeScanActivity"
+            android:name=".module.common.view.QrCodeScanActivity"
             android:theme="@style/DefaultDarkTheme" />
-        <activity android:name=".mvp.view.activity.ImageMultiSelectorActivity" />
-        <activity android:name=".mvp.view.activity.ImageViewPagerActivity" />
+        <activity android:name=".module.common.view.ImageMultiSelectorActivity" />
+        <activity android:name=".module.common.view.ImageViewPagerActivity" />
         <activity android:name=".module.contact.view.ContactProfileActivity" />
-        <activity android:name=".mvp.view.activity.FindNewContactActivity" />
-        <activity android:name=".mvp.view.activity.RemarkInfoActivity" />
+        <activity android:name=".module.contact.view.FindNewContactActivity" />
+        <activity android:name=".module.contact.view.RemarkInfoActivity" />
         <activity android:name=".module.contact.view.EditContactTagsActivity" />
-        <activity android:name=".mvp.view.activity.StrangerProfileActivity" />
-        <activity android:name=".mvp.view.activity.ProfileEditActivity" />
-        <activity android:name=".mvp.view.activity.ImageSingleSelectorActivity" />
+        <activity android:name=".module.contact.view.StrangerProfileActivity" />
+        <activity android:name=".module.me.view.ProfileEditActivity" />
+        <activity android:name=".module.common.view.ImageSingleSelectorActivity" />
         <activity
-            android:name=".mvp.view.activity.ImageOriginalActivity"
+            android:name=".module.common.view.ImageOriginalActivity"
             android:theme="@style/DefaultDarkTheme" />
         <activity android:name=".module.group.view.GroupProfileActivity" />
         <activity
             android:name=".module.group.view.CreateGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".mvp.view.activity.MyQRCodeActivity"
+            android:name=".module.me.view.MyQRCodeActivity"
             android:theme="@style/NoBackgroundLightTheme" />
         <activity
-            android:name=".mvp.view.activity.LocationMapActivity"
+            android:name=".module.common.view.LocationMapActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".module.conversation.view.VideoRecorderActivity"
             android:theme="@style/NoBackgroundLightTheme" />
         <activity android:name=".module.group.view.GroupListActivity" />
-        <activity android:name=".mvp.view.activity.CropImageActivity" />
-        <activity android:name=".mvp.view.activity.FileSelectorActivity" />
+        <activity android:name=".module.me.view.CropImageActivity" />
+        <activity android:name=".module.common.view.FileSelectorActivity" />
         <activity
             android:name=".module.conversation.view.VideoPlayActivity"
             android:theme="@style/DefaultDarkTheme" />
-        <activity android:name=".mvp.view.activity.NotificationMessageActivity" />
-        <activity android:name=".mvp.view.activity.TestActivity">
+        <activity android:name=".module.contact.view.NotificationMessageActivity" />
+        <activity android:name=".module.TestActivity">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
 
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
-        <activity android:name=".mvp.view.activity.MyTagListActivity" />
+        <activity android:name=".module.me.view.MyTagListActivity" />
 
         <receiver android:name=".broadcast.UninstallReceive">
             <!--<intent-filter>-->

@@ -19,7 +19,6 @@ import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactOperationBean;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
 import com.yzx.chat.module.contact.presenter.ContactOperationPresenter;
-import com.yzx.chat.mvp.view.activity.StrangerProfileActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactOperationAdapter;

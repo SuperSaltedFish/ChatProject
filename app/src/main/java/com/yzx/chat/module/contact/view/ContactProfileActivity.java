@@ -24,7 +24,6 @@ import com.yzx.chat.bean.UserBean;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
 import com.yzx.chat.module.contact.presenter.ContactProfilePresenter;
-import com.yzx.chat.mvp.view.activity.RemarkInfoActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.LogUtil;
