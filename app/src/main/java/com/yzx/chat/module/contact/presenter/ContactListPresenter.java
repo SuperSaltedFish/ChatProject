@@ -1,10 +1,10 @@
-package com.yzx.chat.mvp.presenter;
+package com.yzx.chat.module.contact.presenter;
 
 import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.mvp.contract.ContactListContract;
+import com.yzx.chat.module.contact.contract.ContactListContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.util.LogUtil;

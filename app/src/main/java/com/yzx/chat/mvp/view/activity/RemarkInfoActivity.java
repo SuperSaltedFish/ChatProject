@@ -18,6 +18,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
+import com.yzx.chat.module.contact.view.EditContactTagsActivity;
 import com.yzx.chat.mvp.contract.RemarkInfoContract;
 import com.yzx.chat.mvp.presenter.RemarkInfoPresenter;
 import com.yzx.chat.util.AndroidUtil;

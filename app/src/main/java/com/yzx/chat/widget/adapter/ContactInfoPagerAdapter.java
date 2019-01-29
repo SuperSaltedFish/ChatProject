@@ -1,16 +1,13 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.view.View;
 
-import com.yzx.chat.mvp.view.fragment.ContactChatSettingFragment;
-import com.yzx.chat.mvp.view.fragment.ContactMomentsFragment;
-import com.yzx.chat.mvp.view.fragment.ContactMotionFragment;
+import com.yzx.chat.module.contact.view.ContactChatSettingFragment;
+import com.yzx.chat.module.contact.view.ContactMomentsFragment;
+import com.yzx.chat.module.contact.view.ContactMotionFragment;
 
 /**
  * Created by YZX on 2018年07月15日.

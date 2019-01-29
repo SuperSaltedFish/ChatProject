@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.contract;
+package com.yzx.chat.module.group.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;

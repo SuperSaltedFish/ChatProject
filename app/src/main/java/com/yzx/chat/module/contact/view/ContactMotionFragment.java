@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.view.fragment;
+package com.yzx.chat.module.contact.view;
 
 import android.os.Bundle;
 import android.view.View;

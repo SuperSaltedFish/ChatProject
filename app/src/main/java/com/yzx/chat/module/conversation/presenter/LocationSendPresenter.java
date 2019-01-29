@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.presenter;
+package com.yzx.chat.module.conversation.presenter;
 
 import android.text.TextUtils;
 
@@ -8,7 +8,7 @@ import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.mvp.contract.LocationSendContract;
+import com.yzx.chat.module.conversation.contract.LocationSendContract;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 

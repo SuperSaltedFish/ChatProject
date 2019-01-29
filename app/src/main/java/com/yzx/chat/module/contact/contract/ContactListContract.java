@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.contract;
+package com.yzx.chat.module.contact.contract;
 
 import android.support.v7.util.DiffUtil;
 

@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.view.fragment;
+package com.yzx.chat.module.conversation.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -43,8 +43,8 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.mvp.contract.LocationSendContract;
-import com.yzx.chat.mvp.presenter.LocationSendPresenter;
+import com.yzx.chat.module.conversation.contract.LocationSendContract;
+import com.yzx.chat.module.conversation.presenter.LocationSendPresenter;
 import com.yzx.chat.mvp.view.activity.LocationMapActivity;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.BitmapUtil;

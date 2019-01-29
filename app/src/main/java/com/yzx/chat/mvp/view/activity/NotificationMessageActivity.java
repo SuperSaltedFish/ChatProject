@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.mvp.view.fragment.ContactOperationFragment;
+import com.yzx.chat.module.contact.view.ContactOperationFragment;
 import com.yzx.chat.mvp.view.fragment.SystemMessageFragment;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.view.SegmentedControlView;

@@ -1,7 +1,7 @@
-package com.yzx.chat.mvp.presenter;
+package com.yzx.chat.module.contact.presenter;
 
 import com.yzx.chat.bean.ContactBean;
-import com.yzx.chat.mvp.contract.ContactChatSettingContract;
+import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
 import com.yzx.chat.network.chat.ContactManager;
 import com.yzx.chat.network.chat.IMClient;
 import com.yzx.chat.network.chat.ResultCallback;

@@ -1,11 +1,9 @@
-package com.yzx.chat.mvp.contract;
+package com.yzx.chat.module.contact.contract;
 
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 import com.yzx.chat.bean.ContactBean;
 import com.yzx.chat.bean.ContactRemarkBean;
-
-import java.util.ArrayList;
 
 /**
  * Created by YZX on 2018年07月15日.

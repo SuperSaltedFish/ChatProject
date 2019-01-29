@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.view.activity;
+package com.yzx.chat.module.contact.view;
 
 import android.content.Intent;
 import android.graphics.Color;

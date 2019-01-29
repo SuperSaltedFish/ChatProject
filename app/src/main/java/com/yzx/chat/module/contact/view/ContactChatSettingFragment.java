@@ -1,4 +1,4 @@
-package com.yzx.chat.mvp.view.fragment;
+package com.yzx.chat.module.contact.view;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -21,8 +21,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.bean.ContactRemarkBean;
-import com.yzx.chat.mvp.contract.ContactChatSettingContract;
-import com.yzx.chat.mvp.presenter.ContactChatSettingPresenter;
+import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
+import com.yzx.chat.module.contact.presenter.ContactChatSettingPresenter;
 import com.yzx.chat.mvp.view.activity.RemarkInfoActivity;
 
 import java.util.List;
