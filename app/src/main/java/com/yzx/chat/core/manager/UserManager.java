@@ -8,12 +8,12 @@ import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.UserDao;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.user.UploadAvatarBean;
-import com.yzx.chat.core.net.api.user.UserApi;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.entity.UploadAvatarEntity;
+import com.yzx.chat.core.net.api.UserApi;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.framework.NetworkExecutor;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.Base64Util;
 import com.yzx.chat.util.RSAUtil;
@@ -31,9 +31,9 @@ public class UserManager {
     private String mToken;
     private UserEntity mUserEntity;
     private UserApi mUserApi;
-    private NetworkExecutor mNetworkExecutor;
+    private HttpExecutor mHttpExecutor;
     private Call<JsonResponse<Void>> mUpdateUserProfileCall;
-    private Call<JsonResponse<UploadAvatarBean>> mUploadAvatarCall;
+    private Call<JsonResponse<UploadAvatarEntity>> mUploadAvatarCall;
 
     private UserManager(String token, UserEntity userEntity) {
         if (TextUtils.isEmpty(token) || userEntity == null || userEntity.isEmpty()) {
@@ -42,7 +42,7 @@ public class UserManager {
         mToken = token;
         mUserEntity = userEntity;
         mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
-        mNetworkExecutor = NetworkExecutor.getInstance();
+        mHttpExecutor = HttpExecutor.getInstance();
     }
 
     void destroy() {
@@ -69,15 +69,15 @@ public class UserManager {
                 callback.onFailure(message);
             }
         });
-        mNetworkExecutor.submit(mUpdateUserProfileCall);
+        mHttpExecutor.submit(mUpdateUserProfileCall);
     }
 
-    public void uploadAvatar(String imagePath, final ResultCallback<UploadAvatarBean> callback) {
+    public void uploadAvatar(String imagePath, final ResultCallback<UploadAvatarEntity> callback) {
         AsyncUtil.cancelCall(mUploadAvatarCall);
         mUploadAvatarCall = mUserApi.uploadAvatar(imagePath,null);
-        mUploadAvatarCall.setResponseCallback(new BaseResponseCallback<UploadAvatarBean>() {
+        mUploadAvatarCall.setResponseCallback(new BaseResponseCallback<UploadAvatarEntity>() {
             @Override
-            protected void onSuccess(UploadAvatarBean response) {
+            protected void onSuccess(UploadAvatarEntity response) {
                 mUserEntity.setAvatar(response.getAvatarUrl());
                 callback.onSuccess(response);
             }
@@ -87,7 +87,7 @@ public class UserManager {
                 callback.onFailure(message);
             }
         });
-        mNetworkExecutor.submit(mUploadAvatarCall);
+        mHttpExecutor.submit(mUploadAvatarCall);
     }
 
 

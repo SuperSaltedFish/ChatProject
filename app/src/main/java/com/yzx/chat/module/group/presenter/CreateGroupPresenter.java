@@ -9,7 +9,7 @@ import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
 import com.yzx.chat.core.manager.GroupManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.AndroidUtil;
 
@@ -36,7 +36,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     public void attachView(CreateGroupContract.View view) {
         mCreateGroupView = view;
         mHandler = new Handler();
-        mGroupManager = IMClient.getInstance().getGroupManager();
+        mGroupManager = AppClient.getInstance().getGroupManager();
         mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
     }
 
@@ -65,7 +65,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             stringBuilder.append("、");
             membersID[i] = user.getUserID();
         }
-        stringBuilder.append(IMClient.getInstance().getUserManager().getUser().getNickname()).append("的群聊");
+        stringBuilder.append(AppClient.getInstance().getUserManager().getUser().getNickname()).append("的群聊");
 
         mGroupManager.createGroup(stringBuilder.toString(), membersID, new ResultCallback<Void>() {
             @Override
@@ -122,7 +122,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
         public void onCreatedGroup(GroupEntity group) {
-            if (group.getOwner().equals(IMClient.getInstance().getUserManager().getUserID())) {
+            if (group.getOwner().equals(AppClient.getInstance().getUserManager().getUserID())) {
                 mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
                 isCreating = false;

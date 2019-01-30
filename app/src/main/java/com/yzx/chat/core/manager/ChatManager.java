@@ -1,10 +1,12 @@
 package com.yzx.chat.core.manager;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.DownloadCallback;
-import com.yzx.chat.core.net.chat.IManagerHelper;
 import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.util.LogUtil;
 
@@ -33,15 +35,17 @@ import io.rong.message.VoiceMessage;
 
 public class ChatManager {
 
+    private AppClient mAppClient;
     private RongIMClient mRongIMClient;
-    private IManagerHelper mManagerHelper;
+    private Handler mUIHandler;
     private SendMessageCallbackWrapper mSendMessageCallbackWrapper;
     private Map<OnChatMessageReceiveListener, String> mMessageListenerMap;
     private Map<OnMessageSendListener, String> mMessageSendStateChangeListenerMap;
 
-    ChatManager(IManagerHelper helper) {
-        mManagerHelper = helper;
-        mRongIMClient = RongIMClient.getInstance();
+    ChatManager(AppClient appClient) {
+        mAppClient = appClient;
+        mRongIMClient = mAppClient.getRongIMClient();
+        mUIHandler = new Handler(Looper.getMainLooper());
         mSendMessageCallbackWrapper = new SendMessageCallbackWrapper();
         mMessageListenerMap = new HashMap<>();
         mMessageSendStateChangeListenerMap = new HashMap<>();
@@ -191,7 +195,7 @@ public class ChatManager {
         if (mMessageListenerMap.size() == 0) {
             return;
         }
-        mManagerHelper.runOnUiThread(new Runnable() {
+        mUIHandler.post(new Runnable() {
             @Override
             public void run() {
                 OnChatMessageReceiveListener chatListener;

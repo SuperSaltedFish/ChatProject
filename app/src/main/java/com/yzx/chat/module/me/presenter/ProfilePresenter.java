@@ -1,7 +1,7 @@
 package com.yzx.chat.module.me.presenter;
 
 import com.yzx.chat.module.me.contract.ProfileContract;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 
 /**
  * Created by YZX on 2018年08月18日.
@@ -23,6 +23,6 @@ public class ProfilePresenter implements ProfileContract.Presenter {
 
     @Override
     public void initUserInfo() {
-        mProfileView.showUserInfo(IMClient.getInstance().getUserManager().getUser());
+        mProfileView.showUserInfo(AppClient.getInstance().getUserManager().getUser());
     }
 }

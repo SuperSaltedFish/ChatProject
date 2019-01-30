@@ -1,5 +1,7 @@
 package com.yzx.chat.core.manager;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.text.TextUtils;
 
@@ -8,23 +10,23 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseResponseCallback;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.core.entity.TagEntity;
 import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.core.net.chat.IManagerHelper;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.ContactDao;
 import com.yzx.chat.core.database.ContactOperationDao;
 import com.yzx.chat.core.database.UserDao;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.contact.ContactApi;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.net.api.ContactApi;
 import com.yzx.chat.core.extra.ContactNotificationMessageEx;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.framework.NetworkExecutor;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;
@@ -63,9 +66,12 @@ public class ContactManager {
 
     private static final Set<String> CONTACT_OPERATION_SET = new HashSet<>(Arrays.asList(CONTACT_OPERATION_REQUEST, CONTACT_OPERATION_ACCEPT, CONTACT_OPERATION_REJECT, CONTACT_OPERATION_DELETE));
 
+    private AppClient mAppClient;
+    private RongIMClient mRongIMClient;
+    private Handler mUIHandler;
+
     private Map<String, ContactEntity> mContactsMap;
     private Set<String> mContactTags;
-    private IManagerHelper mManagerHelper;
     private List<OnContactChangeListener> mContactChangeListeners;
     private List<OnContactOperationListener> mContactOperationListeners;
     private List<OnContactOperationUnreadCountChangeListener> mContactOperationUnreadCountChangeListeners;
@@ -76,7 +82,7 @@ public class ContactManager {
     private Gson mGson;
 
     private ContactApi mContactApi;
-    private NetworkExecutor mNetworkExecutor;
+    private HttpExecutor mHttpExecutor;
     private Call<JsonResponse<Void>> mRequestContact;
     private Call<JsonResponse<Void>> mRejectContact;
     private Call<JsonResponse<Void>> mAcceptContact;
@@ -85,18 +91,20 @@ public class ContactManager {
 
     private volatile int mContactOperationUnreadNumber;
 
-    ContactManager(IManagerHelper helper) {
-        mManagerHelper = helper;
-        mContactOperationDao = new ContactOperationDao(mManagerHelper.getReadWriteHelper());
-        mContactDao = new ContactDao(mManagerHelper.getReadWriteHelper());
-        mUserDao = new UserDao(mManagerHelper.getReadWriteHelper());
+    ContactManager(AppClient appClient, AbstractDao.ReadWriteHelper helper) {
+        mAppClient = appClient;
+        mRongIMClient = mAppClient.getRongIMClient();
+        mUIHandler = new Handler(Looper.getMainLooper());
+        mContactOperationDao = new ContactOperationDao(helper);
+        mContactDao = new ContactDao(helper);
+        mUserDao = new UserDao(helper);
         mContactChangeListeners = Collections.synchronizedList(new LinkedList<OnContactChangeListener>());
         mContactOperationListeners = Collections.synchronizedList(new LinkedList<OnContactOperationListener>());
         mContactOperationUnreadCountChangeListeners = Collections.synchronizedList(new LinkedList<OnContactOperationUnreadCountChangeListener>());
         mContactTagChangeListeners = Collections.synchronizedList(new LinkedList<OnContactTagChangeListener>());
         mGson = new GsonBuilder().serializeNulls().create();
         mContactApi = (ContactApi) ApiHelper.getProxyInstance(ContactApi.class);
-        mNetworkExecutor = NetworkExecutor.getInstance();
+        mHttpExecutor = HttpExecutor.getInstance();
         mContactsMap = new HashMap<>(256);
         mContactTags = mContactDao.getAllTagsType();
         List<ContactEntity> contacts = mContactDao.loadAllContacts();
@@ -141,7 +149,7 @@ public class ContactManager {
                 operation.setType(ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE);
                 operation.setRemind(false);
                 if (mContactOperationDao.replace(operation) & mUserDao.replace(user)) {
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
@@ -161,7 +169,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mManagerHelper.runOnUiThread(new Runnable() {
+                mUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -171,7 +179,7 @@ public class ContactManager {
                 });
             }
         }, false);
-        mNetworkExecutor.submit(mRequestContact);
+        mHttpExecutor.submit(mRequestContact);
     }
 
     public void refusedContact(final ContactOperationEntity contactOperation, final String reason, final ResultCallback<Void> resultCallback) {
@@ -185,7 +193,7 @@ public class ContactManager {
                 contactOperation.setType(ContactManager.CONTACT_OPERATION_REJECT_ACTIVE);
                 contactOperation.setRemind(false);
                 if (mContactOperationDao.replace(contactOperation)) {
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
@@ -204,7 +212,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mManagerHelper.runOnUiThread(new Runnable() {
+                mUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -214,7 +222,7 @@ public class ContactManager {
                 });
             }
         }, false);
-        mNetworkExecutor.submit(mRejectContact);
+        mHttpExecutor.submit(mRejectContact);
     }
 
     public void acceptContact(final ContactOperationEntity contactOperation, final ResultCallback<Void> resultCallback) {
@@ -233,7 +241,7 @@ public class ContactManager {
                 contact.setRemark(new ContactRemarkEntity());
 
                 if (mContactOperationDao.replace(contactOperation) & addContactToDB(contact)) {
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactOperationListener listener : mContactOperationListeners) {
@@ -252,7 +260,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mManagerHelper.runOnUiThread(new Runnable() {
+                mUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -262,7 +270,7 @@ public class ContactManager {
                 });
             }
         }, false);
-        mNetworkExecutor.submit(mAcceptContact);
+        mHttpExecutor.submit(mAcceptContact);
     }
 
     public void deleteContact(final ContactEntity contact, final ResultCallback<Void> resultCallback) {
@@ -272,7 +280,7 @@ public class ContactManager {
             @Override
             protected void onSuccess(Void response) {
                 if (deleteContactFromDB(contact)) {
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (resultCallback != null) {
@@ -288,7 +296,7 @@ public class ContactManager {
 
             @Override
             protected void onFailure(final String message) {
-                mManagerHelper.runOnUiThread(new Runnable() {
+                mUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (resultCallback != null) {
@@ -298,7 +306,7 @@ public class ContactManager {
                 });
             }
         }, false);
-        mNetworkExecutor.submit(mDeleteContact);
+        mHttpExecutor.submit(mDeleteContact);
     }
 
     private boolean addContactToDB(final ContactEntity contact) {
@@ -310,11 +318,11 @@ public class ContactManager {
             ContactNotificationMessage messageContent = ContactNotificationMessage.obtain(CONTACT_OPERATION_ACCEPT_ACTIVE, extra.userProfile.getUserID(), extra.userProfile.getUserID(), "");
             messageContent.setExtra(mGson.toJson(extra));
             Message hintMessage = Message.obtain(extra.userProfile.getUserID(), Conversation.ConversationType.PRIVATE, messageContent);
-            hintMessage.setSenderUserId(mManagerHelper.getUserManager().getUserID());
+            hintMessage.setSenderUserId(mAppClient.getUserManager().getUserID());
             hintMessage.setSentTime(System.currentTimeMillis());
             hintMessage.setReceivedStatus(new Message.ReceivedStatus(1));
-            mManagerHelper.getChatManager().insertIncomingMessage(hintMessage);
-            mManagerHelper.runOnUiThread(new Runnable() {
+            mAppClient.getChatManager().insertIncomingMessage(hintMessage);
+            mUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -331,8 +339,8 @@ public class ContactManager {
         if (mContactDao.delete(contact)) {
             UserEntity user = contact.getUserProfile();
             mContactsMap.remove(user.getUserID());
-            mManagerHelper.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.PRIVATE, user.getUserID());
-            mManagerHelper.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, user.getUserID());
+            mAppClient.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.PRIVATE, user.getUserID());
+            mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, user.getUserID());
             ContactOperationEntity contactOperation = mContactOperationDao.loadByKey(user.getUserID());
             if (contactOperation != null) {
                 boolean needUpdate = contactOperation.isRemind();
@@ -343,7 +351,7 @@ public class ContactManager {
                     updateContactUnreadCount();
                 }
             }
-            mManagerHelper.runOnUiThread(new Runnable() {
+            mUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -367,8 +375,8 @@ public class ContactManager {
                 UserEntity user = contact.getUserProfile();
                 if (mContactDao.update(contact) & mUserDao.update(user)) {
                     mContactsMap.put(user.getUserID(), contact);
-                    mManagerHelper.getConversationManager().updateConversationTitle(Conversation.ConversationType.PRIVATE, user.getUserID(), contact.getName());
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mAppClient.getConversationManager().updateConversationTitle(Conversation.ConversationType.PRIVATE, user.getUserID(), contact.getName());
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -391,7 +399,7 @@ public class ContactManager {
             protected void onFailure(final String message) {
                 contact.getRemark().setUploadFlag(1);
                 if (mContactDao.update(contact) & mUserDao.update(contact.getUserProfile())) {
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             for (OnContactChangeListener listener : mContactChangeListeners) {
@@ -403,7 +411,7 @@ public class ContactManager {
                         }
                     });
                 } else {
-                    mManagerHelper.runOnUiThread(new Runnable() {
+                    mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (resultCallback != null) {
@@ -414,7 +422,7 @@ public class ContactManager {
                 }
             }
         }, false);
-        mNetworkExecutor.submit(mUpdateContact);
+        mHttpExecutor.submit(mUpdateContact);
     }
 
     public Set<String> getAllTags() {
@@ -455,7 +463,7 @@ public class ContactManager {
     }
 
     void updateContactUnreadCount() {
-        mManagerHelper.runOnUiThread(new Runnable() {
+        mUIHandler.post(new Runnable() {
             @Override
             public void run() {
                 int count = mContactOperationDao.loadRemindCount();
@@ -470,7 +478,7 @@ public class ContactManager {
     }
 
     public void makeAllContactOperationAsRead() {
-        mManagerHelper.runOnWorkThread(new Runnable() {
+        mUIHandler.post(new Runnable() {
             @Override
             public void run() {
                 mContactOperationDao.makeAllRemindAsRemind();
@@ -483,7 +491,7 @@ public class ContactManager {
 
 
     public void removeContactOperationAsync(final ContactOperationEntity contactMessage) {
-        mManagerHelper.runOnWorkThread(new Runnable() {
+        mUIHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (mContactOperationDao.delete(contactMessage)) {
@@ -652,7 +660,7 @@ public class ContactManager {
                 LogUtil.e("update contact operation fail");
                 return;
             }
-            mManagerHelper.runOnUiThread(new Runnable() {
+            mUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     for (OnContactOperationListener contactListener : mContactOperationListeners) {
@@ -666,7 +674,7 @@ public class ContactManager {
                 LogUtil.e("insert contact operation fail");
                 return;
             }
-            mManagerHelper.runOnUiThread(new Runnable() {
+            mUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     for (OnContactOperationListener contactListener : mContactOperationListeners) {

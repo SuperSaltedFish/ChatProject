@@ -3,8 +3,8 @@ package com.yzx.chat.base;
 import android.support.annotation.NonNull;
 
 import com.yzx.chat.R;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.framework.HttpRequest;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.net.framework.Executor.HttpRequest;
 import com.yzx.chat.core.net.framework.NetworkUnavailableException;
 import com.yzx.chat.core.net.framework.ResponseCallback;
 import com.yzx.chat.core.net.framework.HttpResponse;

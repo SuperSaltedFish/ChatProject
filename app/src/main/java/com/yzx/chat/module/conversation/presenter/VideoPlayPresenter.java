@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.yzx.chat.R;
 import com.yzx.chat.module.conversation.contract.VideoPlayContract;
 import com.yzx.chat.core.listener.DownloadCallback;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 
@@ -29,7 +29,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     public void detachView() {
         mVideoPlayView = null;
         if (mCurrentDownloadMessage != null) {
-            IMClient.getInstance().getChatManager().cancelDownloadMediaContent(mCurrentDownloadMessage);
+            AppClient.getInstance().getChatManager().cancelDownloadMediaContent(mCurrentDownloadMessage);
         }
     }
 
@@ -37,7 +37,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     public void downloadVideo(Message message) {
         mCurrentDownloadMessage = message;
         mVideoPlayView.setEnableProgressDialog(true);
-        IMClient.getInstance().getChatManager().downloadMediaContent(message, new DownloadCallback() {
+        AppClient.getInstance().getChatManager().downloadMediaContent(message, new DownloadCallback() {
             @Override
             public void onSuccess(Message message, Uri localUri) {
                 mCurrentDownloadMessage = null;

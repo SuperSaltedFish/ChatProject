@@ -2,7 +2,7 @@ package com.yzx.chat.module.contact.presenter;
 
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -28,12 +28,12 @@ public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
     @Override
     public void save(ContactEntity contact) {
-        IMClient.getInstance().getContactManager().updateContactRemark(contact, null);
+        AppClient.getInstance().getContactManager().updateContactRemark(contact, null);
     }
 
     @Override
     public ArrayList<String> getAllTags() {
-        Set<String> tags = IMClient.getInstance().getContactManager().getAllTags();
+        Set<String> tags = AppClient.getInstance().getContactManager().getAllTags();
         if (tags != null && tags.size() > 0) {
             return new ArrayList<>(tags);
         } else {

@@ -10,7 +10,7 @@ import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.group.contract.GroupProfileContract;
 import com.yzx.chat.core.manager.ConversationManager;
 import com.yzx.chat.core.manager.GroupManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
@@ -33,8 +33,8 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     @Override
     public void attachView(GroupProfileContract.View view) {
         mGroupProfileView = view;
-        mGroupManager = IMClient.getInstance().getGroupManager();
-        mConversationManager = IMClient.getInstance().getConversationManager();
+        mGroupManager = AppClient.getInstance().getGroupManager();
+        mConversationManager = AppClient.getInstance().getConversationManager();
         mHandler = new Handler();
         mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
     }
@@ -51,7 +51,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     @Override
     public void init(String groupID) {
         GroupEntity group = mGroupManager.getGroup(groupID);
-        String mySelfMemberID = IMClient.getInstance().getUserManager().getUserID();
+        String mySelfMemberID = AppClient.getInstance().getUserManager().getUserID();
         if (group == null || TextUtils.isEmpty(mySelfMemberID)) {
             mGroupProfileView.goBack();
             return;
@@ -91,7 +91,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public String getCurrentUserID() {
-        return IMClient.getInstance().getUserManager().getUserID();
+        return AppClient.getInstance().getUserManager().getUserID();
     }
 
 
@@ -181,7 +181,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public boolean isMySelf(String userID) {
-        return userID.equals(IMClient.getInstance().getUserManager().getUserID());
+        return userID.equals(AppClient.getInstance().getUserManager().getUserID());
     }
 
     @Override

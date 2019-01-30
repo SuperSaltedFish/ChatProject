@@ -3,7 +3,7 @@ package com.yzx.chat.module.contact.presenter;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 
 /**
@@ -29,13 +29,13 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void requestContact(final UserEntity user, final String verifyContent) {
-        IMClient.getInstance().getContactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
+        AppClient.getInstance().getContactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
     }
 
     @Override
     public void acceptContactRequest(ContactOperationEntity contactOperation) {
         mStrangerProfileView.setEnableProgressDialog(true);
-        IMClient.getInstance().getContactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
+        AppClient.getInstance().getContactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
     }
 
     private final ResultCallback<Void> mAcceptOrRequestCallback = new ResultCallback<Void>() {

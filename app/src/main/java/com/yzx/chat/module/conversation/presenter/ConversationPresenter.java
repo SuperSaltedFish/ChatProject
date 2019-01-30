@@ -13,7 +13,7 @@ import com.yzx.chat.module.conversation.contract.ConversationContract;
 import com.yzx.chat.core.manager.ChatManager;
 import com.yzx.chat.core.manager.ConversationManager;
 import com.yzx.chat.core.manager.GroupManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
@@ -37,7 +37,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private RefreshAllConversationTask mRefreshTask;
     private List<Conversation> mConversationList;
-    private IMClient mIMClient;
+    private AppClient mAppClient;
     private Handler mHandler;
 
     private boolean isOnceSentMessage;
@@ -47,22 +47,22 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mConversationList = new ArrayList<>(64);
         mHandler = new Handler();
-        mIMClient = IMClient.getInstance();
-        mIMClient.addConnectionListener(mOnConnectionStateChangeListener);
-        mIMClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, null);
-        mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
-        mIMClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
-        mIMClient.getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
+        mAppClient = AppClient.getInstance();
+        mAppClient.addConnectionListener(mOnConnectionStateChangeListener);
+        mAppClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, null);
+        mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mAppClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        mAppClient.getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
-        mIMClient.removeConnectionListener(mOnConnectionStateChangeListener);
-        mIMClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
-        mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
-        mIMClient.getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
+        mAppClient.removeConnectionListener(mOnConnectionStateChangeListener);
+        mAppClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
+        mAppClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mAppClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
+        mAppClient.getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
         mConversationList.clear();
         mConversationList = null;
         mConversationView = null;
@@ -89,23 +89,23 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void setConversationTop(Conversation conversation, boolean isTop) {
-        mIMClient.getConversationManager().setConversationTop(conversation.getConversationType(), conversation.getTargetId(), isTop);
+        mAppClient.getConversationManager().setConversationTop(conversation.getConversationType(), conversation.getTargetId(), isTop);
     }
 
 
     @Override
     public void deleteConversation(Conversation conversation) {
-        mIMClient.getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId());
+        mAppClient.getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId());
     }
 
     @Override
     public void clearConversationMessages(Conversation conversation) {
-        mIMClient.getConversationManager().clearAllConversationMessages(conversation.getConversationType(), conversation.getTargetId());
+        mAppClient.getConversationManager().clearAllConversationMessages(conversation.getConversationType(), conversation.getTargetId());
     }
 
     @Override
     public boolean isConnectedToServer() {
-        return mIMClient.isConnected();
+        return mAppClient.isConnected();
     }
 
 
@@ -113,7 +113,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView.updateConversationsFromUI(diffResult, mConversationList);
     }
 
-    private final IMClient.OnConnectionStateChangeListener mOnConnectionStateChangeListener = new IMClient.OnConnectionStateChangeListener() {
+    private final AppClient.OnConnectionStateChangeListener mOnConnectionStateChangeListener = new AppClient.OnConnectionStateChangeListener() {
         private boolean isConnected = true;
 
         @Override
@@ -240,7 +240,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         @Override
         protected DiffUtil.DiffResult doInBackground(List<Conversation>[] oldConversation) {
             synchronized (ConversationPresenter.class) {
-                IMClient chatManager = IMClient.getInstance();
+                AppClient chatManager = AppClient.getInstance();
                 List<Conversation> oldConversationList = oldConversation[0];
                 List<Conversation> newConversationList = chatManager.getConversationManager().getAllConversations();
                 if (newConversationList != null) {
@@ -260,7 +260,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                                     conversation.setConversationTitle(contactEntity.getName());
                                     conversation.setPortraitUrl(contactEntity.getUserProfile().getAvatar());
                                 } else {
-                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
+                                    AppClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;
@@ -270,7 +270,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                                     conversation.setConversationTitle(group.getName());
                                     conversation.setPortraitUrl(group.getAvatarUrlFromMembers());
                                 } else {
-                                    IMClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
+                                    AppClient.getInstance().getConversationManager().removeConversation(conversation.getConversationType(), conversation.getTargetId(), false);
                                     it.remove();
                                 }
                                 break;

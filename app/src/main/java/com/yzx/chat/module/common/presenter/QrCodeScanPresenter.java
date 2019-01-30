@@ -12,14 +12,14 @@ import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.QRCodeContentEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.common.contract.QrCodeScanContract;
-import com.yzx.chat.core.net.api.Group.GroupApi;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.user.UserApi;
+import com.yzx.chat.core.net.api.GroupApi;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.net.api.UserApi;
 import com.yzx.chat.core.manager.GroupManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
@@ -44,7 +44,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     public void attachView(QrCodeScanContract.View view) {
         mQrCodeView = view;
         mHandler = new Handler();
-        mGroupManager = IMClient.getInstance().getGroupManager();
+        mGroupManager = AppClient.getInstance().getGroupManager();
         mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
         mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
         mGson = ApiHelper.getDefaultGsonInstance();
@@ -63,7 +63,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     @Override
     public void decodeQRCodeContent(String content, boolean isAlreadyDeciphered) {
         if (!isAlreadyDeciphered) {
-            byte[] data = IMClient.getInstance().getCryptoManager().aesDecryptFromBase64String(content);
+            byte[] data = AppClient.getInstance().getCryptoManager().aesDecryptFromBase64String(content);
             if (data == null || data.length == 0) {
                 content = null;
             } else {
@@ -107,7 +107,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     private void joinGroup(String groupID) {
         mHandler.removeCallbacksAndMessages(null);
         isWaitJoiningPush = true;
-        IMClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new ResultCallback<Void>() {
+        AppClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 if (isWaitJoiningPush) {
@@ -137,7 +137,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
             @Override
             protected void onSuccess(UserEntity response) {
                 mQrCodeView.setEnableProgressDialog(false);
-                if (IMClient.getInstance().getContactManager().getContact(response.getUserID()) != null) {
+                if (AppClient.getInstance().getContactManager().getContact(response.getUserID()) != null) {
                     mQrCodeView.startContactProfileActivity(response.getUserID());
                 } else {
                     mQrCodeView.startStrangerProfileActivity(response);
@@ -186,7 +186,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
         @Override
         public void onMemberJoin(GroupEntity group, String memberID) {
-            if (memberID.equals(IMClient.getInstance().getUserManager().getUserID()) && isWaitJoiningPush) {
+            if (memberID.equals(AppClient.getInstance().getUserManager().getUserID()) && isWaitJoiningPush) {
                 isWaitJoiningPush = false;
                 mHandler.removeCallbacksAndMessages(null);
                 mQrCodeView.setEnableProgressDialog(false);
@@ -221,7 +221,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
             if (TextUtils.isEmpty(content)) {
                 return "";
             }
-            byte[] data = IMClient.getInstance().getCryptoManager().aesDecryptFromBase64String(content);
+            byte[] data = AppClient.getInstance().getCryptoManager().aesDecryptFromBase64String(content);
             if (data == null || data.length == 0) {
                 return null;
             }

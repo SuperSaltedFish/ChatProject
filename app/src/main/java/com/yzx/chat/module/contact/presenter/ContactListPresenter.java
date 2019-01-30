@@ -6,7 +6,7 @@ import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
 import com.yzx.chat.core.manager.ContactManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.AsyncUtil;
@@ -28,24 +28,24 @@ public class ContactListPresenter implements ContactListContract.Presenter {
     private RefreshAllContactsTask mRefreshContactsTask;
     private List<ContactEntity> mContactList;
 
-    private IMClient mIMClient;
+    private AppClient mAppClient;
 
 
     @Override
     public void attachView(ContactListContract.View view) {
         mContactView = view;
-        mIMClient = IMClient.getInstance();
+        mAppClient = AppClient.getInstance();
         mContactList = new ArrayList<>(128);
-        mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
-        mIMClient.getContactManager().addContactTagChangeListener(mOnContactTagChangeListener);
+        mAppClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
+        mAppClient.getContactManager().addContactTagChangeListener(mOnContactTagChangeListener);
     }
 
     @Override
     public void detachView() {
-        mIMClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
-        mIMClient.getContactManager().removeContactTagChangeListener(mOnContactTagChangeListener);
+        mAppClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mAppClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
+        mAppClient.getContactManager().removeContactTagChangeListener(mOnContactTagChangeListener);
         AsyncUtil.cancelTask(mRefreshContactsTask);
         mContactView = null;
         mContactList.clear();
@@ -54,7 +54,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     @Override
     public void loadUnreadCount() {
-        mContactView.updateUnreadBadge(mIMClient.getContactManager().getContactUnreadCount());
+        mContactView.updateUnreadBadge(mAppClient.getContactManager().getContactUnreadCount());
     }
 
     @SuppressWarnings("unchecked")
@@ -69,7 +69,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
     @Override
     public void loadTagCount() {
-        Set<String> tags = mIMClient.getContactManager().getAllTags();
+        Set<String> tags = mAppClient.getContactManager().getAllTags();
         mContactView.showTagCount(tags == null ? 0 : tags.size());
     }
 
@@ -133,7 +133,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
 
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ContactEntity>[] lists) {
-            List<ContactEntity> newList = IMClient.getInstance().getContactManager().getAllContacts();
+            List<ContactEntity> newList = AppClient.getInstance().getContactManager().getAllContacts();
             List<ContactEntity> oldList = lists[0];
 
             Collections.sort(newList, new Comparator<ContactEntity>() {

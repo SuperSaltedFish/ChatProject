@@ -2,8 +2,8 @@ package com.yzx.chat.module.me.presenter;
 
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.ProfileEditContract;
-import com.yzx.chat.core.net.api.user.UploadAvatarBean;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.entity.UploadAvatarEntity;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.LogUtil;
 
@@ -31,13 +31,13 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
 
     @Override
     public UserEntity getUserInfo() {
-        return IMClient.getInstance().getUserManager().getUser();
+        return AppClient.getInstance().getUserManager().getUser();
     }
 
     @Override
     public void updateProfile(final UserEntity user) {
         mProfileModifyView.setEnableProgressDialog(true);
-        IMClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new ResultCallback<Void>() {
+        AppClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 mProfileModifyView.setEnableProgressDialog(false);
@@ -61,9 +61,9 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
     @Override
     public void uploadAvatar(final String avatarPath) {
         mProfileModifyView.setEnableProgressDialog(true);
-        IMClient.getInstance().getUserManager().uploadAvatar(avatarPath, new ResultCallback<UploadAvatarBean>() {
+        AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new ResultCallback<UploadAvatarEntity>() {
             @Override
-            public void onSuccess(UploadAvatarBean result) {
+            public void onSuccess(UploadAvatarEntity result) {
                 deleteFile(avatarPath);
                 mProfileModifyView.setEnableProgressDialog(false);
                 mProfileModifyView.showNewAvatar(result.getAvatarUrl());

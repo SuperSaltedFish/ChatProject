@@ -38,7 +38,7 @@ public class SettingFragment extends BaseFragment {
 //                LogUtil.e("onFailure");
 //            }
 //        });
-//        NetworkExecutor.getInstance().submit(task);
+//        HttpExecutor.getInstance().submit(task);
 //
 //            }
 //        });

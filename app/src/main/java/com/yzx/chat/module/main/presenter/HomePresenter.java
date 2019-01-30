@@ -12,7 +12,7 @@ import com.yzx.chat.module.contact.view.NotificationMessageActivity;
 import com.yzx.chat.core.manager.ChatManager;
 import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.core.manager.ConversationManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.extra.ContactNotificationMessageEx;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
@@ -29,38 +29,38 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View mHomeView;
     private Handler mHandler;
-    private IMClient mIMClient;
+    private AppClient mAppClient;
 
     @Override
     public void attachView(HomeContract.View view) {
         mHomeView = view;
         mHandler = new Handler();
-        mIMClient = IMClient.getInstance();
-        mIMClient.getConversationManager().addConversationUnreadCountListener(mOnConversationUnreadCountListener);
-        mIMClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
-        mIMClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
-        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
+        mAppClient = AppClient.getInstance();
+        mAppClient.getConversationManager().addConversationUnreadCountListener(mOnConversationUnreadCountListener);
+        mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
+        mAppClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mAppClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
+        mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
     public void detachView() {
-        mIMClient.getConversationManager().removeConversationUnreadCountListener(mOnConversationUnreadCountListener);
-        mIMClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
-        mIMClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
-        mIMClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
-        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
+        mAppClient.getConversationManager().removeConversationUnreadCountListener(mOnConversationUnreadCountListener);
+        mAppClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
+        mAppClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
+        mAppClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
+        mAppClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
-        mIMClient = null;
+        mAppClient = null;
         mHandler = null;
     }
 
 
     @Override
     public void loadUnreadCount() {
-        mHomeView.updateMessageUnreadBadge(mIMClient.getConversationManager().getConversationUnreadCount());
-        mHomeView.updateContactUnreadBadge(mIMClient.getContactManager().getContactUnreadCount());
+        mHomeView.updateMessageUnreadBadge(mAppClient.getConversationManager().getConversationUnreadCount());
+        mHomeView.updateContactUnreadBadge(mAppClient.getContactManager().getContactUnreadCount());
     }
 
     private final ConversationManager.OnConversationUnreadCountListener mOnConversationUnreadCountListener = new ConversationManager.OnConversationUnreadCountListener() {
@@ -89,13 +89,13 @@ public class HomePresenter implements HomeContract.Presenter {
                 public void run() {
                     switch (message.getConversationType()) {
                         case PRIVATE:
-                            ContactEntity contact = IMClient.getInstance().getContactManager().getContact(message.getTargetId());
+                            ContactEntity contact = AppClient.getInstance().getContactManager().getContact(message.getTargetId());
                             if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
                                 NotificationHelper.getInstance().showPrivateMessageNotification(message, contact,!AndroidUtil.isAppForeground());
                             }
                             break;
                         case GROUP:
-                            GroupEntity group = IMClient.getInstance().getGroupManager().getGroup(message.getTargetId());
+                            GroupEntity group = AppClient.getInstance().getGroupManager().getGroup(message.getTargetId());
                             if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
                                 NotificationHelper.getInstance().showGroupMessageNotification(message, group,!AndroidUtil.isAppForeground());
                             }

@@ -8,7 +8,7 @@ import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
 import com.yzx.chat.core.manager.ContactManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AsyncUtil;
@@ -29,7 +29,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     private ContactOperationContract.View mContactOperationContractView;
     private LoadAllContactOperationTask mLoadAllContactOperationTask;
     private List<ContactOperationEntity> mContactOperationList;
-    private IMClient mIMClient;
+    private AppClient mAppClient;
     private Handler mHandler;
 
     @Override
@@ -37,23 +37,23 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mContactOperationContractView = view;
         mContactOperationList = new ArrayList<>(32);
         mHandler = new Handler();
-        mIMClient = IMClient.getInstance();
-        mIMClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
+        mAppClient = AppClient.getInstance();
+        mAppClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
     }
 
     @Override
     public void detachView() {
         AsyncUtil.cancelTask(mLoadAllContactOperationTask);
-        mIMClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
+        mAppClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
         mContactOperationContractView = null;
-        mIMClient = null;
+        mAppClient = null;
     }
 
     @Override
     public void init() {
-        mIMClient.getContactManager().makeAllContactOperationAsRead();
+        mAppClient.getContactManager().makeAllContactOperationAsRead();
         loadAllContactOperation();
         NotificationHelper.getInstance().cancelAllContactOperationNotification();
     }
@@ -61,7 +61,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @Override
     public void acceptContactRequest(final ContactOperationEntity contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
-        mIMClient.getContactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
+        mAppClient.getContactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
@@ -78,7 +78,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
     @Override
     public void refusedContactRequest(ContactOperationEntity contactOperation) {
         mContactOperationContractView.setEnableProgressDialog(true);
-        mIMClient.getContactManager().refusedContact(contactOperation, "", new ResultCallback<Void>() {
+        mAppClient.getContactManager().refusedContact(contactOperation, "", new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
@@ -94,7 +94,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void removeContactOperation(ContactOperationEntity ContactOperation) {
-        mIMClient.getContactManager().removeContactOperationAsync(ContactOperation);
+        mAppClient.getContactManager().removeContactOperationAsync(ContactOperation);
     }
 
     @SuppressWarnings("unchecked")
@@ -107,7 +107,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public ContactEntity findContact(String userID) {
-        return mIMClient.getContactManager().getContact(userID);
+        return mAppClient.getContactManager().getContact(userID);
     }
 
 
@@ -119,7 +119,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         public void onContactOperationReceive(final ContactOperationEntity message) {
-            mIMClient.getContactManager().makeAllContactOperationAsRead();
+            mAppClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -137,7 +137,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         public void onContactOperationUpdate(final ContactOperationEntity message) {
-            mIMClient.getContactManager().makeAllContactOperationAsRead();
+            mAppClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -154,7 +154,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
         @Override
         public void onContactOperationRemove(final ContactOperationEntity message) {
-            mIMClient.getContactManager().makeAllContactOperationAsRead();
+            mAppClient.getContactManager().makeAllContactOperationAsRead();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -177,7 +177,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         @Override
         protected DiffUtil.DiffResult doInBackground(List<ContactOperationEntity>[] lists) {
             List<ContactOperationEntity> oldList = lists[0];
-            List<ContactOperationEntity> newList = IMClient.getInstance().getContactManager().loadAllContactOperation();
+            List<ContactOperationEntity> newList = AppClient.getInstance().getContactManager().loadAllContactOperation();
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCalculate<ContactOperationEntity>(lists[0], newList) {
                 @Override
                 public boolean isItemEquals(ContactOperationEntity oldItem, ContactOperationEntity newItem) {

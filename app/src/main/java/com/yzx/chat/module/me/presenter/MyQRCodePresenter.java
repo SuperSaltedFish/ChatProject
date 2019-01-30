@@ -10,14 +10,14 @@ import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.QRCodeContentEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.MyQRCodeContract;
-import com.yzx.chat.core.net.api.Group.GetTempGroupID;
-import com.yzx.chat.core.net.api.Group.GroupApi;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.user.GetTempUserID;
-import com.yzx.chat.core.net.api.user.UserApi;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.entity.GetTempGroupIDEntity;
+import com.yzx.chat.core.net.api.GroupApi;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.entity.GetTempUserIDEntity;
+import com.yzx.chat.core.net.api.UserApi;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
@@ -33,8 +33,8 @@ import com.yzx.chat.util.MD5Util;
 public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
     private MyQRCodeContract.View mMyQRCodeActivityView;
-    private Call<JsonResponse<GetTempUserID>> mGetTempUserIDCall;
-    private Call<JsonResponse<GetTempGroupID>> mGetTempGroupIDCall;
+    private Call<JsonResponse<GetTempUserIDEntity>> mGetTempUserIDCall;
+    private Call<JsonResponse<GetTempGroupIDEntity>> mGetTempGroupIDCall;
     private UserApi mUserApi;
     private GroupApi mGroupApi;
     private Gson mGson;
@@ -58,7 +58,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
     @Override
     public UserEntity getUserInfo() {
-        return IMClient.getInstance().getUserManager().getUser();
+        return AppClient.getInstance().getUserManager().getUser();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
         if (TextUtils.isEmpty(groupID)) {
             return null;
         }
-        return IMClient.getInstance().getGroupManager().getGroup(groupID);
+        return AppClient.getInstance().getGroupManager().getGroup(groupID);
     }
 
     @Override
@@ -78,14 +78,14 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
         mMyQRCodeActivityView.setEnableProgressBar(true);
         AsyncUtil.cancelCall(mGetTempUserIDCall);
         mGetTempUserIDCall = mUserApi.getTempUserID();
-        mGetTempUserIDCall.setResponseCallback(new BaseResponseCallback<GetTempUserID>() {
+        mGetTempUserIDCall.setResponseCallback(new BaseResponseCallback<GetTempUserIDEntity>() {
             @Override
-            protected void onSuccess(GetTempUserID response) {
+            protected void onSuccess(GetTempUserIDEntity response) {
                 mMyQRCodeActivityView.setEnableProgressBar(false);
                 isUpdating = false;
                 String id = response.getTempUserID();
                 if (!TextUtils.isEmpty(id)) {
-                    id = IMClient.getInstance().getCryptoManager().aesEncryptToBase64(id.getBytes());
+                    id = AppClient.getInstance().getCryptoManager().aesEncryptToBase64(id.getBytes());
                     if (!TextUtils.isEmpty(id)) {
                         QRCodeContentEntity qrCodeContent = new QRCodeContentEntity();
                         qrCodeContent.setId(id);
@@ -127,9 +127,9 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
         mMyQRCodeActivityView.setEnableProgressBar(true);
         AsyncUtil.cancelCall(mGetTempGroupIDCall);
         mGetTempGroupIDCall = mGroupApi.getTempGroupID(groupID);
-        mGetTempGroupIDCall.setResponseCallback(new BaseResponseCallback<GetTempGroupID>() {
+        mGetTempGroupIDCall.setResponseCallback(new BaseResponseCallback<GetTempGroupIDEntity>() {
             @Override
-            protected void onSuccess(GetTempGroupID response) {
+            protected void onSuccess(GetTempGroupIDEntity response) {
                 mMyQRCodeActivityView.setEnableProgressBar(false);
                 isUpdating = false;
                 String id = response.getTempGroupID();
@@ -138,7 +138,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                     qrCodeContent.setId(id);
                     qrCodeContent.setType(QRCodeContentEntity.TYPE_GROUP);
                     String content = mGson.toJson(qrCodeContent);
-                    content = IMClient.getInstance().getCryptoManager().aesEncryptToBase64(content.getBytes());
+                    content = AppClient.getInstance().getCryptoManager().aesEncryptToBase64(content.getBytes());
                     if (!TextUtils.isEmpty(content)) {
                         mMyQRCodeActivityView.showQRCode(content);
                         return;

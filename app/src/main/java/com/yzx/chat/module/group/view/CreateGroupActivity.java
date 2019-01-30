@@ -22,7 +22,7 @@ import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.group.presenter.CreateGroupPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
@@ -76,7 +76,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mTvIndexBarHint = findViewById(R.id.CreateGroupActivity_mTvIndexBarHint);
         mHeaderView = getLayoutInflater().inflate(R.layout.item_create_group_header, (ViewGroup) getWindow().getDecorView(), false);
         mFlowLayout = mHeaderView.findViewById(R.id.CreateGroupActivity_mFlowLayout);
-        mAllContactList = IMClient.getInstance().getContactManager().getAllContacts();
+        mAllContactList = AppClient.getInstance().getContactManager().getAllContacts();
         if (mAllContactList == null) {
             return;
         }

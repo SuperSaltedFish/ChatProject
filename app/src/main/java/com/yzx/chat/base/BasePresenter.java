@@ -1,7 +1,7 @@
 package com.yzx.chat.base;
 
 
-import com.yzx.chat.core.net.framework.NetworkExecutor;
+import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
 
 /**
  * Created by YZX on 2017年10月18日.
@@ -11,7 +11,7 @@ import com.yzx.chat.core.net.framework.NetworkExecutor;
 
 public interface BasePresenter<V extends BaseView> {
 
-    NetworkExecutor sHttpExecutor = NetworkExecutor.getInstance();
+    HttpExecutor sHttpExecutor = HttpExecutor.getInstance();
 
     void attachView(V v);
 

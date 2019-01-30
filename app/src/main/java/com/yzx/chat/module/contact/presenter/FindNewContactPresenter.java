@@ -5,12 +5,12 @@ import android.os.Handler;
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.FindNewContactContract;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.user.SearchUserBean;
-import com.yzx.chat.core.net.api.user.UserApi;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.entity.SearchUserEntity;
+import com.yzx.chat.core.net.api.UserApi;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AsyncUtil;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
 
     private FindNewContactContract.View mFindNewContactContractView;
 
-    private Call<JsonResponse<SearchUserBean>> mSearchUserCall;
+    private Call<JsonResponse<SearchUserEntity>> mSearchUserCall;
     private UserApi mUserApi;
     private Handler mHandler;
 
@@ -54,15 +54,15 @@ public class FindNewContactPresenter implements FindNewContactContract.Presenter
         isSearching = true;
         AsyncUtil.cancelCall(mSearchUserCall);
         mSearchUserCall = mUserApi.searchUser(nicknameOrTelephone);
-        mSearchUserCall.setResponseCallback(new BaseResponseCallback<SearchUserBean>() {
+        mSearchUserCall.setResponseCallback(new BaseResponseCallback<SearchUserEntity>() {
             @Override
-            protected void onSuccess(SearchUserBean response) {
+            protected void onSuccess(SearchUserEntity response) {
                 List<UserEntity> userList = response.getUserList();
                 if (userList == null || userList.size() == 0) {
                     mFindNewContactContractView.searchNotExist();
                 } else {
                     UserEntity user = userList.get(0);
-                    mFindNewContactContractView.searchSuccess(user, IMClient.getInstance().getContactManager().getContact(user.getUserID()) != null);
+                    mFindNewContactContractView.searchSuccess(user, AppClient.getInstance().getContactManager().getContact(user.getUserID()) != null);
                 }
                 isSearching = false;
 

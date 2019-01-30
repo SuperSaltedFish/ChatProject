@@ -1,5 +1,9 @@
 package com.yzx.chat.core.manager;
 
+import android.os.Handler;
+import android.os.Looper;
+
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.LogUtil;
 
@@ -29,14 +33,19 @@ public class ConversationManager {
     public static final int UPDATE_TYPE_NOTIFICATION_CHANGE = 6;
     public static final int UPDATE_TYPE_UPDATE = 7;
 
+    private AppClient mAppClient;
     private RongIMClient mRongIMClient;
+    private Handler mUIHandler;
 
     private List<OnConversationStateChangeListener> mConversationStateChangeListeners;
     private List<OnConversationUnreadCountListener> mConversationUnreadCountListeners;
 
     private volatile int mUnreadChatMessageCount;
 
-    ConversationManager() {
+    ConversationManager(AppClient appClient) {
+        mAppClient = appClient;
+        mRongIMClient = mAppClient.getRongIMClient();
+        mUIHandler = new Handler(Looper.getMainLooper());
         mConversationUnreadCountListeners = Collections.synchronizedList(new LinkedList<OnConversationUnreadCountListener>());
         mConversationStateChangeListeners = Collections.synchronizedList(new LinkedList<OnConversationStateChangeListener>());
         mRongIMClient = RongIMClient.getInstance();

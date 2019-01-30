@@ -15,9 +15,9 @@ import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.core.manager.GroupManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.extra.VideoMessage;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.LogUtil;
 
@@ -123,7 +123,7 @@ public class IMMessageHelper {
                     for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(group.getOwner())) {
-                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                            if (user.getUserID().equals(AppClient.getInstance().getUserManager().getUserID())) {
                                 builder.insert(0, "我邀请");
                             } else {
                                 builder.insert(0, user.getNickname() + "邀请");
@@ -150,7 +150,7 @@ public class IMMessageHelper {
                     for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(addExtra.operatorUserID)) {
-                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                            if (user.getUserID().equals(AppClient.getInstance().getUserManager().getUserID())) {
                                 builder.insert(0, "我邀请");
                             } else {
                                 builder.insert(0, user.getNickname() + "邀请");
@@ -193,7 +193,7 @@ public class IMMessageHelper {
                     for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(renameExtra.operatorUserID)) {
-                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                            if (user.getUserID().equals(AppClient.getInstance().getUserManager().getUserID())) {
                                 return "我修改群名称为" + group.getName();
                             } else {
                                 return groupMember.getNicknameInGroup() + "修改群名称为" + group.getName();
@@ -210,7 +210,7 @@ public class IMMessageHelper {
                     for (GroupMemberEntity groupMember : group.getMembers()) {
                         user = groupMember.getUserProfile();
                         if (user.getUserID().equals(bulletinExtra.operatorUserID)) {
-                            if (user.getUserID().equals(IMClient.getInstance().getUserManager().getUserID())) {
+                            if (user.getUserID().equals(AppClient.getInstance().getUserManager().getUserID())) {
                                 return "我修改群公告为" + group.getNotice();
                             } else {
                                 return groupMember.getNicknameInGroup() + "修改群公告为" + group.getNotice();

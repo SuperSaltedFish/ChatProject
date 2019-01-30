@@ -27,7 +27,7 @@ import com.yzx.chat.module.group.view.CreateGroupActivity;
 import com.yzx.chat.module.contact.contract.FindNewContactContract;
 import com.yzx.chat.module.me.view.MyQRCodeActivity;
 import com.yzx.chat.module.common.view.QrCodeScanActivity;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.contact.presenter.FindNewContactPresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
@@ -123,7 +123,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     private void setData() {
-        UserEntity user = IMClient.getInstance().getUserManager().getUser();
+        UserEntity user = AppClient.getInstance().getUserManager().getUser();
         mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
     }
 

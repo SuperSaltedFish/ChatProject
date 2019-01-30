@@ -7,14 +7,14 @@ import android.text.TextUtils;
 
 import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.module.login.contract.RegisterContract;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.auth.AuthApi;
-import com.yzx.chat.core.net.api.auth.GetSecretKeyBean;
-import com.yzx.chat.core.net.api.auth.ObtainSMSCode;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.net.api.AuthApi;
+import com.yzx.chat.core.entity.GetSecretKeyEntity;
+import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.manager.CryptoManager;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.HttpConverter;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.LogUtil;
@@ -31,8 +31,8 @@ public class RegisterPresenter implements RegisterContract.Presenter {
 
     private RegisterContract.View mRegisterView;
     private AuthApi mAuthApi;
-    private Call<JsonResponse<GetSecretKeyBean>> mGetSecretKeyCall;
-    private Call<JsonResponse<ObtainSMSCode>> mObtainSMSCodeCall;
+    private Call<JsonResponse<GetSecretKeyEntity>> mGetSecretKeyCall;
+    private Call<JsonResponse<ObtainSMSCodeEntity>> mObtainSMSCodeCall;
     private String mServerSecretKey;
     private Handler mHandler;
 
@@ -100,9 +100,9 @@ public class RegisterPresenter implements RegisterContract.Presenter {
                 return ApiHelper.getDefaultGsonInstance().fromJson(new String(body), genericType);
             }
         });
-        mGetSecretKeyCall.setResponseCallback(new BaseResponseCallback<GetSecretKeyBean>() {
+        mGetSecretKeyCall.setResponseCallback(new BaseResponseCallback<GetSecretKeyEntity>() {
             @Override
-            protected void onSuccess(GetSecretKeyBean response) {
+            protected void onSuccess(GetSecretKeyEntity response) {
                 mServerSecretKey = response.getSecretKey();
                 mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
             }
@@ -126,9 +126,9 @@ public class RegisterPresenter implements RegisterContract.Presenter {
                 type,
                 CryptoManager.getBase64RSAPublicKey(),
                 data);
-        mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCode>() {
+        mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCodeEntity>() {
             @Override
-            protected void onSuccess(ObtainSMSCode response) {
+            protected void onSuccess(ObtainSMSCodeEntity response) {
                 AndroidUtil.showToast(response.getVerifyCode());
                 mRegisterView.jumpToVerifyPage();
             }

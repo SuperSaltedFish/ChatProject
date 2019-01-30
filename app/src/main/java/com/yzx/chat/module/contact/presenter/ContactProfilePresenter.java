@@ -4,7 +4,7 @@ package com.yzx.chat.module.contact.presenter;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
 import com.yzx.chat.core.manager.ContactManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 
 import java.util.ArrayList;
@@ -20,25 +20,25 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     private ContactProfileContract.View mContactProfileView;
     private ContactEntity mContactEntity;
-    private IMClient mIMClient;
+    private AppClient mAppClient;
 
     @Override
     public void attachView(ContactProfileContract.View view) {
         mContactProfileView = view;
-        mIMClient = IMClient.getInstance();
-        mIMClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
+        mAppClient = AppClient.getInstance();
+        mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
     public void detachView() {
-        mIMClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
+        mAppClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mContactProfileView = null;
     }
 
 
     @Override
     public void init(String contactID) {
-        mContactEntity = mIMClient.getContactManager().getContact(contactID);
+        mContactEntity = mAppClient.getContactManager().getContact(contactID);
         if (mContactEntity == null) {
             mContactProfileView.goBack();
             return;
@@ -54,7 +54,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     @Override
     public void deleteContact() {
         mContactProfileView.setEnableProgressDialog(true);
-        mIMClient.getContactManager().deleteContact(mContactEntity, new ResultCallback<Void>() {
+        mAppClient.getContactManager().deleteContact(mContactEntity, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
 
@@ -70,7 +70,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public ArrayList<String> getAllTags() {
-        Set<String> tags = IMClient.getInstance().getContactManager().getAllTags();
+        Set<String> tags = AppClient.getInstance().getContactManager().getAllTags();
         if (tags != null && tags.size() > 0) {
             return new ArrayList<>(tags);
         } else {
@@ -80,7 +80,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void saveRemarkInfo(ContactEntity contact) {
-        IMClient.getInstance().getContactManager().updateContactRemark(contact, null);
+        AppClient.getInstance().getContactManager().updateContactRemark(contact, null);
     }
 
 

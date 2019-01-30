@@ -1,7 +1,7 @@
 package com.yzx.chat.module.me.presenter;
 
 import com.yzx.chat.module.me.contract.MyTagListContract;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 
 /**
  * Created by YZX on 2018年06月26日.
@@ -23,7 +23,7 @@ public class MyTagListPresenter implements MyTagListContract.Presenter {
 
     @Override
     public void loadAllTagList() {
-        mMyTagListView.showAllTags(IMClient.getInstance().getContactManager().getAllTagAndMemberCount());
+        mMyTagListView.showAllTags(AppClient.getInstance().getContactManager().getAllTagAndMemberCount());
     }
 
 

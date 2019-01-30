@@ -6,13 +6,13 @@ import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.module.main.contract.SplashContract;
-import com.yzx.chat.core.net.api.JsonResponse;
-import com.yzx.chat.core.net.api.auth.AuthApi;
-import com.yzx.chat.core.net.api.auth.UserInfoBean;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.net.api.AuthApi;
+import com.yzx.chat.core.entity.UserInfoEntity;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.api.ApiHelper;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.manager.UserManager;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.core.manager.SharePreferenceManager;
@@ -29,7 +29,7 @@ import com.yzx.chat.util.AsyncUtil;
 public class SplashPresenter implements SplashContract.Presenter {
     //
     private SplashContract.View mSplashView;
-    private Call<JsonResponse<UserInfoBean>> mTokenVerify;
+    private Call<JsonResponse<UserInfoEntity>> mTokenVerify;
 
 
     @Override
@@ -45,7 +45,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void checkLogin() {
-        if (IMClient.getInstance().isLogged()) {
+        if (AppClient.getInstance().isLogged()) {
             initDirectory();
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -69,7 +69,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 
             } else {
                 mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
-                IMClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
+                AppClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -99,6 +99,6 @@ public class SplashPresenter implements SplashContract.Presenter {
 
 
     private void initDirectory() {
-        DirectoryHelper.initUserDirectory(IMClient.getInstance().getUserManager().getUserID());
+        DirectoryHelper.initUserDirectory(AppClient.getInstance().getUserManager().getUserID());
     }
 }

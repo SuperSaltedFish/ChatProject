@@ -4,7 +4,7 @@ import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.group.contract.GroupListContract;
 import com.yzx.chat.core.manager.GroupManager;
-import com.yzx.chat.core.IMClient;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.PinYinUtil;
 
@@ -26,12 +26,12 @@ public class GroupListPresenter implements GroupListContract.Presenter {
     @Override
     public void attachView(GroupListContract.View view) {
         mGroupListView = view;
-        IMClient.getInstance().getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
+        AppClient.getInstance().getGroupManager().addGroupChangeListener(mOnGroupOperationListener);
     }
 
     @Override
     public void detachView() {
-        IMClient.getInstance().getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
+        AppClient.getInstance().getGroupManager().removeGroupChangeListener(mOnGroupOperationListener);
         mGroupList = null;
         mGroupListView = null;
     }
@@ -39,7 +39,7 @@ public class GroupListPresenter implements GroupListContract.Presenter {
     @SuppressWarnings("unchecked")
     @Override
     public void loadAllGroup() {
-        List<GroupEntity> groupList = IMClient.getInstance().getGroupManager().getAllGroup();
+        List<GroupEntity> groupList = AppClient.getInstance().getGroupManager().getAllGroup();
         if (groupList == null) {
             mGroupList = new ArrayList<>(2);
         } else {
