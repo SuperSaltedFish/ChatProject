@@ -17,7 +17,7 @@ public interface HttpConverter {
     byte[] convertRequest(Map<String, Object> requestParams);
 
     @Nullable
-    byte[] convertMultipartRequest(String partName, Map<String, Object> requestParams);
+    PartContent convertMultipartRequest(String partName, Map<String, Object> requestParams);
 
     @Nullable
     Object convertResponseBody(byte[] body, Type genericType);

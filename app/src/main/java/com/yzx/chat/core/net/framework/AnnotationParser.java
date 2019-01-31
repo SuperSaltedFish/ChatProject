@@ -1,15 +1,26 @@
-package com.yzx.chat.core.net.framework.annotation;
+package com.yzx.chat.core.net.framework;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.yzx.chat.core.net.framework.Executor.HttpRequest;
 import com.yzx.chat.core.net.framework.RequestParams;
+import com.yzx.chat.core.net.framework.annotation.FileListPart;
+import com.yzx.chat.core.net.framework.annotation.FilePart;
+import com.yzx.chat.core.net.framework.annotation.GET;
+import com.yzx.chat.core.net.framework.annotation.Headers;
+import com.yzx.chat.core.net.framework.annotation.HttpApi;
+import com.yzx.chat.core.net.framework.annotation.Multipart;
+import com.yzx.chat.core.net.framework.annotation.POST;
+import com.yzx.chat.core.net.framework.annotation.Param;
+import com.yzx.chat.core.net.framework.annotation.Part;
 
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +77,7 @@ public class AnnotationParser {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static void parseParamsAnnotation(Annotation[] annotations, Object param, RequestParams params) {
         if (annotations == null || annotations.length == 0 || params == null) {
             return;
@@ -80,21 +92,39 @@ public class AnnotationParser {
                         params.paramsPartMap.put(part.part(), paramsMap);
                     }
                     paramsMap.put(part.paramName(), param);
-                } else if (annotation instanceof UploadPart) {
+                } else if (annotation instanceof FilePart) {
                     if (param instanceof File) {
-                        params.filePart.put(((UploadPart) annotation).value(), param);
-                    } else if (param instanceof List) {
+                        FilePart filePart = (FilePart) annotation;
+                        List<Pair<String, File>> fileList = params.filePartMap.get(filePart.part());
+                        if (fileList == null) {
+                            fileList = new ArrayList<>();
+                            params.filePartMap.put(filePart.part(), fileList);
+                        }
+                        fileList.add(new Pair<>(filePart.fileName(), (File) param));
+                    } else {
+                        throw new RuntimeException("@FilePart supports only types 'File'.");
+                    }
+                } else if (annotation instanceof FileListPart) {
+                    if (param instanceof List) {
                         List paths = (List) param;
                         if (paths.size() == 0) {
                             continue;
                         }
                         if (paths.get(0) instanceof File) {
-                            params.filePart.put(((UploadPart) annotation).value(), param);
+                            FileListPart fileListPart = (FileListPart) annotation;
+                            List<Pair<String, File>> fileList = params.filePartMap.get(fileListPart.value());
+                            if (fileList == null) {
+                                fileList = new ArrayList<>();
+                                params.filePartMap.put(fileListPart.value(), fileList);
+                            }
+                            for (File f : (List<File>) param) {
+                                fileList.add(new Pair<>(f.getName(), (File) param));
+                            }
                         } else {
-                            throw new RuntimeException("When the value of @UploadPart is List type, the parameter type of List must be String.");
+                            throw new RuntimeException("@FileListPart supports only types 'List<File>'.");
                         }
                     } else {
-                        throw new RuntimeException("@UploadPart supports only types 'File' and 'List<File>'.");
+                        throw new RuntimeException("@FilePart supports only types 'List<File>'.");
                     }
                 } else if (annotation instanceof Param) {
                     throw new RuntimeException("@Param cannot be used with @Multipart.");
@@ -106,8 +136,8 @@ public class AnnotationParser {
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Param) {
                     params.params.put(((Param) annotation).value(), param);
-                } else if ((annotation instanceof Part) || (annotation instanceof UploadPart)) {
-                    throw new RuntimeException("@Part or @UploadPart must be used with @Multipart.");
+                } else if ((annotation instanceof Part) || (annotation instanceof FilePart)) {
+                    throw new RuntimeException("@Part or @FilePart must be used with @Multipart.");
                 } else {
                     throw new RuntimeException("Unknown annotations：" + annotation.toString());
                 }

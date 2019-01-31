@@ -15,6 +15,8 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UploadPart {
-    String value();
+public @interface FilePart {
+    String part();
+
+    String fileName();
 }

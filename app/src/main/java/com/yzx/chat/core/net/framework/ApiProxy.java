@@ -4,8 +4,6 @@ package com.yzx.chat.core.net.framework;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.yzx.chat.core.net.framework.annotation.AnnotationParser;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

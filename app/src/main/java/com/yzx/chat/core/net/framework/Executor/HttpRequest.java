@@ -12,7 +12,6 @@ import java.util.UUID;
 
 public abstract class HttpRequest {
 
-    protected static final String MULTIPART_BOUNDARY = UUID.randomUUID().toString();
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
 
@@ -31,6 +30,13 @@ public abstract class HttpRequest {
             return;
         }
         mHeaders.put(key, value);
+    }
+
+    public void putHeaders(Map<String, String> headers) {
+        if (headers == null || headers.size() == 0) {
+            return;
+        }
+        mHeaders.putAll(headers);
     }
 
     public String getUrl() {

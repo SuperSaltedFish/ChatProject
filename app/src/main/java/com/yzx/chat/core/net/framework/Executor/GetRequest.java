@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class GetRequest extends HttpRequest {
 
-    public GetRequest(String url,@Nullable Map<String, String> paramsMap) {
+    public GetRequest(String url,@Nullable Map<String, Object> paramsMap) {
         super(toFormFormat(url, paramsMap), METHOD_GET);
     }
 
@@ -26,12 +26,12 @@ public class GetRequest extends HttpRequest {
 
     }
 
-    private static String toFormFormat(String url, Map<String, String> paramsMap) {
+    private static String toFormFormat(String url, Map<String, Object> paramsMap) {
         if (paramsMap != null && paramsMap.size() > 0) {
             StringBuilder newUrl = new StringBuilder(128);
             newUrl.append(url).append("?");
             boolean isFirst = true;
-            for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
+            for (Map.Entry<String, Object> entry : paramsMap.entrySet()) {
                 if (isFirst) {
                     isFirst = false;
                 } else {

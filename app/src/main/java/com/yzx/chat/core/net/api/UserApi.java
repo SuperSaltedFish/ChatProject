@@ -7,10 +7,10 @@ import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.framework.Call;
+import com.yzx.chat.core.net.framework.annotation.FilePart;
 import com.yzx.chat.core.net.framework.annotation.POST;
 import com.yzx.chat.core.net.framework.annotation.Param;
 import com.yzx.chat.core.net.framework.annotation.Part;
-import com.yzx.chat.core.net.framework.annotation.UploadPart;
 
 /**
  * Created by YZX on 2017年11月17日.
@@ -42,5 +42,5 @@ public interface UserApi {
 
 
     @POST("user/uploadAvatar")
-    Call<JsonResponse<UploadAvatarEntity>> uploadAvatar(@UploadPart("uploadAvatar") String avatarPath, @Part("params") Object params);
+    Call<JsonResponse<UploadAvatarEntity>> uploadAvatar(@FilePart("uploadAvatar") String avatarPath, @Part("params") Object params);
 }
