@@ -41,7 +41,7 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
     private final ResultCallback<Void> mAcceptOrRequestCallback = new ResultCallback<Void>() {
 
         @Override
-        public void onSuccess(Void result) {
+        public void onResult(Void result) {
             mStrangerProfileView.setEnableProgressDialog(false);
             mStrangerProfileView.goBack();
         }

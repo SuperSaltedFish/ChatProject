@@ -63,7 +63,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mContactOperationContractView.setEnableProgressDialog(true);
         mAppClient.getContactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
             }
 
@@ -80,7 +80,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
         mContactOperationContractView.setEnableProgressDialog(true);
         mAppClient.getContactManager().refusedContact(contactOperation, "", new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mContactOperationContractView.setEnableProgressDialog(false);
             }
 

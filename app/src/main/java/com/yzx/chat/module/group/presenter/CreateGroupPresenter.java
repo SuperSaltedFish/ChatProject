@@ -69,11 +69,11 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
 
         mGroupManager.createGroup(stringBuilder.toString(), membersID, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(final Void result) {
+            public void onResult(final Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
@@ -100,11 +100,11 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
         mGroupManager.addMember(groupID, mAddingMembersID, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(final Void result) {
+            public void onResult(final Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }

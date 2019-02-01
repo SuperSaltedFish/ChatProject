@@ -233,8 +233,13 @@
     <string name="LoginActivity_Layout_Forgot">忘记?</string>
     <string name="ContactProfileActivity_AgeInvisible">年龄保密</string>
 
-    <string name="Error_Server">服务器繁忙，请稍候再试！</string>
+    <string name="Error_Server1">服务器繁忙，请稍候再试！</string>
     <string name="Error_Server2">服务器繁忙，请尝试重新登录！</string>
+    <string name="Error_Server3">服务器返回的数据错误，请稍候再试！</string>
+    <string name="Error_Server4">当前网络不可用，请检查网络状态！</string>
+    <string name="Error_Server6">连接超时，请检查当前网络状态是否正常！</string>
+    <string name="Error_Server7">不能连接到服务器，请稍后再试！</string>
+
     <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="Error_NetworkTimeout">网络访问超时，请检查网络连接</string>
     <string name="StrangerProfileActivity_DefaultReason">添加理由：无</string>

@@ -9,7 +9,7 @@ import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.entity.UserInfoEntity;
-import com.yzx.chat.core.manager.CryptoManager;
+import com.yzx.chat.core.manager.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
@@ -55,8 +55,8 @@ public class VerifyPresenter implements VerifyContract.Presenter {
         mLoginCall = mAuthApi.login(
                 username,
                 password,
-                CryptoManager.getDeviceID(),
-                CryptoManager.getBase64RSAPublicKey(),
+                ConfigurationManager.getDeviceID(),
+                ConfigurationManager.getBase64RSAPublicKey(),
                 verifyCode);
         mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(serverSecretKey));
         AppClient.getInstance().login(mLoginCall, mLoginOrRegisterCallBack);
@@ -69,8 +69,8 @@ public class VerifyPresenter implements VerifyContract.Presenter {
                 username,
                 password,
                 nickname,
-                CryptoManager.getDeviceID(),
-                CryptoManager.getBase64RSAPublicKey(),
+                ConfigurationManager.getDeviceID(),
+                ConfigurationManager.getBase64RSAPublicKey(),
                 verifyCode);
         mRegisterCall.setHttpConverter(ApiHelper.getRsaHttpConverter(serverSecretKey));
         AppClient.getInstance().login(mRegisterCall, mLoginOrRegisterCallBack);
@@ -81,7 +81,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
         data.put("password", password);
-        data.put("deviceID", CryptoManager.getDeviceID());
+        data.put("deviceID", ConfigurationManager.getDeviceID());
         obtainSMS(username, AuthApi.SMS_CODE_TYPE_LOGIN, data,serverSecretKey);
     }
 
@@ -97,7 +97,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
         mObtainSMSCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
-                CryptoManager.getBase64RSAPublicKey(),
+                ConfigurationManager.getBase64RSAPublicKey(),
                 data);
         mObtainSMSCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCodeEntity>() {
 
@@ -117,7 +117,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
 
     private final ResultCallback<Void> mLoginOrRegisterCallBack = new ResultCallback<Void>() {
         @Override
-        public void onSuccess(Void result) {
+        public void onResult(Void result) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

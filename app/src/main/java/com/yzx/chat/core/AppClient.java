@@ -20,7 +20,7 @@ import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.manager.ChatManager;
 import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.core.manager.ConversationManager;
-import com.yzx.chat.core.manager.CryptoManager;
+import com.yzx.chat.core.manager.ConfigurationManager;
 import com.yzx.chat.core.manager.GroupManager;
 import com.yzx.chat.core.manager.UserManager;
 import com.yzx.chat.core.database.AbstractDao;
@@ -30,6 +30,7 @@ import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.entity.UserInfoEntity;
 import com.yzx.chat.core.extra.ContactNotificationMessageEx;
 import com.yzx.chat.core.extra.VideoMessage;
+import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
 import com.yzx.chat.core.net.framework.Executor.HttpRequest;
@@ -49,10 +50,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.RongIMClient;
@@ -69,12 +67,9 @@ public class AppClient implements IManagerHelper {
 
     @SuppressLint("StaticFieldLeak")
     private static AppClient sAppClient;
-    private static Context sAppContext;
 
     public static void init(Context context) {
-        sAppContext = context.getApplicationContext();
-        RongIMClient.init(sAppContext);
-        sAppClient = new AppClient();
+        sAppClient = new AppClient(context.getApplicationContext());
     }
 
     public static AppClient getInstance() {
@@ -84,38 +79,50 @@ public class AppClient implements IManagerHelper {
         return sAppClient;
     }
 
-
+    private Context mAppContext;
     private RongIMClient mRongIMClient;
+    private Handler mUIHandler;
+    private AuthApi mAuthApi;
+    private List<OnConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
+
     private UserManager mUserManager;
-    private CryptoManager mCryptoManager;
+    private ConfigurationManager mConfigurationManager;
     private ChatManager mChatManager;
     private ContactManager mContactManager;
     private GroupManager mGroupManager;
     private ConversationManager mConversationManager;
-    private ThreadPoolExecutor mWorkExecutor;
     private DBHelper mDBHelper;
-    private Handler mUiHandler;
-    private List<OnConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
+
 
     private boolean isLogged;
 
-    private AppClient() {
+    private AppClient(Context appContext) {
+        mAppContext = appContext.getApplicationContext();
         mRongIMClient = RongIMClient.getInstance();
-        mUiHandler = new Handler(Looper.getMainLooper());
+        mUIHandler = new Handler(Looper.getMainLooper());
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
-        mWorkExecutor = new ThreadPoolExecutor(
-                0,
-                2,
-                30, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(32));
+        mAuthApi = ApiHelper.getProxyInstance(AuthApi.class);
 
-        RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
-        RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+        mUserManager = new UserManager();
+        mChatManager = new ChatManager();
+        mConversationManager = new ConversationManager();
+        mContactManager = new ContactManager();
+        mGroupManager = new GroupManager();
+
+
+        RongIMClient.init(mAppContext);
         try {
             RongIMClient.registerMessageType(VideoMessage.class);
             RongIMClient.registerMessageType(ContactNotificationMessageEx.class);
         } catch (AnnotationNotFoundException ignored) {
         }
+        RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
+        RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+    }
+
+    public void login(String account, String password, String verifyCode) {
+        mAuthApi.login(account,password,verifyCode)
+                .enqueue();
     }
 
 
@@ -166,7 +173,7 @@ public class AppClient implements IManagerHelper {
             public void run() {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final Result<Boolean> result = new Result<>(true);
-                final Result<String> errorMessage = new Result<>(AndroidUtil.getString(R.string.Error_Server));
+                final Result<String> errorMessage = new Result<>(AndroidUtil.getString(R.string.Error_Server1));
                 loginOrRegisterOrTokenVerifyCall.setResponseCallback(new ResponseCallback<JsonResponse<UserInfoEntity>>() {
 
                     @Override
@@ -205,7 +212,7 @@ public class AppClient implements IManagerHelper {
                         if (!UserManager.updateLocal(token, userEntity, mDBHelper.getReadWriteHelper())) {
                             isUpdateSuccess = false;
                             LogUtil.e("update token and user fail");
-                        } else if (!CryptoManager.update(secretKey)) {
+                        } else if (!ConfigurationManager.update(secretKey)) {
                             isUpdateSuccess = false;
                             LogUtil.e("update secretKey fail");
                         } else if (!ContactManager.update(contacts, mDBHelper.getReadWriteHelper())) {
@@ -305,7 +312,7 @@ public class AppClient implements IManagerHelper {
                 }
                 if (result.getResult()) {
                     isLogged = true;
-                    resultCallback.onSuccess(null);
+                    resultCallback.onResult(null);
                 } else {
                     isLogged = false;
                     logout();
@@ -320,8 +327,8 @@ public class AppClient implements IManagerHelper {
         if (mUserManager == null) {
             return false;
         }
-        mCryptoManager = CryptoManager.getInstanceFromLocal();
-        if (mCryptoManager == null) {
+        mConfigurationManager = ConfigurationManager.getInstanceFromLocal();
+        if (mConfigurationManager == null) {
             return false;
         }
         return true;
@@ -330,8 +337,8 @@ public class AppClient implements IManagerHelper {
     public synchronized void logout() {
         isLogged = false;
         mRongIMClient.logout();
-        if (mUiHandler != null) {
-            mUiHandler.removeCallbacksAndMessages(null);
+        if (mUIHandler != null) {
+            mUIHandler.removeCallbacksAndMessages(null);
         }
         if (mWorkExecutor != null) {
             mWorkExecutor.getQueue().clear();
@@ -361,7 +368,7 @@ public class AppClient implements IManagerHelper {
             mDBHelper = null;
         }
         mUserManager = null;
-        mCryptoManager = null;
+        mConfigurationManager = null;
         SharePreferenceManager.getIdentityPreferences().clear(false);
     }
 
@@ -371,6 +378,10 @@ public class AppClient implements IManagerHelper {
 
     public boolean isConnected() {
         return mRongIMClient.getCurrentConnectionStatus() == RongIMClient.ConnectionStatusListener.ConnectionStatus.CONNECTED;
+    }
+
+    public Context getAppContext() {
+        return mAppContext;
     }
 
     public RongIMClient getRongIMClient() {
@@ -403,8 +414,8 @@ public class AppClient implements IManagerHelper {
     }
 
     @Override
-    public CryptoManager getCryptoManager() {
-        return mCryptoManager;
+    public ConfigurationManager getConfigurationManager() {
+        return mConfigurationManager;
     }
 
     @Override
@@ -414,7 +425,7 @@ public class AppClient implements IManagerHelper {
 
     @Override
     public void runOnUiThread(Runnable runnable) {
-        mUiHandler.post(runnable);
+        mUIHandler.post(runnable);
     }
 
     @Override

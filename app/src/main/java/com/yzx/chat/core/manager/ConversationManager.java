@@ -201,7 +201,7 @@ public class ConversationManager {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
                 if (callback != null) {
-                    callback.onSuccess(conversationNotificationStatus);
+                    callback.onResult(conversationNotificationStatus);
                 }
             }
 

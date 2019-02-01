@@ -12,7 +12,7 @@ import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.GetSecretKeyEntity;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.entity.UserInfoEntity;
-import com.yzx.chat.core.manager.CryptoManager;
+import com.yzx.chat.core.manager.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
@@ -78,7 +78,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         HashMap<String, Object> data = new HashMap<>();
         data.put("telephone", username);
         data.put("password", password);
-        data.put("deviceID", CryptoManager.getDeviceID());
+        data.put("deviceID", ConfigurationManager.getDeviceID());
         initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_LOGIN, data);
         initLoginCall(username, password);
         if (mServerSecretKey == null) {
@@ -147,7 +147,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
-                CryptoManager.getBase64RSAPublicKey(),
+                ConfigurationManager.getBase64RSAPublicKey(),
                 data);
         mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCodeEntity>() {
 
@@ -176,8 +176,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         mLoginCall = mAuthApi.login(
                 username,
                 password,
-                CryptoManager.getDeviceID(),
-                CryptoManager.getBase64RSAPublicKey(),
+                ConfigurationManager.getDeviceID(),
+                ConfigurationManager.getBase64RSAPublicKey(),
                 "");
         if (mServerSecretKey != null) {
             mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
@@ -186,7 +186,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     private final ResultCallback<Void> mLoginCallBack = new ResultCallback<Void>() {
         @Override
-        public void onSuccess(Void result) {
+        public void onResult(Void result) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

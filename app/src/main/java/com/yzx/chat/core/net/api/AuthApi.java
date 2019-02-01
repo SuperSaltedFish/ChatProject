@@ -19,10 +19,8 @@ public interface AuthApi {
     Call<JsonResponse<GetSecretKeyEntity>> getSignature();
 
     @POST("auth/login")
-    Call<JsonResponse<UserInfoEntity>> login(@Param("telephone") String username,
+    Call<JsonResponse<UserInfoEntity>> login(@Param("telephone") String account,
                                              @Param("password") String password,
-                                             @Param("deviceID") String deviceID,
-                                             @Param("clientPublicKey") String publicKey,
                                              @Param("verifyCode") String verifyCode);
 
     @POST("auth/register")

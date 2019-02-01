@@ -63,7 +63,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     @Override
     public void decodeQRCodeContent(String content, boolean isAlreadyDeciphered) {
         if (!isAlreadyDeciphered) {
-            byte[] data = AppClient.getInstance().getCryptoManager().aesDecryptFromBase64String(content);
+            byte[] data = AppClient.getInstance().getConfigurationManager().aesDecryptFromBase64String(content);
             if (data == null || data.length == 0) {
                 content = null;
             } else {
@@ -109,13 +109,13 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
         isWaitJoiningPush = true;
         AppClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 if (isWaitJoiningPush) {
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             if (isWaitJoiningPush) {
-                                decodeFail(AndroidUtil.getString(R.string.Error_Server));
+                                decodeFail(AndroidUtil.getString(R.string.Error_Server1));
                             }
                         }
                     }, 15000);
@@ -221,7 +221,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
             if (TextUtils.isEmpty(content)) {
                 return "";
             }
-            byte[] data = AppClient.getInstance().getCryptoManager().aesDecryptFromBase64String(content);
+            byte[] data = AppClient.getInstance().getConfigurationManager().aesDecryptFromBase64String(content);
             if (data == null || data.length == 0) {
                 return null;
             }

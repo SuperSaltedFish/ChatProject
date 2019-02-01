@@ -39,7 +39,7 @@ public abstract class AsyncResult<R, T> implements ResultCallback<T> {
     }
 
     @Override
-    public void onSuccess(final T result) {
+    public void onResult(final T result) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

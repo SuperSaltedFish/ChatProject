@@ -71,7 +71,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                 mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
                 AppClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
                     @Override
-                    public void onSuccess(Void result) {
+                    public void onResult(Void result) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {

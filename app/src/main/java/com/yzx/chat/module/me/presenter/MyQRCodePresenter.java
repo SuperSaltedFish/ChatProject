@@ -85,7 +85,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                 isUpdating = false;
                 String id = response.getTempUserID();
                 if (!TextUtils.isEmpty(id)) {
-                    id = AppClient.getInstance().getCryptoManager().aesEncryptToBase64(id.getBytes());
+                    id = AppClient.getInstance().getConfigurationManager().aesEncryptToBase64(id.getBytes());
                     if (!TextUtils.isEmpty(id)) {
                         QRCodeContentEntity qrCodeContent = new QRCodeContentEntity();
                         qrCodeContent.setId(id);
@@ -138,7 +138,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                     qrCodeContent.setId(id);
                     qrCodeContent.setType(QRCodeContentEntity.TYPE_GROUP);
                     String content = mGson.toJson(qrCodeContent);
-                    content = AppClient.getInstance().getCryptoManager().aesEncryptToBase64(content.getBytes());
+                    content = AppClient.getInstance().getConfigurationManager().aesEncryptToBase64(content.getBytes());
                     if (!TextUtils.isEmpty(content)) {
                         mMyQRCodeActivityView.showQRCode(content);
                         return;

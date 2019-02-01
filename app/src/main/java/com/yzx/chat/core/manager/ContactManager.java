@@ -156,7 +156,7 @@ public class ContactManager {
                                 listener.onContactOperationUpdate(operation);
                             }
                             if (resultCallback != null) {
-                                resultCallback.onSuccess(null);
+                                resultCallback.onResult(null);
                                 int i = 100;
                             }
                         }
@@ -200,7 +200,7 @@ public class ContactManager {
                                 listener.onContactOperationUpdate(contactOperation);
                             }
                             if (resultCallback != null) {
-                                resultCallback.onSuccess(null);
+                                resultCallback.onResult(null);
                             }
                         }
                     });
@@ -248,7 +248,7 @@ public class ContactManager {
                                 listener.onContactOperationUpdate(contactOperation);
                             }
                             if (resultCallback != null) {
-                                resultCallback.onSuccess(null);
+                                resultCallback.onResult(null);
                             }
                         }
                     });
@@ -284,7 +284,7 @@ public class ContactManager {
                         @Override
                         public void run() {
                             if (resultCallback != null) {
-                                resultCallback.onSuccess(null);
+                                resultCallback.onResult(null);
                             }
                         }
                     });
@@ -384,7 +384,7 @@ public class ContactManager {
                             }
                             checkTagsChange();
                             if (resultCallback != null) {
-                                resultCallback.onSuccess(null);
+                                resultCallback.onResult(null);
                             }
                         }
                     });
@@ -406,7 +406,7 @@ public class ContactManager {
                                 listener.onContactUpdate(contact);
                             }
                             if (resultCallback != null) {
-                                resultCallback.onSuccess(null);
+                                resultCallback.onResult(null);
                             }
                         }
                     });

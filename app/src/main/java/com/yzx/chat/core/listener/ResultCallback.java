@@ -7,7 +7,7 @@ package com.yzx.chat.core.listener;
 
 
 public interface ResultCallback<T> {
-    void onSuccess(T result);
+    void onResult(T result);
 
-    void onFailure(String error);
+    void onFailure(int code,String error);
 }

@@ -47,7 +47,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
         mContactChatSettingView.switchTopState(mConversation.isTop());
         mAppClient.getConversationManager().isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
-            public void onSuccess(Conversation.ConversationNotificationStatus result) {
+            public void onResult(Conversation.ConversationNotificationStatus result) {
                 mContactChatSettingView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
             }
 

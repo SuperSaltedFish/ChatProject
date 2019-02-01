@@ -61,7 +61,7 @@ public class UserManager {
                 mUserEntity.setBirthday(birthday);
                 mUserEntity.setLocation(location);
                 mUserEntity.setSignature(signature);
-                callback.onSuccess(response);
+                callback.onResult(response);
             }
 
             @Override
@@ -79,7 +79,7 @@ public class UserManager {
             @Override
             protected void onSuccess(UploadAvatarEntity response) {
                 mUserEntity.setAvatar(response.getAvatarUrl());
-                callback.onSuccess(response);
+                callback.onResult(response);
             }
 
             @Override
@@ -109,7 +109,7 @@ public class UserManager {
         if (TextUtils.isEmpty(token) || user == null || user.isEmpty()) {
             return false;
         }
-        KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
+        KeyPair rsaKeyPair = ConfigurationManager.getRSAKeyPair();
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
 
         byte enToken[] = RSAUtil.encryptByPublicKey(token.getBytes(), rsaKeyPair.getPublic());
@@ -156,7 +156,7 @@ public class UserManager {
 
     static String getLocalUserID() {
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
-        KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
+        KeyPair rsaKeyPair = ConfigurationManager.getRSAKeyPair();
         String strUserID = idPref.getUserID();
         byte userID[] = Base64Util.decode(strUserID);
         if (userID == null || userID.length == 0) {
@@ -172,7 +172,7 @@ public class UserManager {
     public static String getLocalToken() {
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         String strToken = idPref.getToken();
-        KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
+        KeyPair rsaKeyPair = ConfigurationManager.getRSAKeyPair();
         byte token[] = Base64Util.decode(strToken);
         if (token == null || token.length == 0) {
             return null;

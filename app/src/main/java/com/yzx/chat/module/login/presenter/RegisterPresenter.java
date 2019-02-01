@@ -11,7 +11,7 @@ import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.GetSecretKeyEntity;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
-import com.yzx.chat.core.manager.CryptoManager;
+import com.yzx.chat.core.manager.ConfigurationManager;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.HttpConverter;
 import com.yzx.chat.core.net.ApiHelper;
@@ -124,7 +124,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
         mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
                 username,
                 type,
-                CryptoManager.getBase64RSAPublicKey(),
+                ConfigurationManager.getBase64RSAPublicKey(),
                 data);
         mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCodeEntity>() {
             @Override

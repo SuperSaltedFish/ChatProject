@@ -28,8 +28,8 @@ public class SettingFragment extends BaseFragment {
 //        Call<JsonResponse<Void>> task = api.requestAddFriend("5a3789ff2889040e1822fe88","我想干你");
 //        task.setCallback(new BaseHttpCallback<Void>() {
 //            @Override
-//            protected void onSuccess(Void response) {
-//                LogUtil.e("onSuccess");
+//            protected void onResult(Void response) {
+//                LogUtil.e("onResult");
 //
 //            }
 //

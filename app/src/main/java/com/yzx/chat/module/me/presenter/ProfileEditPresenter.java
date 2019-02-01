@@ -39,7 +39,7 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
         mProfileModifyView.setEnableProgressDialog(true);
         AppClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mProfileModifyView.setEnableProgressDialog(false);
                 if (mProfileModifyView != null) {
                     mProfileModifyView.goBack();
@@ -63,7 +63,7 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
         mProfileModifyView.setEnableProgressDialog(true);
         AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new ResultCallback<UploadAvatarEntity>() {
             @Override
-            public void onSuccess(UploadAvatarEntity result) {
+            public void onResult(UploadAvatarEntity result) {
                 deleteFile(avatarPath);
                 mProfileModifyView.setEnableProgressDialog(false);
                 mProfileModifyView.showNewAvatar(result.getAvatarUrl());

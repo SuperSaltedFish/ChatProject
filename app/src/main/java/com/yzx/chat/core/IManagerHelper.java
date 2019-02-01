@@ -3,7 +3,7 @@ package com.yzx.chat.core;
 import com.yzx.chat.core.manager.ChatManager;
 import com.yzx.chat.core.manager.ContactManager;
 import com.yzx.chat.core.manager.ConversationManager;
-import com.yzx.chat.core.manager.CryptoManager;
+import com.yzx.chat.core.manager.ConfigurationManager;
 import com.yzx.chat.core.manager.GroupManager;
 import com.yzx.chat.core.manager.UserManager;
 import com.yzx.chat.core.database.AbstractDao;
@@ -24,7 +24,7 @@ interface IManagerHelper {
 
     UserManager getUserManager();
 
-    CryptoManager getCryptoManager();
+    ConfigurationManager getConfigurationManager();
 
     AbstractDao.ReadWriteHelper getReadWriteHelper();
 

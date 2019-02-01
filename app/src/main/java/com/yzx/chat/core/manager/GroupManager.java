@@ -160,7 +160,7 @@ public class GroupManager {
                     listener.onQuitGroup(group);
                 }
                 if (resultCallback != null) {
-                    resultCallback.onSuccess(null);
+                    resultCallback.onResult(null);
                 }
             }
 
@@ -367,7 +367,7 @@ public class GroupManager {
 
         @Override
         protected void onSuccess(Void response) {
-            resultCallback.onSuccess(null);
+            resultCallback.onResult(null);
         }
 
         @Override

@@ -73,7 +73,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupProfileView.switchTopState(mConversation.isTop());
         mConversationManager.isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
-            public void onSuccess(Conversation.ConversationNotificationStatus result) {
+            public void onResult(Conversation.ConversationNotificationStatus result) {
                 mGroupProfileView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
             }
 
@@ -100,11 +100,11 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
         mGroupManager.renameGroup(mConversation.getTargetId(), newName, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
@@ -122,11 +122,11 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
         mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
@@ -144,7 +144,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
         mGroupManager.updateMemberAlias(mConversation.getTargetId(), newAlias, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showNewMyAlias(newAlias);
             }
@@ -162,11 +162,11 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Quit));
         mGroupManager.quitGroup(mConversation.getTargetId(), new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server));
+                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }

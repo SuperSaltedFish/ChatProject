@@ -18,11 +18,11 @@ import java.util.UUID;
  */
 
 
-public class CryptoManager {
+public class ConfigurationManager {
 
     private String mAESKey;
 
-    public CryptoManager(String AESKey) {
+    public ConfigurationManager(String AESKey) {
         mAESKey = AESKey;
     }
 
@@ -109,7 +109,7 @@ public class CryptoManager {
         if (TextUtils.isEmpty(aesKey)) {
             return false;
         }
-        KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
+        KeyPair rsaKeyPair = ConfigurationManager.getRSAKeyPair();
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
         byte enAESKey[] = RSAUtil.encryptByPublicKey(aesKey.getBytes(), rsaKeyPair.getPublic());
         if (enAESKey == null || enAESKey.length == 0) {
@@ -122,9 +122,9 @@ public class CryptoManager {
         return idPref.putAESKey(tmpAESKey);
     }
 
-     static CryptoManager getInstanceFromLocal() {
+     static ConfigurationManager getInstanceFromLocal() {
         SharePreferenceManager.IdentityPreferences idPref = SharePreferenceManager.getIdentityPreferences();
-        KeyPair rsaKeyPair = CryptoManager.getRSAKeyPair();
+        KeyPair rsaKeyPair = ConfigurationManager.getRSAKeyPair();
         String strAESKey = idPref.getAESKey();
 
         if (TextUtils.isEmpty(strAESKey)) {
@@ -138,7 +138,7 @@ public class CryptoManager {
         if (aesKey == null || aesKey.length == 0) {
             return null;
         }
-        return new CryptoManager(new String(aesKey));
+        return new ConfigurationManager(new String(aesKey));
     }
 
     public static String getDeviceID() {

@@ -42,5 +42,5 @@ public interface UserApi {
 
 
     @POST("user/uploadAvatar")
-    Call<JsonResponse<UploadAvatarEntity>> uploadAvatar(@FilePart("uploadAvatar") String avatarPath, @Part("params") Object params);
+    Call<JsonResponse<UploadAvatarEntity>> uploadAvatar(@FilePart(part = "uploadAvatar") String avatarPath, Object params);
 }

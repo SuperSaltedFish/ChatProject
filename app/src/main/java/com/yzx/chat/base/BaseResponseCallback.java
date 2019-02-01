@@ -32,19 +32,19 @@ public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonRe
     public void onResponse(HttpRequest request, HttpResponse<JsonResponse<T>> response) {
         if (response.responseCode() != 200) {
             LogUtil.e("ResponseCode:" + response.responseCode());
-            onFailure(AndroidUtil.getString(R.string.Error_Server));
+            onFailure(AndroidUtil.getString(R.string.Error_Server1));
             return;
         }
         JsonResponse<T> jsonResponse = response.body();
         if (jsonResponse == null) {
-            onFailure(AndroidUtil.getString(R.string.Error_Server));
+            onFailure(AndroidUtil.getString(R.string.Error_Server1));
         } else if (jsonResponse.getStatus() != 200) {
             onFailure(jsonResponse.getMessage());
         } else if (jsonResponse.getData() == null) {
             ParameterizedType pType = (ParameterizedType) this.getClass().getGenericSuperclass();
             Type type = pType.getActualTypeArguments()[0];
             if (type != Void.class) {
-                onFailure(AndroidUtil.getString(R.string.Error_Server));
+                onFailure(AndroidUtil.getString(R.string.Error_Server1));
             } else {
                 onSuccess(null);
             }
@@ -61,7 +61,7 @@ public abstract class BaseResponseCallback<T> implements ResponseCallback<JsonRe
         } else if (e instanceof SocketTimeoutException) {
             onFailure(AndroidUtil.getString(R.string.Error_NetworkTimeout));
         } else {
-            onFailure(AndroidUtil.getString(R.string.Error_Server));
+            onFailure(AndroidUtil.getString(R.string.Error_Server1));
         }
     }
 

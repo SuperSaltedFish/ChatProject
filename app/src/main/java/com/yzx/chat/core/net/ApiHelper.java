@@ -1,7 +1,6 @@
 package com.yzx.chat.core.net;
 
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,18 +9,11 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.core.manager.CryptoManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.entity.JsonRequest;
 import com.yzx.chat.core.net.framework.ApiProxy;
 import com.yzx.chat.core.net.framework.HttpConverter;
-import com.yzx.chat.util.Base64Util;
-import com.yzx.chat.util.LogUtil;
-import com.yzx.chat.util.RSAUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**

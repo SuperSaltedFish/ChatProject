@@ -18,5 +18,5 @@ import java.lang.annotation.Target;
 public @interface FilePart {
     String part();
 
-    String fileName();
+    String fileName() default "";
 }

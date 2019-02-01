@@ -56,7 +56,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         mContactProfileView.setEnableProgressDialog(true);
         mAppClient.getContactManager().deleteContact(mContactEntity, new ResultCallback<Void>() {
             @Override
-            public void onSuccess(Void result) {
+            public void onResult(Void result) {
 
             }
 
