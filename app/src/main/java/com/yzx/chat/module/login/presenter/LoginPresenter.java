@@ -12,7 +12,7 @@ import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.GetSecretKeyEntity;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.entity.UserInfoEntity;
-import com.yzx.chat.core.manager.ConfigurationManager;
+import com.yzx.chat.core.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;

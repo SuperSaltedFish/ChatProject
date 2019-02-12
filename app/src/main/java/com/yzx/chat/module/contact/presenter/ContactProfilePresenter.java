@@ -3,7 +3,7 @@ package com.yzx.chat.module.contact.presenter;
 
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
-import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 

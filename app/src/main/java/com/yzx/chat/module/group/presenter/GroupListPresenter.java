@@ -3,7 +3,7 @@ package com.yzx.chat.module.group.presenter;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.group.contract.GroupListContract;
-import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.PinYinUtil;

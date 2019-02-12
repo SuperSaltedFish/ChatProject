@@ -16,14 +16,16 @@ import java.net.UnknownHostException;
  * Created by YZX on 2019年01月31日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
-class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCallback<T> {
+public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCallback<T> {
 
     private static final int STATUS_CODE_SUCCESSFUL = 200;
     private static final int STATUS_CODE_UNKNOWN_RESPONSE_DATA = 0;
 
-    public static final int NETWORK_ERROR_CODE_UNKNOWN = -1;
-    public static final int NETWORK_ERROR_CODE_TIMEOUT = -2;
-    public static final int NETWORK_ERROR_CODE_UNAVAILABLE = -3;
+    public static final int ERROR_CODE_UNKNOWN = -1;
+    public static final int ERROR_CODE_NETWORK_UNKNOWN = -2;
+    public static final int ERROR_CODE_NETWORK_TIMEOUT = -3;
+    public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -4;
+
 
     private ResultCallback<T> mResultCallback;
 
@@ -60,13 +62,13 @@ class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCallback<T>
             return;
         }
         if (t instanceof SocketTimeoutException) {
-            mResultCallback.onFailure(NETWORK_ERROR_CODE_TIMEOUT, AppClient.getInstance().getAppContext().getString(R.string.Error_Server6));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, AppClient.getInstance().getAppContext().getString(R.string.Error_Server6));
         } else if (t instanceof ConnectException) {
-            mResultCallback.onFailure(NETWORK_ERROR_CODE_TIMEOUT, AppClient.getInstance().getAppContext().getString(R.string.Error_Server7));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, AppClient.getInstance().getAppContext().getString(R.string.Error_Server7));
         } else if (t instanceof UnknownHostException) {
-            mResultCallback.onFailure(NETWORK_ERROR_CODE_UNAVAILABLE, AppClient.getInstance().getAppContext().getString(R.string.Error_Server4));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_UNAVAILABLE, AppClient.getInstance().getAppContext().getString(R.string.Error_Server4));
         } else {
-            mResultCallback.onFailure(NETWORK_ERROR_CODE_UNKNOWN, AppClient.getInstance().getAppContext().getString(R.string.Error_Server3));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_UNKNOWN, AppClient.getInstance().getAppContext().getString(R.string.Error_Server3));
         }
     }
 

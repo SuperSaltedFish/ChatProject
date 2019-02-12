@@ -15,7 +15,7 @@ import com.yzx.chat.module.common.contract.QrCodeScanContract;
 import com.yzx.chat.core.net.api.GroupApi;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.UserApi;
-import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;

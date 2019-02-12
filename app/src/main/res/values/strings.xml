@@ -233,6 +233,7 @@
     <string name="LoginActivity_Layout_Forgot">忘记?</string>
     <string name="ContactProfileActivity_AgeInvisible">年龄保密</string>
 
+    <string name="Error_Client">操作错误，请稍候再试！</string>
     <string name="Error_Server1">服务器繁忙，请稍候再试！</string>
     <string name="Error_Server2">服务器繁忙，请尝试重新登录！</string>
     <string name="Error_Server3">服务器返回的数据错误，请稍候再试！</string>

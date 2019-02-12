@@ -5,7 +5,7 @@ import android.support.v7.util.DiffUtil;
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
-import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;

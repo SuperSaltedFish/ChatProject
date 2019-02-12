@@ -1,4 +1,4 @@
-package com.yzx.chat.core.manager;
+package com.yzx.chat.core;
 
 import android.os.Build;
 import android.text.TextUtils;

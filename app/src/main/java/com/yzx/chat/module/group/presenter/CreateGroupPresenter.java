@@ -8,7 +8,7 @@ import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
-import com.yzx.chat.core.manager.GroupManager;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.AndroidUtil;

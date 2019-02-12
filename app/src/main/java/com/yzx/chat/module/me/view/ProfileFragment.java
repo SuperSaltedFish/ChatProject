@@ -16,7 +16,7 @@ import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.me.contract.ProfileContract;
 import com.yzx.chat.module.me.presenter.ProfilePresenter;
 import com.yzx.chat.module.login.view.LoginActivity;
-import com.yzx.chat.core.manager.SharePreferenceManager;
+import com.yzx.chat.core.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;

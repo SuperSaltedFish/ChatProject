@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.core.entity.ContactOperationEntity;
-import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;

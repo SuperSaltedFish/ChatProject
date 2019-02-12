@@ -7,7 +7,7 @@ import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
-import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.tool.NotificationHelper;

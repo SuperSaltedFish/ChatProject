@@ -17,7 +17,7 @@ import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
 import com.yzx.chat.module.contact.presenter.StrangerProfilePresenter;
-import com.yzx.chat.core.manager.ContactManager;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
