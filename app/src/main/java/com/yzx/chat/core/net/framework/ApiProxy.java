@@ -45,10 +45,8 @@ public class ApiProxy {
                     } else {
                         throw new RuntimeException("The return value of \"" + method.getName() + "\" must explicitly declare generic parameters");
                     }
-                } else if (returnType == DownloadCall.class) {
-                    return new DownloadCallImpl(requestParams, mDefaultHttpConverter);
                 } else {
-                    throw new RuntimeException("The return value type of the \"" + method.getName() + "\" method must be " + Call.class + " or" + DownloadCall.class);
+                    throw new RuntimeException("The return value type of the \"" + method.getName() + "\" method must be " + Call.class );
                 }
 
             }

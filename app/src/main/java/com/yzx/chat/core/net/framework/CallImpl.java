@@ -82,7 +82,7 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
                         @Override
                         public void run() {
                             try {
-                                mCallback.onResponse((T) mHttpConverter.convertResponseBody(body, mGenericType));
+                                mCallback.onResponse((T) mHttpConverter.convertResponseBody(mRequestParams.url(),body, mGenericType));
                             } catch (Exception e) {
                                 onError(e);
                             }
@@ -90,7 +90,7 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
                     });
                 } else {
                     try {
-                        mCallback.onResponse((T) mHttpConverter.convertResponseBody(body, mGenericType));
+                        mCallback.onResponse((T) mHttpConverter.convertResponseBody(mRequestParams.url(),body, mGenericType));
                     } catch (Exception e) {
                         onError(e);
                     }
@@ -130,7 +130,7 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
                 for (Map.Entry<String, Map<String, Object>> entry : params.paramsPartMap.entrySet()) {
                     String partName = entry.getKey();
                     Map<String, Object> paramsMap = entry.getValue();
-                    PartContent partContent = converter.convertMultipartRequest(partName, paramsMap);
+                    PartContent partContent = converter.convertMultipartRequest(request.getUrl(),partName, paramsMap);
                     if (partContent != null) {
                         request.addPart(partName, partContent.getContentType(), partContent.getContent());
                     }
@@ -144,7 +144,7 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
                 }
                 return request;
             } else {
-                return new PostRequest(params.url(), converter.convertRequest(params.params));
+                return new PostRequest(params.url(), converter.convertRequest(params.url(),params.params));
             }
         } else {
             throw new RuntimeException("Unknown http method：" + params.method);

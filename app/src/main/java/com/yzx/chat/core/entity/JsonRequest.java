@@ -10,6 +10,7 @@ package com.yzx.chat.core.entity;
 public class JsonRequest {
 
     private String token;
+    private String deviceID;
     private int status = 200;
     private Object params;
 
@@ -19,6 +20,14 @@ public class JsonRequest {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getDeviceID() {
+        return deviceID;
+    }
+
+    public void setDeviceID(String deviceID) {
+        this.deviceID = deviceID;
     }
 
     public int getStatus() {

@@ -297,6 +297,10 @@ public class AppClient {
         return mDeviceID;
     }
 
+    public Context getAppContext() {
+        return mAppContext;
+    }
+
     public RongIMClient getRongIMClient() {
         return mRongIMClient;
     }

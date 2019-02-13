@@ -1,6 +1,7 @@
 package com.yzx.chat.core.net;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,13 +10,29 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.yzx.chat.configure.Constants;
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.entity.DecryptedResponse;
+import com.yzx.chat.core.entity.EncryptedRequest;
+import com.yzx.chat.core.entity.JsonRequest;
 import com.yzx.chat.core.net.framework.ApiProxy;
 import com.yzx.chat.core.net.framework.HttpConverter;
 import com.yzx.chat.core.net.framework.PartContent;
+import com.yzx.chat.core.util.AESUtil;
+import com.yzx.chat.core.util.Base64Util;
+import com.yzx.chat.core.util.ECCUtil;
+import com.yzx.chat.core.util.ECDHUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.crypto.SecretKey;
 
 /**
  * Created by YZX on 2017年10月15日.
@@ -27,6 +44,11 @@ public class ApiHelper {
 
     public static final Gson GSON;
     private static final ApiProxy API_PROXY;
+
+    private static final String CLIENT_PUBLIC_KEY;
+    private static final SecretKey AES_KEY;
+    private static final Signature CLIENT_SIGNATURE;
+    private static final Signature SERVER_SIGNATURE;
 
     static {
         GSON = new GsonBuilder()
@@ -58,22 +80,88 @@ public class ApiHelper {
 
             @Nullable
             @Override
-            public byte[] convertRequest(Map<String, Object> requestParams) {
-                return new byte[0];
+            public byte[] convertRequest(String url, Map<String, Object> requestParams) {
+                JsonRequest jsonRequest = new JsonRequest();
+                jsonRequest.setDeviceID(AppClient.getInstance().getDeviceID());
+                jsonRequest.setToken(AppClient.getInstance().getToken());
+                jsonRequest.setParams(requestParams);
+                String strData = GSON.toJson(jsonRequest);
+                EncryptedRequest encryptedRequest = new EncryptedRequest();
+                encryptedRequest.setSecretKey(CLIENT_PUBLIC_KEY);
+                encryptedRequest.setSignature(Base64Util.encodeToString(ECCUtil.sign(CLIENT_SIGNATURE, strData.getBytes())));
+                encryptedRequest.setData(Base64Util.encodeToString(AESUtil.encrypt(strData.getBytes(), AES_KEY)));
+                String strEncryptedData = GSON.toJson(encryptedRequest);
+                LogUtil.d(String.format(
+                        Locale.getDefault(),
+                        "\n正在发出请求：url = %s\n打印请求内容：%s\n完整加密内容：%s",
+                        url,
+                        strData,
+                        strEncryptedData
+                ));
+                return strEncryptedData.getBytes();
+            }
+
+            @Override
+            public PartContent convertMultipartRequest(String url, String partName, Map<String, Object> requestParams) {
+                PartContent partContent = new PartContent();
+                partContent.setContentType("application/json");
+                partContent.setContent(convertRequest(url, requestParams));
+                return partContent;
             }
 
             @Nullable
             @Override
-            public PartContent convertMultipartRequest(String partName, Map<String, Object> requestParams) {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public Object convertResponseBody(byte[] body, Type genericType) {
+            public Object convertResponseBody(String url, byte[] body, Type genericType) {
+                String responseData = new String(body);
+                String decryptData = null;
+                try {
+                    DecryptedResponse decryptedResponse;
+                    decryptedResponse = GSON.fromJson(responseData, DecryptedResponse.class);
+                    if (decryptedResponse == null) {
+                        return null;
+                    }
+                    String signature = decryptedResponse.getSignature();
+                    if (TextUtils.isEmpty(signature)) {
+                        return null;
+                    }
+                    String data = decryptedResponse.getData();
+                    if (TextUtils.isEmpty(data)) {
+                        return null;
+                    }
+                    byte[] originalData = AESUtil.decrypt(Base64Util.decode(data), AES_KEY);
+                    if (originalData == null || originalData.length == 0) {
+                        return null;
+                    }
+                    if (!ECCUtil.verify(SERVER_SIGNATURE, originalData, Base64Util.decode(signature))) {
+                        return null;
+                    }
+                    decryptData = new String(originalData);
+                    decryptedResponse = GSON.fromJson(decryptData, DecryptedResponse.class);
+                    return decryptedResponse;
+                } catch (Exception e) {
+                    LogUtil.w(e.toString(), e);
+                } finally {
+                    LogUtil.d(String.format(
+                            Locale.getDefault(),
+                            "\n正在处理响应：url = %s\n打印响应内容：%s\n解密响应内容：%s",
+                            url,
+                            responseData,
+                            decryptData
+                    ));
+                }
                 return null;
             }
         });
+
+        KeyPair ecKeyPair = ECCUtil.generateECCKeyPairCompat(AppClient.getInstance().getAppContext(), ApiHelper.class.getName() + ".ecc");
+        PublicKey clientPublicKey = ecKeyPair.getPublic();
+        PrivateKey clientPrivateKey = ecKeyPair.getPrivate();
+        PublicKey serverPublicKey = ECCUtil.loadECPublicKeyCompat(Base64Util.decode(Constants.SERVER_PUBLIC_KEY));
+
+        CLIENT_PUBLIC_KEY = Base64Util.encodeToString(clientPublicKey.getEncoded());
+        AES_KEY = AESUtil.loadKey(ECDHUtil.ecdhToAESByBC(clientPrivateKey, serverPublicKey));
+        CLIENT_SIGNATURE = ECCUtil.loadSignatureOfSignTypeCompat(clientPrivateKey);
+        SERVER_SIGNATURE = ECCUtil.loadSignatureOfVerifyTypeCompat(serverPublicKey);
     }
 
     public static <T> T getProxyInstance(Class<T> interfaceClass) {

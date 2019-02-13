@@ -14,12 +14,12 @@ import java.util.Map;
 public interface HttpConverter {
 
     @Nullable
-    byte[] convertRequest(Map<String, Object> requestParams);
+    byte[] convertRequest(String url,Map<String, Object> requestParams);
 
     @Nullable
-    PartContent convertMultipartRequest(String partName, Map<String, Object> requestParams);
+    PartContent convertMultipartRequest(String url,String partName, Map<String, Object> requestParams);
 
     @Nullable
-    Object convertResponseBody(byte[] body, Type genericType);
+    Object convertResponseBody(String url,byte[] body, Type genericType);
 
 }

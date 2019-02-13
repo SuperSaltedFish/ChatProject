@@ -14,6 +14,9 @@ public class Constants {
 
     public static final String URL_MAP_IMAGE_FORMAT = "http://restapi.amap.com/v3/staticmap?markers=-1,http://www.orline.cn/superim/ic_location_flag.png,0:%f,%f&size=400*160&zoom=15&key=ded050da042a8b77a62c6cda02cc330a";
 
+    public static final String SERVER_PUBLIC_KEY = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEOs56iDUHeQ5tcdFlRKzHKvSdR8Y/pFJMbYlZWF90dqGXVFfCf0/3ZiKYrKAeOvR3HqXcxMvQudLn+Y99X0FMQw==";
+
+
     public static final String DATABASE_NAME = "dffdkk.db";
     public static final int DATABASE_VERSION = 1;
 
@@ -38,4 +41,4 @@ public class Constants {
     public static final String LOCATION_STYLE_FILE_PATH = DirectoryHelper.getPublicTempPath() + "map_style.data";
     public static final int LOCATION_DEFAULT_ZOOM = 15;
     public static final int LOCATION_INTERVAL = 2000;
-}
+   }
