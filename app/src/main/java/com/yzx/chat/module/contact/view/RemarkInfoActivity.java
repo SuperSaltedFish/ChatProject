@@ -21,7 +21,7 @@ import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
 import com.yzx.chat.module.contact.presenter.RemarkInfoPresenter;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.FlowLayout;

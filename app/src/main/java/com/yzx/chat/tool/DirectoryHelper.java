@@ -4,7 +4,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.yzx.chat.configure.AppApplication;
-import com.yzx.chat.util.MD5Util;
+import com.yzx.chat.core.util.MD5Util;
 
 import java.io.File;
 

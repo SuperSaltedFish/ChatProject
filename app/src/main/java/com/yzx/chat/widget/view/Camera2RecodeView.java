@@ -12,7 +12,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 
 import com.yzx.chat.util.Camera2Helper;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.VideoEncoder;
 
 import java.util.List;

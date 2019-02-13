@@ -26,7 +26,7 @@ import com.yzx.chat.module.contact.contract.ContactProfileContract;
 import com.yzx.chat.module.contact.presenter.ContactProfilePresenter;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
 import com.yzx.chat.widget.adapter.ContactInfoPagerAdapter;

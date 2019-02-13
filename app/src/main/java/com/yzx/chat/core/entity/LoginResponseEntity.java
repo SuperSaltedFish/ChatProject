@@ -1,9 +1,5 @@
 package com.yzx.chat.core.entity;
 
-import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.GroupEntity;
-import com.yzx.chat.core.entity.UserEntity;
-
 import java.util.ArrayList;
 
 /**
@@ -12,7 +8,7 @@ import java.util.ArrayList;
  */
 
 
-public class UserInfoEntity {
+public class LoginResponseEntity {
 
     private String token;
     private String secretKey;

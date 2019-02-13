@@ -28,7 +28,7 @@ import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.GsonUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.RoundImageView;
 

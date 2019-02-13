@@ -5,7 +5,7 @@ import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.group.contract.GroupListContract;
 import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.PinYinUtil;
 
 import java.util.ArrayList;

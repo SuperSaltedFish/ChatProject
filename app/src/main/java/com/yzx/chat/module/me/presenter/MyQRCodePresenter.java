@@ -22,7 +22,7 @@ import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
-import com.yzx.chat.util.MD5Util;
+import com.yzx.chat.core.util.MD5Util;
 
 /**
  * Created by YZX on 2018年02月26日.

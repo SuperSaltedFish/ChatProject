@@ -5,10 +5,9 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.DownloadCallback;
 import com.yzx.chat.core.extra.VideoMessage;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.List;

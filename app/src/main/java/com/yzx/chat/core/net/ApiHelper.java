@@ -11,6 +11,7 @@ import com.google.gson.stream.JsonWriter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.core.net.framework.ApiProxy;
 import com.yzx.chat.core.net.framework.HttpConverter;
+import com.yzx.chat.core.net.framework.PartContent;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 public class ApiHelper {
 
-    private static final Gson GSON;
+    public static final Gson GSON;
     private static final ApiProxy API_PROXY;
 
     static {
@@ -54,6 +55,7 @@ public class ApiHelper {
                 .create();
 
         API_PROXY = new ApiProxy(Constants.URL_API_BASE, new HttpConverter() {
+
             @Nullable
             @Override
             public byte[] convertRequest(Map<String, Object> requestParams) {
@@ -62,8 +64,8 @@ public class ApiHelper {
 
             @Nullable
             @Override
-            public byte[] convertMultipartRequest(String partName, Object body) {
-                return new byte[0];
+            public PartContent convertMultipartRequest(String partName, Map<String, Object> requestParams) {
+                return null;
             }
 
             @Nullable

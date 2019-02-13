@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.UserEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,168 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         cursor.close();
         mReadWriteHelper.closeReadableDatabase();
         return entity;
+    }
+
+    @Override
+    public boolean insert(ContactOperationEntity entity) {
+        if (entity == null) {
+            return false;
+        }
+        UserEntity userInfo = entity.getUser();
+        if (userInfo == null) {
+            return false;
+        }
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        parseToContentValues(entity, values);
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            if (database.insert(getTableName(), null, values) > 0 && UserDao.replaceUser(database, userInfo, values)) {
+                database.setTransactionSuccessful();
+                result = true;
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    @Override
+    public boolean insertAll(Iterable<ContactOperationEntity> entityIterable) {
+        if (entityIterable == null) {
+            return false;
+        }
+        boolean result = true;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            ContentValues values = new ContentValues();
+            for (ContactOperationEntity entity : entityIterable) {
+                values.clear();
+                parseToContentValues(entity, values);
+                if (database.insert(getTableName(), null, values) <= 0 || !UserDao.replaceUser(database, entity.getUser(), values)) {
+                    result = false;
+                    break;
+                }
+            }
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    @Override
+    public boolean replace(ContactOperationEntity entity) {
+        if (entity == null) {
+            return false;
+        }
+        UserEntity userInfo = entity.getUser();
+        if (userInfo == null) {
+            return false;
+        }
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        parseToContentValues(entity, values);
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            if (database.replace(getTableName(), null, values) > 0 && UserDao.replaceUser(database, userInfo, values)) {
+                database.setTransactionSuccessful();
+                result = true;
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    @Override
+    public boolean replaceAll(Iterable<ContactOperationEntity> entityIterable) {
+        if (entityIterable == null) {
+            return false;
+        }
+        boolean result = true;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            ContentValues values = new ContentValues();
+            for (ContactOperationEntity entity : entityIterable) {
+                values.clear();
+                parseToContentValues(entity, values);
+                if (database.replace(getTableName(), null, values) <= 0 || !UserDao.replaceUser(database, entity.getUser(), values)) {
+                    result = false;
+                    break;
+                }
+            }
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    @Override
+    public boolean update(ContactOperationEntity entity) {
+        if (entity == null) {
+            return false;
+        }
+        UserEntity userInfo = entity.getUser();
+        if (userInfo == null) {
+            return false;
+        }
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        parseToContentValues(entity, values);
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            if (database.update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0 && UserDao.replaceUser(database, userInfo, values)) {
+                database.setTransactionSuccessful();
+                result = true;
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
+    }
+
+    @Override
+    public boolean updateAll(Iterable<ContactOperationEntity> entityIterable) {
+        if (entityIterable == null) {
+            return false;
+        }
+        boolean result = true;
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
+        database.beginTransactionNonExclusive();
+        try {
+            ContentValues values = new ContentValues();
+            for (ContactOperationEntity entity : entityIterable) {
+                values.clear();
+                parseToContentValues(entity, values);
+                if (database.update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) <= 0 || !UserDao.replaceUser(database, entity.getUser(), values)) {
+                    result = false;
+                    break;
+                }
+            }
+            if (result) {
+                database.setTransactionSuccessful();
+            }
+        } finally {
+            database.endTransaction();
+        }
+        mReadWriteHelper.closeWritableDatabase();
+        return result;
     }
 
     @Override

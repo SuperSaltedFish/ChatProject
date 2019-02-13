@@ -6,8 +6,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yzx.chat.util.LogUtil;
-
 import java.util.LinkedList;
 import java.util.List;
 

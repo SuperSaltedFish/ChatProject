@@ -16,7 +16,7 @@ import com.yzx.chat.core.ConversationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.tool.NotificationHelper;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.io.File;
 import java.util.List;

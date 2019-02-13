@@ -8,7 +8,7 @@ import com.yzx.chat.module.conversation.contract.VideoPlayContract;
 import com.yzx.chat.core.listener.DownloadCallback;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import io.rong.imlib.model.Message;
 

@@ -12,7 +12,7 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.util.ArrayList;

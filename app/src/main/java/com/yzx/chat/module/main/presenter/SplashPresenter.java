@@ -8,7 +8,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.AuthApi;
-import com.yzx.chat.core.entity.UserInfoEntity;
+import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
@@ -17,7 +17,7 @@ import com.yzx.chat.core.UserManager;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.core.SharePreferenceManager;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
 
 
@@ -29,7 +29,7 @@ import com.yzx.chat.util.AsyncUtil;
 public class SplashPresenter implements SplashContract.Presenter {
     //
     private SplashContract.View mSplashView;
-    private Call<JsonResponse<UserInfoEntity>> mTokenVerify;
+    private Call<JsonResponse<LoginResponseEntity>> mTokenVerify;
 
 
     @Override
@@ -69,7 +69,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 
             } else {
                 mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
-                AppClient.getInstance().loginByToken(mTokenVerify, new ResultCallback<Void>() {
+                AppClient.getInstance().loginByLocalToken(mTokenVerify, new ResultCallback<Void>() {
                     @Override
                     public void onResult(Void result) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {

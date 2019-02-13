@@ -10,7 +10,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.module.conversation.contract.LocationSendContract;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;

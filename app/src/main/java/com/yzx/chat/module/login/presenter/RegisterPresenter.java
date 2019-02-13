@@ -17,7 +17,7 @@ import com.yzx.chat.core.net.framework.HttpConverter;
 import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

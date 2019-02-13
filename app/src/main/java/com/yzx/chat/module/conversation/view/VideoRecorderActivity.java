@@ -15,7 +15,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.util.MD5Util;
+import com.yzx.chat.core.util.MD5Util;
 import com.yzx.chat.util.VideoDecoder;
 import com.yzx.chat.widget.view.Camera2RecodeView;
 import com.yzx.chat.widget.view.RecorderButton;

@@ -5,6 +5,7 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Callback;
+import com.yzx.chat.core.util.ResourcesHelper;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -22,9 +23,10 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
     private static final int STATUS_CODE_UNKNOWN_RESPONSE_DATA = 0;
 
     public static final int ERROR_CODE_UNKNOWN = -1;
-    public static final int ERROR_CODE_NETWORK_UNKNOWN = -2;
-    public static final int ERROR_CODE_NETWORK_TIMEOUT = -3;
-    public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -4;
+    public static final int ERROR_CODE_NOT_LOGGED_IN = -2;
+    public static final int ERROR_CODE_NETWORK_UNKNOWN = -200;
+    public static final int ERROR_CODE_NETWORK_TIMEOUT = -300;
+    public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -400;
 
 
     private ResultCallback<T> mResultCallback;
@@ -43,7 +45,7 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
                 ParameterizedType pType = (ParameterizedType) this.getClass().getGenericSuperclass();
                 Type type = pType.getActualTypeArguments()[0];
                 if (type != Void.class) {
-                    onFailure(STATUS_CODE_UNKNOWN_RESPONSE_DATA, AppClient.getInstance().getAppContext().getString(R.string.Error_Server3));
+                    onFailure(STATUS_CODE_UNKNOWN_RESPONSE_DATA, ResourcesHelper.getString(R.string.Error_Server3));
                 } else {
                     onResult(null);
                 }
@@ -62,13 +64,13 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
             return;
         }
         if (t instanceof SocketTimeoutException) {
-            mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, AppClient.getInstance().getAppContext().getString(R.string.Error_Server6));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, ResourcesHelper.getString(R.string.Error_Server6));
         } else if (t instanceof ConnectException) {
-            mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, AppClient.getInstance().getAppContext().getString(R.string.Error_Server7));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, ResourcesHelper.getString(R.string.Error_Server7));
         } else if (t instanceof UnknownHostException) {
-            mResultCallback.onFailure(ERROR_CODE_NETWORK_UNAVAILABLE, AppClient.getInstance().getAppContext().getString(R.string.Error_Server4));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_UNAVAILABLE, ResourcesHelper.getString(R.string.Error_Server4));
         } else {
-            mResultCallback.onFailure(ERROR_CODE_NETWORK_UNKNOWN, AppClient.getInstance().getAppContext().getString(R.string.Error_Server3));
+            mResultCallback.onFailure(ERROR_CODE_NETWORK_UNKNOWN, ResourcesHelper.getString(R.string.Error_Server3));
         }
     }
 

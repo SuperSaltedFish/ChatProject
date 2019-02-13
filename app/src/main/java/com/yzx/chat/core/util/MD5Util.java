@@ -1,4 +1,4 @@
-package com.yzx.chat.util;
+package com.yzx.chat.core.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

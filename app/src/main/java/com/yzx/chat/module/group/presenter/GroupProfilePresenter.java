@@ -13,7 +13,7 @@ import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import io.rong.imlib.model.Conversation;
 

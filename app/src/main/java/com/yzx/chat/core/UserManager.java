@@ -1,26 +1,21 @@
 package com.yzx.chat.core;
 
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import com.yzx.chat.base.BaseResponseCallback;
-import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.UserDao;
-import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.entity.GetUserProfileEntity;
+import com.yzx.chat.core.entity.SearchUserEntity;
+import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.core.net.api.UserApi;
-import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
 import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.util.CallbackUtil;
-import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.Base64Util;
-import com.yzx.chat.util.RSAUtil;
 
-import java.security.KeyPair;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by YZX on 2017年10月17日.
@@ -30,13 +25,16 @@ import java.security.KeyPair;
 
 public class UserManager {
 
+    private AppClient mAppClient;
+
     private UserEntity mUserEntity;
     private UserApi mUserApi;
 
-    public UserManager(UserEntity userEntity) {
+    UserManager(AppClient appClient, UserEntity userEntity) {
         if (userEntity == null || userEntity.isEmpty()) {
             throw new RuntimeException("token or user can't be empty");
         }
+        mAppClient = appClient;
         mUserEntity = userEntity;
         mUserApi = ApiHelper.getProxyInstance(UserApi.class);
     }
@@ -77,6 +75,36 @@ public class UserManager {
                 }));
     }
 
+    public void findUser(String nicknameOrTelephone, final ResultCallback<SearchUserEntity> callback) {
+        mUserApi.searchUser(nicknameOrTelephone)
+                .enqueue(new ResponseHandler<>(new ResultCallback<SearchUserEntity>() {
+                    @Override
+                    public void onResult(SearchUserEntity result) {
+                        CallbackUtil.callResult(result, callback);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String error) {
+                        CallbackUtil.callFailure(code, error, callback);
+                    }
+                }));
+    }
+
+    public void getUserProfileByID(String userID, final ResultCallback<GetUserProfileEntity> callback) {
+        mUserApi.getUserProfile(userID)
+                .enqueue(new ResponseHandler<>(new ResultCallback<GetUserProfileEntity>() {
+                    @Override
+                    public void onResult(GetUserProfileEntity result) {
+                        CallbackUtil.callResult(result, callback);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String error) {
+                        CallbackUtil.callFailure(code, error, callback);
+                    }
+                }));
+    }
+
     @Nullable
     public String getUserID() {
         return mUserEntity.getUserID();
@@ -84,5 +112,13 @@ public class UserManager {
 
     public UserEntity getUser() {
         return UserEntity.copy(mUserEntity);
+    }
+
+    static boolean replace(UserEntity userInfo, AbstractDao.ReadWriteHelper readWriteHelper) {
+        return new UserDao(readWriteHelper).replace(userInfo);
+    }
+
+     void destroy() {
+
     }
 }

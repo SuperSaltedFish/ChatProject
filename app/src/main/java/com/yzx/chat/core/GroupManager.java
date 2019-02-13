@@ -3,25 +3,19 @@ package com.yzx.chat.core;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.yzx.chat.base.BaseResponseCallback;
-import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.GroupDao;
 import com.yzx.chat.core.database.GroupMemberDao;
+import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.core.net.api.GroupApi;
 import com.yzx.chat.core.entity.QuitGroupEntity;
-import com.yzx.chat.core.entity.JsonResponse;
-import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
 import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.CallbackUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,15 +54,6 @@ public class GroupManager {
     private List<OnGroupOperationListener> mOnGroupOperationListeners;
 
     private GroupApi mGroupApi;
-    private Gson mGson;
-    private HttpExecutor mHttpExecutor;
-    private Call<JsonResponse<Void>> mRenameGroupCall;
-    private Call<JsonResponse<Void>> mUpdateGroupNoticeCall;
-    private Call<JsonResponse<Void>> mUpdateAliasCall;
-    private Call<JsonResponse<QuitGroupEntity>> mQuitGroupCall;
-    private Call<JsonResponse<Void>> mCreateGroupCall;
-    private Call<JsonResponse<Void>> mJoinGroupCall;
-    private Call<JsonResponse<Void>> mAddMemberCall;
 
     GroupManager(AppClient appClient, AbstractDao.ReadWriteHelper helper) {
         mAppClient = appClient;
@@ -76,10 +61,8 @@ public class GroupManager {
         mUIHandler = new Handler(Looper.getMainLooper());
         mGroupDao = new GroupDao(helper);
         mGroupMemberDao = new GroupMemberDao(helper);
-        mGson = new GsonBuilder().serializeNulls().create();
         mOnGroupOperationListeners = Collections.synchronizedList(new LinkedList<OnGroupOperationListener>());
-        mHttpExecutor = HttpExecutor.getInstance();
-        mGroupApi = (GroupApi) ApiHelper.getProxyInstance(GroupApi.class);
+        mGroupApi = ApiHelper.getProxyInstance(GroupApi.class);
         mGroupsMap = new HashMap<>(24);
         List<GroupEntity> groups = mGroupDao.loadAllGroup();
         if (groups != null) {
@@ -125,74 +108,57 @@ public class GroupManager {
         return null;
     }
 
-    public void createGroup(String groupID, String[] membersID, ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mCreateGroupCall);
-        mCreateGroupCall = mGroupApi.createGroup(groupID, membersID);
-        mCreateGroupCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
-        mHttpExecutor.submit(mCreateGroupCall);
+    public void createGroup(String groupID, String[] membersID, ResultCallback<Void> callback) {
+        mGroupApi.createGroup(groupID, membersID)
+                .enqueue(new ResponseHandler<>(callback));
+
     }
 
-    public void joinGroup(String groupID, @GroupApi.JoinType String joinType, ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mJoinGroupCall);
-        mJoinGroupCall = mGroupApi.join(groupID, joinType);
-        mJoinGroupCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
-        mHttpExecutor.submit(mJoinGroupCall);
+    public void joinGroup(String groupID, @GroupApi.JoinType String joinType, ResultCallback<Void> callback) {
+        mGroupApi.join(groupID, joinType)
+                .enqueue(new ResponseHandler<>(callback));
     }
 
-    public void addMember(String groupID, String[] membersID, ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mAddMemberCall);
-        mAddMemberCall = mGroupApi.add(groupID, membersID);
-        mAddMemberCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
-        mHttpExecutor.submit(mAddMemberCall);
+    public void addMember(String groupID, String[] membersID, ResultCallback<Void> callback) {
+        mGroupApi.add(groupID, membersID)
+                .enqueue(new ResponseHandler<>(callback));
     }
 
-    public void quitGroup(final String groupID, final ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mQuitGroupCall);
-        mQuitGroupCall = mGroupApi.quit(groupID);
-        mQuitGroupCall.setResponseCallback(new BaseResponseCallback<QuitGroupEntity>() {
-            @Override
-            protected void onSuccess(QuitGroupEntity response) {
-                GroupEntity group = mGroupsMap.get(groupID);
-                mGroupsMap.remove(groupID);
-                mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID);
-                mAppClient.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.GROUP, groupID);
-                for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
-                    listener.onQuitGroup(group);
-                }
-                if (resultCallback != null) {
-                    resultCallback.onResult(null);
-                }
-            }
+    public void quitGroup(final String groupID, final ResultCallback<Void> callback) {
+        mGroupApi.quit(groupID)
+                .enqueue(new ResponseHandler<>(new ResultCallback<QuitGroupEntity>() {
+                    @Override
+                    public void onResult(QuitGroupEntity result) {
+                        GroupEntity group = mGroupsMap.get(groupID);
+                        mGroupsMap.remove(groupID);
+                        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID);
+                        mAppClient.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.GROUP, groupID);
+                        for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
+                            listener.onQuitGroup(group);
+                        }
+                        CallbackUtil.callResult(null, callback);
+                    }
 
-            @Override
-            protected void onFailure(String message) {
-                if (resultCallback != null) {
-                    resultCallback.onFailure(message);
-                }
-            }
-        });
-        mHttpExecutor.submit(mQuitGroupCall);
+                    @Override
+                    public void onFailure(int code, String error) {
+                        CallbackUtil.callFailure(code, error, callback);
+                    }
+                }));
     }
 
-    public void renameGroup(String groupID, String newName, ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mRenameGroupCall);
-        mRenameGroupCall = mGroupApi.rename(groupID, newName);
-        mRenameGroupCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
-        mHttpExecutor.submit(mRenameGroupCall);
+    public void renameGroup(String groupID, String newName, ResultCallback<Void> callback) {
+        mGroupApi.rename(groupID, newName)
+                .enqueue(new ResponseHandler<>(callback));
     }
 
-    public void updateGroupNotice(String groupID, String newNotice, ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mUpdateGroupNoticeCall);
-        mUpdateGroupNoticeCall = mGroupApi.updateNotice(groupID, newNotice);
-        mUpdateGroupNoticeCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
-        mHttpExecutor.submit(mUpdateGroupNoticeCall);
+    public void updateGroupNotice(String groupID, String newNotice, ResultCallback<Void> callback) {
+        mGroupApi.updateNotice(groupID, newNotice)
+                .enqueue(new ResponseHandler<>(callback));
     }
 
-    public void updateMemberAlias(String groupID, String newAlias, ResultCallback<Void> resultCallback) {
-        AsyncUtil.cancelCall(mUpdateAliasCall);
-        mUpdateAliasCall = mGroupApi.updateAlias(groupID, newAlias);
-        mUpdateAliasCall.setResponseCallback(new GroupOperationResponseCallback(resultCallback));
-        mHttpExecutor.submit(mUpdateAliasCall);
+    public void updateMemberAlias(String groupID, String newAlias, ResultCallback<Void> callback) {
+        mGroupApi.updateAlias(groupID, newAlias)
+                .enqueue(new ResponseHandler<>(callback));
     }
 
     void onReceiveGroupNotificationMessage(GroupNotificationMessage groupNotification) {
@@ -201,25 +167,25 @@ public class GroupManager {
         try {
             switch (operation) {
                 case GROUP_OPERATION_CREATE:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Created.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Created.class);
                     break;
                 case GROUP_OPERATION_ADD:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Add.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Add.class);
                     break;
                 case GROUP_OPERATION_JOIN:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Join.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Join.class);
                     break;
                 case GROUP_OPERATION_QUIT:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Quit.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Quit.class);
                     break;
                 case GROUP_OPERATION_RENAME:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Rename.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Rename.class);
                     break;
                 case GROUP_OPERATION_BULLETIN:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Bulletin.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Bulletin.class);
                     break;
                 case GROUP_OPERATION_ALIAS:
-                    extra = mGson.fromJson(groupNotification.getExtra(), GroupMessageExtra.Alias.class);
+                    extra = ApiHelper.GSON.fromJson(groupNotification.getExtra(), GroupMessageExtra.Alias.class);
                     break;
                 default:
                     LogUtil.e("unknown group operation:" + operation);
@@ -324,12 +290,6 @@ public class GroupManager {
     }
 
     void destroy() {
-        AsyncUtil.cancelCall(mRenameGroupCall);
-        AsyncUtil.cancelCall(mAddMemberCall);
-        AsyncUtil.cancelCall(mUpdateGroupNoticeCall);
-        AsyncUtil.cancelCall(mUpdateAliasCall);
-        AsyncUtil.cancelCall(mQuitGroupCall);
-        AsyncUtil.cancelCall(mJoinGroupCall);
         mGroupsMap.clear();
         mGroupsMap = null;
     }
@@ -345,7 +305,7 @@ public class GroupManager {
     }
 
 
-    static boolean update(ArrayList<GroupEntity> groups, AbstractDao.ReadWriteHelper readWriteHelper) {
+    static boolean insertAll(ArrayList<GroupEntity> groups, AbstractDao.ReadWriteHelper readWriteHelper) {
         GroupDao groupDao = new GroupDao(readWriteHelper);
         GroupMemberDao groupMemberDao = new GroupMemberDao(readWriteHelper);
         groupMemberDao.cleanTable();
@@ -357,25 +317,6 @@ public class GroupManager {
             return false;
         }
     }
-
-    private static class GroupOperationResponseCallback extends BaseResponseCallback<Void> {
-        private ResultCallback<Void> resultCallback;
-
-        GroupOperationResponseCallback(ResultCallback<Void> resultCallback) {
-            this.resultCallback = resultCallback;
-        }
-
-        @Override
-        protected void onSuccess(Void response) {
-            resultCallback.onResult(null);
-        }
-
-        @Override
-        protected void onFailure(final String message) {
-            resultCallback.onFailure(message);
-        }
-    }
-
 
     public interface OnGroupOperationListener {
         void onCreatedGroup(GroupEntity group);

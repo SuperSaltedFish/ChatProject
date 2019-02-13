@@ -1,11 +1,8 @@
 package com.yzx.chat.core;
 
-import android.os.Handler;
-import android.os.Looper;
-
-import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.CallbackUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -35,7 +32,6 @@ public class ConversationManager {
 
     private AppClient mAppClient;
     private RongIMClient mRongIMClient;
-    private Handler mUIHandler;
 
     private List<OnConversationStateChangeListener> mConversationStateChangeListeners;
     private List<OnConversationUnreadCountListener> mConversationUnreadCountListeners;
@@ -45,7 +41,6 @@ public class ConversationManager {
     ConversationManager(AppClient appClient) {
         mAppClient = appClient;
         mRongIMClient = mAppClient.getRongIMClient();
-        mUIHandler = new Handler(Looper.getMainLooper());
         mConversationUnreadCountListeners = Collections.synchronizedList(new LinkedList<OnConversationUnreadCountListener>());
         mConversationStateChangeListeners = Collections.synchronizedList(new LinkedList<OnConversationStateChangeListener>());
         mRongIMClient = RongIMClient.getInstance();
@@ -200,18 +195,12 @@ public class ConversationManager {
         mRongIMClient.getConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                if (callback != null) {
-                    callback.onResult(conversationNotificationStatus);
-                }
+                CallbackUtil.callResult(conversationNotificationStatus, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                if (callback != null) {
-                    callback.onFailure(errorCode.getMessage());
-                } else {
-                    LogUtil.e(errorCode.getMessage());
-                }
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
             }
         });
     }
@@ -220,7 +209,7 @@ public class ConversationManager {
         return mUnreadChatMessageCount;
     }
 
-     void updateChatUnreadCount() {
+    void updateChatUnreadCount() {
         mRongIMClient.getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {

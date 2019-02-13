@@ -7,6 +7,8 @@ import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.yzx.chat.core.util.LogUtil;
+
 import java.io.IOException;
 
 /**

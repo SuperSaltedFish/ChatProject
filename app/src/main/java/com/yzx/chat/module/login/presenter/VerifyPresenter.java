@@ -8,7 +8,7 @@ import com.yzx.chat.module.login.contract.VerifyContract;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
-import com.yzx.chat.core.entity.UserInfoEntity;
+import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
@@ -26,8 +26,8 @@ import java.util.Map;
 public class VerifyPresenter implements VerifyContract.Presenter {
 
     private VerifyContract.View mVerifyView;
-    private Call<JsonResponse<UserInfoEntity>> mLoginCall;
-    private Call<JsonResponse<UserInfoEntity>> mRegisterCall;
+    private Call<JsonResponse<LoginResponseEntity>> mLoginCall;
+    private Call<JsonResponse<LoginResponseEntity>> mRegisterCall;
     private Call<JsonResponse<ObtainSMSCodeEntity>> mObtainSMSCall;
     private AuthApi mAuthApi;
     private Handler mHandler;

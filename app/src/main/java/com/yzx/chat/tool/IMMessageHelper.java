@@ -19,7 +19,7 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

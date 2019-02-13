@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.Px;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -14,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.yzx.chat.R;
-import com.yzx.chat.util.LogUtil;
 
 
 /**

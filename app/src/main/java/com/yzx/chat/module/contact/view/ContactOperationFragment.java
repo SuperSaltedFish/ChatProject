@@ -20,7 +20,7 @@ import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
 import com.yzx.chat.module.contact.presenter.ContactOperationPresenter;
 import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.widget.adapter.ContactOperationAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;

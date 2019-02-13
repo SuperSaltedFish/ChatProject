@@ -11,7 +11,7 @@ import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.GetSecretKeyEntity;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
-import com.yzx.chat.core.entity.UserInfoEntity;
+import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
@@ -21,7 +21,7 @@ import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AndroidUtil;
 import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.lang.reflect.Type;
@@ -40,7 +40,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View mLoginView;
     private AuthApi mAuthApi;
     private Call<JsonResponse<GetSecretKeyEntity>> mGetSecretKeyCall;
-    private Call<JsonResponse<UserInfoEntity>> mLoginCall;
+    private Call<JsonResponse<LoginResponseEntity>> mLoginCall;
     private Call<JsonResponse<ObtainSMSCodeEntity>> mObtainSMSCodeCall;
     private String mServerSecretKey;
 

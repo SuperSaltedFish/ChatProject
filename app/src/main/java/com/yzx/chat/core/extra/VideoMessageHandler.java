@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.util.MD5Util;
+import com.yzx.chat.core.util.MD5Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

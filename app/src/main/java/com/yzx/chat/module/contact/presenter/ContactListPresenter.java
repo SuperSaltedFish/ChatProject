@@ -7,7 +7,7 @@ import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.util.LogUtil;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.AsyncUtil;
 

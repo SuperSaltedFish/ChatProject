@@ -16,8 +16,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.yzx.chat.util.LogUtil;
-
 /**
  * Created by YZX on 2018年07月23日.
  * 每一个不曾起舞的日子 都是对生命的辜负
