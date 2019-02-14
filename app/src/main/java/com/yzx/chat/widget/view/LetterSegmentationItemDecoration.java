@@ -3,12 +3,13 @@ package com.yzx.chat.widget.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.annotation.ColorInt;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextPaint;
 import android.view.View;
 
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
+
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
@@ -61,7 +62,7 @@ public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoratio
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         if (isUninitialized) {
-            mStartDrawX = parent.getPaddingLeft() + AndroidUtil.dip2px(16);
+            mStartDrawX = parent.getPaddingLeft() + AndroidHelper.dip2px(16);
             mWidth = parent.getWidth() - mStartDrawX - parent.getPaddingRight();
             init();
         }

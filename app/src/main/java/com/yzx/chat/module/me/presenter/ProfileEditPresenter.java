@@ -1,11 +1,11 @@
 package com.yzx.chat.module.me.presenter;
 
-import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.module.me.contract.ProfileEditContract;
-import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.core.entity.UploadAvatarEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.me.contract.ProfileEditContract;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import java.io.File;
 
@@ -37,22 +37,10 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
     @Override
     public void updateProfile(final UserEntity user) {
         mProfileModifyView.setEnableProgressDialog(true);
-        AppClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new ResultCallback<Void>() {
+        AppClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new LifecycleMVPResultCallback<Void>(mProfileModifyView) {
             @Override
-            public void onResult(Void result) {
-                mProfileModifyView.setEnableProgressDialog(false);
-                if (mProfileModifyView != null) {
-                    mProfileModifyView.goBack();
-                }
-
-            }
-
-            @Override
-            public void onFailure(String error) {
-                mProfileModifyView.setEnableProgressDialog(false);
-                if (mProfileModifyView != null) {
-                    mProfileModifyView.showError(error);
-                }
+            protected void onSuccess(Void result) {
+                mProfileModifyView.goBack();
             }
         });
 
@@ -61,21 +49,19 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
     @Override
     public void uploadAvatar(final String avatarPath) {
         mProfileModifyView.setEnableProgressDialog(true);
-        AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new ResultCallback<UploadAvatarEntity>() {
+        AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new LifecycleMVPResultCallback<UploadAvatarEntity>(mProfileModifyView) {
             @Override
-            public void onResult(UploadAvatarEntity result) {
+            protected void onSuccess(UploadAvatarEntity result) {
                 deleteFile(avatarPath);
-                mProfileModifyView.setEnableProgressDialog(false);
                 mProfileModifyView.showNewAvatar(result.getAvatarUrl());
             }
 
             @Override
-            public void onFailure(final String error) {
+            protected boolean onError(int code, String error) {
                 deleteFile(avatarPath);
-                mProfileModifyView.setEnableProgressDialog(false);
-                mProfileModifyView.showError(error);
-
+                return super.onError(code, error);
             }
+
         });
     }
 

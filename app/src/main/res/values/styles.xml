@@ -9,8 +9,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorTertiary">@color/textSecondaryColorBlack</item>
         <item name="android:windowBackground">@color/backgroundColorWhite</item>
-        <item name="android:windowAnimationStyle">@style/ActivitySlideAnimStyle</item>
-
+        <item name="android:textAllCaps">false</item>
+        <item name="android:windowDisablePreview">true</item>
     </style>
 
 
@@ -51,6 +51,35 @@
 
     <style name="ToolbarPopupDarkTheme" parent="ThemeOverlay.AppCompat">
         <item name="overlapAnchor">false</item>
+    </style>
+
+    <style name="AlertDialogStyle" parent="DefaultLightTheme">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@drawable/bg_dialog_default</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item><!--除去title-->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+        <item name="android:windowElevation">16dp</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+    </style>
+
+    <style name="DialogFragmentStyle" parent="DefaultLightTheme">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item><!--除去title-->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowElevation">16dp</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
     </style>
 
     <style name="CollapsingToolbarExpandedTitleTextAppearance.Light" parent="TextAppearance.Design.CollapsingToolbar.Expanded">

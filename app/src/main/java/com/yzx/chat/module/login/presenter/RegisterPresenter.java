@@ -2,26 +2,25 @@ package com.yzx.chat.module.login.presenter;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.yzx.chat.base.BaseResponseCallback;
-import com.yzx.chat.module.login.contract.RegisterContract;
-import com.yzx.chat.core.entity.JsonResponse;
-import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.GetSecretKeyEntity;
+import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
-import com.yzx.chat.core.ConfigurationManager;
+import com.yzx.chat.core.net.ApiHelper;
+import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.HttpConverter;
-import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.login.contract.RegisterContract;
+import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.util.AsyncUtil;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2018年07月09日.
@@ -40,7 +39,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
     @Override
     public void attachView(RegisterContract.View view) {
         mRegisterView = view;
-        mAuthApi = (AuthApi) ApiHelper.getProxyInstance(AuthApi.class);
+        mAuthApi = ApiHelper.getProxyInstance(AuthApi.class);
         mHandler = new Handler(Looper.myLooper());
     }
 
@@ -129,7 +128,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
         mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCodeEntity>() {
             @Override
             protected void onSuccess(ObtainSMSCodeEntity response) {
-                AndroidUtil.showToast(response.getVerifyCode());
+                AndroidHelper.showToast(response.getVerifyCode());
                 mRegisterView.jumpToVerifyPage();
             }
 

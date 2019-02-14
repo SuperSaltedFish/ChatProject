@@ -3,8 +3,6 @@ package com.yzx.chat.module.me.view;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,12 +10,12 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.core.SharePreferenceManager;
 import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.module.me.contract.ProfileContract;
 import com.yzx.chat.module.me.presenter.ProfilePresenter;
-import com.yzx.chat.module.login.view.LoginActivity;
-import com.yzx.chat.core.SharePreferenceManager;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
@@ -26,6 +24,9 @@ import com.yzx.chat.widget.view.MaskImageView;
 import com.yzx.chat.widget.view.PageIndicator;
 
 import java.util.ArrayList;
+
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Created by YZX on 2017年09月01日.
@@ -74,7 +75,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
 
         mPageIndicator.setIndicatorColorSelected(Color.WHITE);
         mPageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(mContext, R.color.backgroundColorWhiteLight));
-        mPageIndicator.setIndicatorRadius((int) AndroidUtil.dip2px(3));
+        mPageIndicator.setIndicatorRadius((int) AndroidHelper.dip2px(3));
         mPageIndicator.setupWithViewPager(mVpBanner);
 
         mCropImagePagerAdapter.setMaskType(MaskImageView.MASK_MODE_LINEAR);
@@ -101,7 +102,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mAlbumAdapter = new AlbumPagerAdapter(mObjects);
 
         mVpAlbum.setAdapter(mAlbumAdapter);
-        //     mVpAlbum.setPageMargin((int) AndroidUtil.dip2px(32));
+        //     mVpAlbum.setPageMargin((int) AndroidHelper.dip2px(32));
         mVpAlbum.setPageTransformer(true, new ZoomPageTransformer());
         mVpAlbum.setOffscreenPageLimit(2);
         mVpAlbum.setCurrentItem(1);

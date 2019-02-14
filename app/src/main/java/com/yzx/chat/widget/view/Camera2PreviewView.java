@@ -11,7 +11,6 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
-import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.MotionEvent;
@@ -26,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.IntDef;
 
 /**
  * Created by YZX on 2018年05月03日.

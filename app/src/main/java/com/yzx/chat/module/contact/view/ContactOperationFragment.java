@@ -3,11 +3,6 @@ package com.yzx.chat.module.contact.view;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,19 +12,25 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
 import com.yzx.chat.module.contact.presenter.ContactOperationPresenter;
-import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ContactOperationAdapter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2018年01月18日.
@@ -84,9 +85,9 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
 
 
     private void setOverflowMenu() {
-        mContactOperationMenu.setWidth((int) AndroidUtil.dip2px(128));
+        mContactOperationMenu.setWidth((int) AndroidHelper.dip2px(128));
         mContactOperationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.backgroundColorWhite)));
-        mContactOperationMenu.setElevation(AndroidUtil.dip2px(2));
+        mContactOperationMenu.setElevation(AndroidHelper.dip2px(2));
         mContactOperationMenu.inflate(R.menu.menu_contact_message_overflow);
         mContactOperationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override

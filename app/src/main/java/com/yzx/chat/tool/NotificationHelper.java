@@ -11,31 +11,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-
 import android.graphics.Color;
-
 import android.media.RingtoneManager;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.text.emoji.EmojiCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yzx.chat.R;
-import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.ContactOperationEntity;
-import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.view.GlideHexagonTransform;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.emoji.text.EmojiCompat;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
@@ -46,7 +44,7 @@ import io.rong.imlib.model.Message;
  */
 public class NotificationHelper {
 
-    private static final int LARGE_ICON_SIZE = (int) AndroidUtil.dip2px(56);
+    private static final int LARGE_ICON_SIZE = (int) AndroidHelper.dip2px(56);
 
     private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = "1";
     private static final String CHANNEL_NAME_CHAT_MESSAGE_TYPE = "ChatMessage";
@@ -168,7 +166,7 @@ public class NotificationHelper {
         String title = contactOperation.getUser().getNickname();
         String content = contactOperation.getReason();
         if (TextUtils.isEmpty(content)) {
-            content = AndroidUtil.getString(R.string.ContactOperationAdapter_DefaultReason);
+            content = AndroidHelper.getString(R.string.ContactOperationAdapter_DefaultReason);
         }
         String avatarUrl = contactOperation.getUser().getAvatar();
         int notificationID = id.hashCode();
@@ -292,11 +290,11 @@ public class NotificationHelper {
             if (message != null) {
                 String conversationID = message.getTargetId();
                 Conversation.ConversationType type = message.getConversationType();
-                HomeActivity homeActivity = AndroidUtil.getLaunchActivity(HomeActivity.class);
+                HomeActivity homeActivity = ActivityHelper.getActivityInstance(HomeActivity.class);
                 if (!TextUtils.isEmpty(conversationID) && homeActivity != null) {
                     recycleNotification(conversationID.hashCode());
-                    if (AndroidUtil.getStackTopActivityClass() != ChatActivity.class) {
-                        AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
+                    if (ActivityHelper.getStackTopActivityClass() != ChatActivity.class) {
+                        ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
                     }
                     Intent startActivityIntent = new Intent(homeActivity, ChatActivity.class);
                     startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
@@ -323,7 +321,7 @@ public class NotificationHelper {
             ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
             if (contactOperation != null && TextUtils.isEmpty(contactOperation.getUserID())) {
                 recycleNotification(contactOperation.getUserID().hashCode());
-                Activity topActivity = AndroidUtil.getStackTopActivityInstance();
+                Activity topActivity = ActivityHelper.getStackTopActivityInstance();
                 if (topActivity != null) {
 
                 }

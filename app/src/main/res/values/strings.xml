@@ -73,6 +73,7 @@
     <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍后再试！</string>
     <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短</string>
 
+    <string name="ProgressHint_Default">正在处理...</string>
     <string name="ProgressHint_Search">正在搜索...</string>
     <string name="ProgressHint_Send">正在发送...</string>
     <string name="ProgressHint_Add">正在添加...</string>

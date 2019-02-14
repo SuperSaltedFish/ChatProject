@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.view.BackInputConnection;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.LabelEditText;
@@ -76,13 +76,13 @@ public class EditContactTagsActivity extends BaseCompatActivity {
         mEtInput.addTextChangedListener(mTextWatcher);
 
         mFlowLayoutSelected.setOnClickListener(mOnFlowLayoutClickListener);
-        mFlowLayoutSelected.setItemSpace((int) AndroidUtil.dip2px(8));
-        mFlowLayoutSelected.setLineSpace((int) AndroidUtil.dip2px(4));
+        mFlowLayoutSelected.setItemSpace((int) AndroidHelper.dip2px(8));
+        mFlowLayoutSelected.setLineSpace((int) AndroidHelper.dip2px(4));
 
-        mFlowLayoutSelectable.setItemSpace((int) AndroidUtil.dip2px(8));
-        mFlowLayoutSelectable.setLineSpace((int) AndroidUtil.dip2px(4));
+        mFlowLayoutSelectable.setItemSpace((int) AndroidHelper.dip2px(8));
+        mFlowLayoutSelectable.setLineSpace((int) AndroidHelper.dip2px(4));
 
-        int size = (int) AndroidUtil.dip2px(12);
+        int size = (int) AndroidHelper.dip2px(12);
         mCloseDrawable.setBounds(0, 0, size, size);
         mCloseDrawable.setTint(Color.WHITE);
 
@@ -185,9 +185,9 @@ public class EditContactTagsActivity extends BaseCompatActivity {
             return;
         }
         if (isSelected) {
-            labelView.setCompoundDrawablePadding((int) AndroidUtil.dip2px(2));
+            labelView.setCompoundDrawablePadding((int) AndroidHelper.dip2px(2));
             labelView.setCompoundDrawables(null, null, mCloseDrawable, null);
-            labelView.setPadding(labelView.getPaddingStart(), labelView.getPaddingTop(), (int) AndroidUtil.dip2px(6), labelView.getPaddingBottom());
+            labelView.setPadding(labelView.getPaddingStart(), labelView.getPaddingTop(), (int) AndroidHelper.dip2px(6), labelView.getPaddingBottom());
         } else {
             labelView.setPadding(labelView.getPaddingStart(), labelView.getPaddingTop(), labelView.getPaddingStart(), labelView.getPaddingBottom());
             labelView.setCompoundDrawables(null, null, null, null);

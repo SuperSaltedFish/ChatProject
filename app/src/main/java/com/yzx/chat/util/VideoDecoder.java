@@ -9,7 +9,6 @@ import android.media.MediaFormat;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.util.Size;
 import android.view.Surface;
 import android.widget.MediaController;
@@ -17,6 +16,8 @@ import android.widget.MediaController;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年05月20日.

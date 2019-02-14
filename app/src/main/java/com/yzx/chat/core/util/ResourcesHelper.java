@@ -1,8 +1,8 @@
 package com.yzx.chat.core.util;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 
+import androidx.annotation.StringRes;
 
 
 /**

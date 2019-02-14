@@ -20,7 +20,7 @@ import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
 import com.yzx.chat.module.contact.presenter.RemarkInfoPresenter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.view.ClearEditText;
@@ -66,8 +66,8 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mLabelFlowLayout.setLineSpace((int) AndroidUtil.dip2px(8));
-        mLabelFlowLayout.setItemSpace((int) AndroidUtil.dip2px(8));
+        mLabelFlowLayout.setLineSpace((int) AndroidHelper.dip2px(8));
+        mLabelFlowLayout.setItemSpace((int) AndroidHelper.dip2px(8));
         mLabelFlowLayout.setOnClickListener(mOnLabelFlowLayoutClickListener);
 
         mEtTelephone.setOnEditorActionListener(mOnEditorActionListener);

@@ -2,10 +2,6 @@ package com.yzx.chat.module.contact.view;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayoutt;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +9,15 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.PrivateMomentsAdapter;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 import com.yzx.chat.widget.view.TimeLineItemDecoration;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
  * Created by YZX on 2018年01月06日.
@@ -70,16 +71,16 @@ public class ContactMomentsFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(layoutManager);
         //  mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12)));
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(12)));
         mRecyclerView.addItemDecoration(
                 new TimeLineItemDecoration()
-                        .setTimeLineWidth((int) AndroidUtil.dip2px(56))
+                        .setTimeLineWidth((int) AndroidHelper.dip2px(56))
                         .setTimeLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack))
                         .setLineWidth(1.2f)
-                        .setTimePointDrawable(AndroidUtil.getDrawable(R.drawable.src_time_point))
-                        .setTimePointOffsetY((int) AndroidUtil.dip2px(4))
+                        .setTimePointDrawable(AndroidHelper.getDrawable(R.drawable.src_time_point))
+                        .setTimePointOffsetY((int) AndroidHelper.dip2px(4))
                         .setHasFooterView(true)
-                        .setTimePointSize((int) AndroidUtil.dip2px(28)));
+                        .setTimePointSize((int) AndroidHelper.dip2px(28)));
 
         mAdapter.setFooterView(mFooterView);
     }

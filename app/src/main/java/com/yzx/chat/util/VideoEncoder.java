@@ -9,12 +9,13 @@ import android.media.MediaMuxer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
 import android.view.Surface;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年05月20日.

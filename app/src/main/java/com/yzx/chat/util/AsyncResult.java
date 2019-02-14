@@ -2,11 +2,12 @@ package com.yzx.chat.util;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.MainThread;
 
 import com.yzx.chat.core.listener.ResultCallback;
 
 import java.lang.ref.WeakReference;
+
+import androidx.annotation.MainThread;
 
 /**
  * Created by YZX on 2018年02月13日.
@@ -55,7 +56,7 @@ public abstract class AsyncResult<R, T> implements ResultCallback<T> {
     }
 
     @Override
-    public void onFailure(final String error) {
+    public void onFailure(int code,final String error) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

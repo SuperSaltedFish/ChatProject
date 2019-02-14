@@ -7,7 +7,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.module.conversation.contract.VideoPlayContract;
 import com.yzx.chat.core.listener.DownloadCallback;
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.core.util.LogUtil;
 
 import io.rong.imlib.model.Message;
@@ -46,7 +46,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
                     mVideoPlayView.playVideo(localUri.getPath());
                 } else {
                     LogUtil.e("localUri==" + (localUri == null ? "null" : localUri.getPath()));
-                    mVideoPlayView.showError(AndroidUtil.getString(R.string.VideoPlayActivity_DownloadVideoFail));
+                    mVideoPlayView.showError(AndroidHelper.getString(R.string.VideoPlayActivity_DownloadVideoFail));
                 }
             }
 
@@ -59,7 +59,7 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
             public void onError(Message message, String error) {
                 LogUtil.e(error);
                 mVideoPlayView.setEnableProgressDialog(false);
-                mVideoPlayView.showError(AndroidUtil.getString(R.string.VideoPlayActivity_DownloadVideoFail));
+                mVideoPlayView.showError(AndroidHelper.getString(R.string.VideoPlayActivity_DownloadVideoFail));
             }
 
             @Override

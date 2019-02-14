@@ -5,12 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +15,12 @@ import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
+import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.module.conversation.contract.ConversationContract;
 import com.yzx.chat.module.conversation.presenter.ConversationPresenter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
-import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
@@ -36,6 +30,12 @@ import com.yzx.chat.widget.view.OverflowPopupMenu;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.rong.imlib.model.Conversation;
 
 /**
@@ -86,7 +86,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 //        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
@@ -101,10 +101,10 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     private void setOverflowMenu() {
-        mConversationMenu.setWidth((int) AndroidUtil.dip2px(152));
+        mConversationMenu.setWidth((int) AndroidHelper.dip2px(152));
         mConversationMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mConversationMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
-        mConversationMenu.setElevation(AndroidUtil.dip2px(4));
+        mConversationMenu.setElevation(AndroidHelper.dip2px(4));
         mConversationMenu.inflate(R.menu.menu_conversation_overflow);
         mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override

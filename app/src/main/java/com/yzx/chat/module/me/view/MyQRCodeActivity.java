@@ -5,9 +5,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -19,11 +16,15 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.module.common.view.QrCodeScanActivity;
 import com.yzx.chat.module.me.contract.MyQRCodeContract;
 import com.yzx.chat.module.me.presenter.MyQRCodePresenter;
-import com.yzx.chat.module.common.view.QrCodeScanActivity;
 import com.yzx.chat.util.QRUtils;
 import com.yzx.chat.widget.view.NineGridAvatarView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by YZX on 2018年02月24日.

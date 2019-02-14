@@ -18,7 +18,7 @@ import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.core.util.LogUtil;
 
 import java.text.SimpleDateFormat;
@@ -52,7 +52,7 @@ public class IMMessageHelper {
             return "";
         }
         if (!TextUtils.isEmpty(conversation.getDraft())) {
-            String hint = AndroidUtil.getString(R.string.EMMessageUtil_Draft);
+            String hint = AndroidHelper.getString(R.string.EMMessageUtil_Draft);
             SpannableString spannableStr = new SpannableString(hint + " " + conversation.getDraft());
             spannableStr.setSpan(new ForegroundColorSpan(Color.RED), 0, hint.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             return spannableStr;
@@ -66,15 +66,15 @@ public class IMMessageHelper {
             TextMessage textMessage = (TextMessage) messageContent;
             return textMessage.getContent();
         } else if (messageContent instanceof VoiceMessage) {
-            return AndroidUtil.getString(R.string.MessageSummary_VoiceInfo);
+            return AndroidHelper.getString(R.string.MessageSummary_VoiceInfo);
         } else if (messageContent instanceof ImageMessage) {
-            return AndroidUtil.getString(R.string.MessageSummary_ImageInfo);
+            return AndroidHelper.getString(R.string.MessageSummary_ImageInfo);
         } else if (messageContent instanceof LocationMessage) {
-            return AndroidUtil.getString(R.string.MessageSummary_LocationInfo);
+            return AndroidHelper.getString(R.string.MessageSummary_LocationInfo);
         } else if (messageContent instanceof FileMessage) {
-            return AndroidUtil.getString(R.string.MessageSummary_FileInfo);
+            return AndroidHelper.getString(R.string.MessageSummary_FileInfo);
         } else if (messageContent instanceof VideoMessage) {
-            return AndroidUtil.getString(R.string.MessageSummary_VideoInfo);
+            return AndroidHelper.getString(R.string.MessageSummary_VideoInfo);
         } else if (messageContent instanceof GroupNotificationMessage) {
             return groupNotificationMessageToString((GroupNotificationMessage) messageContent);
         } else if (messageContent instanceof ContactNotificationMessage) {
@@ -92,7 +92,7 @@ public class IMMessageHelper {
                 try {
                     ContactManager.ContactMessageExtra extra = GSON.fromJson(message.getExtra(), ContactManager.ContactMessageExtra.class);
                     if (extra != null && extra.userProfile != null) {
-                        return String.format(AndroidUtil.getString(R.string.MessageSummary_ContactNtf_Accept), extra.userProfile.getNickname());
+                        return String.format(AndroidHelper.getString(R.string.MessageSummary_ContactNtf_Accept), extra.userProfile.getNickname());
                     } else {
                         LogUtil.e("extra==null || extra.userProfile==null,data:" + message.getExtra());
                     }

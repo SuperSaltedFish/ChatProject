@@ -3,14 +3,15 @@ package com.yzx.chat.widget.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.annotation.ColorInt;
-import android.support.annotation.IntDef;
-import android.support.annotation.Px;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
+import androidx.annotation.Px;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2018年01月18日.

@@ -14,8 +14,8 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.module.me.contract.CropImageContract;
 import com.yzx.chat.module.me.presenter.CropImagePresenter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.view.CropImageView;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 /**
  * Created by YZX on 2018年03月18日.

@@ -4,16 +4,15 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.ConversationManager;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.group.contract.GroupProfileContract;
-import com.yzx.chat.core.ConversationManager;
-import com.yzx.chat.core.GroupManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import io.rong.imlib.model.Conversation;
 
@@ -71,15 +70,11 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
             mConversation.setConversationType(Conversation.ConversationType.GROUP);
         }
         mGroupProfileView.switchTopState(mConversation.isTop());
-        mConversationManager.isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
+        mConversationManager.isEnableConversationNotification(mConversation, new LifecycleMVPResultCallback<Conversation.ConversationNotificationStatus>(mGroupProfileView) {
             @Override
-            public void onResult(Conversation.ConversationNotificationStatus result) {
+            protected void onSuccess(Conversation.ConversationNotificationStatus result) {
                 mGroupProfileView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
-            }
 
-            @Override
-            public void onFailure(String error) {
-                LogUtil.e(error);
             }
         });
     }
@@ -97,84 +92,59 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void updateGroupName(final String newName) {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
-        mGroupManager.renameGroup(mConversation.getTargetId(), newName, new ResultCallback<Void>() {
+        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Modify));
+        mGroupManager.renameGroup(mConversation.getTargetId(), newName, new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
-            public void onResult(Void result) {
+            protected void onSuccess(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
+                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
-            }
-
-            @Override
-            public void onFailure(final String error) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.showError(error);
             }
         });
     }
 
     @Override
     public void updateGroupNotice(final String newNotice) {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
-        mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new ResultCallback<Void>() {
+        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Modify));
+        mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
-            public void onResult(Void result) {
+            protected void onSuccess(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
+                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
-            }
-
-            @Override
-            public void onFailure(final String error) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.showError(error);
             }
         });
     }
 
     @Override
     public void updateMyGroupAlias(final String newAlias) {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Modify));
-        mGroupManager.updateMemberAlias(mConversation.getTargetId(), newAlias, new ResultCallback<Void>() {
+        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Modify));
+        mGroupManager.updateMemberAlias(mConversation.getTargetId(), newAlias, new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
-            public void onResult(Void result) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
+            protected void onSuccess(Void result) {
                 mGroupProfileView.showNewMyAlias(newAlias);
-            }
-
-            @Override
-            public void onFailure(final String error) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.showError(error);
             }
         });
     }
 
     @Override
     public void quitGroup() {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Quit));
-        mGroupManager.quitGroup(mConversation.getTargetId(), new ResultCallback<Void>() {
+        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Quit));
+        mGroupManager.quitGroup(mConversation.getTargetId(), new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
-            public void onResult(Void result) {
+            protected void onSuccess(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
+                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
-            }
-
-            @Override
-            public void onFailure(String error) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
-                mGroupProfileView.showError(error);
             }
         });
     }

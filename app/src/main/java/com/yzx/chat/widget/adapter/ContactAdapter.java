@@ -13,7 +13,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.FlowLayout;
 
@@ -162,7 +162,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             mTvSignature = itemView.findViewById(R.id.ContactAdapter_mTvSignature);
             mTvAge = itemView.findViewById(R.id.ContactAdapter_mTvAge);
             mTagsFlowLayout.setMaxLine(1);
-            mTagsFlowLayout.setItemSpace((int) AndroidUtil.dip2px(4));
+            mTagsFlowLayout.setItemSpace((int) AndroidHelper.dip2px(4));
         }
 
     }

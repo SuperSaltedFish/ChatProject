@@ -1,8 +1,9 @@
 package com.yzx.chat.base;
 
-import android.support.v7.util.DiffUtil;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by YZX on 2017年11月28日.

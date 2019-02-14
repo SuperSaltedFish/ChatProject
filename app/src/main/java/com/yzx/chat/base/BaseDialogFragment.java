@@ -14,6 +14,11 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.yzx.chat.R;
+import com.yzx.chat.widget.dialog.ErrorDialog;
+import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.Cancelable;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -22,11 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.fragment.app.DialogFragment;
-import cn.swiftpass.standardwallet.R;
-import cn.swiftpass.standardwallet.core.listener.Cancelable;
-import cn.swiftpass.standardwallet.widget.dialog.ErrorDialog;
-import cn.swiftpass.standardwallet.widget.dialog.ProgressDialog;
-
 /**
  * Created by 叶智星 on 2018年09月20日.
  * 每一个不曾起舞的日子，都是对生命的辜负。
@@ -106,13 +106,6 @@ public abstract class BaseDialogFragment<P extends BasePresenter> extends Dialog
         mContext = null;
     }
 
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        setWindowAnimations(R.style.BottomDialogFragmentDismissAnimStyle);
-    }
-
     protected void setWindowLayout(int width, int height) {
         Dialog dialog = getDialog();
         if (dialog != null) {
@@ -187,7 +180,7 @@ public abstract class BaseDialogFragment<P extends BasePresenter> extends Dialog
 
     public void setEnableLoading(boolean isEnable, final Cancelable cancelable) {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(mContext, getString(R.string.Hint_Loading));
+            mProgressDialog = new ProgressDialog(mContext, getString(R.string.ProgressHint_Default));
         }
         if (isEnable) {
             if (cancelable != null) {

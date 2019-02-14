@@ -24,6 +24,7 @@ import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.module.main.view.SplashActivity;
 import com.yzx.chat.widget.dialog.ErrorDialog;
 import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.Cancelable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -339,7 +340,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
 
     public void setEnableLoading(boolean isEnable, final Cancelable cancelable) {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this, getString(R.string.Hint_Loading));
+            mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Default));
         }
         if (isEnable) {
             if (cancelable != null) {

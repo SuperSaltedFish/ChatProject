@@ -1,11 +1,11 @@
 package com.yzx.chat.module.contact.presenter;
 
 
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
-import com.yzx.chat.core.ContactManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -53,18 +53,13 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void deleteContact() {
-        mContactProfileView.setEnableProgressDialog(true);
-        mAppClient.getContactManager().deleteContact(mContactEntity, new ResultCallback<Void>() {
+        mAppClient.getContactManager().deleteContact(mContactEntity.getUserProfile().getUserID(), new LifecycleMVPResultCallback<Void>(mContactProfileView) {
+
             @Override
-            public void onResult(Void result) {
+            protected void onSuccess(Void result) {
 
             }
 
-            @Override
-            public void onFailure(String error) {
-                mContactProfileView.setEnableProgressDialog(false);
-                mContactProfileView.showError(error);
-            }
         });
     }
 

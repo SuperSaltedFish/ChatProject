@@ -10,7 +10,6 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.Surface;
@@ -18,6 +17,8 @@ import android.view.Surface;
 import com.yzx.chat.util.Camera2Helper;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年06月10日.

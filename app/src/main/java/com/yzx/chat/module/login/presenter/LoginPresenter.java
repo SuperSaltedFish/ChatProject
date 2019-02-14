@@ -2,31 +2,30 @@ package com.yzx.chat.module.login.presenter;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.yzx.chat.base.BaseResponseCallback;
-import com.yzx.chat.module.login.contract.LoginContract;
-import com.yzx.chat.core.entity.JsonResponse;
-import com.yzx.chat.core.net.api.AuthApi;
-import com.yzx.chat.core.entity.GetSecretKeyEntity;
-import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
-import com.yzx.chat.core.entity.LoginResponseEntity;
-import com.yzx.chat.core.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.entity.GetSecretKeyEntity;
+import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.entity.LoginResponseEntity;
+import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.core.net.ApiHelper;
+import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.HttpConverter;
-import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.tool.NotificationHelper;
-import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.login.contract.LoginContract;
+import com.yzx.chat.tool.NotificationHelper;
+import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 
 /**
@@ -52,7 +51,6 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         NotificationHelper.getInstance().cancelAllNotification();
         AppClient.getInstance().logout();
-        sHttpExecutor.cleanAllTask();
         BackstageAsyncTask.cleanAllTask();
 
     }
@@ -154,7 +152,7 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             protected void onSuccess(ObtainSMSCodeEntity response) {
                 if (!response.isSkipVerify()) {
-                    AndroidUtil.showToast(response.getVerifyCode());
+                    AndroidHelper.showToast(response.getVerifyCode());
                     mLoginView.jumpToVerifyPage();
                 } else {
                     AppClient.getInstance().login(mLoginCall, mLoginCallBack);

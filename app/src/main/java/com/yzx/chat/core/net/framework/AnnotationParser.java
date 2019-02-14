@@ -1,11 +1,9 @@
 package com.yzx.chat.core.net.framework;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import com.yzx.chat.core.net.framework.Executor.HttpRequest;
-import com.yzx.chat.core.net.framework.RequestParams;
 import com.yzx.chat.core.net.framework.annotation.FileListPart;
 import com.yzx.chat.core.net.framework.annotation.FilePart;
 import com.yzx.chat.core.net.framework.annotation.GET;
@@ -24,6 +22,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年07月17日.

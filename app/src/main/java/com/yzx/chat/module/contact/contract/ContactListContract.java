@@ -1,12 +1,12 @@
 package com.yzx.chat.module.contact.contract;
 
-import android.support.v7.util.DiffUtil;
-
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 import com.yzx.chat.core.entity.ContactEntity;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by YZX on 2017年11月19日.

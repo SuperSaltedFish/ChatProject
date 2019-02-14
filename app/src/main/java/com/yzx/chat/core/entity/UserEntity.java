@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -173,7 +173,7 @@ public class UserEntity implements Parcelable {
                 Date birthDay = isoFormat.parse(strBirthday);
                 Calendar cal = Calendar.getInstance();
                 if (cal.before(birthDay)) {
-                    return "0"+AndroidUtil.getString(R.string.Unit_Age);
+                    return "0"+ AndroidHelper.getString(R.string.Unit_Age);
                 }
                 int yearNow = cal.get(Calendar.YEAR);
                 int monthNow = cal.get(Calendar.MONTH);
@@ -193,13 +193,13 @@ public class UserEntity implements Parcelable {
                         age--;
                     }
                 }
-                return String.valueOf(age)+AndroidUtil.getString(R.string.Unit_Age);
+                return String.valueOf(age)+ AndroidHelper.getString(R.string.Unit_Age);
             } catch (ParseException e) {
                 e.printStackTrace();
 
             }
         }
-        return AndroidUtil.getString(R.string.ContactProfileActivity_AgeInvisible);
+        return AndroidHelper.getString(R.string.ContactProfileActivity_AgeInvisible);
 
     }
 

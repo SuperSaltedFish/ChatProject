@@ -3,8 +3,9 @@ package com.yzx.chat.module.common.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,7 +14,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.DirectoryPathAdapter;
 import com.yzx.chat.widget.adapter.FileAndDirectoryAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
@@ -74,11 +75,11 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mDirectoryPathLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRvDirectoryPath.setLayoutManager(mDirectoryPathLayoutManager);
         mRvDirectoryPath.setHasFixedSize(true);
-        mRvDirectoryPath.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(6), SpacesItemDecoration.HORIZONTAL));
+        mRvDirectoryPath.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(6), SpacesItemDecoration.HORIZONTAL));
         mRvDirectoryPath.addOnItemTouchListener(mOnPathItemClickListener);
         mRvDirectoryPath.setAdapter(mDirectoryPathAdapter);
 
-        mRvFileAndDirectory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRvFileAndDirectory.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mRvFileAndDirectory.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRvFileAndDirectory.setHasFixedSize(true);
         mRvFileAndDirectory.addOnItemTouchListener(mOnFileOrDirectoryItemClickListener);

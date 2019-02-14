@@ -3,7 +3,6 @@ package com.yzx.chat.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IntRange;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
@@ -15,6 +14,8 @@ import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
 import com.yzx.chat.widget.view.GlideBlurTransform;
 import com.yzx.chat.widget.view.GlideHexagonTransform;
+
+import androidx.annotation.IntRange;
 
 /**
  * Created by YZX on 2017年05月23日.

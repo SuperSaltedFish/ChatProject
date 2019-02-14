@@ -2,20 +2,20 @@ package com.yzx.chat.module.main.presenter;
 
 import android.os.Handler;
 
-import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.ContactOperationEntity;
-import com.yzx.chat.core.entity.GroupEntity;
-import com.yzx.chat.module.main.contract.HomeContract;
-import com.yzx.chat.module.conversation.presenter.ChatPresenter;
-import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.module.contact.view.NotificationMessageActivity;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ChatManager;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.ConversationManager;
-import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.extra.ContactNotificationMessageEx;
+import com.yzx.chat.module.contact.view.NotificationMessageActivity;
+import com.yzx.chat.module.conversation.presenter.ChatPresenter;
+import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.module.main.contract.HomeContract;
+import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.tool.NotificationHelper;
-import com.yzx.chat.util.AndroidUtil;
 
 import io.rong.imlib.model.Message;
 import io.rong.message.GroupNotificationMessage;
@@ -80,7 +80,7 @@ public class HomePresenter implements HomeContract.Presenter {
     private final ChatManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatManager.OnChatMessageReceiveListener() {
         @Override
         public void onChatMessageReceived(final Message message, int untreatedCount) {
-            Class activityClass = AndroidUtil.getStackTopActivityClass();
+            Class activityClass = ActivityHelper.getStackTopActivityClass();
             if (activityClass == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID)) {
                 return;
             }
@@ -91,13 +91,13 @@ public class HomePresenter implements HomeContract.Presenter {
                         case PRIVATE:
                             ContactEntity contact = AppClient.getInstance().getContactManager().getContact(message.getTargetId());
                             if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
-                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact,!AndroidUtil.isAppForeground());
+                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact,!ActivityHelper.isAppForeground());
                             }
                             break;
                         case GROUP:
                             GroupEntity group = AppClient.getInstance().getGroupManager().getGroup(message.getTargetId());
                             if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
-                                NotificationHelper.getInstance().showGroupMessageNotification(message, group,!AndroidUtil.isAppForeground());
+                                NotificationHelper.getInstance().showGroupMessageNotification(message, group,!ActivityHelper.isAppForeground());
                             }
                             break;
                     }
@@ -126,11 +126,11 @@ public class HomePresenter implements HomeContract.Presenter {
     private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
         @Override
         public void onContactOperationReceive(final ContactOperationEntity contactOperation) {
-            Class activityClass = AndroidUtil.getStackTopActivityClass();
+            Class activityClass = ActivityHelper.getStackTopActivityClass();
             if ( activityClass == NotificationMessageActivity.class) {
                 return;
             }
-            NotificationHelper.getInstance().showContactOperationNotification(contactOperation,!AndroidUtil.isAppForeground());
+            NotificationHelper.getInstance().showContactOperationNotification(contactOperation,!ActivityHelper.isAppForeground());
         }
 
         @Override

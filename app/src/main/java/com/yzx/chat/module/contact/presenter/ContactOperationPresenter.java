@@ -1,22 +1,23 @@
 package com.yzx.chat.module.contact.presenter;
 
 import android.os.Handler;
-import android.support.v7.util.DiffUtil;
 
 import com.yzx.chat.base.DiffCalculate;
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.contract.ContactOperationContract;
-import com.yzx.chat.core.ContactManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by YZX on 2018年01月20日.
@@ -60,34 +61,22 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void acceptContactRequest(final ContactOperationEntity contactOperation) {
-        mContactOperationContractView.setEnableProgressDialog(true);
-        mAppClient.getContactManager().acceptContact(contactOperation, new ResultCallback<Void>() {
+
+        mAppClient.getContactManager().acceptContact(contactOperation.getUserID(), new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
             @Override
-            public void onResult(Void result) {
-                mContactOperationContractView.setEnableProgressDialog(false);
+            protected void onSuccess(Void result) {
+
             }
 
-            @Override
-            public void onFailure(String error) {
-                mContactOperationContractView.showError(error);
-                mContactOperationContractView.setEnableProgressDialog(false);
-            }
         });
     }
 
     @Override
     public void refusedContactRequest(ContactOperationEntity contactOperation) {
-        mContactOperationContractView.setEnableProgressDialog(true);
-        mAppClient.getContactManager().refusedContact(contactOperation, "", new ResultCallback<Void>() {
+        mAppClient.getContactManager().refusedContact(contactOperation.getUserID(), "", new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
             @Override
-            public void onResult(Void result) {
-                mContactOperationContractView.setEnableProgressDialog(false);
-            }
+            protected void onSuccess(Void result) {
 
-            @Override
-            public void onFailure(String error) {
-                mContactOperationContractView.showError(error);
-                mContactOperationContractView.setEnableProgressDialog(false);
             }
         });
     }

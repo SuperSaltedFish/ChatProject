@@ -2,26 +2,26 @@ package com.yzx.chat.module.conversation.presenter;
 
 
 import android.os.Handler;
-import android.support.v7.util.DiffUtil;
 import android.text.TextUtils;
 
 import com.yzx.chat.base.DiffCalculate;
-import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.GroupEntity;
-import com.yzx.chat.core.entity.GroupMemberEntity;
-import com.yzx.chat.module.conversation.contract.ConversationContract;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ChatManager;
 import com.yzx.chat.core.ConversationManager;
 import com.yzx.chat.core.GroupManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.conversation.contract.ConversationContract;
+import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.recyclerview.widget.DiffUtil;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 

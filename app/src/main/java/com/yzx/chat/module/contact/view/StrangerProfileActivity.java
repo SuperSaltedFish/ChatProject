@@ -2,8 +2,6 @@ package com.yzx.chat.module.contact.view;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -13,18 +11,21 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
 import com.yzx.chat.module.contact.presenter.StrangerProfilePresenter;
-import com.yzx.chat.core.ContactManager;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.view.PageIndicator;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
+
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -87,7 +88,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
         mPageIndicator.setIndicatorColorSelected(Color.WHITE);
         mPageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(this, R.color.backgroundColorWhiteLight));
-        mPageIndicator.setIndicatorRadius((int) AndroidUtil.dip2px(3));
+        mPageIndicator.setIndicatorRadius((int) AndroidHelper.dip2px(3));
         mPageIndicator.setupWithViewPager(mVpBanner);
 
         mVpBanner.setAdapter(mCropImagePagerAdapter);

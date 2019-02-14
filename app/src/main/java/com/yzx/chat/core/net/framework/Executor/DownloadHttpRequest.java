@@ -1,9 +1,10 @@
 package com.yzx.chat.core.net.framework.Executor;
 
-import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2019年01月30日.

@@ -3,7 +3,6 @@ package com.yzx.chat.widget.view;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -13,6 +12,9 @@ import android.view.View;
 
 import com.yzx.chat.R;
 
+import androidx.annotation.ColorInt;
+import androidx.appcompat.widget.AppCompatEditText;
+
 
 /**
  * Created by YZX on 2018年01月15日.
@@ -20,7 +22,7 @@ import com.yzx.chat.R;
  */
 
 
-public class ClearEditText extends android.support.v7.widget.AppCompatEditText {
+public class ClearEditText extends AppCompatEditText {
 
     private Drawable mClearDrawable;
     private boolean isShowClearDrawable;

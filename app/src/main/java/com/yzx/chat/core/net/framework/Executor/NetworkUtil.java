@@ -5,9 +5,10 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.content.ContextCompat;
 
 import com.yzx.chat.core.util.LogUtil;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by YZX on 2018年06月08日.

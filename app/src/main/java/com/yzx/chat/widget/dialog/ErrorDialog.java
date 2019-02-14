@@ -6,10 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import cn.swiftpass.standardwallet.R;
-import cn.swiftpass.standardwallet.widget.listener.OnOnlySingleClickListener;
+import com.yzx.chat.R;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
+import androidx.annotation.NonNull;
 /**
  * Created by 叶智星 on 2018年09月21日.
  * 每一个不曾起舞的日子，都是对生命的辜负。

@@ -3,7 +3,6 @@ package com.yzx.chat.module.me.view;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,15 +20,15 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.CityEntity;
 import com.yzx.chat.core.entity.ProvinceEntity;
 import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.common.view.ImageSingleSelectorActivity;
 import com.yzx.chat.module.me.contract.ProfileEditContract;
 import com.yzx.chat.module.me.presenter.ProfileEditPresenter;
-import com.yzx.chat.module.common.view.ImageSingleSelectorActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.GsonUtil;
-import com.yzx.chat.core.util.LogUtil;
-import com.yzx.chat.widget.view.ProgressDialog;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.view.RoundImageView;
 
 import java.util.ArrayList;
@@ -37,6 +36,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年02月05日.
@@ -89,7 +90,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         mTvBirthday.setOnClickListener(mOnBirthdayClickListener);
         mTvLocation.setOnClickListener(mOnLocationClickListener);
 
-        mIvChangeAvatar.setRoundRadius(AndroidUtil.dip2px(16));
+        mIvChangeAvatar.setRoundRadius(AndroidHelper.dip2px(16));
 
 
         setData();

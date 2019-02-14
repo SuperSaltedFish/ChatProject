@@ -2,7 +2,6 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,6 +17,8 @@ import com.yzx.chat.R;
 
 import java.util.Formatter;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年05月15日.

@@ -1,7 +1,5 @@
 package com.yzx.chat.module.contact.presenter;
 
-import android.support.v7.util.DiffUtil;
-
 import com.yzx.chat.base.DiffCalculate;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
@@ -16,6 +14,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by YZX on 2017年11月19日.

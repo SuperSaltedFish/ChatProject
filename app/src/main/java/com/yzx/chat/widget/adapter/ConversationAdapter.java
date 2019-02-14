@@ -1,7 +1,5 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.text.emoji.EmojiCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,13 +8,15 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.tool.IMMessageHelper;
+import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.widget.view.BadgeView;
 import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
+import androidx.emoji.text.EmojiCompat;
 import io.rong.imlib.model.Conversation;
 
 /**

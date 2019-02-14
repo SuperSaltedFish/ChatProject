@@ -1,25 +1,21 @@
 package com.yzx.chat.widget.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.widget.view.NineGridImageView;
 import com.yzx.chat.widget.view.RoundImageView;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 
 /**
  * Created by YZX on 2017年09月04日.
@@ -61,7 +57,7 @@ public class AlbumPagerAdapter extends PagerAdapter {
         WeakReference<RoundImageView> weakReference = mCacheViewQueue.poll();
         if (weakReference == null || weakReference.get() == null) {
             imageView = (RoundImageView) LayoutInflater.from(mContext).inflate(R.layout.item_album, container, false);
-            imageView.setRoundRadius(AndroidUtil.dip2px(6));
+            imageView.setRoundRadius(AndroidHelper.dip2px(6));
         } else {
             imageView = weakReference.get();
         }

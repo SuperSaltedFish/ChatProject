@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.transition.Transition;
 import android.util.Size;
@@ -19,13 +18,14 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.module.conversation.contract.VideoPlayContract;
 import com.yzx.chat.module.conversation.presenter.VideoPlayPresenter;
 import com.yzx.chat.util.VideoDecoder;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.SimpleTransitionListener;
 import com.yzx.chat.widget.view.AutoFitTextureView;
 import com.yzx.chat.widget.view.MediaControllerPopupWindow;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.Locale;
 
+import androidx.core.view.ViewCompat;
 import io.rong.imlib.model.Message;
 
 public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Presenter> implements VideoPlayContract.View {

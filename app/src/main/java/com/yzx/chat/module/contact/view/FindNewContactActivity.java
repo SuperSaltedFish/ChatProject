@@ -7,10 +7,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -22,19 +18,24 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.module.group.view.CreateGroupActivity;
-import com.yzx.chat.module.contact.contract.FindNewContactContract;
-import com.yzx.chat.module.me.view.MyQRCodeActivity;
-import com.yzx.chat.module.common.view.QrCodeScanActivity;
 import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.module.common.view.QrCodeScanActivity;
+import com.yzx.chat.module.contact.contract.FindNewContactContract;
 import com.yzx.chat.module.contact.presenter.FindNewContactPresenter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.module.group.view.CreateGroupActivity;
+import com.yzx.chat.module.me.view.MyQRCodeActivity;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.util.Locale;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class FindNewContactActivity extends BaseCompatActivity<FindNewContactContract.Presenter> implements FindNewContactContract.View {
@@ -77,7 +78,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(8),SpacesItemDecoration.HORIZONTAL));
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(8),SpacesItemDecoration.HORIZONTAL));
 
         mClScan.setOnClickListener(mOnScanLayoutClickListener);
         mClCreateGroup.setOnClickListener(mOnCreateGroupClickListener);

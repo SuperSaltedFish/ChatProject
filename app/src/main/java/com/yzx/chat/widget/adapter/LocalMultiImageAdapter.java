@@ -2,8 +2,6 @@ package com.yzx.chat.widget.adapter;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +14,9 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2017年08月14日.

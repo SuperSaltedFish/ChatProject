@@ -1,13 +1,13 @@
 package com.yzx.chat.widget.view;
 
 import android.graphics.Rect;
-import android.support.annotation.IntDef;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2017年06月27日.

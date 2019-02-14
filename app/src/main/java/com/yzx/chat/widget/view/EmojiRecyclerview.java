@@ -1,15 +1,15 @@
 package com.yzx.chat.widget.view;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.text.emoji.EmojiCompat;
-import androidx.emoji.widget.EmojiTextView;
-import android.support.v7.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.emoji.text.EmojiCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2017年11月29日.
@@ -23,7 +23,7 @@ public class EmojiRecyclerview extends RecyclerView {
     private int[] mEmojiUnicodeArray;
     private GridLayoutManager mGridLayoutManager;
     private EmojiAdapter mAdapter;
-    private  EmojiCompat mEmojiCompat;
+    private EmojiCompat mEmojiCompat;
     private int mEmojiSize;
 
     public EmojiRecyclerview(Context context) {

@@ -2,15 +2,14 @@ package com.yzx.chat.module.contact.view;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.module.contact.view.ContactOperationFragment;
-import com.yzx.chat.module.contact.view.SystemMessageFragment;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.view.SegmentedControlView;
+
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 
 public class NotificationMessageActivity extends BaseCompatActivity {
 
@@ -39,14 +38,14 @@ public class NotificationMessageActivity extends BaseCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        int paddingLeftRight = (int) AndroidUtil.dip2px(10);
-        int paddingTopBottom = (int) AndroidUtil.dip2px(5);
+        int paddingLeftRight = (int) AndroidHelper.dip2px(10);
+        int paddingTopBottom = (int) AndroidHelper.dip2px(5);
         mSegmentedControlView
                 .setItems(getResources().getStringArray(R.array.NotificationMessageActivity_Subtitle))
                 .setColors(Color.WHITE, ContextCompat.getColor(this, R.color.colorAccent))
-                .setTextSize(AndroidUtil.sp2px(14))
+                .setTextSize(AndroidHelper.sp2px(14))
                 .setItemPadding(paddingLeftRight, paddingTopBottom, paddingLeftRight, paddingTopBottom)
-                .setRadius(AndroidUtil.dip2px(4))
+                .setRadius(AndroidHelper.dip2px(4))
                 .setDefaultSelectedPosition(0)
                 .setOnSelectionChangedListener(mOnSelectedChangedListener)
                 .update();

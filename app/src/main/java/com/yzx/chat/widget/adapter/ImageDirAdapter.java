@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
@@ -41,10 +41,10 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
     public void bindDataToViewHolder(ItemView holder, int position) {
         if (mSelectedPosition == position) {
             holder.mIvSelectedIcon.setVisibility(View.VISIBLE);
-            holder.mTvDirPath.setTextColor(AndroidUtil.getColor(R.color.colorAccent));
+            holder.mTvDirPath.setTextColor(AndroidHelper.getColor(R.color.colorAccent));
         } else {
             holder.mIvSelectedIcon.setVisibility(View.INVISIBLE);
-            holder.mTvDirPath.setTextColor(AndroidUtil.getColor(R.color.textPrimaryColorBlack));
+            holder.mTvDirPath.setTextColor(AndroidHelper.getColor(R.color.textPrimaryColorBlack));
         }
         if (position == 0) {
             holder.mTvDirPath.setText(R.string.ImageSelectorActivity_AllImage);

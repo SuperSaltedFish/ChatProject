@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,12 +38,14 @@ import com.yzx.chat.module.contact.view.ContactProfileActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.common.contract.QrCodeScanContract;
 import com.yzx.chat.module.common.presenter.QrCodeScanPresenter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.view.Camera2CaptureView;
 import com.yzx.chat.widget.view.MaskView;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
+
+import androidx.annotation.NonNull;
 
 
 public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Presenter> implements QrCodeScanContract.View {

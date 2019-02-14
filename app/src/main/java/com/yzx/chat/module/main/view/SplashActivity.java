@@ -6,10 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +15,17 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.core.SharePreferenceManager;
+import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.module.main.presenter.SplashPresenter;
-import com.yzx.chat.module.login.view.LoginActivity;
-import com.yzx.chat.core.SharePreferenceManager;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.PageIndicator;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 
 public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter> implements SplashContract.View {

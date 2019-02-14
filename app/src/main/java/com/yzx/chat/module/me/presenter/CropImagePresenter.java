@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.yzx.chat.R;
 import com.yzx.chat.module.me.contract.CropImageContract;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
@@ -49,7 +49,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
 
     private void saveFail() {
         mCropImageView.setEnableProgressDialog(false);
-        mCropImageView.showError(AndroidUtil.getString(R.string.CropImageActivity_SaveAvatarFail));
+        mCropImageView.showError(AndroidHelper.getString(R.string.CropImageActivity_SaveAvatarFail));
     }
 
     private static class SaveAvatarToLocalTask extends BackstageAsyncTask<CropImagePresenter, Bitmap, String> {

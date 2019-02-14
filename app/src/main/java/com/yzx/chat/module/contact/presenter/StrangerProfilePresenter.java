@@ -1,10 +1,10 @@
 package com.yzx.chat.module.contact.presenter;
 
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 /**
  * Created by YZX on 2018年01月29日.
@@ -29,28 +29,22 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void requestContact(final UserEntity user, final String verifyContent) {
-        AppClient.getInstance().getContactManager().requestContact(user, verifyContent, mAcceptOrRequestCallback);
+        AppClient.getInstance().getContactManager().requestContact(user.getUserID(), verifyContent, new LifecycleMVPResultCallback<Void>(mStrangerProfileView) {
+            @Override
+            protected void onSuccess(Void result) {
+                mStrangerProfileView.goBack();
+            }
+        });
     }
 
     @Override
     public void acceptContactRequest(ContactOperationEntity contactOperation) {
-        mStrangerProfileView.setEnableProgressDialog(true);
-        AppClient.getInstance().getContactManager().acceptContact(contactOperation, mAcceptOrRequestCallback);
+        AppClient.getInstance().getContactManager().acceptContact(contactOperation.getUserID(), new LifecycleMVPResultCallback<Void>(mStrangerProfileView) {
+            @Override
+            protected void onSuccess(Void result) {
+                mStrangerProfileView.goBack();
+            }
+        });
     }
-
-    private final ResultCallback<Void> mAcceptOrRequestCallback = new ResultCallback<Void>() {
-
-        @Override
-        public void onResult(Void result) {
-            mStrangerProfileView.setEnableProgressDialog(false);
-            mStrangerProfileView.goBack();
-        }
-
-        @Override
-        public void onFailure(String error) {
-            mStrangerProfileView.showError(error);
-            mStrangerProfileView.setEnableProgressDialog(false);
-        }
-    };
 
 }

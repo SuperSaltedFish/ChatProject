@@ -3,7 +3,7 @@ package com.yzx.chat.widget.view;
 import android.view.View;
 
 import com.yzx.chat.R;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 
 /**
  * Created by YZX on 2018年01月14日.
@@ -17,7 +17,7 @@ public class OverflowMenuShowHelper {
         int menuHeight = menu.getHeight();
         int offsetY = -(anchor.getBottom()-touchY);
         int offsetX;
-        if (touchX > AndroidUtil.getScreenWidth() / 2) {
+        if (touchX > AndroidHelper.getScreenWidth() / 2) {
             offsetX = touchX - menuWidth;
             if (parentHeight / 2 > touchY) {
                 menu.setAnimationStyle(R.style.PopupMenuAnimation_Right_Top);

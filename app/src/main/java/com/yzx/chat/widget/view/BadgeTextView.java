@@ -6,15 +6,16 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.annotation.ColorInt;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * Created by YZX on 2017年11月20日.
@@ -22,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 
-public class BadgeTextView extends android.support.v7.widget.AppCompatTextView {
+public class BadgeTextView extends AppCompatTextView {
 
     public static final int MODE_HIDE = 0;
     public static final int MODE_SHOW = 1;

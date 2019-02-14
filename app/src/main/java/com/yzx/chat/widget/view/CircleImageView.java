@@ -2,11 +2,12 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.graphics.Outline;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2018年07月08日.

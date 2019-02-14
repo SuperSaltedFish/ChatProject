@@ -8,11 +8,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
@@ -20,10 +20,11 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalMultiImageAdapter;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
@@ -109,7 +110,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mRvImageDir.setLayoutManager(new LinearLayoutManager(this));
         mRvImageDir.setAdapter(mImageDirAdapter);
         mRvImageDir.addOnItemTouchListener(mOnBottomSheetItemClickListener);
-        mRvImageDir.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12)));
+        mRvImageDir.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(12)));
 
         mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomBehavior.setSkipCollapsed(true);

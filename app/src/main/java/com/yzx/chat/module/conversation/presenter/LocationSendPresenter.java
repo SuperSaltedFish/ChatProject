@@ -9,7 +9,7 @@ import com.amap.api.services.poisearch.PoiSearch;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.module.conversation.contract.LocationSendContract;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.core.util.LogUtil;
 
 import java.util.ArrayList;
@@ -93,9 +93,9 @@ public class LocationSendPresenter implements LocationSendContract.Presenter {
                     }
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
+                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_Server1));
+                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_Server1));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }
@@ -141,9 +141,9 @@ public class LocationSendPresenter implements LocationSendContract.Presenter {
                     }
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_NetworkUnavailable));
+                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidUtil.getString(R.string.Error_Server1));
+                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_Server1));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }

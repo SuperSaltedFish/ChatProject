@@ -3,16 +3,17 @@ package com.yzx.chat.module.moments.view;
 
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayoutt;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import com.yzx.chat.R;
-import com.yzx.chat.util.AndroidUtil;
-import com.yzx.chat.widget.adapter.MomentsAdapter;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.widget.adapter.MomentsAdapter;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
 /**
@@ -61,7 +62,7 @@ public class MomentsFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12), SpacesItemDecoration.VERTICAL, true, true));
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(12), SpacesItemDecoration.VERTICAL, true, true));
         // mRecyclerView.addOnScrollListener(new ImageAutoLoadScrollListener());
     }
 

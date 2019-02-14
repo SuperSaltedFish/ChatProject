@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,6 +21,8 @@ import com.yzx.chat.module.login.presenter.RegisterPresenter;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.RegexUtil;
 import com.yzx.chat.util.ViewUtil;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by YZX on 2018年07月08日.

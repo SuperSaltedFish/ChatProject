@@ -1,10 +1,10 @@
 package com.yzx.chat.module.contact.presenter;
 
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
-import com.yzx.chat.core.ContactManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import io.rong.imlib.model.Conversation;
 
@@ -45,16 +45,13 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
         }
 
         mContactChatSettingView.switchTopState(mConversation.isTop());
-        mAppClient.getConversationManager().isEnableConversationNotification(mConversation, new ResultCallback<Conversation.ConversationNotificationStatus>() {
+        mAppClient.getConversationManager().isEnableConversationNotification(mConversation, new LifecycleMVPResultCallback<Conversation.ConversationNotificationStatus>(mContactChatSettingView, false) {
             @Override
-            public void onResult(Conversation.ConversationNotificationStatus result) {
+            protected void onSuccess(Conversation.ConversationNotificationStatus result) {
                 mContactChatSettingView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
-            }
-
-            @Override
-            public void onFailure(String error) {
 
             }
+
         });
     }
 

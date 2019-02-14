@@ -16,9 +16,10 @@ import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.UserManager;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.core.SharePreferenceManager;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 
 /**
@@ -54,7 +55,7 @@ public class SplashPresenter implements SplashContract.Presenter {
                 }
             }, 1000);
         } else {
-            String token = UserManager.getLocalToken();
+            String token = "";
             if (TextUtils.isEmpty(token)) {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
@@ -68,10 +69,10 @@ public class SplashPresenter implements SplashContract.Presenter {
                 }, 1000);
 
             } else {
-                mTokenVerify = ((AuthApi) ApiHelper.getProxyInstance(AuthApi.class)).tokenVerify();
-                AppClient.getInstance().loginByLocalToken(mTokenVerify, new ResultCallback<Void>() {
+                mTokenVerify = ApiHelper.getProxyInstance(AuthApi.class).tokenVerify();
+                AppClient.getInstance().loginByLocalToken(mTokenVerify, new LifecycleMVPResultCallback<Void>(mSplashView) {
                     @Override
-                    public void onResult(Void result) {
+                    protected void onSuccess(Void result) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
@@ -82,15 +83,16 @@ public class SplashPresenter implements SplashContract.Presenter {
                     }
 
                     @Override
-                    public void onFailure(String error) {
+                    protected boolean onError(int code, String error) {
                         LogUtil.e(error);
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                mSplashView.showError(AndroidUtil.getString(R.string.SplashPresenter_TokenIncorrect));
+                                mSplashView.showError(AndroidHelper.getString(R.string.SplashPresenter_TokenIncorrect));
                                 mSplashView.startLoginActivity();
                             }
                         });
+                        return true;
                     }
                 });
             }

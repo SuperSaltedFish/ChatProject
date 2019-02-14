@@ -1,14 +1,13 @@
 package com.yzx.chat.widget.listener;
 
-import android.graphics.Rect;
-import android.support.annotation.IntDef;
 import com.google.android.material.appbar.AppBarLayout;
-import android.support.v4.widget.ViewGroupUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import androidx.annotation.IntDef;
 
 /**
  * Created by YZX on 2018年06月14日.

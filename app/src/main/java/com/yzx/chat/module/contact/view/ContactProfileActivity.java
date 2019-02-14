@@ -4,11 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.tabs.TabLayout;
-import android.support.v4.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,26 +11,32 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.tabs.TabLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
 import com.yzx.chat.module.contact.presenter.ContactProfilePresenter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
 import com.yzx.chat.widget.adapter.ContactInfoPagerAdapter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.PageIndicator;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 
 public class ContactProfileActivity extends BaseCompatActivity<ContactProfileContract.Presenter> implements ContactProfileContract.View {
@@ -110,7 +111,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
         mPageIndicator.setIndicatorColorSelected(Color.WHITE);
         mPageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(this, R.color.backgroundColorWhiteLight));
-        mPageIndicator.setIndicatorRadius((int) AndroidUtil.dip2px(3));
+        mPageIndicator.setIndicatorRadius((int) AndroidHelper.dip2px(3));
         mPageIndicator.setupWithViewPager(mVpBanner);
 
         mVpBanner.setAdapter(mCropImagePagerAdapter);
@@ -118,10 +119,10 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
         mTabLayout.setupWithViewPager(mVpContactInfo);
 
-        mLabelFlowLayout.setLineSpace((int) AndroidUtil.dip2px(8));
-        mLabelFlowLayout.setItemSpace((int) AndroidUtil.dip2px(8));
+        mLabelFlowLayout.setLineSpace((int) AndroidHelper.dip2px(8));
+        mLabelFlowLayout.setItemSpace((int) AndroidHelper.dip2px(8));
 
-        int size = (int) AndroidUtil.dip2px(10);
+        int size = (int) AndroidHelper.dip2px(10);
         Drawable drawable = getDrawable(R.drawable.ic_add);
         if (drawable != null) {
             drawable.setTint(Color.WHITE);

@@ -9,10 +9,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.yzx.chat.R;
+import com.yzx.chat.util.AndroidHelper;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import cn.swiftpass.standardwallet.R;
-import cn.swiftpass.standardwallet.util.AndroidHelper;
 
 
 /**

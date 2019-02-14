@@ -7,13 +7,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import androidx.cardview.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -43,10 +36,10 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.configure.Constants;
+import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.module.conversation.contract.LocationSendContract;
 import com.yzx.chat.module.conversation.presenter.LocationSendPresenter;
-import com.yzx.chat.module.common.view.LocationMapActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
@@ -56,6 +49,14 @@ import com.yzx.chat.widget.view.DividerItemDecoration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2018年08月10日.
@@ -252,7 +253,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
                 .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_point)))
                 .radiusFillColor(Color.TRANSPARENT)
                 .strokeColor(Color.TRANSPARENT));
-        if (AndroidUtil.rawResToLocalFile(R.raw.map_style, Constants.LOCATION_STYLE_FILE_PATH)) {
+        if (AndroidHelper.rawResToLocalFile(R.raw.map_style, Constants.LOCATION_STYLE_FILE_PATH)) {
             mAMap.setCustomMapStylePath(Constants.LOCATION_STYLE_FILE_PATH);
             mAMap.setMapCustomEnable(true);
         }
@@ -321,7 +322,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
             public void onGlobalLayout() {
                 mMapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int centerX = mMapView.getWidth() / 2;
-                int centerY = (mToolbar.getBottom() + mCvMarkerLayout.getTop()) / 2 - (int) AndroidUtil.dip2px(16);
+                int centerY = (mToolbar.getBottom() + mCvMarkerLayout.getTop()) / 2 - (int) AndroidHelper.dip2px(16);
                 mMapMarker.setPositionByPixels(centerX, centerY);
                 mAMap.setPointToCenter(centerX, centerY);
                 mAMap.setMyLocationEnabled(true);

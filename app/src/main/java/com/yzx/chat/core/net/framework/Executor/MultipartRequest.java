@@ -1,6 +1,5 @@
 package com.yzx.chat.core.net.framework.Executor;
 
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.io.File;
@@ -12,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2019年01月30日.

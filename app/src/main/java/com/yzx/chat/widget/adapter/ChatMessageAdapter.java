@@ -5,14 +5,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
-import android.support.annotation.CallSuper;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.CircularProgressDrawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Size;
 import android.util.SparseLongArray;
@@ -26,22 +18,23 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.module.conversation.view.VideoPlayActivity;
+import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.core.extra.VideoMessage;
+import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.common.view.ImageOriginalActivity;
+import com.yzx.chat.module.common.view.LocationMapActivity;
+import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.module.conversation.view.VideoPlayActivity;
+import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.tool.IMMessageHelper;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.util.CountDownTimer;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.FileUtil;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
-import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.module.common.view.ImageOriginalActivity;
-import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.widget.view.RoundImageView;
 import com.yzx.chat.widget.view.VisualizerView;
 
@@ -50,6 +43,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;
 import io.rong.message.FileMessage;
@@ -307,8 +308,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                     mProgressDrawable = new CircularProgressDrawable(itemView.getContext());
                     mProgressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
                     mProgressDrawable.setArrowEnabled(false);
-                    mProgressDrawable.setStrokeWidth(AndroidUtil.dip2px(1));
-                    mProgressDrawable.setColorSchemeColors(AndroidUtil.getColor(R.color.colorAccent));
+                    mProgressDrawable.setStrokeWidth(AndroidHelper.dip2px(1));
+                    mProgressDrawable.setColorSchemeColors(AndroidHelper.getColor(R.color.colorAccent));
                     mIvMessageState.setImageDrawable(mProgressDrawable);
                 }
                 mProgressDrawable.start();
@@ -356,7 +357,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
                     mViewHolder = new VoiceViewHolder(itemView);
                     if (type == HOLDER_TYPE_RECEIVE_MESSAGE_VOICE) {
-                        ((VoiceViewHolder) mViewHolder).setVisualizerColor(AndroidUtil.getColor(R.color.colorAccentLight));
+                        ((VoiceViewHolder) mViewHolder).setVisualizerColor(AndroidHelper.getColor(R.color.colorAccentLight));
                     }
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
@@ -440,11 +441,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             if (imageUri == null || TextUtils.isEmpty(imageUri.getPath()) || !new File(imageUri.getPath()).exists()) {
                 imageUri = imageMessage.getMediaUrl();
                 if (imageUri == null || TextUtils.isEmpty(imageUri.getPath())) {
-                    AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_ImageAlreadyOverdue));
+                    AndroidHelper.showToast(AndroidHelper.getString(R.string.ChatActivity_ImageAlreadyOverdue));
                     return;
                 }
             }
-            Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
+            Activity stackTopActivity = ActivityHelper.getStackTopActivityInstance();
             if (stackTopActivity instanceof ChatActivity) {
                 Intent intent = new Intent(stackTopActivity, ImageOriginalActivity.class);
                 intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_URI, imageUri);
@@ -492,12 +493,12 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 localPath = null;
                 videoUri = videoMessage.getMediaUrl();
                 if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
-                    AndroidUtil.showToast(AndroidUtil.getString(R.string.ChatActivity_VideoAlreadyOverdue));
+                    AndroidHelper.showToast(AndroidHelper.getString(R.string.ChatActivity_VideoAlreadyOverdue));
                     return;
                 }
             }
             Uri thumbUri = videoMessage.getThumbUri();
-            Activity stackTopActivity = AndroidUtil.getStackTopActivityInstance();
+            Activity stackTopActivity = ActivityHelper.getStackTopActivityInstance();
             if (stackTopActivity instanceof ChatActivity) {
                 Intent intent = new Intent(stackTopActivity, VideoPlayActivity.class);
                 intent.putExtra(VideoPlayActivity.INTENT_EXTRA_VIDEO_PATH, localPath);
@@ -581,7 +582,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mIvImageContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
             mContentLayout = mIvImageContent;
-            mIvImageContent.setRoundRadius(AndroidUtil.dip2px(3));
+            mIvImageContent.setRoundRadius(AndroidHelper.dip2px(3));
         }
 
         @Override
@@ -800,7 +801,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mIvVideoThumbnail = itemView.findViewById(R.id.ChatMessageAdapter_mIvVideoThumbnail);
             mTvVideoDuration = itemView.findViewById(R.id.ChatMessageAdapter_mTvVideoDuration);
-            mIvVideoThumbnail.setRoundRadius(AndroidUtil.dip2px(3));
+            mIvVideoThumbnail.setRoundRadius(AndroidHelper.dip2px(3));
             mContentLayout = mIvVideoThumbnail;
         }
 

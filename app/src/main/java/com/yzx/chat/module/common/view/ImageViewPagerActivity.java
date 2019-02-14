@@ -1,12 +1,12 @@
 package com.yzx.chat.module.common.view;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ImageSelectedAdapter;
 import com.yzx.chat.widget.adapter.LocalImageViewPagerAdapter;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
@@ -98,7 +98,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.backgroundColorGrey)));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(12), SpacesItemDecoration.HORIZONTAL, true, true));
+        mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(12), SpacesItemDecoration.HORIZONTAL, true, true));
         mRecyclerView.addOnItemTouchListener(mOnSelectedImageItemClickListener);
         mRecyclerView.setAdapter(mSelectedAdapter);
 
@@ -135,7 +135,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
             mFlBottomLayout.setElevation(0);
         } else {
             mRecyclerView.setVisibility(View.INVISIBLE);
-            mFlBottomLayout.setElevation(AndroidUtil.dip2px(10));
+            mFlBottomLayout.setElevation(AndroidHelper.dip2px(10));
         }
     }
 

@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
-import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.transition.Transition;
 import android.widget.ImageView;
@@ -18,6 +17,8 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.widget.listener.SimpleTransitionListener;
+
+import androidx.core.view.ViewCompat;
 
 
 /**

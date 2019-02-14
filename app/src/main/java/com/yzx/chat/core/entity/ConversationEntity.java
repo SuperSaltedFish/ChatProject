@@ -1,10 +1,11 @@
 package com.yzx.chat.core.entity;
 
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 /**
  * Created by YZX on 2017年06月17日.

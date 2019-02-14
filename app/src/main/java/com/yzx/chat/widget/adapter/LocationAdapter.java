@@ -4,13 +4,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 
 import java.util.List;
 
@@ -29,8 +28,8 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
 
     public LocationAdapter(List<PoiItem> POIList) {
         mPOIList = POIList;
-        mSelectedTextColor = AndroidUtil.getColor(R.color.colorAccent);
-        mUnselectedTextColor = AndroidUtil.getColor(R.color.textPrimaryColorBlack);
+        mSelectedTextColor = AndroidHelper.getColor(R.color.colorAccent);
+        mUnselectedTextColor = AndroidHelper.getColor(R.color.textPrimaryColorBlack);
     }
 
     @Override

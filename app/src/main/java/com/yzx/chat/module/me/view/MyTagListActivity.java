@@ -1,9 +1,6 @@
 package com.yzx.chat.module.me.view;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -17,6 +14,10 @@ import com.yzx.chat.widget.view.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Presenter> implements MyTagListContract.View {
 
@@ -42,7 +43,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mRvTags.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRvTags.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mRvTags.setAdapter(mAdapter);
         mRvTags.setHasFixedSize(true);
         mRvTags.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));

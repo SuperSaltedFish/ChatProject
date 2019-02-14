@@ -8,11 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.LinearLayoutManager;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -35,7 +36,7 @@ import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.module.contact.contract.ContactListContract;
 import com.yzx.chat.module.contact.presenter.ContactListPresenter;
 import com.yzx.chat.module.me.view.MyTagListActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.module.group.view.GroupListActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
@@ -130,9 +131,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack));
         mLetterSegmentationItemDecoration.setLineWidth(1);
         mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlackLight));
-        mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(15));
+        mLetterSegmentationItemDecoration.setTextSize(AndroidHelper.sp2px(15));
 
-        mLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
         mRvContact.setLayoutManager(mLinearLayoutManager);
         mRvContact.setAdapter(mContactAdapter);
         mRvContact.setHasFixedSize(true);
@@ -159,7 +160,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
     private void setSearchBar() {
 
-        mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         mRvSearchContact.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
         mRvSearchContact.setAdapter(mSearchAdapter);
@@ -182,14 +183,14 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         });
 
 
-        final int searchPopupWindowWidth = (int) (AndroidUtil.getScreenWidth() - AndroidUtil.dip2px(32));
+        final int searchPopupWindowWidth = (int) (AndroidHelper.getScreenWidth() - AndroidHelper.dip2px(32));
         mSearchPopupWindow = new PopupWindow(mContext);
         mSearchPopupWindow.setAnimationStyle(-1);
         mSearchPopupWindow.setWidth(searchPopupWindowWidth);
         mSearchPopupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
         mSearchPopupWindow.setContentView(mRvSearchContact);
         mSearchPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        mSearchPopupWindow.setElevation(AndroidUtil.dip2px(8));
+        mSearchPopupWindow.setElevation(AndroidHelper.dip2px(8));
         mSearchPopupWindow.setOutsideTouchable(true);
         mSearchPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
         mSearchPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -197,7 +198,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mToolbar.inflateMenu(R.menu.menu_contact_list);
         MenuItem searchItem = mToolbar.getMenu().findItem(R.id.ContactList_Search);
         mSearchView = (SearchView) searchItem.getActionView();
-        ImageView searchButton = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_button);
+        ImageView searchButton = mSearchView.findViewById(androidx.appcompat.R.id.search_button);
         if (searchButton != null) {
             searchButton.setImageResource(R.drawable.ic_search);
             searchButton.setImageTintList(ColorStateList.valueOf(Color.WHITE));
@@ -234,10 +235,10 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     private void setOverflowMenu() {
-        mContactMenu.setWidth((int) AndroidUtil.dip2px(152));
+        mContactMenu.setWidth((int) AndroidHelper.dip2px(152));
         mContactMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mContactMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
-        mContactMenu.setElevation(AndroidUtil.dip2px(4));
+        mContactMenu.setElevation(AndroidHelper.dip2px(4));
         mContactMenu.inflate(R.menu.menu_contact_overflow);
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override

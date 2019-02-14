@@ -1,6 +1,6 @@
 package com.yzx.chat.widget.listener;
 
-import android.support.v4.view.GestureDetectorCompat;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import android.view.GestureDetector;
@@ -16,7 +16,7 @@ import android.view.View;
 public abstract class OnRecyclerViewItemClickListener implements OnItemTouchListener {
 
     private  RecyclerView mRecyclerView;
-    private  GestureDetectorCompat mGestureDetector;
+    private GestureDetectorCompat mGestureDetector;
 
     @Override
     public void onTouchEvent(RecyclerView rv, MotionEvent e) {

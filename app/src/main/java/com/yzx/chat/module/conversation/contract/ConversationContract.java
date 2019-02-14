@@ -1,13 +1,12 @@
 package com.yzx.chat.module.conversation.contract;
 
 
-import android.support.v7.util.DiffUtil;
-
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.DiffUtil;
 import io.rong.imlib.model.Conversation;
 
 /**

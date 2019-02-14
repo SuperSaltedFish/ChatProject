@@ -5,24 +5,25 @@ import android.graphics.Outline;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.broadcast.BackPressedReceive;
+import com.yzx.chat.module.common.view.QrCodeScanActivity;
+import com.yzx.chat.module.contact.view.ContactListFragment;
+import com.yzx.chat.module.conversation.view.ConversationFragment;
 import com.yzx.chat.module.main.contract.HomeContract;
 import com.yzx.chat.module.main.presenter.HomePresenter;
-import com.yzx.chat.module.common.view.QrCodeScanActivity;
-import com.yzx.chat.module.conversation.view.ConversationFragment;
-import com.yzx.chat.module.contact.view.ContactListFragment;
-import com.yzx.chat.module.moments.view.MomentsFragment;
 import com.yzx.chat.module.me.view.ProfileFragment;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.module.moments.view.MomentsFragment;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.view.BottomTabLayout;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> implements HomeContract.View {
@@ -71,7 +72,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .addTab(R.drawable.ic_contacts_focus, R.drawable.ic_contacts_unfocus, getString(R.string.HomeBottomNavigationTitle_Contact))
                 .addTab(R.drawable.ic_moments_focus, R.drawable.ic_moments_unfocus, getString(R.string.HomeBottomNavigationTitle_Moments))
                 .addTab(R.drawable.ic_personal_focus, R.drawable.ic_personal_unfocus, getString(R.string.HomeBottomNavigationTitle_Profile))
-                .setTitleTextSize(AndroidUtil.sp2px(11))
+                .setTitleTextSize(AndroidHelper.sp2px(11))
                 .addOnTabItemSelectedListener(mOnTabSelectedListener)
                 .setSelectPosition(0, false, true);
 
@@ -86,7 +87,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 } else {
                     mRect.set(0, 0, view.getWidth(), view.getHeight());
                 }
-                mRect.offset(0, (int) -AndroidUtil.dip2px(2));
+                mRect.offset(0, (int) -AndroidHelper.dip2px(2));
                 outline.setRect(mRect);
             }
         });

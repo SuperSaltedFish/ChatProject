@@ -7,12 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.emoji.widget.EmojiEditText;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -34,20 +28,20 @@ import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.module.conversation.contract.ChatContract;
-import com.yzx.chat.module.conversation.presenter.ChatPresenter;
-import com.yzx.chat.module.contact.view.ContactProfileActivity;
+import com.yzx.chat.core.SharePreferenceManager;
+import com.yzx.chat.core.entity.BasicInfoProvider;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.FileSelectorActivity;
-import com.yzx.chat.module.group.view.GroupProfileActivity;
 import com.yzx.chat.module.common.view.ImageMultiSelectorActivity;
 import com.yzx.chat.module.common.view.LocationMapActivity;
+import com.yzx.chat.module.contact.view.ContactProfileActivity;
+import com.yzx.chat.module.conversation.contract.ChatContract;
+import com.yzx.chat.module.conversation.presenter.ChatPresenter;
+import com.yzx.chat.module.group.view.GroupProfileActivity;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.core.SharePreferenceManager;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.EmojiUtil;
-import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
@@ -65,6 +59,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.emoji.widget.EmojiEditText;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.rong.imlib.model.Message;
 
 /**
@@ -343,7 +343,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
         mRvChatView.setLayoutManager(layoutManager);
-        mRvChatView.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
+        mRvChatView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         ((DefaultItemAnimator) (mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
@@ -475,7 +475,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setEmojiData(mEmojis, 7);
         emojiRecyclerview.setEmojiSize(24);
         emojiRecyclerview.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        emojiRecyclerview.setPadding((int) AndroidUtil.dip2px(8), 0, (int) AndroidUtil.dip2px(8), 0);
+        emojiRecyclerview.setPadding((int) AndroidHelper.dip2px(8), 0, (int) AndroidHelper.dip2px(8), 0);
         emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {

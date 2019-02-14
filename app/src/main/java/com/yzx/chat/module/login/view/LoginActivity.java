@@ -5,10 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class LoginActivity extends BaseCompatActivity {
 

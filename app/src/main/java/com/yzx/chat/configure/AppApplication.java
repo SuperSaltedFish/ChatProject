@@ -3,15 +3,15 @@ package com.yzx.chat.configure;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
-import android.support.text.emoji.EmojiCompat;
-import android.support.text.emoji.bundled.BundledEmojiCompatConfig;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.net.framework.Executor.HttpExecutor;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 
 import java.util.List;
+
+import androidx.emoji.bundled.BundledEmojiCompatConfig;
+import androidx.emoji.text.EmojiCompat;
 
 /**
  * Created by YZX on 2017年10月04日.
@@ -20,29 +20,39 @@ import java.util.List;
 
 public class AppApplication extends Application {
 
-    private static Context ApplicationContext;
+    public static final int APP_STATE_UNINITIALIZED = 0;
+    public static final int APP_STATE_INITIALIZING = 1;
+    public static final int APP_STATE_NORMAL = 2;
+
+    private static int sCurrentAppState;
+    private static Context sApplicationContext;
+
+    public static void setAppState(int state) {
+        sCurrentAppState = state;
+    }
+
+    public static int getAppState() {
+        return sCurrentAppState;
+    }
 
     public static Context getAppContext(){
-        return ApplicationContext;
+        return sApplicationContext;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        if(ApplicationContext==null){
-            ApplicationContext = this;
+        if(sApplicationContext ==null){
+            sApplicationContext = this;
         }
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
 
-            AndroidUtil.init(this);
+            AndroidHelper.init(this);
 
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 
             AppClient.init(this);
-
-            HttpExecutor.init(this);
-            HttpExecutor.getNetworkConfigure().setEnableNetworkStateCheck(true);
 
             LeakCanary.install(this);
         }

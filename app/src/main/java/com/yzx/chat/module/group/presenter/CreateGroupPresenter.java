@@ -3,15 +3,15 @@ package com.yzx.chat.module.group.presenter;
 import android.os.Handler;
 
 import com.yzx.chat.R;
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
-import com.yzx.chat.core.GroupManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +55,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         if (isCreating) {
             return;
         }
-        mCreateGroupView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Create));
+        mCreateGroupView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Create));
         StringBuilder stringBuilder = new StringBuilder(64);
         String[] membersID = new String[members.size()];
         UserEntity user;
@@ -67,22 +67,21 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
         stringBuilder.append(AppClient.getInstance().getUserManager().getUser().getNickname()).append("的群聊");
 
-        mGroupManager.createGroup(stringBuilder.toString(), membersID, new ResultCallback<Void>() {
+        mGroupManager.createGroup(stringBuilder.toString(), membersID, new LifecycleMVPResultCallback<Void>(mCreateGroupView) {
             @Override
-            public void onResult(final Void result) {
+            protected void onSuccess(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
+                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
 
             @Override
-            public void onFailure(final String error) {
-                mCreateGroupView.setEnableProgressDialog(false, null);
-                mCreateGroupView.showError(error);
+            protected boolean onError(int code, String error) {
                 isCreating = false;
+                return false;
             }
         });
         isCreating = true;
@@ -93,27 +92,27 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         if (isAdding) {
             return;
         }
-        mCreateGroupView.setEnableProgressDialog(true, AndroidUtil.getString(R.string.ProgressHint_Add));
+        mCreateGroupView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Add));
         mAddingMembersID = new String[members.size()];
         for (int i = 0, count = members.size(); i < count; i++) {
             mAddingMembersID[i] = members.get(i).getUserProfile().getUserID();
         }
-        mGroupManager.addMember(groupID, mAddingMembersID, new ResultCallback<Void>() {
+        mGroupManager.addMember(groupID, mAddingMembersID, new LifecycleMVPResultCallback<Void>(mCreateGroupView) {
+
             @Override
-            public void onResult(final Void result) {
+            protected void onSuccess(Void result) {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(AndroidUtil.getString(R.string.Error_Server1));
+                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
 
             @Override
-            public void onFailure(final String error) {
-                mCreateGroupView.setEnableProgressDialog(false, null);
-                mCreateGroupView.showError(error);
+            protected boolean onError(int code, String error) {
                 isAdding = false;
+                return super.onError(code, error);
             }
         });
         isAdding = true;

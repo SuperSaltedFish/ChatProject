@@ -1,7 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +10,13 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.ContactManager;
+import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.util.GlideUtil;
 
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by YZX on 2018年01月18日.

@@ -2,7 +2,6 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -13,6 +12,8 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 
 import java.lang.reflect.Field;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by YZX on 2018年02月10日.

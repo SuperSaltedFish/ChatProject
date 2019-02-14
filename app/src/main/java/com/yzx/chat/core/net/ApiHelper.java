@@ -1,6 +1,5 @@
 package com.yzx.chat.core.net;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -33,6 +32,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2017年10月15日.

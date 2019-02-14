@@ -1,10 +1,11 @@
 package com.yzx.chat.core.net.framework.Executor;
 
-import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2019年01月30日.

@@ -1,6 +1,5 @@
 package com.yzx.chat.core.net.api;
 
-import android.support.annotation.StringDef;
 
 import com.yzx.chat.core.entity.GetTempGroupIDEntity;
 import com.yzx.chat.core.entity.JsonResponse;
@@ -11,6 +10,8 @@ import com.yzx.chat.core.net.framework.annotation.Param;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.StringDef;
 
 
 /**

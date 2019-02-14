@@ -16,6 +16,11 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.yzx.chat.R;
+import com.yzx.chat.widget.dialog.ErrorDialog;
+import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.Cancelable;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,10 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import cn.swiftpass.standardwallet.R;
-import cn.swiftpass.standardwallet.core.listener.Cancelable;
-import cn.swiftpass.standardwallet.widget.dialog.ErrorDialog;
-import cn.swiftpass.standardwallet.widget.dialog.ProgressDialog;
 
 
 /**
@@ -233,7 +234,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
     public void setEnableLoading(boolean isEnable, final Cancelable cancelable) {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(mContext, getString(R.string.Hint_Loading));
+            mProgressDialog = new ProgressDialog(mContext, getString(R.string.ProgressHint_Default));
         }
         if (isEnable) {
             if (cancelable != null) {

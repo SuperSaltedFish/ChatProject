@@ -1,7 +1,7 @@
 package com.yzx.chat.base;
 
 
-import cn.swiftpass.standardwallet.core.listener.Cancelable;
+import com.yzx.chat.widget.listener.Cancelable;
 
 /**
  * Created by YZX on 2017年10月18日.

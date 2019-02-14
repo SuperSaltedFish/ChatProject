@@ -4,7 +4,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,12 +28,14 @@ import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.view.RoundLinearLayout;
 
 import java.util.Locale;
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by YZX on 2018年08月10日.
@@ -104,7 +105,7 @@ public class LocationShareFragment extends BaseFragment {
                 .myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_point)))
                 .radiusFillColor(Color.TRANSPARENT)
                 .strokeColor(Color.TRANSPARENT));
-        if (AndroidUtil.rawResToLocalFile(R.raw.map_style, Constants.LOCATION_STYLE_FILE_PATH)) {
+        if (AndroidHelper.rawResToLocalFile(R.raw.map_style, Constants.LOCATION_STYLE_FILE_PATH)) {
             mAMap.setCustomMapStylePath(Constants.LOCATION_STYLE_FILE_PATH);
             mAMap.setMapCustomEnable(true);
         }

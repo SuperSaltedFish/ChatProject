@@ -40,7 +40,7 @@ public class ViewUtil {
                     int[] location = new int[2];
                     anchor.getLocationInWindow(location);
                     //计算root滚动高度，使scrollToView在可见区域的底部
-                    scrollHeight = (location[1] + anchor.getHeight() + (int) AndroidUtil.dip2px(8)) - rect.bottom;
+                    scrollHeight = (location[1] + anchor.getHeight() + (int) AndroidHelper.dip2px(8)) - rect.bottom;
                     if (scrollHeight < 0) {
                         return;
                     }

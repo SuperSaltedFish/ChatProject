@@ -2,7 +2,6 @@ package com.yzx.chat.core.net.framework;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.yzx.chat.core.net.framework.Executor.GetRequest;
@@ -17,6 +16,8 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 
 class CallImpl<T> implements Call<T>, ResponseCallback {

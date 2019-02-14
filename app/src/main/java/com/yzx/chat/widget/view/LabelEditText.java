@@ -1,10 +1,11 @@
 package com.yzx.chat.widget.view;
 
 import android.content.Context;
-
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 /**
  * Created by YZX on 2018年01月23日.
@@ -12,7 +13,7 @@ import android.view.inputmethod.InputConnection;
  */
 
 
-public class LabelEditText extends android.support.v7.widget.AppCompatEditText {
+public class LabelEditText extends AppCompatEditText {
 
     private BackInputConnection.BackspaceListener mBackspaceListener;
     private BackInputConnection mBackInputConnection;

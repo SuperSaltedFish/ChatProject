@@ -1,9 +1,10 @@
 package com.yzx.chat.core.net.framework;
 
-import android.support.annotation.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2017年10月15日.

@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.FileUtil;
 
 import java.io.File;
@@ -30,8 +30,8 @@ public class FileAndDirectoryAdapter extends BaseRecyclerViewAdapter<FileAndDire
     public FileAndDirectoryAdapter(List<File> fileList, List<String> selectedFilePathList) {
         mFileList = fileList;
         mSelectedFilePathList = selectedFilePathList;
-        UNIT_TERM = AndroidUtil.getString(R.string.Unit_Term);
-        SIZE_LABEL = AndroidUtil.getString(R.string.FileAndDirectoryAdapter_FileSize);
+        UNIT_TERM = AndroidHelper.getString(R.string.Unit_Term);
+        SIZE_LABEL = AndroidHelper.getString(R.string.FileAndDirectoryAdapter_FileSize);
     }
 
     @Override

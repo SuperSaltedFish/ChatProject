@@ -1,6 +1,5 @@
 package com.yzx.chat.core;
 
-import android.support.annotation.Nullable;
 
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.UserDao;
@@ -14,8 +13,8 @@ import com.yzx.chat.core.net.api.UserApi;
 import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.util.CallbackUtil;
 
-import java.util.HashMap;
-import java.util.List;
+import androidx.annotation.Nullable;
+
 
 /**
  * Created by YZX on 2017年10月17日.

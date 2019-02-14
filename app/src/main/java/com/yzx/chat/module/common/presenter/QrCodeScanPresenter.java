@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.QRCodeContentEntity;
@@ -20,10 +19,11 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
 import com.yzx.chat.util.QRUtils;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 /**
  * Created by YZX on 2018年06月12日.
@@ -35,7 +35,6 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     private BackstageAsyncTask<QrCodeScanPresenter, String, String> mDecodeQRCodeFileTask;
     private Call<JsonResponse<UserEntity>> GetUserProfileCall;
     private GroupManager mGroupManager;
-    private Gson mGson;
     private UserApi mUserApi;
     private Handler mHandler;
     private boolean isWaitJoiningPush;
@@ -46,8 +45,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
         mHandler = new Handler();
         mGroupManager = AppClient.getInstance().getGroupManager();
         mGroupManager.addGroupChangeListener(mOnGroupOperationListener);
-        mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
-        mGson = ApiHelper.getDefaultGsonInstance();
+        mUserApi = ApiHelper.getProxyInstance(UserApi.class);
     }
 
     @Override
@@ -62,38 +60,38 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
     @Override
     public void decodeQRCodeContent(String content, boolean isAlreadyDeciphered) {
-        if (!isAlreadyDeciphered) {
-            byte[] data = AppClient.getInstance().getConfigurationManager().aesDecryptFromBase64String(content);
-            if (data == null || data.length == 0) {
-                content = null;
-            } else {
-                content = new String(data);
-            }
-        }
-        if (TextUtils.isEmpty(content)) {
-            decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));
-        } else {
-            QRCodeContentEntity qrCodeContent = null;
-            try {
-                qrCodeContent = mGson.fromJson(content, QRCodeContentEntity.class);
-            } catch (JsonSyntaxException e) {
-                e.printStackTrace();
-            }
-            if (qrCodeContent == null || TextUtils.isEmpty(qrCodeContent.getId())) {
-                decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));
-            } else {
-                switch (qrCodeContent.getType()) {
-                    case QRCodeContentEntity.TYPE_USER:
-                        findUserInfo(qrCodeContent.getId());
-                        break;
-                    case QRCodeContentEntity.TYPE_GROUP:
-                        joinGroup(qrCodeContent.getId());
-                        break;
-                    default:
-                        decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));
-                }
-            }
-        }
+//        if (!isAlreadyDeciphered) {
+//            byte[] data = AppClient.getInstance().getConfigurationManager().aesDecryptFromBase64String(content);
+//            if (data == null || data.length == 0) {
+//                content = null;
+//            } else {
+//                content = new String(data);
+//            }
+//        }
+//        if (TextUtils.isEmpty(content)) {
+//            decodeFail(AndroidHelper.getString(R.string.QrCodePresenter_Unrecognized));
+//        } else {
+//            QRCodeContentEntity qrCodeContent = null;
+//            try {
+//                qrCodeContent = mGson.fromJson(content, QRCodeContentEntity.class);
+//            } catch (JsonSyntaxException e) {
+//                e.printStackTrace();
+//            }
+//            if (qrCodeContent == null || TextUtils.isEmpty(qrCodeContent.getId())) {
+//                decodeFail(AndroidHelper.getString(R.string.QrCodePresenter_Unrecognized));
+//            } else {
+//                switch (qrCodeContent.getType()) {
+//                    case QRCodeContentEntity.TYPE_USER:
+//                        findUserInfo(qrCodeContent.getId());
+//                        break;
+//                    case QRCodeContentEntity.TYPE_GROUP:
+//                        joinGroup(qrCodeContent.getId());
+//                        break;
+//                    default:
+//                        decodeFail(AndroidHelper.getString(R.string.QrCodePresenter_Unrecognized));
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -107,15 +105,15 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
     private void joinGroup(String groupID) {
         mHandler.removeCallbacksAndMessages(null);
         isWaitJoiningPush = true;
-        AppClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new ResultCallback<Void>() {
+        AppClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new LifecycleMVPResultCallback<Void>(this) {
             @Override
-            public void onResult(Void result) {
+            protected void onSuccess(Void result) {
                 if (isWaitJoiningPush) {
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             if (isWaitJoiningPush) {
-                                decodeFail(AndroidUtil.getString(R.string.Error_Server1));
+                                decodeFail(AndroidHelper.getString(R.string.Error_Server1));
                             }
                         }
                     }, 15000);
@@ -232,9 +230,9 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
         protected void onPostExecute(String s, QrCodeScanPresenter lifeDependentObject) {
             super.onPostExecute(s, lifeDependentObject);
             if (s == null) {
-                lifeDependentObject.decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_Unrecognized));
+                lifeDependentObject.decodeFail(AndroidHelper.getString(R.string.QrCodePresenter_Unrecognized));
             } else if ("".equals(s)) {
-                lifeDependentObject.decodeFail(AndroidUtil.getString(R.string.QrCodePresenter_UnableFind));
+                lifeDependentObject.decodeFail(AndroidHelper.getString(R.string.QrCodePresenter_UnableFind));
             } else {
                 lifeDependentObject.decodeQRCodeContent(s, true);
             }

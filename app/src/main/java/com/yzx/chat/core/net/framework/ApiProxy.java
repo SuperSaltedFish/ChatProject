@@ -1,7 +1,6 @@
 package com.yzx.chat.core.net.framework;
 
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -10,6 +9,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+
+import androidx.annotation.NonNull;
 
 
 public class ApiProxy {

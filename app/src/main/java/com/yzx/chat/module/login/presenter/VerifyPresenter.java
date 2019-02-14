@@ -3,13 +3,11 @@ package com.yzx.chat.module.login.presenter;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.module.login.contract.VerifyContract;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.api.AuthApi;
 import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.entity.LoginResponseEntity;
-import com.yzx.chat.core.ConfigurationManager;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Call;

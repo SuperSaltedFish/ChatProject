@@ -2,12 +2,13 @@ package com.yzx.chat.widget.view;
 
 import android.content.Context;
 import android.graphics.Outline;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewOutlineProvider;
-import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 
 
 /**
@@ -16,7 +17,7 @@ import android.widget.ImageView;
  */
 
 
-public class RoundImageView extends android.support.v7.widget.AppCompatImageView {
+public class RoundImageView extends AppCompatImageView {
     private float mRoundRadius;
     private Context mContext;
 

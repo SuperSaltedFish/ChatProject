@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseResponseCallback;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.QRCodeContentEntity;
 import com.yzx.chat.core.entity.UserEntity;
@@ -19,7 +18,7 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.core.util.MD5Util;
@@ -37,16 +36,14 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
     private Call<JsonResponse<GetTempGroupIDEntity>> mGetTempGroupIDCall;
     private UserApi mUserApi;
     private GroupApi mGroupApi;
-    private Gson mGson;
 
     private boolean isUpdating;
 
     @Override
     public void attachView(MyQRCodeContract.View view) {
         mMyQRCodeActivityView = view;
-        mUserApi = (UserApi) ApiHelper.getProxyInstance(UserApi.class);
-        mGroupApi = (GroupApi) ApiHelper.getProxyInstance(GroupApi.class);
-        mGson = ApiHelper.getDefaultGsonInstance();
+        mUserApi = ApiHelper.getProxyInstance(UserApi.class);
+        mGroupApi = ApiHelper.getProxyInstance(GroupApi.class);
     }
 
     @Override
@@ -94,14 +91,14 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                         return;
                     }
                 }
-                onFailure(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
+                onFailure(AndroidHelper.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
             }
 
             @Override
             protected void onFailure(String message) {
                 mMyQRCodeActivityView.setEnableProgressBar(false);
                 mMyQRCodeActivityView.showHint(message);
-                mMyQRCodeActivityView.showErrorHint(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
+                mMyQRCodeActivityView.showErrorHint(AndroidHelper.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
                 isUpdating = false;
             }
         });
@@ -112,9 +109,9 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
     public void saveQRCodeToLocal(Bitmap bitmap, String id) {
         String savePath = BitmapUtil.saveBitmapToJPEG(bitmap, DirectoryHelper.getUserImagePath(), MD5Util.encrypt16(id));
         if (TextUtils.isEmpty(savePath)) {
-            mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeFail));
+            mMyQRCodeActivityView.showHint(AndroidHelper.getString(R.string.MyQRCodeActivity_SaveQRCodeFail));
         } else {
-            mMyQRCodeActivityView.showHint(AndroidUtil.getString(R.string.MyQRCodeActivity_SaveQRCodeSuccess) + savePath);
+            mMyQRCodeActivityView.showHint(AndroidHelper.getString(R.string.MyQRCodeActivity_SaveQRCodeSuccess) + savePath);
         }
     }
 
@@ -144,14 +141,14 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
                         return;
                     }
                 }
-                onFailure(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
+                onFailure(AndroidHelper.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
             }
 
             @Override
             protected void onFailure(String message) {
                 mMyQRCodeActivityView.setEnableProgressBar(false);
                 mMyQRCodeActivityView.showHint(message);
-                mMyQRCodeActivityView.showErrorHint(AndroidUtil.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
+                mMyQRCodeActivityView.showErrorHint(AndroidHelper.getString(R.string.MyQRCodePresenter_GenerateQRCodeFail));
                 isUpdating = false;
             }
         });

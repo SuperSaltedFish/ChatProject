@@ -4,12 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.support.v7.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -23,6 +17,8 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.GroupEntity;
@@ -33,14 +29,20 @@ import com.yzx.chat.module.group.contract.GroupProfileContract;
 import com.yzx.chat.module.group.presenter.GroupProfilePresenter;
 import com.yzx.chat.module.me.view.MyQRCodeActivity;
 import com.yzx.chat.module.me.view.ProfileEditActivity;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.tool.ActivityHelper;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.GroupMembersAdapter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
-import com.yzx.chat.widget.view.ProgressDialog;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2018年02月18日.
@@ -110,7 +112,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mCollapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
 
         mRvGroupMembers.setHasFixedSize(true);
-        mRvGroupMembers.addItemDecoration(new SpacesItemDecoration((int) AndroidUtil.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
+        mRvGroupMembers.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
         mRvGroupMembers.setLayoutManager(new GridLayoutManager(this, GROUP_MEMBERS_LINE_MAX_COUNT));
         mRvGroupMembers.addOnItemTouchListener(mOnGroupMemberItemClickListener);
         mRvGroupMembers.setAdapter(mAdapter);
@@ -412,7 +414,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
 
     @Override
     public void finishChatActivity() {
-        Activity activity = AndroidUtil.getLaunchActivity(ChatActivity.class);
+        Activity activity = ActivityHelper.getActivityInstance(ChatActivity.class);
         if (activity != null) {
             activity.finish();
         }

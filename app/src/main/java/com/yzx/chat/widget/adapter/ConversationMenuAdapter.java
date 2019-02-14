@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.util.AndroidHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class ConversationMenuAdapter extends BaseAdapter {
         if(convertView==null){
             TextView textView = new TextView(parent.getContext());
             textView.setGravity(Gravity.CENTER_VERTICAL);
-            textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) AndroidUtil.dip2px(40)));
+            textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) AndroidHelper.dip2px(40)));
             convertView = textView;
         }
         TextView itemMenu = (TextView) convertView;

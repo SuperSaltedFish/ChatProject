@@ -7,8 +7,6 @@ import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -41,6 +39,9 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NullCipher;
 import javax.security.auth.x500.X500Principal;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 
 /**

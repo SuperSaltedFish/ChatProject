@@ -2,10 +2,6 @@ package com.yzx.chat.module.group.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,25 +12,31 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.module.group.contract.CreateGroupContract;
-import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.group.presenter.CreateGroupPresenter;
-import com.yzx.chat.util.AndroidUtil;
+import com.yzx.chat.module.main.view.HomeActivity;
+import com.yzx.chat.tool.ActivityHelper;
+import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
-import com.yzx.chat.widget.view.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2018年02月22日.
@@ -98,16 +100,16 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
         mFilterContactList.addAll(mAllContactList);
 
-        mFlowLayout.setItemSpace((int) AndroidUtil.dip2px(4));
-        mFlowLayout.setLineSpace((int) AndroidUtil.dip2px(4));
+        mFlowLayout.setItemSpace((int) AndroidHelper.dip2px(4));
+        mFlowLayout.setLineSpace((int) AndroidHelper.dip2px(4));
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(this, R.color.dividerColorBlack));
         mLetterSegmentationItemDecoration.setLineWidth(1);
         mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(this, R.color.dividerColorBlack));
-        mLetterSegmentationItemDecoration.setTextSize(AndroidUtil.sp2px(16));
+        mLetterSegmentationItemDecoration.setTextSize(AndroidHelper.sp2px(16));
 
-        mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setAdapter(mCreateGroupAdapter);
         mRecyclerView.setHasFixedSize(true);
@@ -207,7 +209,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 avatar.setId(position);
                 avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this,avatar,mFilterContactList.get(position-1).getUserProfile().getAvatar());
-                mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidUtil.dip2px(40), (int) AndroidUtil.dip2px(40)));
+                mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidHelper.dip2px(40), (int) AndroidHelper.dip2px(40)));
             } else {
                 mSelectedContactList.remove(mAllContactList.get(position - 1));
                 ImageView needRemoveView = mFlowLayout.findViewById(position);
@@ -284,7 +286,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
 
     @Override
     public void launchChatActivity(GroupEntity group) {
-        AndroidUtil.finishActivitiesInStackAbove(HomeActivity.class);
+        ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
         mProgressDialog.dismiss();
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
