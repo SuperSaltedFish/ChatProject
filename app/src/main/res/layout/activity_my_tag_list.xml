@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".module.me.view.MyTagListActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         app:srlEnablePureScrollMode="true">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/MyTagListActivity_mRvTags"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

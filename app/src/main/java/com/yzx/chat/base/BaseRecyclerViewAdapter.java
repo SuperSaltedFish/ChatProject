@@ -2,13 +2,14 @@ package com.yzx.chat.base;
 
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
- * Created by YZX on 2017年08月20日.
+ * Created by YZX on 2018年08月20日.
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
@@ -57,6 +58,9 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return getViewHolder(parent, viewType);
     }
 
+
+
+    @SuppressWarnings("unchecked")
     @Override
     public final void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         if (mContext == null) {
@@ -217,7 +221,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
     }
 
-    public static class ListUpdateCallback implements android.support.v7.util.ListUpdateCallback {
+    public static class ListUpdateCallback implements androidx.recyclerview.widget.ListUpdateCallback {
 
         private BaseRecyclerViewAdapter mAdapter;
 

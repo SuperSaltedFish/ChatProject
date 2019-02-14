@@ -5,7 +5,7 @@
     <item
         android:id="@+id/CreateGroupMenu_Search"
         android:title="@string/Search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
 
     <item

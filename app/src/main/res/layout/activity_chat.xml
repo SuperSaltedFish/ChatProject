@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     tools:context=".module.conversation.view.ChatActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/Default_mToolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
@@ -20,7 +20,7 @@
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ChatActivity_mRvChatView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -72,7 +72,7 @@
                 android:padding="5dp"
                 android:src="@drawable/ic_microphone" />
 
-            <android.support.text.emoji.widget.EmojiEditText
+            <androidx.emoji.widget.EmojiEditText
                 android:id="@+id/ChatActivity_mEtContent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -149,7 +149,7 @@
             android:layout_height="200dp"
             android:visibility="gone" />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ChatActivity_mClOtherPanelLayout"
             android:layout_width="match_parent"
             android:layout_height="128dp"
@@ -253,9 +253,9 @@
                 app:layout_constraintStart_toStartOf="@id/ChatActivity_mIvSendFile"
                 app:layout_constraintTop_toBottomOf="@id/ChatActivity_mIvSendFile" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.yzx.chat.widget.view.KeyboardPanelSwitcher>
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,7 @@ package com.yzx.chat.widget.animation;
 
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 

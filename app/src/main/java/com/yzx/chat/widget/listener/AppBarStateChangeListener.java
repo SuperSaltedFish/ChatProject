@@ -2,7 +2,7 @@ package com.yzx.chat.widget.listener;
 
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
-import android.support.design.widget.AppBarLayout;
+import com.google.android.material.appbar.AppBarLayout;
 import android.support.v4.widget.ViewGroupUtils;
 
 import java.lang.annotation.Retention;

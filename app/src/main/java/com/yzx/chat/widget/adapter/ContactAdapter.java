@@ -1,6 +1,6 @@
 package com.yzx.chat.widget.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;

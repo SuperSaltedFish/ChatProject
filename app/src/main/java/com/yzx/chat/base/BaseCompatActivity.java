@@ -4,29 +4,26 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.IntDef;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yzx.chat.R;
+import com.yzx.chat.configure.AppApplication;
+import com.yzx.chat.module.main.view.SplashActivity;
+import com.yzx.chat.widget.dialog.ErrorDialog;
+import com.yzx.chat.widget.dialog.ProgressDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,6 +31,16 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 
 /**
  * Created by YZX on 2017年06月12日.
@@ -60,11 +67,10 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     private @interface SystemUiMode {
     }
 
-
     protected P mPresenter;
     protected InputMethodManager mInputManager;
-    private Toast mToast;
-    private TextView mTvToast;
+    protected ProgressDialog mProgressDialog;
+    protected ErrorDialog mErrorDialog;
 
     @LayoutRes
     protected abstract int getLayoutID();
@@ -74,29 +80,50 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     protected abstract void setup(Bundle savedInstanceState);
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         int layoutID = getLayoutID();
         if (layoutID != 0) {
             setContentView(layoutID);
+            Toolbar toolbar = findViewById(R.id.Default_mToolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                setTitle("");
+            }
         }
         initPresenter();
-        Toolbar toolbar = findViewById(R.id.Default_mToolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            setTitle(null);
-        }
         init(savedInstanceState);
+        switch (AppApplication.getAppState()) {//防止APP被系统杀死后，恢复activity导致null的问题，代码放在init()的后面防止对象未初始化可能导致空指针的问题
+            case AppApplication.APP_STATE_UNINITIALIZED:
+                AppApplication.setAppState(AppApplication.APP_STATE_INITIALIZING);
+                SplashActivity.startActivity(this);
+                finish();
+                return;
+            case AppApplication.APP_STATE_INITIALIZING:
+                finish();
+                return;
+        }
         setup(savedInstanceState);
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (mPresenter != null) {
             mPresenter.detachView();
             mPresenter = null;
         }
+        if (mErrorDialog != null) {
+            mErrorDialog.dismiss();
+            mErrorDialog.setOnDismissListener(null);
+            mErrorDialog = null;
+        }
+        if (mProgressDialog != null) {
+            mProgressDialog.setOnCancelListener(null);
+            mProgressDialog.dismiss();
+            mErrorDialog = null;
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -108,7 +135,14 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             default:
                 return super.onOptionsItemSelected(item);
         }
+        getRequestedOrientation();
         return true;
+    }
+
+    protected void setDisplayHomeAsUpEnabled(boolean enable) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(enable);
+        }
     }
 
     @Override
@@ -132,9 +166,9 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (result) {
             onRequestPermissionsResult(requestCode, true, null);
         } else if (isNeedShowMissingPermissionDialog) {
-            showMissingPermissionDialog(requestCode, deniedPermissions.toArray(new String[deniedPermissions.size()]));
+            showMissingPermissionDialog(requestCode, deniedPermissions.toArray(new String[0]));
         } else {
-            onRequestPermissionsResult(requestCode, false, deniedPermissions.toArray(new String[deniedPermissions.size()]));
+            onRequestPermissionsResult(requestCode, false, deniedPermissions.toArray(new String[0]));
         }
     }
 
@@ -159,25 +193,24 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     }
 
     private void showMissingPermissionDialog(final int requestCode, final String[] deniedPermissions) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.PermissionDialog_Help);
-        builder.setMessage(R.string.PermissionDialog_MissPermissionHint);
-        builder.setNegativeButton(R.string.PermissionDialog_Cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onRequestPermissionsResult(requestCode, false, deniedPermissions);
-            }
-        });
-        builder.setPositiveButton(R.string.PermissionDialog_Setting, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startAppSettings();
-                onRequestPermissionsResult(requestCode, false, deniedPermissions);
-            }
-        });
-        builder.setCancelable(true);
-
-        builder.show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.PermissionDialog_Help)
+                .setMessage(R.string.PermissionDialog_MissPermissionHint)
+                .setNegativeButton(R.string.PermissionDialog_Cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        onRequestPermissionsResult(requestCode, false, deniedPermissions);
+                    }
+                })
+                .setPositiveButton(R.string.PermissionDialog_Setting, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startAppSettings();
+                        onRequestPermissionsResult(requestCode, false, deniedPermissions);
+                    }
+                })
+                .setCancelable(true)
+                .show();
     }
 
     // 启动应用的设置界面
@@ -212,7 +245,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
                     aClass = aClass.getSuperclass();
                 }
             }
-
+            mPresenter = null;
         }
     }
 
@@ -259,7 +292,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         }
     }
 
-    public void setBrightness(float paramFloat) {
+    public void setBrightness(@FloatRange(from = 0, to = 1) float paramFloat) {
         Window window = getWindow();
         WindowManager.LayoutParams params = window.getAttributes();
         params.screenBrightness = paramFloat;
@@ -275,15 +308,7 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     }
 
     public void showToast(String content, int duration) {
-        if (mToast == null) {
-            mToast = new Toast(this);
-            View toastView = getLayoutInflater().inflate(R.layout.view_toast_default, null);
-            mTvToast = toastView.findViewById(R.id.BaseCompatActivity_mTvToast);
-            mToast.setView(toastView);
-        }
-        mToast.setDuration(duration);
-        mTvToast.setText(content);
-        mToast.show();
+        Toast.makeText(this, content, duration).show();
     }
 
 
@@ -291,7 +316,10 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         if (mInputManager == null) {
             mInputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         }
+        focusView.setFocusable(true);
+        focusView.setFocusableInTouchMode(true);
         focusView.requestFocus();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         mInputManager.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
     }
 
@@ -303,5 +331,54 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
             if (getCurrentFocus() != null)
                 mInputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+    public void setEnableLoading(boolean isEnable) {
+        setEnableLoading(isEnable, null);
+    }
+
+    public void setEnableLoading(boolean isEnable, final Cancelable cancelable) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this, getString(R.string.Hint_Loading));
+        }
+        if (isEnable) {
+            if (cancelable != null) {
+                mProgressDialog.setCancelable(true);
+                mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        cancelable.cancel();
+                    }
+                });
+            } else {
+                mProgressDialog.setCancelable(false);
+                mProgressDialog.setOnCancelListener(null);
+            }
+            if (!mProgressDialog.isShowing()) {
+                mProgressDialog.show();
+            }
+        } else {
+            mProgressDialog.setOnCancelListener(null);
+            mProgressDialog.dismiss();
+        }
+    }
+
+    public void showErrorDialog(String error) {
+        showErrorDialog(error, null);
+    }
+
+    public void showErrorDialog(String error, DialogInterface.OnDismissListener listener) {
+        if (mErrorDialog == null) {
+            mErrorDialog = new ErrorDialog(this);
+        }
+        mErrorDialog.setOnDismissListener(listener);
+        mErrorDialog.setContentText(error);
+        if (!mErrorDialog.isShowing()) {
+            mErrorDialog.show();
+        }
+    }
+
+    public boolean isAttachedToPresenter() {
+        return mPresenter != null;
     }
 }

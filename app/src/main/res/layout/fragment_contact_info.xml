@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -24,7 +24,7 @@
             android:textSize="12sp"
             android:visibility="gone" />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/FriendProfileActivity_mLabelLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/FriendProfileActivity_mIvLabelGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,9 +82,9 @@
                 android:background="@color/dividerColorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconLabel" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/FriendProfileActivity_mTelephoneLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/FriendProfileActivity_mIvTelephoneGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -143,9 +143,9 @@
                 android:background="@color/dividerColorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconTelephone" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/FriendProfileActivity_mDescriptionLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.constraint.Guideline
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/FriendProfileActivity_mIvDescriptionGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -202,7 +202,7 @@
                 android:background="@color/dividerColorBlack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/FriendProfileActivity_mIvIconDescription" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
         
         <Space
             android:layout_width="0dp"
@@ -213,4 +213,4 @@
 
 
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>

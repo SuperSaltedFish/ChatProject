@@ -3,7 +3,7 @@ package com.yzx.chat.widget.view;
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import java.lang.annotation.Retention;

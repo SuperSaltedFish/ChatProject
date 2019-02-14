@@ -1,6 +1,6 @@
 package com.yzx.chat.widget.listener;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yzx.chat.configure.GlideApp;
 

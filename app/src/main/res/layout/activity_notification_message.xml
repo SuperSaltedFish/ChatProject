@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".module.contact.view.NotificationMessageActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
         android:id="@+id/NotificationMessageActivity_mFlContent"

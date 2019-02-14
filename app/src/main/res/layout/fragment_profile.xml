@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/ProfileFragment_mGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,7 +13,7 @@
         app:layout_constraintGuide_percent="0.4" />
 
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/ProfileFragment_mVpBanner"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -88,7 +88,7 @@
         app:layout_constraintTop_toTopOf="@id/ProfileFragment_mIvSexIcon" />
 
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -117,7 +117,7 @@
                 android:textSize="16sp" />
 
 
-            <android.support.v4.view.ViewPager
+            <androidx.viewpager.widget.ViewPager
                 android:id="@+id/ProfileFragment_mVpAlbum"
                 android:layout_width="116dp"
                 android:layout_height="88dp"
@@ -128,7 +128,7 @@
         </LinearLayout>
 
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/ProfileFragment_mIvSetting"
@@ -142,4 +142,4 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

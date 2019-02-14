@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".module.me.view.MyQRCodeActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/Default_mToolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
@@ -20,7 +20,7 @@
         app:title="@string/MyQRCodeActivity_Title"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MyQRCodeActivity_mClQRCodeLayout"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
@@ -124,9 +124,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/MyQRCodeActivity_mIvQRCode" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MyQRCodeActivity_mClMore"
         android:layout_width="0dp"
         android:layout_height="88dp"
@@ -232,7 +232,7 @@
                 android:textSize="14sp" />
         </FrameLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

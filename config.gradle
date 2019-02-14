@@ -9,20 +9,18 @@ ext {
     ]
 
     depVersions = [
-            supportVersion   : "28.0.0",
             mapVersion       : "latest.integration",
-            leakcanaryVersion: "1.6.1",
+            leakcanaryVersion: "1.6.2",
             glideVersion     : "4.8.0"
     ]
 
     deps = [
-            suport    : [
-                    constraintLayout: "com.android.support.constraint:constraint-layout:1.1.3",
-                    appcompat       : "com.android.support:appcompat-v7:${depVersions.supportVersion}",
-                    design          : "com.android.support:design:${depVersions.supportVersion}",
-                    cardview        : "com.android.support:cardview-v7:${depVersions.supportVersion}",
-                    emoji           : "com.android.support:support-emoji:${depVersions.supportVersion}",
-                    emojibBundled   : "com.android.support:support-emoji-bundled:${depVersions.supportVersion}"
+            androidx  : [
+                    constraintLayout: "androidx.constraintlayout:constraintlayout:1.1.3",
+                    appcompat       : "androidx.appcompat:appcompat:1.0.2",
+                    emoji           : "androidx.emoji:emoji:1.0.0",
+                    emojibBundled   : "androidx.emoji:emoji-bundled:1.0.0",
+                    design          : "com.google.android.material:material:1.0.0"
             ],
 
             ext       : [
@@ -39,7 +37,8 @@ ext {
             ],
 
             annotation: [
-                    glide: "com.github.bumptech.glide:compiler:${depVersions.glideVersion}"
+                    glide     : "com.github.bumptech.glide:compiler:${depVersions.glideVersion}",
+                    annotation: "androidx.annotation:annotation:1.0.1"
             ]
     ]
 }

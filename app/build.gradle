@@ -31,12 +31,11 @@ dependencies {
 
     def dependencies = rootProject.ext.deps
 
-    implementation dependencies.suport.constraintLayout
-    implementation dependencies.suport.appcompat
-    implementation dependencies.suport.design
-    implementation dependencies.suport.cardview
-    implementation dependencies.suport.emoji
-    implementation dependencies.suport.emojibBundled
+    implementation dependencies.androidx.constraintLayout
+    implementation dependencies.androidx.appcompat
+    implementation dependencies.androidx.design
+    implementation dependencies.androidx.emoji
+    implementation dependencies.androidx.emojibBundled
 
     implementation dependencies.ext.gson
     implementation dependencies.ext.materialDialogs
@@ -50,4 +49,5 @@ dependencies {
     implementation dependencies.ext.leakcanaryFragment
 
     annotationProcessor dependencies.annotation.glide
+    annotationProcessor dependencies.annotation.annotation
 }

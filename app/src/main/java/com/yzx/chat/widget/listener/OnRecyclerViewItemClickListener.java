@@ -1,8 +1,8 @@
 package com.yzx.chat.widget.listener;
 
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnItemTouchListener;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;

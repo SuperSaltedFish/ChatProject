@@ -2,7 +2,7 @@ package com.yzx.chat.widget.listener;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 

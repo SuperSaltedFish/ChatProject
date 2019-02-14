@@ -9,7 +9,7 @@
     tools:context=".module.contact.view.FindNewContactActivity">
 
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/Default_mToolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -21,7 +21,7 @@
         android:layout_height="match_parent"
         app:srlEnablePureScrollMode="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -39,7 +39,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/FindNewContactActivity_mClSearchLayout"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
@@ -97,7 +97,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/FindNewContactActivity_mTvMyPhoneNumber"
@@ -114,7 +114,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mClSearchLayout" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/FindNewContactActivity_mClCreateGroup"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -184,9 +184,9 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mIvCreateGroup" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/FindNewContactActivity_mClScan"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -256,10 +256,10 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mIvScan" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/FindNewContactActivity_mClMail"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -319,9 +319,9 @@
                     app:layout_constraintStart_toEndOf="@id/ConversationFragment_mIvAddPhoneContact"
                     app:layout_constraintTop_toBottomOf="@id/ConversationFragment_mTvAddPhoneContact" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/FindNewContactActivity_mLlMorePeopleLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -361,7 +361,7 @@
                     app:layout_constraintTop_toTopOf="@id/FindNewContactActivity_mTvMorePeople" />
 
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/FindNewContactActivity_mRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -381,9 +381,9 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/FindNewContactActivity_mTvMorePeople" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </LinearLayout>
 
