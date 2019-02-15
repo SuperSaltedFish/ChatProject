@@ -20,6 +20,7 @@ import com.yzx.chat.module.common.view.QrCodeScanActivity;
 import com.yzx.chat.module.me.contract.MyQRCodeContract;
 import com.yzx.chat.module.me.presenter.MyQRCodePresenter;
 import com.yzx.chat.util.QRUtils;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import androidx.appcompat.app.ActionBar;
@@ -185,9 +186,9 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
         mClQRCodeLayout.setDrawingCacheEnabled(false);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.MyQRCodeActivity_mFlScan:
                     startActivity(new Intent(MyQRCodeActivity.this, QrCodeScanActivity.class));
@@ -219,17 +220,10 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
     }
 
     @Override
-    public void showErrorHint(String hint) {
+    public void showErrorDialog(String error) {
         mTvErrorHint.setVisibility(View.VISIBLE);
-        mTvErrorHint.setText(hint);
+        mTvErrorHint.setText(error);
     }
 
-    @Override
-    public void setEnableProgressBar(boolean isEnable) {
-        if (isEnable) {
-            mProgressBar.setVisibility(View.VISIBLE);
-        } else {
-            mProgressBar.setVisibility(View.INVISIBLE);
-        }
-    }
+
 }

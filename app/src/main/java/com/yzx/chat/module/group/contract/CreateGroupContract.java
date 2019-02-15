@@ -15,10 +15,6 @@ import java.util.List;
 
 public class CreateGroupContract {
     public interface View extends BaseView<Presenter> {
-        void setEnableProgressDialog(boolean isEnable,String hintContent);
-
-        void showError(String error);
-
         void launchChatActivity(GroupEntity group);
     }
 

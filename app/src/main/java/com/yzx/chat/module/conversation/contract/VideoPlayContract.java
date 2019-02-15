@@ -14,10 +14,6 @@ public class VideoPlayContract {
         void playVideo(String videoPath);
 
         void showProcess(int percent);
-
-        void setEnableProgressDialog(boolean isEnable);
-
-        void showError(String error);
     }
 
 

@@ -26,11 +26,6 @@ public class ContactOperationContract {
         void updateContactOperationFromList(ContactOperationEntity ContactOperation);
 
         void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationEntity> newDataList);
-
-        void setEnableProgressDialog(boolean isEnable);
-
-        void showError(String error);
-
     }
 
 

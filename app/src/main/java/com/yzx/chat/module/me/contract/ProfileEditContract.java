@@ -15,10 +15,6 @@ public class ProfileEditContract {
     public interface View extends BaseView<Presenter> {
         void showNewAvatar(String avatarPath);
 
-        void setEnableProgressDialog(boolean isEnable);
-
-        void showError(String error);
-
         void goBack();
     }
 

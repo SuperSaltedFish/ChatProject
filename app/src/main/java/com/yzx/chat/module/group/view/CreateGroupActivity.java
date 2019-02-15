@@ -24,7 +24,6 @@ import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
@@ -59,7 +58,6 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     private FlowLayout mFlowLayout;
     private MenuItem mConfirmMenuItem;
     private SearchView mSearchView;
-    private ProgressDialog mProgressDialog;
     private List<ContactEntity> mAllContactList;
     private List<ContactEntity> mFilterContactList;
     private List<ContactEntity> mSelectedContactList;
@@ -83,7 +81,6 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
             return;
         }
         mFilterContactList = new ArrayList<>(mAllContactList.size());
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Create));
         mSelectedContactList = new ArrayList<>(mAllContactList.size() / 2 + 1);
         mCreateGroupAdapter = new CreateGroupAdapter(mFilterContactList, mSelectedContactList);
     }
@@ -265,23 +262,6 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     @Override
     public CreateGroupContract.Presenter getPresenter() {
         return new CreateGroupPresenter();
-    }
-
-
-
-    @Override
-    public void setEnableProgressDialog(boolean isEnable, String hintContent) {
-        mProgressDialog.setHintText(hintContent);
-        if(isEnable){
-            mProgressDialog.show();
-        }else {
-            mProgressDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void showError(String error) {
-        showToast(error);
     }
 
     @Override

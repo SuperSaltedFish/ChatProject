@@ -8,12 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -28,6 +22,7 @@ import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalMultiImageAdapter;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -38,6 +33,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class ImageMultiSelectorActivity extends BaseCompatActivity {
@@ -200,9 +201,9 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         }
     }
 
-    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnConfirmClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mSelectedList.size() != 0) {
                 Intent intent = new Intent();
                 intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_PATH_LIST, mSelectedList);
@@ -211,11 +212,12 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
             }
             finish();
         }
+
     };
 
-    private final View.OnClickListener mOnChooseDirClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnChooseDirClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mBottomBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                 mBottomBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
@@ -224,9 +226,9 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         }
     };
 
-    private final View.OnClickListener mOnMaskViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnMaskViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
     };
@@ -239,9 +241,9 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     };
 
 
-    private final View.OnClickListener mOnPreviewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnPreviewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             Intent intent = new Intent(ImageMultiSelectorActivity.this, ImageViewPagerActivity.class);
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_LIST, mSelectedList);
             intent.putStringArrayListExtra(ImageViewPagerActivity.INTENT_EXTRA_IMAGE_SELECTED_LIST, mSelectedList);

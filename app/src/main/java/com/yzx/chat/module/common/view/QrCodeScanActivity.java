@@ -33,12 +33,12 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.module.contact.view.StrangerProfileActivity;
-import com.yzx.chat.module.contact.view.ContactProfileActivity;
-import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.common.contract.QrCodeScanContract;
 import com.yzx.chat.module.common.presenter.QrCodeScanPresenter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.module.contact.view.ContactProfileActivity;
+import com.yzx.chat.module.contact.view.StrangerProfileActivity;
+import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.Camera2CaptureView;
 import com.yzx.chat.widget.view.MaskView;
 
@@ -57,7 +57,6 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     private ImageView mIvToggleFlash;
     private ScaleAnimation mScaleAnimation;
     private Vibrator mVibrator;
-    private ProgressDialog mProgressDialog;
 
     private Rect mClipRect;
 
@@ -75,7 +74,6 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
         mIvToggleFlash = findViewById(R.id.QrCodeScanActivity_mIvToggleFlash);
         mScaleAnimation = new ScaleAnimation(1f, 1f, 0.0f, 1.0f);
         mVibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Decode));
     }
 
     @Override
@@ -226,9 +224,9 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     };
 
 
-    private final View.OnClickListener mOnToggleFlashClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnToggleFlashClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             mIvToggleFlash.setSelected(!mIvToggleFlash.isSelected());
             mCamera2CaptureView.setEnableFlash(mIvToggleFlash.isSelected());
         }
@@ -285,15 +283,6 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, groupID);
         startActivity(intent);
         finish();
-    }
-
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.dismiss();
-        }
     }
 
     @Override

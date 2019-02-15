@@ -2,7 +2,6 @@ package com.yzx.chat.core.net.api;
 
 import com.yzx.chat.core.entity.GetSecretKeyEntity;
 import com.yzx.chat.core.entity.JsonResponse;
-import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
 import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.annotation.GET;
@@ -24,18 +23,14 @@ public interface AuthApi {
                                                   @Param("verifyCode") String verifyCode);
 
     @POST("auth/register")
-    Call<JsonResponse<LoginResponseEntity>> register(@Param("telephone") String username,
-                                                     @Param("password") String password,
-                                                     @Param("nickname") String nickname,
-                                                     @Param("deviceID") String deviceID,
-                                                     @Param("clientPublicKey") String publicKey,
-                                                     @Param("verifyCode") String verifyCode);
+    Call<JsonResponse<Void>> register(@Param("telephone") String username,
+                                      @Param("password") String password,
+                                      @Param("nickname") String nickname,
+                                      @Param("verifyCode") String verifyCode);
 
     @POST("auth/obtainSMSCode")
-    Call<JsonResponse<ObtainSMSCodeEntity>> obtainSMSCode(@Param("telephone") String username,
-                                                          @Param("codeType") String type,
-                                                          @Param("clientPublicKey") String publicKey,
-                                                          @Param("data") Object data);
+    Call<JsonResponse<Void>> obtainSMSCode(@Param("telephone") String telephone,
+                                           @Param("codeType") String type);
 
     @POST("auth/tokenVerify")
     Call<JsonResponse<LoginResponseEntity>> tokenVerify();

@@ -1,24 +1,9 @@
 package com.yzx.chat.module.main.presenter;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
-
-import com.yzx.chat.R;
-import com.yzx.chat.module.main.contract.SplashContract;
-import com.yzx.chat.core.entity.JsonResponse;
-import com.yzx.chat.core.net.api.AuthApi;
-import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.core.UserManager;
-import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.core.SharePreferenceManager;
-import com.yzx.chat.util.AndroidHelper;
-import com.yzx.chat.core.util.LogUtil;
-import com.yzx.chat.util.AsyncUtil;
+import com.yzx.chat.core.entity.UserEntity;
+import com.yzx.chat.module.main.contract.SplashContract;
+import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 
@@ -28,79 +13,40 @@ import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
  */
 
 public class SplashPresenter implements SplashContract.Presenter {
-    //
-    private SplashContract.View mSplashView;
-    private Call<JsonResponse<LoginResponseEntity>> mTokenVerify;
 
+    private SplashContract.View mSplashView;
+    private AppClient mAppClient;
 
     @Override
     public void attachView(SplashContract.View view) {
         mSplashView = view;
+        mAppClient = AppClient.getInstance();
     }
 
     @Override
     public void detachView() {
-        AsyncUtil.cancelCall(mTokenVerify);
+        mAppClient = null;
         mSplashView = null;
     }
 
     @Override
     public void checkLogin() {
-        if (AppClient.getInstance().isLogged()) {
-            initDirectory();
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSplashView.startHomeActivity();
-                }
-            }, 1000);
-        } else {
-            String token = "";
-            if (TextUtils.isEmpty(token)) {
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (SharePreferenceManager.getConfigurePreferences().isFirstGuide()) {
-                            mSplashView.startGuide();
-                        } else {
-                            mSplashView.startLoginActivity();
-                        }
-                    }
-                }, 1000);
-
-            } else {
-                mTokenVerify = ApiHelper.getProxyInstance(AuthApi.class).tokenVerify();
-                AppClient.getInstance().loginByLocalToken(mTokenVerify, new LifecycleMVPResultCallback<Void>(mSplashView) {
-                    @Override
-                    protected void onSuccess(Void result) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                initDirectory();
-                                mSplashView.startHomeActivity();
-                            }
-                        });
-                    }
-
-                    @Override
-                    protected boolean onError(int code, String error) {
-                        LogUtil.e(error);
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSplashView.showError(AndroidHelper.getString(R.string.SplashPresenter_TokenIncorrect));
-                                mSplashView.startLoginActivity();
-                            }
-                        });
-                        return true;
-                    }
-                });
+        mAppClient.loginByLocalToken(new LifecycleMVPResultCallback<UserEntity>(mSplashView,false) {
+            @Override
+            protected void onSuccess(UserEntity result) {
+                mSplashView.startHomeActivity();
             }
-        }
+
+            @Override
+            protected boolean onError(int code, String error) {
+                if (SharePreferenceHelper.getConfigurePreferences().isFirstGuide()) {
+                    mSplashView.startGuide();
+                } else {
+                    mSplashView.startLoginActivity();
+                }
+                return true;
+            }
+        });
     }
 
-
-    private void initDirectory() {
-        DirectoryHelper.initUserDirectory(AppClient.getInstance().getUserManager().getUserID());
-    }
 }

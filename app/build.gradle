@@ -15,6 +15,13 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+        checkReleaseBuilds false
+//        abortOnError false
+    }
+
     buildTypes {
         release {
             minifyEnabled false

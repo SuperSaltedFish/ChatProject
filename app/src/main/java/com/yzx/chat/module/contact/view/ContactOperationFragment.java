@@ -17,7 +17,6 @@ import com.yzx.chat.module.contact.contract.ContactOperationContract;
 import com.yzx.chat.module.contact.presenter.ContactOperationPresenter;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ContactOperationAdapter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
@@ -43,7 +42,6 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     private View mFooterView;
     private TextView mTvLoadMoreHint;
     private OverflowPopupMenu mContactOperationMenu;
-    private ProgressDialog mProgressDialog;
     private ContactOperationAdapter mAdapter;
     private List<ContactOperationEntity> mContactOperationList;
 
@@ -57,7 +55,6 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         mRecyclerView = parentView.findViewById(R.id.ContactOperationFragment_mRecyclerView);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
-        mProgressDialog = new ProgressDialog(mContext, getString(R.string.ProgressHint_Add));
         mContactOperationMenu = new OverflowPopupMenu(mContext);
         mContactOperationList = new ArrayList<>(32);
         mAdapter = new ContactOperationAdapter(mContactOperationList);
@@ -66,7 +63,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
     @Override
     protected void setup(Bundle savedInstanceState) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRecyclerView.setAdapter(mAdapter);
@@ -196,19 +193,4 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         enableLoadMoreHint(mContactOperationList.size() > 12);
     }
 
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            if (!mProgressDialog.isShowing()) {
-                mProgressDialog.show();
-            }
-        } else {
-            mProgressDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void showError(String error) {
-        showToast(error);
-    }
 }

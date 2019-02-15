@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,9 +82,9 @@ public class NineGridImageView extends ViewGroup {
                 final int position = i;
                 RoundImageView imageView = new RoundImageView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setOnClickListener(new OnClickListener() {
+                imageView.setOnClickListener(new OnOnlySingleClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onSingleClick(View v) {
                         if (mOnItemClickListener != null) {
                             mOnItemClickListener.onItemClick((ImageView) v, position, mImageUrlList.get(position));
                         }

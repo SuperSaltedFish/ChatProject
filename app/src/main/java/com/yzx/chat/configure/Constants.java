@@ -14,7 +14,7 @@ public class Constants {
 
     public static final String URL_MAP_IMAGE_FORMAT = "http://restapi.amap.com/v3/staticmap?markers=-1,http://www.orline.cn/superim/ic_location_flag.png,0:%f,%f&size=400*160&zoom=15&key=ded050da042a8b77a62c6cda02cc330a";
 
-    public static final String SERVER_PUBLIC_KEY = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEOs56iDUHeQ5tcdFlRKzHKvSdR8Y/pFJMbYlZWF90dqGXVFfCf0/3ZiKYrKAeOvR3HqXcxMvQudLn+Y99X0FMQw==";
+    public static final String SERVER_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE60BkU5fcacDtqV6Co2rPgxzfXdmLcnVNau6JE84AVPRz3x/cZFlJK6aSrSgzqxUPAU8NBNj1J4Z2oHdsjzZpMg==";
 
 
     public static final String DATABASE_NAME = "dffdkk.db";

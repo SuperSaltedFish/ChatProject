@@ -35,6 +35,7 @@ import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.FileUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.VoicePlayer;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.RoundImageView;
 import com.yzx.chat.widget.view.VisualizerView;
 
@@ -322,9 +323,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                     case FAILED:
                     case CANCELED:
                         mIvMessageState.setImageResource(R.drawable.ic_send_fail);
-                        mIvMessageState.setOnClickListener(new View.OnClickListener() {
+                        mIvMessageState.setOnClickListener(new OnOnlySingleClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onSingleClick(View v) {
                                 if (mMessageCallback != null) {
                                     mMessageCallback.resendMessage(getAdapterPosition(), mMessage);
                                 }
@@ -403,9 +404,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             mMessageCallback = messageCallback;
         }
 
-        private final View.OnClickListener mOnContentClickListener = new View.OnClickListener() {
+        private final View.OnClickListener mOnContentClickListener = new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 switch (mHolderType) {
                     case HOLDER_TYPE_SEND_MESSAGE_TEXT:
                     case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:

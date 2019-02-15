@@ -3,11 +3,6 @@ package com.yzx.chat.module.common.view;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.viewpager.widget.ViewPager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -20,11 +15,17 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ImageSelectedAdapter;
 import com.yzx.chat.widget.adapter.LocalImageViewPagerAdapter;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
 import java.util.ArrayList;
 import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Created by YZX on 2018年01月27日.
@@ -150,9 +151,9 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         }
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.ImageViewpagerActivity_mTvConfirm:
                     isSending = true;

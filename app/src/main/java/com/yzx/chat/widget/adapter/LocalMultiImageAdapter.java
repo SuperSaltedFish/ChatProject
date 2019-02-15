@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.List;
 
@@ -105,9 +106,9 @@ public class LocalMultiImageAdapter extends BaseRecyclerViewAdapter<LocalMultiIm
             mIvImage.setOnClickListener(mOnImageClickListener);
         }
 
-        private final View.OnClickListener mOnImageClickListener = new View.OnClickListener() {
+        private final View.OnClickListener mOnImageClickListener = new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 mOnImageItemChangeListener.onItemClick(getAdapterPosition());
             }
         };

@@ -20,6 +20,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,9 +131,9 @@ public class VerifyEditView extends LinearLayout {
         return true;
     }
 
-    private final OnClickListener mOnClickListener = new OnClickListener() {
+    private final OnClickListener mOnClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mCurrentInputPosition >= mItemCount) {
                 return;
             }

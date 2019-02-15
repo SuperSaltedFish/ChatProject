@@ -9,7 +9,7 @@
 
 
     <ImageView
-        android:id="@+id/RegisterFragment_mIvBack"
+        android:id="@+id/mIvBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:paddingBottom="12dp"
@@ -62,7 +62,7 @@
             android:src="@drawable/ic_telephone2" />
 
         <EditText
-            android:id="@+id/RegisterFragment_mEtTelephone"
+            android:id="@+id/mEtTelephone"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_marginStart="16dp"
@@ -78,7 +78,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/RegisterFragment_mTelephoneUnderline"
+        android:id="@+id/mTelephoneUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@drawable/selector_bg_underline" />
@@ -98,7 +98,7 @@
             android:src="@drawable/ic_user" />
 
         <EditText
-            android:id="@+id/RegisterFragment_mEtNickname"
+            android:id="@+id/mEtNickname"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_marginStart="16dp"
@@ -113,7 +113,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/RegisterFragment_mNicknameUnderline"
+        android:id="@+id/mNicknameUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@drawable/selector_bg_underline" />
@@ -133,7 +133,7 @@
             android:src="@drawable/ic_password" />
 
         <EditText
-            android:id="@+id/RegisterFragment_mEtPassword"
+            android:id="@+id/mEtPassword"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_marginStart="16dp"
@@ -148,7 +148,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/RegisterFragment_mPasswordUnderline"
+        android:id="@+id/mPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@drawable/selector_bg_underline" />
@@ -168,7 +168,7 @@
             android:src="@drawable/ic_password_again" />
 
         <EditText
-            android:id="@+id/RegisterFragment_mEtConfirmPassword"
+            android:id="@+id/mEtConfirmPassword"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_marginStart="16dp"
@@ -181,14 +181,14 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/RegisterFragment_mConfirmPasswordUnderline"
+        android:id="@+id/mConfirmPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@drawable/selector_bg_underline" />
 
 
     <TextView
-        android:id="@+id/RegisterFragment_mTvErrorHint"
+        android:id="@+id/mTvErrorHint"
         android:layout_width="match_parent"
         android:layout_height="24dp"
         android:layout_marginBottom="4dp"
@@ -204,14 +204,14 @@
         android:layout_height="wrap_content">
 
         <ProgressBar
-            android:id="@+id/RegisterFragment_mPbRegisterProgress"
+            android:id="@+id/mPbRegisterProgress"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_gravity="center"
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/RegisterFragment_mBtnRegister"
+            android:id="@+id/mBtnRegister"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:background="@drawable/radius_btn_4dp"
@@ -228,7 +228,7 @@
         android:gravity="center">
 
         <TextView
-            android:id="@+id/RegisterFragment_mTvLoginHint"
+            android:id="@+id/mTvLoginHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/LoginActivity_Layout_HasUsernameHint"
@@ -236,7 +236,7 @@
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/RegisterFragment_mTvJumpToLogin"
+            android:id="@+id/mTvJumpToLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/LoginActivity_Layout_Login"

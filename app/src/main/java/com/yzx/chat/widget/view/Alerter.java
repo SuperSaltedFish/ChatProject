@@ -11,6 +11,8 @@ import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 
@@ -58,9 +60,9 @@ public class Alerter {
         mSlideInAnimation.setInterpolator(new OvershootInterpolator(1));
         mSlideOutAnimation.setInterpolator(new AnticipateInterpolator(1));
 
-        mOutsideSpace.setOnClickListener(new View.OnClickListener() {
+        mOutsideSpace.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (isCanceledOnTouchOutside) {
                     hide();
                 }

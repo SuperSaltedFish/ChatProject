@@ -1,59 +1,19 @@
 package com.yzx.chat.module.login.presenter;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
-
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.entity.GetSecretKeyEntity;
-import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.entity.LoginResponseEntity;
-import com.yzx.chat.core.entity.ObtainSMSCodeEntity;
-import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.core.net.api.AuthApi;
-import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.framework.HttpConverter;
-import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.module.login.contract.LoginContract;
-import com.yzx.chat.tool.NotificationHelper;
-import com.yzx.chat.util.AndroidHelper;
-import com.yzx.chat.util.AsyncUtil;
-import com.yzx.chat.util.BackstageAsyncTask;
-
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-
-import androidx.annotation.Nullable;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 
 /**
  * Created by YZX on 2017年10月20日.
  * 每一个不曾起舞的日子，都是对生命的辜负。
  */
-
-
 public class LoginPresenter implements LoginContract.Presenter {
 
     private LoginContract.View mLoginView;
-    private AuthApi mAuthApi;
-    private Call<JsonResponse<GetSecretKeyEntity>> mGetSecretKeyCall;
-    private Call<JsonResponse<LoginResponseEntity>> mLoginCall;
-    private Call<JsonResponse<ObtainSMSCodeEntity>> mObtainSMSCodeCall;
-    private String mServerSecretKey;
-
-    private Handler mHandler;
-
-    public LoginPresenter() {
-        mAuthApi = (AuthApi) ApiHelper.getProxyInstance(AuthApi.class);
-        mHandler = new Handler(Looper.myLooper());
-
-        NotificationHelper.getInstance().cancelAllNotification();
-        AppClient.getInstance().logout();
-        BackstageAsyncTask.cleanAllTask();
-
-    }
 
     @Override
     public void attachView(LoginContract.View view) {
@@ -62,145 +22,31 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void detachView() {
-        AsyncUtil.cancelCall(mGetSecretKeyCall);
-        AsyncUtil.cancelCall(mLoginCall);
-        AsyncUtil.cancelCall(mObtainSMSCodeCall);
-        mHandler.removeCallbacksAndMessages(null);
-        mHandler = null;
         mLoginView = null;
     }
 
-
     @Override
-    public void tryLogin(String username, String password) {
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("telephone", username);
-        data.put("password", password);
-        data.put("deviceID", ConfigurationManager.getDeviceID());
-        initSMSCodeCall(username, AuthApi.SMS_CODE_TYPE_LOGIN, data);
-        initLoginCall(username, password);
-        if (mServerSecretKey == null) {
-            initSecretKeyCall();
-            sHttpExecutor.submit(mGetSecretKeyCall, mObtainSMSCodeCall);
-        } else {
-            sHttpExecutor.submit(mObtainSMSCodeCall);
-        }
-    }
-
-    @Override
-    public String getServerSecretKey() {
-        return mServerSecretKey;
-    }
-
-    private void initSecretKeyCall() {
-        AsyncUtil.cancelCall(mGetSecretKeyCall);
-        mGetSecretKeyCall = mAuthApi.getSignature();
-        mGetSecretKeyCall.setResponseCallback(new BaseResponseCallback<GetSecretKeyEntity>() {
+    public void tryLogin(final String username, String password) {
+        AppClient.getInstance().login(username, password, null, new LifecycleMVPResultCallback<LoginResponseEntity>(mLoginView, false) {
             @Override
-            protected void onSuccess(GetSecretKeyEntity response) {
-                mServerSecretKey = response.getSecretKey();
-                mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
-                mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
+            protected void onSuccess(LoginResponseEntity result) {
+                mLoginView.startHomeActivity();
             }
 
             @Override
-            protected void onFailure(String message) {
-                mLoginView.showErrorHint(message);
-            }
-
-            @Override
-            public boolean isExecuteNextTask() {
-                return !TextUtils.isEmpty(mServerSecretKey);
-            }
-        });
-
-        mGetSecretKeyCall.setHttpConverter(new HttpConverter() {
-            @Nullable
-            @Override
-            public byte[] convertRequest(Map<String, Object> requestParams) {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public byte[] convertMultipartRequest(String partName, Object body) {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public Object convertResponseBody(byte[] body, Type genericType) {
-                if(body==null||body.length==0){
-                    return null;
-                }
-                String strBody = new String(body);
-                LogUtil.e("convertResponseBody:"+strBody);
-                return ApiHelper.getDefaultGsonInstance().fromJson(new String(body), genericType);
-            }
-        });
-    }
-
-    private void initSMSCodeCall(final String username, final String type, final Map<String, Object> data) {
-        AsyncUtil.cancelCall(mObtainSMSCodeCall);
-        mObtainSMSCodeCall = mAuthApi.obtainSMSCode(
-                username,
-                type,
-                ConfigurationManager.getBase64RSAPublicKey(),
-                data);
-        mObtainSMSCodeCall.setResponseCallback(new BaseResponseCallback<ObtainSMSCodeEntity>() {
-
-            @Override
-            protected void onSuccess(ObtainSMSCodeEntity response) {
-                if (!response.isSkipVerify()) {
-                    AndroidHelper.showToast(response.getVerifyCode());
-                    mLoginView.jumpToVerifyPage();
+            protected boolean onError(int code, String error) {
+                if (code == ResponseHandler.ERROR_CODE_SERVER_SEND_LOGIN_VERIFU_CODE) {
+                   AppClient.getInstance().obtainSMSOfLoginType(username, new LifecycleMVPResultCallback<Void>(mLoginView,false) {
+                       @Override
+                       protected void onSuccess(Void result) {
+                           mLoginView.jumpToVerifyPage();
+                       }
+                   });
+                    return true;
                 } else {
-                    AppClient.getInstance().login(mLoginCall, mLoginCallBack);
+                    return false;
                 }
-            }
-
-            @Override
-            protected void onFailure(String message) {
-                mLoginView.showErrorHint(message);
             }
         });
-        if (mServerSecretKey != null) {
-            mObtainSMSCodeCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
-        }
     }
-
-    private void initLoginCall(String username, String password) {
-        AsyncUtil.cancelCall(mLoginCall);
-        mLoginCall = mAuthApi.login(
-                username,
-                password,
-                ConfigurationManager.getDeviceID(),
-                ConfigurationManager.getBase64RSAPublicKey(),
-                "");
-        if (mServerSecretKey != null) {
-            mLoginCall.setHttpConverter(ApiHelper.getRsaHttpConverter(mServerSecretKey));
-        }
-    }
-
-    private final ResultCallback<Void> mLoginCallBack = new ResultCallback<Void>() {
-        @Override
-        public void onResult(Void result) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mLoginView.startSplashActivity();
-                }
-            });
-        }
-
-        @Override
-        public void onFailure(final String error) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mLoginView.showErrorHint(error);
-                }
-            });
-        }
-    };
 }

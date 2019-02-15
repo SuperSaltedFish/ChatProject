@@ -92,7 +92,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void updateGroupName(final String newName) {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Modify));
         mGroupManager.renameGroup(mConversation.getTargetId(), newName, new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
             protected void onSuccess(Void result) {
@@ -108,7 +107,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void updateGroupNotice(final String newNotice) {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Modify));
         mGroupManager.updateGroupNotice(mConversation.getTargetId(), newNotice, new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
             protected void onSuccess(Void result) {
@@ -124,7 +122,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void updateMyGroupAlias(final String newAlias) {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Modify));
         mGroupManager.updateMemberAlias(mConversation.getTargetId(), newAlias, new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
             protected void onSuccess(Void result) {
@@ -135,7 +132,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void quitGroup() {
-        mGroupProfileView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Quit));
         mGroupManager.quitGroup(mConversation.getTargetId(), new LifecycleMVPResultCallback<Void>(mGroupProfileView) {
             @Override
             protected void onSuccess(Void result) {
@@ -178,7 +174,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         @Override
         public void onQuitGroup(GroupEntity group) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
                 if (mConversation.getTargetId().equals(ChatPresenter.sConversationID)) {
                     mGroupProfileView.finishChatActivity();
                 }
@@ -189,7 +184,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         @Override
         public void onBulletinChange(GroupEntity group) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showNewGroupNotice(group.getNotice());
             }
         }
@@ -197,7 +191,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         @Override
         public void onNameChange(GroupEntity group) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showNewGroupName(group.getName());
             }
         }
@@ -205,7 +198,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         @Override
         public void onMemberAdded(GroupEntity group, String[] newMembersID) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showMembers(group.getMembers());
             }
         }
@@ -218,7 +210,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         @Override
         public void onMemberQuit(GroupEntity group, GroupMemberEntity quitMember) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
-                mGroupProfileView.setEnableProgressDialog(false, null);
                 mGroupProfileView.showMembers(group.getMembers());
             }
         }
@@ -227,7 +218,6 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
         public void onMemberAliasChange(GroupEntity group, GroupMemberEntity member, String newAlias) {
             if (mConversation.getTargetId().equals(group.getGroupID())) {
                 if (member.getUserProfile().getUserID().equals(getCurrentUserID())) {
-                    mGroupProfileView.setEnableProgressDialog(false, null);
                     mGroupProfileView.showNewMyAlias(newAlias);
                 }
                 mGroupProfileView.showMembers(group.getMembers());

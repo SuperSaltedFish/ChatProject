@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.yzx.chat">
 
     <!-- 以下为不需要手动申请的权限 -->
@@ -35,11 +36,13 @@
 
     <application
         android:name=".configure.AppApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/DefaultLightTheme">
+        android:theme="@style/DefaultLightTheme"
+        tools:targetApi="n">
+
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="810aa1b6f44962b87f87059d20335acf" />
@@ -61,7 +64,7 @@
         </activity>
         <activity
             android:name=".module.login.view.LoginActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
         <activity
             android:name=".module.main.view.HomeActivity"
             android:theme="@style/NoBackgroundLightTheme"
@@ -105,23 +108,16 @@
             android:name=".module.conversation.view.VideoPlayActivity"
             android:theme="@style/DefaultDarkTheme" />
         <activity android:name=".module.contact.view.NotificationMessageActivity" />
-        <activity android:name=".module.TestActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
         <activity android:name=".module.me.view.MyTagListActivity" />
 
-        <receiver android:name=".broadcast.UninstallReceive">
+        <activity android:name=".module.TestActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<data android:scheme="package" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
-        </receiver>
-
+        </activity>
     </application>
 
 </manifest>

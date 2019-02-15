@@ -39,17 +39,14 @@ public class CropImagePresenter implements CropImageContract.Presenter {
         AsyncUtil.cancelTask(mSaveAvatarToLocalTask);
         mSaveAvatarToLocalTask = new SaveAvatarToLocalTask(this);
         mSaveAvatarToLocalTask.execute(bitmap);
-        mCropImageView.setEnableProgressDialog(true);
     }
 
     private void saveComplete(String imagePath) {
-        mCropImageView.setEnableProgressDialog(false);
         mCropImageView.returnSaveResult(imagePath);
     }
 
     private void saveFail() {
-        mCropImageView.setEnableProgressDialog(false);
-        mCropImageView.showError(AndroidHelper.getString(R.string.CropImageActivity_SaveAvatarFail));
+        mCropImageView.showErrorDialog(AndroidHelper.getString(R.string.CropImageActivity_SaveAvatarFail));
     }
 
     private static class SaveAvatarToLocalTask extends BackstageAsyncTask<CropImagePresenter, Bitmap, String> {

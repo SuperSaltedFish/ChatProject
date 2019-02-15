@@ -137,15 +137,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mPresenter.refreshAllConversationsIfNeed();
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (mParentView != null) {
-            mFlToolbarLayout.setFitsSystemWindows(!hidden);
-            mFlToolbarLayout.requestApplyInsets();
-        }
-        super.onHiddenChanged(hidden);
-    }
-
     private void enableEmptyListHint(boolean isEnable) {
         if (isEnable) {
             mIvEmptyHintImage.setVisibility(View.VISIBLE);

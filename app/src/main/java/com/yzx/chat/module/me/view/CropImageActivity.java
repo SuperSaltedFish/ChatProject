@@ -14,7 +14,6 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.module.me.contract.CropImageContract;
 import com.yzx.chat.module.me.presenter.CropImagePresenter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.view.CropImageView;
 
 /**
@@ -28,7 +27,6 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
     public static final String INTENT_EXTRA_IMAGE_PATH = "ImagePath";
 
     private CropImageView mCropImageView;
-    private ProgressDialog mProgressDialog;
 
     @Override
     protected int getLayoutID() {
@@ -38,7 +36,6 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
     @Override
     protected void init(Bundle savedInstanceState) {
         mCropImageView = findViewById(R.id.CropActivity_mCropImageView);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Crop));
     }
 
     @Override
@@ -74,7 +71,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
         if (item.getItemId() == R.id.CropImageMenu_Confirm) {
             Bitmap bitmap = mCropImageView.crop();
             if (bitmap == null) {
-                showError(getString(R.string.CropImageActivity_CropFail));
+                showErrorDialog(getString(R.string.CropImageActivity_CropFail));
                 return true;
             }
             mProgressDialog.show();
@@ -96,15 +93,6 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
     }
 
     @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.dismiss();
-        }
-    }
-
-    @Override
     public void returnSaveResult(String imagePath) {
         Intent intent = new Intent();
         intent.putExtra(INTENT_EXTRA_IMAGE_PATH, imagePath);
@@ -112,10 +100,6 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
         finish();
     }
 
-    @Override
-    public void showError(String error) {
-        showToast(error);
-    }
 }
 
 

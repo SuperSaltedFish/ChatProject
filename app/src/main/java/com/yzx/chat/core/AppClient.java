@@ -8,22 +8,22 @@ import android.text.TextUtils;
 
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
+import com.yzx.chat.configure.Constants;
+import com.yzx.chat.core.database.DBHelper;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
-import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.configure.Constants;
-import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.core.database.DBHelper;
 import com.yzx.chat.core.entity.LoginResponseEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.extra.ContactNotificationMessageEx;
 import com.yzx.chat.core.extra.VideoMessage;
+import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.core.net.api.AuthApi;
-import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.util.CallbackUtil;
-import com.yzx.chat.core.util.ResourcesHelper;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.core.util.MD5Util;
+import com.yzx.chat.core.util.ResourcesHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,6 +94,21 @@ public class AppClient {
         }
         RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
         RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+    }
+
+    public void obtainSMSOfLoginType(String telephone, ResultCallback<Void> callback) {
+        mAuthApi.obtainSMSCode(telephone, AuthApi.SMS_CODE_TYPE_LOGIN)
+                .enqueue(new ResponseHandler<>(callback));
+    }
+
+    public void obtainSMSOfRegisterType(String telephone, ResultCallback<Void> callback) {
+        mAuthApi.obtainSMSCode(telephone, AuthApi.SMS_CODE_TYPE_REGISTER)
+                .enqueue(new ResponseHandler<>(callback));
+    }
+
+    public void register(String account, String password, String nickname, String verifyCode, ResultCallback<Void> callback) {
+        mAuthApi.register(account, password, nickname, verifyCode)
+                .enqueue(new ResponseHandler<>(callback));
     }
 
     public void login(String account, String password, String verifyCode, final ResultCallback<LoginResponseEntity> callback) {
@@ -214,7 +229,6 @@ public class AppClient {
     }
 
 
-
     private void init(String token, UserEntity userInfo) {
         isLogged = true;
         mToken = token;
@@ -263,7 +277,6 @@ public class AppClient {
         }
         mRongIMClient.logout();
         destroy();
-        SharePreferenceManager.getIdentityPreferences().clear(false);
         mLoginLock.release();
     }
 
@@ -295,10 +308,6 @@ public class AppClient {
             }
         }
         return mDeviceID;
-    }
-
-    public Context getAppContext() {
-        return mAppContext;
     }
 
     public RongIMClient getRongIMClient() {

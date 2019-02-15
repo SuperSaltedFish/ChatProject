@@ -55,7 +55,6 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         if (isCreating) {
             return;
         }
-        mCreateGroupView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Create));
         StringBuilder stringBuilder = new StringBuilder(64);
         String[] membersID = new String[members.size()];
         UserEntity user;
@@ -92,7 +91,6 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         if (isAdding) {
             return;
         }
-        mCreateGroupView.setEnableProgressDialog(true, AndroidHelper.getString(R.string.ProgressHint_Add));
         mAddingMembersID = new String[members.size()];
         for (int i = 0, count = members.size(); i < count; i++) {
             mAddingMembersID[i] = members.get(i).getUserProfile().getUserID();
@@ -122,7 +120,6 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         @Override
         public void onCreatedGroup(GroupEntity group) {
             if (group.getOwner().equals(AppClient.getInstance().getUserManager().getUserID())) {
-                mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
                 isCreating = false;
             }
@@ -146,7 +143,6 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         @Override
         public void onMemberAdded(GroupEntity group, String[] newMembersID) {
             if (Arrays.equals(mAddingMembersID, newMembersID)) {
-                mCreateGroupView.setEnableProgressDialog(false, null);
                 mCreateGroupView.launchChatActivity(group);
                 isCreating = false;
             }

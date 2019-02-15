@@ -93,9 +93,9 @@ public class LocationSendPresenter implements LocationSendContract.Presenter {
                     }
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_NetworkUnavailable));
+                        mLocationMapActivityView.showErrorDialog(AndroidHelper.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_Server1));
+                        mLocationMapActivityView.showErrorDialog(AndroidHelper.getString(R.string.Error_Server1));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }
@@ -141,9 +141,9 @@ public class LocationSendPresenter implements LocationSendContract.Presenter {
                     }
                 } else {
                     if (errorCode == 1804 || errorCode == 1806) {
-                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_NetworkUnavailable));
+                        mLocationMapActivityView.showErrorDialog(AndroidHelper.getString(R.string.Error_NetworkUnavailable));
                     } else {
-                        mLocationMapActivityView.showError(AndroidHelper.getString(R.string.Error_Server1));
+                        mLocationMapActivityView.showErrorDialog(AndroidHelper.getString(R.string.Error_Server1));
                     }
                     LogUtil.e("search location fail,code:" + errorCode);
                 }

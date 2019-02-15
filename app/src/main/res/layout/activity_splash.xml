@@ -8,17 +8,17 @@
     tools:context=".module.main.view.SplashActivity">
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/SplashActivity_mGuideViewPager"
+        android:id="@+id/mGuideViewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@id/SplashActivity_mFlNavigation"
+        app:layout_constraintBottom_toTopOf="@id/mFlNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/SplashActivity_mFlNavigation"
+        android:id="@+id/mFlNavigation"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:paddingEnd="10dp"
@@ -28,12 +28,12 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.yzx.chat.widget.view.PageIndicator
-            android:id="@+id/SplashActivity_mPageIndicator"
+            android:id="@+id/mPageIndicator"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
 
         <LinearLayout
-            android:id="@+id/SplashActivity_mLlTextIndicator"
+            android:id="@+id/mLlTextIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
@@ -41,7 +41,7 @@
             android:orientation="horizontal">
 
             <TextSwitcher
-                android:id="@+id/SplashActivity_mTextSwitcher"
+                android:id="@+id/mTextSwitcher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"

@@ -1,29 +1,21 @@
 package com.yzx.chat.module.common.presenter;
 
 import android.os.Handler;
-import android.text.TextUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
-import com.yzx.chat.core.entity.QRCodeContentEntity;
-import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.module.common.contract.QrCodeScanContract;
-import com.yzx.chat.core.net.api.GroupApi;
 import com.yzx.chat.core.entity.JsonResponse;
-import com.yzx.chat.core.net.api.UserApi;
-import com.yzx.chat.core.GroupManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.core.net.framework.Call;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.net.ApiHelper;
+import com.yzx.chat.core.net.api.UserApi;
+import com.yzx.chat.core.net.framework.Call;
+import com.yzx.chat.module.common.contract.QrCodeScanContract;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AsyncUtil;
 import com.yzx.chat.util.BackstageAsyncTask;
-import com.yzx.chat.util.QRUtils;
-import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 /**
  * Created by YZX on 2018年06月12日.
@@ -96,63 +88,62 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
     @Override
     public void decodeQRCodeContentFromFile(String filePath) {
-        mQrCodeView.setEnableProgressDialog(true);
         AsyncUtil.cancelTask(mDecodeQRCodeFileTask);
         mDecodeQRCodeFileTask = new DecodeQRCodeFileTask(this);
         mDecodeQRCodeFileTask.execute(filePath);
     }
 
     private void joinGroup(String groupID) {
-        mHandler.removeCallbacksAndMessages(null);
-        isWaitJoiningPush = true;
-        AppClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new LifecycleMVPResultCallback<Void>(this) {
-            @Override
-            protected void onSuccess(Void result) {
-                if (isWaitJoiningPush) {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isWaitJoiningPush) {
-                                decodeFail(AndroidHelper.getString(R.string.Error_Server1));
-                            }
-                        }
-                    }, 15000);
-                }
-            }
-
-            @Override
-            public void onFailure(String error) {
-                isWaitJoiningPush = false;
-                decodeFail(error);
-            }
-        });
+//        mHandler.removeCallbacksAndMessages(null);
+//        isWaitJoiningPush = true;
+//        AppClient.getInstance().getGroupManager().joinGroup(groupID, GroupApi.JOIN_TYPE_QR_CODE, new LifecycleMVPResultCallback<Void>(this) {
+//            @Override
+//            protected void onSuccess(Void result) {
+//                if (isWaitJoiningPush) {
+//                    mHandler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (isWaitJoiningPush) {
+//                                decodeFail(AndroidHelper.getString(R.string.Error_Server1));
+//                            }
+//                        }
+//                    }, 15000);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(String error) {
+//                isWaitJoiningPush = false;
+//                decodeFail(error);
+//            }
+//        });
     }
 
     private void findUserInfo(String tempUserID) {
-        AsyncUtil.cancelCall(GetUserProfileCall);
-        GetUserProfileCall = mUserApi.getUserProfileByTempUserID(tempUserID);
-        GetUserProfileCall.setResponseCallback(new BaseResponseCallback<UserEntity>() {
-            @Override
-            protected void onSuccess(UserEntity response) {
-                mQrCodeView.setEnableProgressDialog(false);
-                if (AppClient.getInstance().getContactManager().getContact(response.getUserID()) != null) {
-                    mQrCodeView.startContactProfileActivity(response.getUserID());
-                } else {
-                    mQrCodeView.startStrangerProfileActivity(response);
-                }
-            }
-
-            @Override
-            protected void onFailure(String message) {
-                decodeFail(message);
-            }
-        });
-        sHttpExecutor.submit(GetUserProfileCall);
+//        AsyncUtil.cancelCall(GetUserProfileCall);
+//        GetUserProfileCall = mUserApi.getUserProfileByTempUserID(tempUserID);
+//        GetUserProfileCall.setResponseCallback(new BaseResponseCallback<UserEntity>() {
+//            @Override
+//            protected void onSuccess(UserEntity response) {
+//                mQrCodeView.setEnableProgressDialog(false);
+//                if (AppClient.getInstance().getContactManager().getContact(response.getUserID()) != null) {
+//                    mQrCodeView.startContactProfileActivity(response.getUserID());
+//                } else {
+//                    mQrCodeView.startStrangerProfileActivity(response);
+//                }
+//            }
+//
+//            @Override
+//            protected void onFailure(String message) {
+//                decodeFail(message);
+//            }
+//        });
+//        sHttpExecutor.submit(GetUserProfileCall);
     }
 
     private void decodeFail(String error) {
-        mQrCodeView.setEnableProgressDialog(false);
-        mQrCodeView.showErrorDialog(error);
+//        mQrCodeView.setEnableProgressDialog(false);
+//        mQrCodeView.showErrorDialog(error);
     }
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
@@ -184,12 +175,12 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
         @Override
         public void onMemberJoin(GroupEntity group, String memberID) {
-            if (memberID.equals(AppClient.getInstance().getUserManager().getUserID()) && isWaitJoiningPush) {
-                isWaitJoiningPush = false;
-                mHandler.removeCallbacksAndMessages(null);
-                mQrCodeView.setEnableProgressDialog(false);
-                mQrCodeView.startGroupChatActivity(group.getGroupID());
-            }
+//            if (memberID.equals(AppClient.getInstance().getUserManager().getUserID()) && isWaitJoiningPush) {
+//                isWaitJoiningPush = false;
+//                mHandler.removeCallbacksAndMessages(null);
+//                mQrCodeView.setEnableProgressDialog(false);
+//                mQrCodeView.startGroupChatActivity(group.getGroupID());
+//            }
         }
 
         @Override
@@ -211,19 +202,19 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
         @Override
         protected String doInBackground(String... strings) {
-            String filePath = strings[0];
-            if (TextUtils.isEmpty(filePath)) {
-                return null;
-            }
-            String content = QRUtils.decodeFromLocalFile(filePath);
-            if (TextUtils.isEmpty(content)) {
-                return "";
-            }
-            byte[] data = AppClient.getInstance().getConfigurationManager().aesDecryptFromBase64String(content);
-            if (data == null || data.length == 0) {
-                return null;
-            }
-            return new String(data);
+//            String filePath = strings[0];
+//            if (TextUtils.isEmpty(filePath)) {
+//                return null;
+//            }
+//            String content = QRUtils.decodeFromLocalFile(filePath);
+//            if (TextUtils.isEmpty(content)) {
+//                return "";
+//            }
+//            byte[] data = AppClient.getInstance().getConfigurationManager().aesDecryptFromBase64String(content);
+//            if (data == null || data.length == 0) {
+//                return null;
+//            }
+            return null;
         }
 
         @Override

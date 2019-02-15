@@ -35,7 +35,7 @@
             android:src="@drawable/ic_telephone2" />
 
         <EditText
-            android:id="@+id/LoginFragment_mEtTelephone"
+            android:id="@+id/mEtTelephone"
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:layout_marginStart="16dp"
@@ -51,7 +51,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/LoginFragment_mTelephoneUnderline"
+        android:id="@+id/mTelephoneUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@drawable/selector_bg_underline" />
@@ -71,7 +71,7 @@
             android:src="@drawable/ic_password" />
 
         <EditText
-            android:id="@+id/LoginFragment_mEtPassword"
+            android:id="@+id/mEtPassword"
             android:layout_width="0dp"
             android:layout_height="44dp"
             android:layout_marginStart="16dp"
@@ -96,14 +96,14 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/LoginFragment_mPasswordUnderline"
+        android:id="@+id/mPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@drawable/selector_bg_underline" />
 
 
     <TextView
-        android:id="@+id/LoginFragment_mTvErrorHint"
+        android:id="@+id/mTvErrorHint"
         android:layout_width="match_parent"
         android:layout_height="24dp"
         android:layout_marginBottom="4dp"
@@ -119,14 +119,14 @@
         android:layout_height="wrap_content">
 
         <ProgressBar
-            android:id="@+id/LoginFragment_mPbLoginProgress"
+            android:id="@+id/mPbLoginProgress"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_gravity="center"
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/LoginFragment_mBtnLogin"
+            android:id="@+id/mBtnLogin"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:background="@drawable/radius_btn_4dp"
@@ -150,7 +150,7 @@
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/LoginFragment_mTvJumpToRegister"
+            android:id="@+id/mTvJumpToRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/LoginActivity_Layout_Register"

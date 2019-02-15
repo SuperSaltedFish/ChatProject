@@ -1,7 +1,6 @@
 package com.yzx.chat.core.net;
 
 import com.yzx.chat.R;
-import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Callback;
@@ -27,6 +26,7 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
     public static final int ERROR_CODE_NETWORK_UNKNOWN = -200;
     public static final int ERROR_CODE_NETWORK_TIMEOUT = -300;
     public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -400;
+    public static final int ERROR_CODE_SERVER_SEND_LOGIN_VERIFU_CODE = 200001;
 
 
     private ResultCallback<T> mResultCallback;

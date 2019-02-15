@@ -5,11 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +20,13 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
 import com.yzx.chat.module.contact.presenter.ContactChatSettingPresenter;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by YZX on 2018年07月15日.
@@ -118,9 +118,9 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
         startActivityForResult(intent, 0);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.ContactChatSettingFragment_mRemarkNameLayout:
                 case R.id.ContactChatSettingFragment_mTelephoneLayout:
@@ -176,9 +176,9 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
                 textView.setTextSize(13.5f);
                 textView.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
                 textView.setText(telephone);
-                textView.setOnClickListener(new View.OnClickListener() {
+                textView.setOnClickListener(new OnOnlySingleClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onSingleClick(View v) {
                         final String telephone = ((TextView) v).getText().toString();
                         if (TextUtils.isEmpty(telephone)) {
                             return;

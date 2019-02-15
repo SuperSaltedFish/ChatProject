@@ -2,7 +2,6 @@ package com.yzx.chat.module.login.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -21,8 +20,9 @@ import com.yzx.chat.module.login.presenter.RegisterPresenter;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.RegexUtil;
 import com.yzx.chat.util.ViewUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import java.util.Objects;
 
 /**
  * Created by YZX on 2018年07月08日.
@@ -53,20 +53,20 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
 
     @Override
     protected void init(View parentView) {
-        mEtRegisterTelephone = parentView.findViewById(R.id.RegisterFragment_mEtTelephone);
-        mEtRegisterNickname = parentView.findViewById(R.id.RegisterFragment_mEtNickname);
-        mEtRegisterPassword = parentView.findViewById(R.id.RegisterFragment_mEtPassword);
-        mEtRegisterConfirmPassword = parentView.findViewById(R.id.RegisterFragment_mEtConfirmPassword);
-        mPbRegisterProgress = parentView.findViewById(R.id.RegisterFragment_mPbRegisterProgress);
-        mBtnRegister = parentView.findViewById(R.id.RegisterFragment_mBtnRegister);
-        mTvJumpToLogin = parentView.findViewById(R.id.RegisterFragment_mTvJumpToLogin);
-        mTelephoneUnderline = parentView.findViewById(R.id.RegisterFragment_mTelephoneUnderline);
-        mNicknameUnderline = parentView.findViewById(R.id.RegisterFragment_mNicknameUnderline);
-        mPasswordUnderline = parentView.findViewById(R.id.RegisterFragment_mPasswordUnderline);
-        mConfirmPasswordUnderline = parentView.findViewById(R.id.RegisterFragment_mConfirmPasswordUnderline);
-        mTvLoginHint = parentView.findViewById(R.id.RegisterFragment_mTvLoginHint);
-        mTvErrorHint = parentView.findViewById(R.id.RegisterFragment_mTvErrorHint);
-        mIvBack = parentView.findViewById(R.id.RegisterFragment_mIvBack);
+        mEtRegisterTelephone = parentView.findViewById(R.id.mEtTelephone);
+        mEtRegisterNickname = parentView.findViewById(R.id.mEtNickname);
+        mEtRegisterPassword = parentView.findViewById(R.id.mEtPassword);
+        mEtRegisterConfirmPassword = parentView.findViewById(R.id.mEtConfirmPassword);
+        mPbRegisterProgress = parentView.findViewById(R.id.mPbRegisterProgress);
+        mBtnRegister = parentView.findViewById(R.id.mBtnRegister);
+        mTvJumpToLogin = parentView.findViewById(R.id.mTvJumpToLogin);
+        mTelephoneUnderline = parentView.findViewById(R.id.mTelephoneUnderline);
+        mNicknameUnderline = parentView.findViewById(R.id.mNicknameUnderline);
+        mPasswordUnderline = parentView.findViewById(R.id.mPasswordUnderline);
+        mConfirmPasswordUnderline = parentView.findViewById(R.id.mConfirmPasswordUnderline);
+        mTvLoginHint = parentView.findViewById(R.id.mTvLoginHint);
+        mTvErrorHint = parentView.findViewById(R.id.mTvErrorHint);
+        mIvBack = parentView.findViewById(R.id.mIvBack);
     }
 
     @Override
@@ -82,14 +82,18 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mBtnRegister.setOnClickListener(mOnViewClickListener);
         mTvJumpToLogin.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
-
-        ViewUtil.registerAutoScrollAtInput( mParentView, mBtnRegister);
     }
 
     @Override
-    public void onDestroyView() {
-        ViewUtil.registerAutoScrollAtInput( mParentView, mBtnRegister);
-        super.onDestroyView();
+    public void onResume() {
+        super.onResume();
+        ViewUtil.registerAutoScrollAtInput(getView(), mBtnRegister);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ViewUtil.unregisterAutoScrollAtInput(getView());
     }
 
     private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
@@ -145,16 +149,16 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
     }
 
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (!isDisableInput) {
                 switch (v.getId()) {
-                    case R.id.RegisterFragment_mBtnRegister:
+                    case R.id.mBtnRegister:
                         tryRegister();
                         break;
-                    case R.id.RegisterFragment_mTvJumpToLogin:
-                    case R.id.RegisterFragment_mIvBack:
+                    case R.id.mTvJumpToLogin:
+                    case R.id.mIvBack:
                         backPressed();
                         break;
                 }
@@ -163,26 +167,26 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
     };
 
     private void tryRegister() {
-        showErrorHint(null);
+        showErrorDialog(null);
         final String username = mEtRegisterTelephone.getText().toString();
         final String nickname = mEtRegisterNickname.getText().toString();
         final String password = mEtRegisterPassword.getText().toString();
         final String confirm = mEtRegisterConfirmPassword.getText().toString();
 
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirm)) {
-            showErrorHint(getString(R.string.LoginActivity_Error_NoneInput));
+            showErrorDialog(getString(R.string.LoginActivity_Error_NoneInput));
             return;
         }
         if (!RegexUtil.isMobile(username)) {
-            showErrorHint(getString(R.string.LoginActivity_Error_PhoneNumber));
+            showErrorDialog(getString(R.string.LoginActivity_Error_PhoneNumber));
             return;
         }
         if (!RegexUtil.isLegalNickname(nickname)) {
-            showErrorHint(getString(R.string.LoginActivity_Error_IllegalNickname));
+            showErrorDialog(getString(R.string.LoginActivity_Error_IllegalNickname));
             return;
         }
         if (!RegexUtil.isLegalPassword(password)) {
-            showErrorHint(getString(R.string.LoginActivity_Error_IllegalPassword));
+            showErrorDialog(getString(R.string.LoginActivity_Error_IllegalPassword));
             return;
         }
         startProgressAnim(true, new AnimatorListenerAdapter() {
@@ -197,16 +201,16 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             switch (v.getId()) {
-                case R.id.RegisterFragment_mEtTelephone:
+                case R.id.mEtTelephone:
                     mTelephoneUnderline.setSelected(hasFocus);
                     break;
-                case R.id.RegisterFragment_mEtNickname:
+                case R.id.mEtNickname:
                     mNicknameUnderline.setSelected(hasFocus);
                     break;
-                case R.id.RegisterFragment_mEtPassword:
+                case R.id.mEtPassword:
                     mPasswordUnderline.setSelected(hasFocus);
                     break;
-                case R.id.RegisterFragment_mEtConfirmPassword:
+                case R.id.mEtConfirmPassword:
                     mConfirmPasswordUnderline.setSelected(hasFocus);
                     break;
             }
@@ -224,7 +228,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
 
         @Override
         public void afterTextChanged(Editable s) {
-            showErrorHint(null);
+            showErrorDialog(null);
         }
     };
 
@@ -240,21 +244,15 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         info.telephone = mEtRegisterTelephone.getText().toString();
         info.password = mEtRegisterPassword.getText().toString();
         info.nickname = mEtRegisterNickname.getText().toString();
-        info.serverSecretKey = mPresenter.getServerSecretKey();
-        Intent intent = new Intent(LoginActivity.INTENT_ACTION);
-        intent.putExtra(LoginActivity.INTENT_EXTRA_PAGE_TYPE, LoginActivity.PAGE_TYPE_VERIFY);
-        intent.putExtra(LoginActivity.INTENT_EXTRA_PAGE_PARAM, info);
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+        LoginActivity.jumpToVerifyPage(Objects.requireNonNull(getActivity()), info);
     }
 
     private void backPressed() {
-        Intent intent = new Intent(LoginActivity.INTENT_ACTION);
-        intent.putExtra(LoginActivity.INTENT_EXTRA_PAGE_TYPE, LoginActivity.PAGE_TYPE_BACK);
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+        Objects.requireNonNull(getFragmentManager()).popBackStackImmediate();
     }
 
     @Override
-    public void showErrorHint(String error) {
+    public void showErrorDialog(String error) {
         mTvErrorHint.setText(error);
         if (!TextUtils.isEmpty(error)) {
             AnimationUtil.errorTranslateAnim(mTvErrorHint);

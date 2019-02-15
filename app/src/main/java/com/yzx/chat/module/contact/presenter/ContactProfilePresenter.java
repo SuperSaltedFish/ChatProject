@@ -54,7 +54,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
     @Override
     public void deleteContact() {
         mAppClient.getContactManager().deleteContact(mContactEntity.getUserProfile().getUserID(), new LifecycleMVPResultCallback<Void>(mContactProfileView) {
-
             @Override
             protected void onSuccess(Void result) {
 
@@ -88,7 +87,6 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         @Override
         public void onContactDeleted(ContactEntity contact) {
             if (contact.equals(mContactEntity)) {
-                mContactProfileView.setEnableProgressDialog(false);
                 mContactProfileView.goBack();
             }
         }

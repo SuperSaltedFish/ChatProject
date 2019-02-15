@@ -8,12 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,6 +18,7 @@ import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ImageDirAdapter;
 import com.yzx.chat.widget.adapter.LocalSingleImageAdapter;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -33,6 +28,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2018年02月12日.
@@ -149,9 +150,9 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
         mLocalSingleImageAdapter.notifyDataSetChanged();
     }
 
-    private final View.OnClickListener mOnChooseDirClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnChooseDirClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mBottomBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                 mBottomBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
@@ -203,9 +204,9 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
         }
     };
 
-    private final View.OnClickListener mOnMaskViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnMaskViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             mBottomBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
     };

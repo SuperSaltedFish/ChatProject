@@ -29,7 +29,6 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.core.SharePreferenceManager;
 import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.FileSelectorActivity;
@@ -40,12 +39,14 @@ import com.yzx.chat.module.conversation.contract.ChatContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.group.view.GroupProfileActivity;
 import com.yzx.chat.tool.DirectoryHelper;
+import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
@@ -284,7 +285,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
         mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
-        mKeyBoardHeight = SharePreferenceManager.getConfigurePreferences().getKeyBoardHeight();
+        mKeyBoardHeight = SharePreferenceHelper.getConfigurePreferences().getKeyBoardHeight();
     }
 
     @Override
@@ -434,9 +435,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAlerterIconAnimation.setRepeatCount(Animation.INFINITE);
         mAlerterIconAnimation.setRepeatMode(Animation.REVERSE);
 
-        btnResend.setOnClickListener(new View.OnClickListener() {
+        btnResend.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 mAlerter.hide();
                 mMessageList.remove(mNeedResendMessage);
                 mAdapter.notifyItemRemovedEx(mNeedResendPosition);
@@ -444,9 +445,9 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 mAlerter.hide();
             }
         });
@@ -488,30 +489,30 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     private void setOtherPanel() {
-        mIvSendImage.setOnClickListener(new View.OnClickListener() {
+        mIvSendImage.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_IMAGE);
             }
         });
 
-        mIvSendLocation.setOnClickListener(new View.OnClickListener() {
+        mIvSendLocation.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CHANGE_WIFI_STATE}, REQUEST_PERMISSION_LOCATION);
             }
         });
 
-        mIvSendVideo.setOnClickListener(new View.OnClickListener() {
+        mIvSendVideo.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CAMERA);
             }
         });
 
-        mIvSendFile.setOnClickListener(new View.OnClickListener() {
+        mIvSendFile.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 requestPermissionsInCompatMode(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_FILE);
             }
         });
@@ -524,7 +525,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (mKeyBoardHeight != keyBoardHeight) {
                     mKeyBoardHeight = keyBoardHeight;
                     mEmotionPanelLayout.setHeight(mKeyBoardHeight);
-                    SharePreferenceManager.getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
+                    SharePreferenceHelper.getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
                 }
                 if (isShowMoreInput()) {
                     hideMoreInput();
@@ -545,22 +546,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 isOpenedKeyBoard = false;
             }
         });
-        mIvEmoticons.setOnClickListener(new View.OnClickListener() {
+        mIvEmoticons.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 toggleMoreInput(MORE_INPUT_TYPE_EMOTICONS);
             }
         });
-        mIvMicrophone.setOnClickListener(new View.OnClickListener() {
+        mIvMicrophone.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
             }
         });
 
-        mIsvSendMessage.setOnClickListener(new View.OnClickListener() {
+        mIsvSendMessage.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (isHasContentInInputBox) {
                     String message = mEtContent.getText().toString();
                     if (TextUtils.isEmpty(message)) {

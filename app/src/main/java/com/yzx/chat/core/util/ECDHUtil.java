@@ -3,7 +3,6 @@ package com.yzx.chat.core.util;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 
 import javax.crypto.KeyAgreement;
@@ -16,20 +15,19 @@ public class ECDHUtil {
 
     private static final String ECDH = "ECDH";
 
-    public static byte[] ecdhToAESByBC(PrivateKey localKey, Key remoteKey) {
-        if(localKey==null||remoteKey==null){
+    public static byte[] ecdh(PrivateKey localKey, Key remoteKey) {
+        if (localKey == null || remoteKey == null) {
             return null;
         }
         KeyAgreement agreement;
         try {
-            agreement = KeyAgreement.getInstance(ECDH,"BC");
+            agreement = KeyAgreement.getInstance(ECDH);
             agreement.init(localKey);
             agreement.doPhase(remoteKey, true);
             return agreement.generateSecret();
-        } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 }

@@ -18,11 +18,12 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactRemarkEntity;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
 import com.yzx.chat.module.contact.presenter.RemarkInfoPresenter;
 import com.yzx.chat.util.AndroidHelper;
-import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.StringUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.ClearEditText;
 import com.yzx.chat.widget.view.FlowLayout;
 
@@ -228,9 +229,9 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         }
     };
 
-    private final View.OnClickListener mOnLabelFlowLayoutClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnLabelFlowLayoutClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             Intent intent = new Intent(RemarkInfoActivity.this, EditContactTagsActivity.class);
             intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mContactEntity.getRemark().getTags());
             intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());

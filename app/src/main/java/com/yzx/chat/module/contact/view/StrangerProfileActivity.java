@@ -20,6 +20,7 @@ import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
 import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.PageIndicator;
 
 import java.util.ArrayList;
@@ -172,9 +173,9 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     }
 
-    private final View.OnClickListener mOnConfirmClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnConfirmClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mContactOperationEntity != null) {
                 mPresenter.acceptContactRequest(mContactOperationEntity);
             } else if (mUser != null) {
@@ -193,17 +194,4 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         finish();
     }
 
-    @Override
-    public void showError(String error) {
-        showToast(error);
-    }
-
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.dismiss();
-        }
-    }
 }

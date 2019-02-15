@@ -3,10 +3,6 @@ package com.yzx.chat.module.common.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +13,7 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.DirectoryPathAdapter;
 import com.yzx.chat.widget.adapter.FileAndDirectoryAdapter;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
@@ -28,6 +25,10 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class FileSelectorActivity extends BaseCompatActivity {
 
@@ -199,9 +200,9 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mTvConfirm.setEnabled(mSelectedFilePathList.size() > 0);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.FileSelectorActivity_mTvConfirm:
                     confirmSelectedResult();

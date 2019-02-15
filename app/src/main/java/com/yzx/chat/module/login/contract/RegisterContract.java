@@ -10,14 +10,10 @@ import com.yzx.chat.base.BaseView;
 public class RegisterContract {
     public interface View extends BaseView<Presenter> {
         void jumpToVerifyPage();
-
-        void showErrorHint(String error);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
         void obtainRegisterVerifyCode(String username);
-
-        String getServerSecretKey();
     }
 }

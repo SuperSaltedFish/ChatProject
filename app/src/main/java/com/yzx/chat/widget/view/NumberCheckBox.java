@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.yzx.chat.R;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -47,9 +48,9 @@ public class NumberCheckBox extends View {
         super(context, attrs, defStyleAttr);
         mPaint = new Paint();
         initDefault(context);
-        setOnClickListener(new OnClickListener() {
+        setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 setChecked(!isChecked);
             }
         });

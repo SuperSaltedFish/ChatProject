@@ -10,21 +10,23 @@ import com.yzx.chat.base.BaseView;
 public class VerifyContract {
     public interface View extends BaseView<Presenter> {
 
-        void showErrorHint(String error);
+        void showCountDown();
 
-        void startSplashActivity();
+        void startHomeActivity();
+
+        void goBack();
     }
 
 
     public interface Presenter extends BasePresenter<View> {
 
-        void login(String username, String password, String verifyCode,String serverSecretKey);
+        void login(String username, String password, String verifyCode);
 
-        void register(String username, String password, String nickname, String verifyCode,String serverSecretKey);
+        void register(String username, String password, String nickname, String verifyCode);
 
-        void obtainLoginSMS(String username,String password,String serverSecretKey);
+        void obtainLoginSMS(String username, String password);
 
-        void obtainRegisterSMS(String username,String serverSecretKey);
+        void obtainRegisterSMS(String username);
 
     }
 }

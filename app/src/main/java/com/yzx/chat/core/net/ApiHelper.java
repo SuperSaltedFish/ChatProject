@@ -154,15 +154,15 @@ public class ApiHelper {
             }
         });
 
-        KeyPair ecKeyPair = ECCUtil.generateECCKeyPairCompat(AppClient.getInstance().getAppContext(), ApiHelper.class.getName() + ".ecc");
+        KeyPair ecKeyPair = ECCUtil.generateECCKeyPair("secp256r1");
         PublicKey clientPublicKey = ecKeyPair.getPublic();
         PrivateKey clientPrivateKey = ecKeyPair.getPrivate();
-        PublicKey serverPublicKey = ECCUtil.loadECPublicKeyCompat(Base64Util.decode(Constants.SERVER_PUBLIC_KEY));
+        PublicKey serverPublicKey = ECCUtil.loadECPublicKey(Base64Util.decode(Constants.SERVER_PUBLIC_KEY));
 
         CLIENT_PUBLIC_KEY = Base64Util.encodeToString(clientPublicKey.getEncoded());
-        AES_KEY = AESUtil.loadKey(ECDHUtil.ecdhToAESByBC(clientPrivateKey, serverPublicKey));
-        CLIENT_SIGNATURE = ECCUtil.loadSignatureOfSignTypeCompat(clientPrivateKey);
-        SERVER_SIGNATURE = ECCUtil.loadSignatureOfVerifyTypeCompat(serverPublicKey);
+        AES_KEY = AESUtil.loadKey(ECDHUtil.ecdh(clientPrivateKey, serverPublicKey));
+        CLIENT_SIGNATURE = ECCUtil.loadSignature(clientPrivateKey);
+        SERVER_SIGNATURE = ECCUtil.loadSignature(serverPublicKey);
     }
 
     public static <T> T getProxyInstance(Class<T> interfaceClass) {

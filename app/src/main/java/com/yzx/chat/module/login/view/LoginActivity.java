@@ -1,24 +1,13 @@
 package com.yzx.chat.module.login.view;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.fragment.app.FragmentActivity;
 
 public class LoginActivity extends BaseCompatActivity {
-
-    public final static String INTENT_EXTRA_PAGE_TYPE = "PageType";
-    public final static String INTENT_EXTRA_PAGE_PARAM = "Param";
-    public final static String INTENT_ACTION = LoginActivity.class + ".Switch";
-    public final static int PAGE_TYPE_BACK = 0;
-    public final static int PAGE_TYPE_REGISTER = 2;
-    public final static int PAGE_TYPE_VERIFY = 3;
 
 
     @Override
@@ -34,56 +23,31 @@ public class LoginActivity extends BaseCompatActivity {
     @Override
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSwitchPageReceiver, new IntentFilter(INTENT_ACTION));
-        jumpToLoginPage();
+        jumpToLoginPage(this);
     }
 
-    @Override
-    protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSwitchPageReceiver);
-        super.onDestroy();
-    }
-
-
-    private final BroadcastReceiver mSwitchPageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getIntExtra(INTENT_EXTRA_PAGE_TYPE, 0)) {
-                case PAGE_TYPE_BACK:
-                    LoginActivity.super.onBackPressed();
-                    break;
-                case PAGE_TYPE_REGISTER:
-                    jumpToRegisterPage();
-                    break;
-                case PAGE_TYPE_VERIFY:
-                    jumpToVerifyPage((VerifyFragment.VerifyInfo) intent.getParcelableExtra(INTENT_EXTRA_PAGE_PARAM));
-                    break;
-            }
-        }
-    };
-
-    public void jumpToLoginPage() {
-        getSupportFragmentManager()
+    static void jumpToLoginPage(FragmentActivity activity) {
+        activity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.LoginActivity_mFlContent, new LoginFragment())
+                .replace(R.id.mFlContent, new LoginFragment())
                 .commitAllowingStateLoss();
     }
 
-    public void jumpToRegisterPage() {
-        getSupportFragmentManager()
+    static void jumpToRegisterPage(FragmentActivity activity) {
+        activity.getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.anim_fragment_in_right, R.anim.anim_fragment_out_left, R.anim.anim_fragment_in_left, R.anim.anim_fragment_out_right)
                 .addToBackStack(null)
-                .replace(R.id.LoginActivity_mFlContent, new RegisterFragment())
+                .replace(R.id.mFlContent, new RegisterFragment())
                 .commitAllowingStateLoss();
     }
 
-    public void jumpToVerifyPage(VerifyFragment.VerifyInfo info) {
-        getSupportFragmentManager()
+    static void jumpToVerifyPage(FragmentActivity activity, VerifyFragment.VerifyInfo info) {
+        activity.getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.anim_fragment_in_right, R.anim.anim_fragment_out_left, R.anim.anim_fragment_in_left, R.anim.anim_fragment_out_right)
-                .replace(R.id.LoginActivity_mFlContent, VerifyFragment.newInstance(info))
+                .replace(R.id.mFlContent, VerifyFragment.newInstance(info))
                 .commitAllowingStateLoss();
     }
 

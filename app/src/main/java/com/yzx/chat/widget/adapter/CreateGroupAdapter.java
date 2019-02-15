@@ -12,6 +12,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.List;
 
@@ -129,9 +130,9 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
             itemView.setOnClickListener(mOnItemClickListener);
         }
 
-        private final View.OnClickListener mOnItemClickListener = new View.OnClickListener() {
+        private final View.OnClickListener mOnItemClickListener = new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 mCbIsSelected.setChecked(!mCbIsSelected.isChecked());
                 mOnItemSelectedChangeListener.onItemSelectedChange(getAdapterPosition(), mCbIsSelected.isChecked());
             }

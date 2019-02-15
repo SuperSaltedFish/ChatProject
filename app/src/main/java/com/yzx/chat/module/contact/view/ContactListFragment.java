@@ -7,14 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,24 +19,26 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
-import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.broadcast.BackPressedReceive;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
 import com.yzx.chat.module.contact.presenter.ContactListPresenter;
+import com.yzx.chat.module.group.view.GroupListActivity;
+import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.module.me.view.MyTagListActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AnimationUtil;
-import com.yzx.chat.module.group.view.GroupListActivity;
-import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.BadgeView;
 import com.yzx.chat.widget.view.IndexBarView;
@@ -55,6 +49,13 @@ import com.yzx.chat.widget.view.OverflowPopupMenu;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by YZX on 2017年06月28日.
@@ -266,15 +267,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (mParentView != null) {
-            mFlToolbarLayout.setFitsSystemWindows(!hidden);
-            mFlToolbarLayout.requestApplyInsets();
-        }
-        super.onHiddenChanged(hidden);
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         mSearchView.clearFocus();
@@ -287,9 +279,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mSearchHandler.removeCallbacksAndMessages(null);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.ContactFragmentList_mLlContactOperation:
                     startActivity(new Intent(mContext, NotificationMessageActivity.class));

@@ -8,24 +8,24 @@
 
 
     <ImageView
-        android:id="@+id/SplashActivity_mIvSplashImage"
+        android:id="@+id/mIvSplashImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/SplashActivity_mGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/mGuideline"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/SplashActivity_mGuideline"
+        android:id="@+id/mGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.8" />
 
     <TextView
-        android:id="@+id/SplashActivity_mTvTitle"
+        android:id="@+id/mTvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -33,14 +33,14 @@
         android:textColor="@color/textPrimaryColorBlack2"
         android:textSize="25sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/SplashActivity_mTvContent"
+        app:layout_constraintBottom_toTopOf="@id/mTvContent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/SplashActivity_mIvSplashImage"
+        app:layout_constraintTop_toBottomOf="@id/mIvSplashImage"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/SplashActivity_mTvContent"
+        android:id="@+id/mTvContent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -49,7 +49,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/SplashActivity_mTvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/mTvTitle" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

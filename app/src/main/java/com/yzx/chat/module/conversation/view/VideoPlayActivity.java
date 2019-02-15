@@ -18,7 +18,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.module.conversation.contract.VideoPlayContract;
 import com.yzx.chat.module.conversation.presenter.VideoPlayPresenter;
 import com.yzx.chat.util.VideoDecoder;
-import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.SimpleTransitionListener;
 import com.yzx.chat.widget.view.AutoFitTextureView;
 import com.yzx.chat.widget.view.MediaControllerPopupWindow;
@@ -40,7 +40,6 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
 
     private ImageView mIvThumbnail;
     private AutoFitTextureView mTextureView;
-    private ProgressDialog mProgressDialog;
     private MediaControllerPopupWindow mMediaControllerPopupWindow;
     private VideoDecoder mVideoDecoder;
 
@@ -57,7 +56,6 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
     protected void init(Bundle savedInstanceState) {
         mIvThumbnail = findViewById(R.id.VideoPlayActivity_mIvThumbnail);
         mTextureView = findViewById(R.id.VideoPlayActivity_mTextureView);
-        mProgressDialog = new ProgressDialog(this, String.format(Locale.getDefault(), getString(R.string.ProgressHint_DownloadVideo), 0));
         mMediaControllerPopupWindow = new MediaControllerPopupWindow(this);
     }
 
@@ -159,28 +157,15 @@ public class VideoPlayActivity extends BaseCompatActivity<VideoPlayContract.Pres
         mProgressDialog.setHintText(String.format(Locale.getDefault(), getString(R.string.ProgressHint_DownloadVideo), percent));
     }
 
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            mProgressDialog.show(getWindow().getDecorView().getSystemUiVisibility());
-        } else {
-            mProgressDialog.dismiss();
-        }
-    }
-
-    @Override
-    public void showError(String error) {
-        showToast(error);
-    }
 
     @Override
     public VideoPlayContract.Presenter getPresenter() {
         return new VideoPlayPresenter();
     }
 
-    private final View.OnClickListener mOnCloseClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnCloseClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             onBackPressed();
         }
     };

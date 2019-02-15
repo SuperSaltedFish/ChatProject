@@ -36,7 +36,6 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
 
     @Override
     public void updateProfile(final UserEntity user) {
-        mProfileModifyView.setEnableProgressDialog(true);
         AppClient.getInstance().getUserManager().updateProfile(user.getNickname(), user.getSex(), user.getBirthday(), user.getLocation(), user.getSignature(), new LifecycleMVPResultCallback<Void>(mProfileModifyView) {
             @Override
             protected void onSuccess(Void result) {
@@ -48,7 +47,6 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
 
     @Override
     public void uploadAvatar(final String avatarPath) {
-        mProfileModifyView.setEnableProgressDialog(true);
         AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new LifecycleMVPResultCallback<UploadAvatarEntity>(mProfileModifyView) {
             @Override
             protected void onSuccess(UploadAvatarEntity result) {

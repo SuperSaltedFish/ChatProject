@@ -25,8 +25,6 @@ public class LocationSendContract {
         void showNewSearchLocation(List<PoiItem> poiItemList, boolean hasMore);
 
         void showMoreSearchLocation(List<PoiItem> poiItemList, boolean hasMore);
-
-        void showError(String error);
     }
 
 

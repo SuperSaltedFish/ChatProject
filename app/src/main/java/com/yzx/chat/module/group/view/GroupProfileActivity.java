@@ -32,7 +32,7 @@ import com.yzx.chat.module.me.view.ProfileEditActivity;
 import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.GroupMembersAdapter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -70,7 +70,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private ConstraintLayout mClClearMessage;
     private Switch mSwitchTop;
     private Switch mSwitchRemind;
-    private ProgressDialog mProgressDialog;
     private GroupMembersAdapter mAdapter;
 
     private String mGroupID;
@@ -99,7 +98,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         mSwitchRemind = findViewById(R.id.ChatSetup_mSwitchRemind);
         mGroupMemberList = new ArrayList<>(64);
         mAdapter = new GroupMembersAdapter(mGroupMemberList, GROUP_MEMBERS_MAX_VISIBILITY_COUNT);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Modify));
     }
 
     @Override
@@ -164,9 +162,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         return true;
     }
 
-    private final View.OnClickListener mOnStartChatClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnStartChatClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             Intent intent = new Intent(GroupProfileActivity.this, ChatActivity.class);
             GroupEntity group = mPresenter.getGroup();
             intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
@@ -177,9 +175,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     };
 
 
-    private final View.OnClickListener mOnGroupNameClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnGroupNameClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             new MaterialDialog.Builder(GroupProfileActivity.this)
                     .title(R.string.GroupProfileActivity_GroupNameDialogTitle)
                     .content(R.string.GroupProfileActivity_GroupNameDialogHint)
@@ -206,9 +204,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
     };
 
-    private final View.OnClickListener mOnMyGroupNicknameClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnMyGroupNicknameClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             new MaterialDialog.Builder(GroupProfileActivity.this)
                     .title(R.string.GroupProfileActivity_MyGroupNicknameDialogTitle)
                     .content(R.string.GroupProfileActivity_MyGroupNicknameDialogHint)
@@ -235,9 +233,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
     };
 
-    private final View.OnClickListener mOnGroupNoticeClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnGroupNoticeClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             CharSequence currentNotice = mTvContentGroupNotice.getText();
             if (getString(R.string.None).equals(currentNotice)) {
                 currentNotice = null;
@@ -272,9 +270,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
     };
 
-    private final View.OnClickListener mOnQRCodeClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnQRCodeClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             Intent intent = new Intent(GroupProfileActivity.this, MyQRCodeActivity.class);
             intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_QR_TYPE, MyQRCodeActivity.QR_CODE_TYPE_GROUP);
             intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_GROUP_ID, mGroupID);
@@ -282,9 +280,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
     };
 
-    private final View.OnClickListener mOnAddNewMemberClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnAddNewMemberClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             Intent intent = new Intent(GroupProfileActivity.this, CreateGroupActivity.class);
             intent.putExtra(CreateGroupActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getGroup().getGroupID());
             intent.putParcelableArrayListExtra(CreateGroupActivity.INTENT_EXTRA_ALREADY_JOIN_MEMBER, mGroupMemberList);
@@ -323,9 +321,9 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         }
     };
 
-    private final View.OnClickListener mOnClearMessageClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnClearMessageClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             new MaterialDialog.Builder(GroupProfileActivity.this)
                     .content(R.string.ChatSetup_DeleteHint)
                     .positiveText(R.string.Confirm)
@@ -417,15 +415,6 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         Activity activity = ActivityHelper.getActivityInstance(ChatActivity.class);
         if (activity != null) {
             activity.finish();
-        }
-    }
-
-    @Override
-    public void setEnableProgressDialog(boolean isEnable, String hint) {
-        if (isEnable) {
-            mProgressDialog.show(hint);
-        } else {
-            mProgressDialog.dismiss();
         }
     }
 

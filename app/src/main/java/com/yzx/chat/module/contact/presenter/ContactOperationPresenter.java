@@ -61,7 +61,6 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void acceptContactRequest(final ContactOperationEntity contactOperation) {
-
         mAppClient.getContactManager().acceptContact(contactOperation.getUserID(), new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
             @Override
             protected void onSuccess(Void result) {

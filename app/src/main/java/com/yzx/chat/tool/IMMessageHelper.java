@@ -83,7 +83,7 @@ public class IMMessageHelper {
         return "";
     }
 
-    private static final Gson GSON = ApiHelper.getDefaultGsonInstance();
+    private static final Gson GSON = ApiHelper.GSON;
 
     public static CharSequence contactNotificationMessageToString(ContactNotificationMessage message) {
         switch (message.getOperation()) {

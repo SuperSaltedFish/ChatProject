@@ -15,11 +15,8 @@ public class StrangerProfileContract {
 
     public interface View extends BaseView<Presenter> {
         void goBack();
-        void showError(String error);
-        void setEnableProgressDialog(boolean isEnable);
     }
-
-
+    
     public interface Presenter extends BasePresenter<View> {
 
         void requestContact(UserEntity user, String verifyContent);

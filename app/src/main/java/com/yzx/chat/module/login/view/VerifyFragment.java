@@ -15,18 +15,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
-import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.module.login.contract.VerifyContract;
 import com.yzx.chat.module.login.presenter.VerifyPresenter;
-import com.yzx.chat.module.main.view.SplashActivity;
+import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.CountDownTimer;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.VerifyEditView;
 
 import java.util.Locale;
+import java.util.Objects;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Created by YZX on 2018年07月09日.
@@ -65,13 +65,13 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
 
     @Override
     protected void init(View parentView) {
-        mBtnVerify = parentView.findViewById(R.id.VerifyFragment_mBtnVerify);
-        mVerifyEditView = parentView.findViewById(R.id.VerifyFragment_mVerifyEditView);
-        mPbLoginProgress = parentView.findViewById(R.id.VerifyFragment_mPbLoginProgress);
-        mBtnResend = parentView.findViewById(R.id.VerifyFragment_mBtnResend);
-        mTvErrorHint = parentView.findViewById(R.id.VerifyFragment_mTvErrorHint);
-        mIvBack = parentView.findViewById(R.id.VerifyFragment_mIvBack);
-        mTvTelephone = parentView.findViewById(R.id.VerifyFragment_mTvTelephone);
+        mBtnVerify = parentView.findViewById(R.id.mBtnVerify);
+        mVerifyEditView = parentView.findViewById(R.id.mVerifyEditView);
+        mPbLoginProgress = parentView.findViewById(R.id.mPbLoginProgress);
+        mBtnResend = parentView.findViewById(R.id.mBtnResend);
+        mTvErrorHint = parentView.findViewById(R.id.mTvErrorHint);
+        mIvBack = parentView.findViewById(R.id.mIvBack);
+        mTvTelephone = parentView.findViewById(R.id.mTvTelephone);
     }
 
     @Override
@@ -99,6 +99,10 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     public void onDestroyView() {
         super.onDestroyView();
         mVerifyCountDown.cancel();
+    }
+
+    private void backPressed() {
+        Objects.requireNonNull(getFragmentManager()).popBackStackImmediate();
     }
 
     private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
@@ -162,24 +166,24 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     private void resendVerifyCode() {
         startVerifyCountDown();
         if (TextUtils.isEmpty(mVerifyInfo.nickname)) {
-            mPresenter.obtainLoginSMS(mVerifyInfo.telephone, mVerifyInfo.password, mVerifyInfo.serverSecretKey);
+            mPresenter.obtainLoginSMS(mVerifyInfo.telephone, mVerifyInfo.password);
         } else {
-            mPresenter.obtainRegisterSMS(mVerifyInfo.telephone, mVerifyInfo.serverSecretKey);
+            mPresenter.obtainRegisterSMS(mVerifyInfo.telephone);
         }
     }
 
-    private void loginOrRegister() {
+    private void tryLoginOrRegister() {
         if (TextUtils.isEmpty(mInputVerifyCode)) {
-            showErrorHint(getString(R.string.LoginActivity_Error_NoneVerify));
+            showErrorDialog(getString(R.string.LoginActivity_Error_NoneVerify));
             return;
         }
         startProgressAnim(true, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (TextUtils.isEmpty(mVerifyInfo.nickname)) {
-                    mPresenter.login(mVerifyInfo.telephone, mVerifyInfo.password, mInputVerifyCode, mVerifyInfo.serverSecretKey);
+                    mPresenter.login(mVerifyInfo.telephone, mVerifyInfo.password, mInputVerifyCode);
                 } else {
-                    mPresenter.register(mVerifyInfo.telephone, mVerifyInfo.password, mVerifyInfo.nickname, mInputVerifyCode, mVerifyInfo.serverSecretKey);
+                    mPresenter.register(mVerifyInfo.telephone, mVerifyInfo.password, mVerifyInfo.nickname, mInputVerifyCode);
                 }
             }
         });
@@ -205,18 +209,18 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         }
     };
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (!isDisableInput) {
                 switch (v.getId()) {
-                    case R.id.VerifyFragment_mIvBack:
+                    case R.id.mIvBack:
                         backPressed();
                         break;
-                    case R.id.VerifyFragment_mBtnVerify:
-                        loginOrRegister();
+                    case R.id.mBtnVerify:
+                        tryLoginOrRegister();
                         break;
-                    case R.id.VerifyFragment_mBtnResend:
+                    case R.id.mBtnResend:
                         resendVerifyCode();
                         break;
                 }
@@ -224,11 +228,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         }
     };
 
-    private void backPressed() {
-        Intent intent = new Intent(LoginActivity.INTENT_ACTION);
-        intent.putExtra(LoginActivity.INTENT_EXTRA_PAGE_TYPE, LoginActivity.PAGE_TYPE_BACK);
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-    }
 
     private final VerifyEditView.OnInputListener mOnInputListener = new VerifyEditView.OnInputListener() {
         @Override
@@ -240,7 +239,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         @Override
         public void onInputChange(String content) {
             mInputVerifyCode = null;
-            showErrorHint(null);
+            showErrorDialog(null);
         }
     };
 
@@ -251,41 +250,46 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     }
 
     @Override
-    public void showErrorHint(String error) {
+    public void showErrorDialog(String error) {
         mTvErrorHint.setText(error);
         if (!TextUtils.isEmpty(error)) {
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
         }
         startProgressAnim(false, null);
+
     }
 
     @Override
-    public void startSplashActivity() {
-        Activity activity = getActivity();
+    public void showCountDown() {
+        startVerifyCountDown();
+    }
+
+    @Override
+    public void startHomeActivity() {
+        final Activity activity = getActivity();
         if (activity == null) {
             return;
         }
         AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(Animator animation) {
-                BaseCompatActivity activity = (BaseCompatActivity) getActivity();
-                activity.setSystemUiMode(BaseCompatActivity.SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
-            }
-
-            @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
-                startActivity(new Intent(mContext, SplashActivity.class));
-                getActivity().finish();
+                startActivity(new Intent(mContext, HomeActivity.class));
+                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                activity.finish();
             }
         });
+    }
+
+    @Override
+    public void goBack() {
+        backPressed();
     }
 
     public static final class VerifyInfo implements Parcelable {
         String telephone;
         String password;
         String nickname;
-        String serverSecretKey;
 
         @Override
         public int describeContents() {
@@ -297,7 +301,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             dest.writeString(this.telephone);
             dest.writeString(this.password);
             dest.writeString(this.nickname);
-            dest.writeString(this.serverSecretKey);
         }
 
         public VerifyInfo() {
@@ -307,7 +310,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             this.telephone = in.readString();
             this.password = in.readString();
             this.nickname = in.readString();
-            this.serverSecretKey = in.readString();
         }
 
         public static final Parcelable.Creator<VerifyInfo> CREATOR = new Parcelable.Creator<VerifyInfo>() {

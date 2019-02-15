@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
+
 import java.util.LinkedList;
 
 import androidx.annotation.AttrRes;
@@ -229,9 +231,9 @@ public class BottomTabLayout extends LinearLayout {
         }
     }
 
-    private final View.OnClickListener mOnTabClickListener = new OnClickListener() {
+    private final View.OnClickListener mOnTabClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             int childIndex = (int) v.getTag();
             if (mCurrentSelectedPosition == childIndex) {
                 dispenseRepeatedEvent();

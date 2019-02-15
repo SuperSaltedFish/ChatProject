@@ -19,10 +19,6 @@ public class MyQRCodeContract {
         void showQRCode(String content);
 
         void showHint(String hint);
-
-        void showErrorHint(String hint);
-
-        void setEnableProgressBar(boolean isEnable);
     }
 
 

@@ -28,7 +28,7 @@ import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.StringUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
 import com.yzx.chat.widget.adapter.ContactInfoPagerAdapter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.PageIndicator;
 
@@ -51,7 +51,6 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     private TextView mTvNickname;
     private TextView mTvLocationAndAge;
     private TextView mTvLastLabel;
-    private ProgressDialog mProgressDialog;
     private AppBarLayout mAppBarLayout;
     private FlowLayout mLabelFlowLayout;
     private TabLayout mTabLayout;
@@ -88,7 +87,6 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mVpContactInfo = findViewById(R.id.ContactProfileActivity_mVpContactInfo);
         mCollapsingToolbarLayout = findViewById(R.id.ContactProfileActivity_mCollapsingToolbarLayout);
         mTvLastLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_normal, mLabelFlowLayout, false);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Delete));
         mContactID = getIntent().getStringExtra(INTENT_EXTRA_CONTACT_ID);
         mPicUrlList = new ArrayList<>(6);
         mCropImagePagerAdapter = new CenterCropImagePagerAdapter(mPicUrlList);
@@ -204,9 +202,9 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         startActivityForResult(intent, 0);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.ContactProfileActivity_mIvStartChat:
                     startChatActivity();
@@ -279,24 +277,10 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         mLabelFlowLayout.addView(mTvLastLabel);
     }
 
-
-    @Override
-    public void showError(String error) {
-        showToast(error);
-    }
-
     @Override
     public void goBack() {
         finish();
     }
 
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.dismiss();
-        }
-    }
 
 }

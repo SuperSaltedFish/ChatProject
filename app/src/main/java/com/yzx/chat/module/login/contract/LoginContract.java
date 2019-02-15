@@ -15,16 +15,12 @@ public class LoginContract {
 
         void jumpToVerifyPage();
 
-        void showErrorHint(String error);
-
-        void startSplashActivity();
+        void startHomeActivity();
     }
 
 
     public interface Presenter extends BasePresenter<View> {
         void tryLogin(String username, String password);
-
-        String getServerSecretKey();
     }
 
 

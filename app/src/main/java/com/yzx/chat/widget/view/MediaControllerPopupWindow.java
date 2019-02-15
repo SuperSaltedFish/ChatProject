@@ -14,6 +14,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -181,9 +182,9 @@ public class MediaControllerPopupWindow extends PopupWindow {
         mOnCloseClickListener = onCloseClickListener;
     }
 
-    private final View.OnClickListener mOnControllerViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnControllerViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.MediaController_mIvClose:
                     if(mOnCloseClickListener!=null){

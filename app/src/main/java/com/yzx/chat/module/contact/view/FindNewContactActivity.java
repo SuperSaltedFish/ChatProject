@@ -27,6 +27,7 @@ import com.yzx.chat.module.group.view.CreateGroupActivity;
 import com.yzx.chat.module.me.view.MyQRCodeActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.MaybeKnowAdapter;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -136,25 +137,25 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         }
     }
 
-    private final View.OnClickListener mOnMyPhoneClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnMyPhoneClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             Intent intent = new Intent(FindNewContactActivity.this, MyQRCodeActivity.class);
             intent.putExtra(MyQRCodeActivity.INTENT_EXTRA_QR_TYPE, MyQRCodeActivity.QR_CODE_TYPE_USER);
             startActivity(intent);
         }
     };
 
-    private final View.OnClickListener mOnCreateGroupClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnCreateGroupClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             startActivity(new Intent(FindNewContactActivity.this, CreateGroupActivity.class));
         }
     };
 
-    private final View.OnClickListener mOnScanLayoutClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnScanLayoutClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA},0);
         }
     };

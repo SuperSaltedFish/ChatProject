@@ -14,9 +14,10 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.core.util.MD5Util;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.VideoDecoder;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.Camera2RecodeView;
 import com.yzx.chat.widget.view.RecorderButton;
 
@@ -185,9 +186,9 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         finish();
     }
 
-    private final View.OnClickListener mOnViewClick = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClick = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.VideoRecorderActivity_mIvClose:
                     finish();

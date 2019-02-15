@@ -13,6 +13,7 @@ import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.List;
 
@@ -135,27 +136,27 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
             mOnContactRequestListener = onContactRequestListener;
         }
 
-        private final View.OnClickListener mOnAcceptClickListener = new View.OnClickListener() {
+        private final View.OnClickListener mOnAcceptClickListener = new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (mOnContactRequestListener != null) {
                     mOnContactRequestListener.onAcceptRequest(getAdapterPosition());
                 }
             }
         };
 
-        private final View.OnClickListener mOnRefusedClickListener = new View.OnClickListener() {
+        private final View.OnClickListener mOnRefusedClickListener = new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (mOnContactRequestListener != null) {
                     mOnContactRequestListener.onRefusedRequest(getAdapterPosition());
                 }
             }
         };
 
-        private final View.OnClickListener mOnDetailsClickListener = new View.OnClickListener() {
+        private final View.OnClickListener mOnDetailsClickListener = new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (mOnContactRequestListener != null) {
                     mOnContactRequestListener.enterDetails(getAdapterPosition());
                 }

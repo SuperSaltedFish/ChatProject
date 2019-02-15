@@ -21,9 +21,9 @@ public class SettingFragment extends BaseFragment {
     @Override
     protected void init(View parentView) {
 //        Button button = parentView.findViewById(R.id.mButton);
-//        button.setOnClickListener(new View.OnClickListener() {
+//        button.setOnClickListener(new OnOnlySingleClickListener() {
 //            @Override
-//            public void onClick(View v) {
+//            public void onSingleClick(View v) {
 //                        UserApi api = (UserApi) ApiManager.getProxyInstance(UserApi.class);
 //        Call<JsonResponse<Void>> task = api.requestAddFriend("5a3789ff2889040e1822fe88","我想干你");
 //        task.setCallback(new BaseHttpCallback<Void>() {

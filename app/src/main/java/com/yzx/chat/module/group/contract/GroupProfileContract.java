@@ -33,8 +33,6 @@ public class GroupProfileContract {
 
         void finishChatActivity();
 
-        void setEnableProgressDialog(boolean isEnable, String hint);
-
         void goBack();
     }
 

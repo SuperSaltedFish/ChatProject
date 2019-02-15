@@ -30,6 +30,7 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.RoundLinearLayout;
 
 import java.util.Locale;
@@ -188,9 +189,9 @@ public class LocationShareFragment extends BaseFragment {
         mMapView.onDestroy();
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.LocationShareFragment_mLlNavigation:
                     tryNavigation();

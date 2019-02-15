@@ -10,16 +10,17 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.core.SharePreferenceManager;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.module.me.contract.ProfileContract;
 import com.yzx.chat.module.me.presenter.ProfilePresenter;
+import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
 import com.yzx.chat.widget.animation.ZoomPageTransformer;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.MaskImageView;
 import com.yzx.chat.widget.view.PageIndicator;
 
@@ -108,15 +109,15 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
         mVpAlbum.setCurrentItem(1);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             switch (v.getId()) {
                 case R.id.ProfileFragment_mIvAvatar:
                     startActivity(new Intent(mContext, ProfileEditActivity.class));
                     break;
                 case R.id.ProfileFragment_mIvSetting:
-                    SharePreferenceManager.getConfigurePreferences().putFirstGuide(true);
+                    SharePreferenceHelper.getConfigurePreferences().putFirstGuide(true);
                     startActivity(new Intent(mContext, LoginActivity.class));
                     getActivity().finish();
                     break;

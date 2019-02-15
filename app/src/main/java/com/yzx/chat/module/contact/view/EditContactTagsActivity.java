@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.BackInputConnection;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.LabelEditText;
@@ -224,16 +225,16 @@ public class EditContactTagsActivity extends BaseCompatActivity {
         return true;
     }
 
-    private final View.OnClickListener mOnFlowLayoutClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnFlowLayoutClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             tryAddNewLabelTextView();
         }
     };
 
-    private final View.OnClickListener mOnLabelClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnLabelClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             int id = v.getId();
             if (id == mCurrentSelectedID) {
                 removeLabel((TextView) v);
@@ -247,9 +248,9 @@ public class EditContactTagsActivity extends BaseCompatActivity {
         }
     };
 
-    private final View.OnClickListener mOnSelectionLabelClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnSelectionLabelClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             TextView view = (TextView) v;
             String label = view.getText().toString();
             if (mLabels.contains(label)) {

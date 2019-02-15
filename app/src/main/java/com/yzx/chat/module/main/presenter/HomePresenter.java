@@ -15,6 +15,7 @@ import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.contract.HomeContract;
 import com.yzx.chat.tool.ActivityHelper;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.tool.NotificationHelper;
 
 import io.rong.imlib.model.Message;
@@ -36,6 +37,7 @@ public class HomePresenter implements HomeContract.Presenter {
         mHomeView = view;
         mHandler = new Handler();
         mAppClient = AppClient.getInstance();
+        DirectoryHelper.initUserDirectory(mAppClient.getUserManager().getUserID());
         mAppClient.getConversationManager().addConversationUnreadCountListener(mOnConversationUnreadCountListener);
         mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mAppClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);

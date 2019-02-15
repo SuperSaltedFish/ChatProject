@@ -11,7 +11,7 @@
 
 
     <ImageView
-        android:id="@+id/VerifyFragment_mIvBack"
+        android:id="@+id/mIvBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="start"
@@ -25,7 +25,7 @@
 
 
     <TextView
-        android:id="@+id/VerifyFragment_mTvTitle"
+        android:id="@+id/mTvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -35,10 +35,10 @@
         android:textColor="@color/textPrimaryColorBlack2"
         android:textSize="23sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mIvBack" />
+        app:layout_constraintTop_toBottomOf="@id/mIvBack" />
 
     <TextView
-        android:id="@+id/VerifyFragment_mTvTelephoneHint"
+        android:id="@+id/mTvTelephoneHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -47,31 +47,31 @@
         android:textColor="@color/textSecondaryColorBlack"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mTvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/mTvTitle" />
 
     <TextView
-        android:id="@+id/VerifyFragment_mTvTelephone"
+        android:id="@+id/mTvTelephone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
         android:textColor="@color/textSecondaryColorBlack"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@id/VerifyFragment_mTvTelephoneHint"
-        app:layout_constraintStart_toEndOf="@id/VerifyFragment_mTvTelephoneHint"
-        app:layout_constraintTop_toTopOf="@id/VerifyFragment_mTvTelephoneHint" />
+        app:layout_constraintBottom_toBottomOf="@id/mTvTelephoneHint"
+        app:layout_constraintStart_toEndOf="@id/mTvTelephoneHint"
+        app:layout_constraintTop_toTopOf="@id/mTvTelephoneHint" />
 
 
     <com.yzx.chat.widget.view.VerifyEditView
-        android:id="@+id/VerifyFragment_mVerifyEditView"
+        android:id="@+id/mVerifyEditView"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mTvTelephone" />
+        app:layout_constraintTop_toBottomOf="@id/mTvTelephone" />
 
     <Button
-        android:id="@+id/VerifyFragment_mBtnResend"
+        android:id="@+id/mBtnResend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
@@ -81,10 +81,10 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mVerifyEditView" />
+        app:layout_constraintTop_toBottomOf="@id/mVerifyEditView" />
 
     <TextView
-        android:id="@+id/VerifyFragment_mTvErrorHint"
+        android:id="@+id/mTvErrorHint"
         android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginBottom="4dp"
@@ -93,29 +93,29 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mBtnResend" />
+        app:layout_constraintTop_toBottomOf="@id/mBtnResend" />
 
     <FrameLayout
-        android:id="@+id/VerifyFragment_mFlLoginLayout"
+        android:id="@+id/mFlLoginLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mTvErrorHint">
+        app:layout_constraintTop_toBottomOf="@id/mTvErrorHint">
 
         <ProgressBar
-            android:id="@+id/VerifyFragment_mPbLoginProgress"
+            android:id="@+id/mPbLoginProgress"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@id/VerifyFragment_mBtnVerify"
-            app:layout_constraintEnd_toEndOf="@id/VerifyFragment_mBtnVerify"
-            app:layout_constraintStart_toStartOf="@id/VerifyFragment_mBtnVerify"
-            app:layout_constraintTop_toTopOf="@id/VerifyFragment_mBtnVerify" />
+            app:layout_constraintBottom_toBottomOf="@id/mBtnVerify"
+            app:layout_constraintEnd_toEndOf="@id/mBtnVerify"
+            app:layout_constraintStart_toStartOf="@id/mBtnVerify"
+            app:layout_constraintTop_toTopOf="@id/mBtnVerify" />
 
         <Button
-            android:id="@+id/VerifyFragment_mBtnVerify"
+            android:id="@+id/mBtnVerify"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:background="@drawable/radius_btn_4dp"
@@ -135,7 +135,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/VerifyFragment_mFlLoginLayout" />
+        app:layout_constraintTop_toBottomOf="@id/mFlLoginLayout" />
 
     <TextView
         android:layout_width="match_parent"

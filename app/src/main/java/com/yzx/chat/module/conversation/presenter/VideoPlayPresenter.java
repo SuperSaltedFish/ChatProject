@@ -36,17 +36,17 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
     @Override
     public void downloadVideo(Message message) {
         mCurrentDownloadMessage = message;
-        mVideoPlayView.setEnableProgressDialog(true);
+        mVideoPlayView.setEnableLoading(true);
         AppClient.getInstance().getChatManager().downloadMediaContent(message, new DownloadCallback() {
             @Override
             public void onSuccess(Message message, Uri localUri) {
                 mCurrentDownloadMessage = null;
-                mVideoPlayView.setEnableProgressDialog(false);
+                mVideoPlayView.setEnableLoading(false);
                 if (localUri != null && !TextUtils.isEmpty(localUri.getPath())) {
                     mVideoPlayView.playVideo(localUri.getPath());
                 } else {
                     LogUtil.e("localUri==" + (localUri == null ? "null" : localUri.getPath()));
-                    mVideoPlayView.showError(AndroidHelper.getString(R.string.VideoPlayActivity_DownloadVideoFail));
+                    mVideoPlayView.showErrorDialog(AndroidHelper.getString(R.string.VideoPlayActivity_DownloadVideoFail));
                 }
             }
 
@@ -58,8 +58,8 @@ public class VideoPlayPresenter implements VideoPlayContract.Presenter {
             @Override
             public void onError(Message message, String error) {
                 LogUtil.e(error);
-                mVideoPlayView.setEnableProgressDialog(false);
-                mVideoPlayView.showError(AndroidHelper.getString(R.string.VideoPlayActivity_DownloadVideoFail));
+                mVideoPlayView.setEnableLoading(false);
+                mVideoPlayView.showErrorDialog(AndroidHelper.getString(R.string.VideoPlayActivity_DownloadVideoFail));
             }
 
             @Override

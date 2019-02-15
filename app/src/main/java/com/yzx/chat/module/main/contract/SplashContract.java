@@ -1,7 +1,5 @@
 package com.yzx.chat.module.main.contract;
 
-import android.content.Context;
-
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
 
@@ -19,11 +17,6 @@ public class SplashContract {
         void startHomeActivity();
 
         void startGuide();
-
-        Context getContext();
-
-        void showError(String error);
-
     }
 
 

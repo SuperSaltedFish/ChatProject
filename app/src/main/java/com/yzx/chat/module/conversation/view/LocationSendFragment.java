@@ -43,6 +43,7 @@ import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 
@@ -182,9 +183,9 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
                 }
             }
         });
-        mIvMyLocation.setOnClickListener(new View.OnClickListener() {
+        mIvMyLocation.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (mMyLocationLatLng != null) {
                     mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMyLocationLatLng, mAMap.getCameraPosition().zoom));
                 }
@@ -201,9 +202,9 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
     private void initToolbar() {
         mToolbar.inflateMenu(R.menu.menu_location_send);
         mToolbar.setNavigationIcon(R.drawable.ic_back);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationOnClickListener(new OnOnlySingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -487,10 +488,5 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
             mSearchLocationAdapter.notifyItemRangeInsertedEx(mSearchLocationList.size(), poiItemList.size());
             mSearchLocationList.addAll(poiItemList);
         }
-    }
-
-    @Override
-    public void showError(String error) {
-        showToast(error);
     }
 }

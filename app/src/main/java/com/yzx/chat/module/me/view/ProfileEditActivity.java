@@ -28,7 +28,7 @@ import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.GsonUtil;
-import com.yzx.chat.widget.dialog.ProgressDialog;
+import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.RoundImageView;
 
 import java.util.ArrayList;
@@ -47,7 +47,6 @@ import androidx.annotation.NonNull;
 
 public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.Presenter> implements ProfileEditContract.View {
 
-    private ProgressDialog mProgressDialog;
     private ImageView mIvAvatarBackground;
     private RoundImageView mIvChangeAvatar;
     private ImageView mIvAvatar;
@@ -75,7 +74,6 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         mEtSignature = findViewById(R.id.ProfileEditActivity_mEtSignature);
         mEtEmail = findViewById(R.id.ProfileEditActivity_mEtEmail);
         mIvAvatar = findViewById(R.id.ProfileEditActivity_mIvAvatar);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Save));
     }
 
     @Override
@@ -243,16 +241,16 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
 
     }
 
-    private final View.OnClickListener mOnAvatarClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnAvatarClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             startActivityForResult(new Intent(ProfileEditActivity.this, ImageSingleSelectorActivity.class), 0);
         }
     };
 
-    private final View.OnClickListener mOnSexSelectedClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnSexSelectedClickListener = new OnOnlySingleClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             new MaterialDialog.Builder(ProfileEditActivity.this)
                     .title(R.string.ProfileEditActivity_SexDialogTitle)
                     .items(R.array.ProfileEditActivity_SexList)
@@ -274,12 +272,12 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         }
     };
 
-    private final View.OnClickListener mOnBirthdayClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnBirthdayClickListener = new OnOnlySingleClickListener() {
         private DatePickerDialog mDatePickerDialog;
         private Calendar mCalendar;
 
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mCalendar == null) {
                 if (TextUtils.isEmpty(mUserEntity.getBirthday())) {
                     mCalendar = Calendar.getInstance();
@@ -305,7 +303,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         }
     };
 
-    private final View.OnClickListener mOnLocationClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnLocationClickListener = new OnOnlySingleClickListener() {
         private MaterialDialog mLocationSelectorDialog;
         private NumberPicker mProvincePicker;
         private NumberPicker mCityPicker;
@@ -314,7 +312,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
         private Map<String, String[]> mProvinceCityMap;
 
         @Override
-        public void onClick(View v) {
+        public void onSingleClick(View v) {
             if (mLocationSelectorDialog == null) {
                 List<ProvinceEntity> provinceList = GsonUtil.readJsonStream(getResources().openRawResource(R.raw.city));
                 if (provinceList == null || provinceList.size() == 0) {
@@ -423,20 +421,6 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
     public void showNewAvatar(String avatarPath) {
         mUserEntity.setAvatar(avatarPath);
         setAvatar(avatarPath);
-    }
-
-    @Override
-    public void showError(String error) {
-        showToast(error);
-    }
-
-    @Override
-    public void setEnableProgressDialog(boolean isEnable) {
-        if (isEnable) {
-            mProgressDialog.show();
-        } else {
-            mProgressDialog.dismiss();
-        }
     }
 
     @Override

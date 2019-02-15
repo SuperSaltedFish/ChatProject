@@ -30,7 +30,7 @@ class StorageHelper {
 
     StorageHelper(Context appContent, String storageName) {
         mConfigurationPreferences = appContent.getSharedPreferences(storageName, Context.MODE_PRIVATE);
-        mECCKeyPair = ECCUtil.generateECCKeyPairCompat(appContent, RSA_KET_ALIAS);
+        mECCKeyPair = ECCUtil.generateECCKeyPairInAndroidKeyStore(appContent, RSA_KET_ALIAS,"secp256r1");
     }
 
     boolean saveToken(String token) {
