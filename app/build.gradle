@@ -56,5 +56,4 @@ dependencies {
     implementation dependencies.ext.leakcanaryFragment
 
     annotationProcessor dependencies.annotation.glide
-    annotationProcessor dependencies.annotation.annotation
 }

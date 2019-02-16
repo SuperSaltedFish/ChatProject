@@ -11,7 +11,7 @@ ext {
     depVersions = [
             mapVersion       : "latest.integration",
             leakcanaryVersion: "1.6.2",
-            glideVersion     : "4.8.0"
+            glideVersion     : "4.9.0"
     ]
 
     deps = [
@@ -38,7 +38,6 @@ ext {
 
             annotation: [
                     glide     : "com.github.bumptech.glide:compiler:${depVersions.glideVersion}",
-                    annotation: "androidx.annotation:annotation:1.0.1"
             ]
     ]
 }
