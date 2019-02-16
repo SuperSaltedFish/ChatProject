@@ -3,8 +3,10 @@ package com.yzx.chat.module.login.view;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -128,6 +130,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginTelephone.clearFocus();
         mEtLoginPassword.clearFocus();
         isDisableInput = isDisable;
+        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), !isDisable);
     }
 
     private void tryLogin() {
@@ -216,6 +219,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mTvErrorHint.setText(error);
         if (!TextUtils.isEmpty(error)) {
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
+            ((Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE)).vibrate(50);
         }
         startProgressAnim(false, null);
     }

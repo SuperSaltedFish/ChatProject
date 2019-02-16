@@ -12,14 +12,11 @@ import java.util.WeakHashMap;
  */
 public class ViewUtil {
 
-    private static WeakHashMap<View, ViewTreeObserver.OnGlobalLayoutListener> sAutoScrollMap;
+    private static WeakHashMap<View, ViewTreeObserver.OnGlobalLayoutListener> sAutoScrollMap = new WeakHashMap<>();
 
     public static void registerAutoScrollAtInput(final View scrollView, final View anchor) {
         if (scrollView == null || anchor == null) {
             throw new RuntimeException("scrollView or anchor can not be empty");
-        }
-        if (sAutoScrollMap == null) {
-            sAutoScrollMap = new WeakHashMap<>();
         }
         ViewTreeObserver.OnGlobalLayoutListener listener = sAutoScrollMap.get(scrollView);
         if (listener != null) {
@@ -55,10 +52,13 @@ public class ViewUtil {
     }
 
     public static void unregisterAutoScrollAtInput(View scrollView) {
-        if (scrollView == null || sAutoScrollMap == null || sAutoScrollMap.size() == 0) {
-            return;
+        if (scrollView == null) {
+            throw new RuntimeException("scrollView or anchor can not be empty");
         }
-        sAutoScrollMap.remove(scrollView);
+        ViewTreeObserver.OnGlobalLayoutListener listener = sAutoScrollMap.remove(scrollView);
+        if (listener != null) {
+            scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
+        }
     }
 
 }

@@ -2,7 +2,9 @@ package com.yzx.chat.module.login.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Service;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -146,6 +148,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mEtRegisterPassword.clearFocus();
         mEtRegisterConfirmPassword.clearFocus();
         isDisableInput = isDisable;
+        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()),isDisable);
     }
 
 
@@ -256,6 +259,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mTvErrorHint.setText(error);
         if (!TextUtils.isEmpty(error)) {
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
+            ((Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE)).vibrate(50);
         }
         startProgressAnim(false, null);
     }

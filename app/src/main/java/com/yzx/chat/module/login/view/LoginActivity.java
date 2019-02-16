@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 
 public class LoginActivity extends BaseCompatActivity {
 
+    private boolean isEnableBackPressed;
 
     @Override
     protected int getLayoutID() {
@@ -24,6 +25,17 @@ public class LoginActivity extends BaseCompatActivity {
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
         jumpToLoginPage(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isEnableBackPressed) {
+            super.onBackPressed();
+        }
+    }
+
+    static void setEnableBackPressed(LoginActivity activity, boolean isEnable) {
+        activity.isEnableBackPressed = isEnable;
     }
 
     static void jumpToLoginPage(FragmentActivity activity) {

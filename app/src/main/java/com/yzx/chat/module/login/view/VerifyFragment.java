@@ -3,10 +3,12 @@ package com.yzx.chat.module.login.view;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Vibrator;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -147,6 +149,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mIvBack.setEnabled(!isDisable);
         mBtnResend.setEnabled((!isDisable) && isAllowResendVerifyCode);
         isDisableInput = isDisable;
+        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), isDisable);
     }
 
     private void setAllowResendVerifyCode(boolean isAllow) {
@@ -254,6 +257,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mTvErrorHint.setText(error);
         if (!TextUtils.isEmpty(error)) {
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
+            ((Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE)).vibrate(50);
         }
         startProgressAnim(false, null);
 

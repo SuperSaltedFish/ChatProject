@@ -5,7 +5,6 @@ import android.os.Build;
 import android.text.TextUtils;
 
 
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,8 +21,8 @@ import java.util.Map;
 
 public class Http {
 
-    private final static int CONNECT_TIMEOUT = 20000;
-    private final static int READ_TIMEOUT = 20000;
+    private final static int CONNECT_TIMEOUT = 15000;
+    private final static int READ_TIMEOUT = 15000;
 
     public static ResponseParams call(HttpRequest request) {
         ResponseParams responseParams = new ResponseParams();
@@ -53,8 +52,8 @@ public class Http {
             setDefaultAttribute(conn);
             setAttributeFromRequest(conn, request);
             writeRequestBody(conn, request);
-            String filePath =  getFilePath(request.getUrl(), request.getSavePath(), conn.getHeaderField("Content-Disposition"));
-            readResponseBodyToFile(conn, request,responseParams,filePath, callback);
+            String filePath = getFilePath(request.getUrl(), request.getSavePath(), conn.getHeaderField("Content-Disposition"));
+            readResponseBodyToFile(conn, request, responseParams, filePath, callback);
             responseParams.body = filePath.getBytes();
         } catch (Exception e) {
             if (conn != null) {
@@ -136,7 +135,7 @@ public class Http {
         }
     }
 
-    private static void readResponseBodyToFile(HttpURLConnection conn,DownloadHttpRequest request, ResponseParams responseParams, String savePath, DownloadCallback callback) throws IOException {
+    private static void readResponseBodyToFile(HttpURLConnection conn, DownloadHttpRequest request, ResponseParams responseParams, String savePath, DownloadCallback callback) throws IOException {
         responseParams.responseCode = conn.getResponseCode();
         if (HttpURLConnection.HTTP_OK != responseParams.responseCode) {
             return;

@@ -50,6 +50,7 @@ public class AppClient {
     private static AppClient sAppClient;
 
     public static void init(Context context) {
+        ResourcesHelper.init(context.getApplicationContext());
         sAppClient = new AppClient(context.getApplicationContext());
     }
 
