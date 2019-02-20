@@ -20,8 +20,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.yzx.chat.R;
-import com.yzx.chat.configure.AppApplication;
-import com.yzx.chat.module.main.view.SplashActivity;
 import com.yzx.chat.widget.dialog.ErrorDialog;
 import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.Cancelable;
@@ -95,16 +93,6 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
         }
         initPresenter();
         init(savedInstanceState);
-        switch (AppApplication.getAppState()) {//防止APP被系统杀死后，恢复activity导致null的问题，代码放在init()的后面防止对象未初始化可能导致空指针的问题
-            case AppApplication.APP_STATE_UNINITIALIZED:
-                AppApplication.setAppState(AppApplication.APP_STATE_INITIALIZING);
-                SplashActivity.startActivity(this);
-                finish();
-                return;
-            case AppApplication.APP_STATE_INITIALIZING:
-                finish();
-                return;
-        }
         setup(savedInstanceState);
     }
 

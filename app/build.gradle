@@ -1,18 +1,18 @@
 apply plugin: 'com.android.application'
 
-android {
-    def version = rootProject.ext.versions
+def config = rootProject.ext
 
-    compileSdkVersion version.compileSdkVersion
-    buildToolsVersion version.buildToolsVersion
+android {
+    compileSdkVersion config.versions.compileSdkVersion
+    buildToolsVersion config.versions.buildToolsVersion
     defaultConfig {
         applicationId "com.yzx.chat"
-        minSdkVersion version.minSdkVersion
-        targetSdkVersion version.targetSdkVersion
-        versionCode version.versionCode
-        versionName version.versionName
+        minSdkVersion config.versions.minSdkVersion
+        targetSdkVersion config.versions.targetSdkVersion
+        versionCode config.versions.versionCode
+        versionName config.versions.versionName
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters "arm64-v8a", "x86"
         }
     }
 
@@ -35,25 +35,20 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':IMLib')
-
-    def dependencies = rootProject.ext.deps
-
-    implementation dependencies.androidx.constraintLayout
-    implementation dependencies.androidx.appcompat
-    implementation dependencies.androidx.design
-    implementation dependencies.androidx.emoji
-    implementation dependencies.androidx.emojibBundled
-
-    implementation dependencies.ext.gson
-    implementation dependencies.ext.materialDialogs
-    implementation dependencies.ext.SmartRefreshLayout
-    implementation dependencies.ext.PhotoView
-    implementation dependencies.ext.zxing
-    implementation dependencies.ext.map3D
-    implementation dependencies.ext.mapSearch
-    implementation dependencies.ext.glide
-    implementation dependencies.ext.leakcanaryAndroid
-    implementation dependencies.ext.leakcanaryFragment
-
-    annotationProcessor dependencies.annotation.glide
+    implementation config.deps.androidx.constraintLayout
+    implementation config.deps.androidx.appcompat
+    implementation config.deps.androidx.design
+    implementation config.deps.androidx.emoji
+    implementation config.deps.androidx.emojibBundled
+    implementation config.deps.ext.gson
+    implementation config.deps.ext.materialDialogs
+    implementation config.deps.ext.SmartRefreshLayout
+    implementation config.deps.ext.PhotoView
+    implementation config.deps.ext.zxing
+    implementation config.deps.ext.map3D
+    implementation config.deps.ext.mapSearch
+    implementation config.deps.ext.glide
+    implementation config.deps.ext.leakcanaryAndroid
+    implementation config.deps.ext.leakcanaryFragment
+    annotationProcessor config.deps.annotation.glide
 }

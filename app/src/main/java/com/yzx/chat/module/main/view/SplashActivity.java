@@ -1,7 +1,6 @@
 package com.yzx.chat.module.main.view;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.configure.AppApplication;
 import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.module.main.presenter.SplashPresenter;
@@ -36,12 +34,6 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     private static final int GUIDE_COUNT = 3;
 
-    public static void startActivity(Context context) {
-        Intent intent = new Intent(context, SplashActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
-    }
-
     private int[] mSplashImage = {R.drawable.src_splash_1, R.drawable.src_splash_2, R.drawable.src_splash_3};
     private String[] mSplashTitle;
     private String mSplashContent;
@@ -53,7 +45,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        AppApplication.setAppState(AppApplication.APP_STATE_NORMAL);
+
     }
 
     @Override

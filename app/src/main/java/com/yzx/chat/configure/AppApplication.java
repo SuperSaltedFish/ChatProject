@@ -20,20 +20,7 @@ import androidx.emoji.text.EmojiCompat;
 
 public class AppApplication extends Application {
 
-    public static final int APP_STATE_UNINITIALIZED = 0;
-    public static final int APP_STATE_INITIALIZING = 1;
-    public static final int APP_STATE_NORMAL = 2;
-
-    private static int sCurrentAppState;
     private static Context sApplicationContext;
-
-    public static void setAppState(int state) {
-        sCurrentAppState = state;
-    }
-
-    public static int getAppState() {
-        return sCurrentAppState;
-    }
 
     public static Context getAppContext(){
         return sApplicationContext;
