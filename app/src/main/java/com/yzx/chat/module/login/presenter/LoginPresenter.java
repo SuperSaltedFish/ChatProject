@@ -27,9 +27,9 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void tryLogin(final String username, String password) {
-        AppClient.getInstance().login(username, password, null, new LifecycleMVPResultCallback<LoginResponseEntity>(mLoginView, false) {
+        AppClient.getInstance().login(username, password, null, new LifecycleMVPResultCallback<Void>(mLoginView, false) {
             @Override
-            protected void onSuccess(LoginResponseEntity result) {
+            protected void onSuccess(Void result) {
                 mLoginView.startHomeActivity();
             }
 

@@ -2,7 +2,6 @@ package com.yzx.chat.module.login.presenter;
 
 
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.module.login.contract.VerifyContract;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
@@ -27,9 +26,9 @@ public class VerifyPresenter implements VerifyContract.Presenter {
 
     @Override
     public void login(String username, String password, String verifyCode) {
-        AppClient.getInstance().login(username, password, verifyCode, new LifecycleMVPResultCallback<LoginResponseEntity>(mVerifyView) {
+        AppClient.getInstance().login(username, password, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView) {
             @Override
-            protected void onSuccess(LoginResponseEntity result) {
+            protected void onSuccess(Void result) {
                 mVerifyView.startHomeActivity();
             }
         });

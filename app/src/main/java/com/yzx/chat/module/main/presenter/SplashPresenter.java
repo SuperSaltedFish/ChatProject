@@ -1,7 +1,6 @@
 package com.yzx.chat.module.main.presenter;
 
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
@@ -31,9 +30,9 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void checkLogin() {
-        mAppClient.loginByLocalToken(new LifecycleMVPResultCallback<UserEntity>(mSplashView,false) {
+        mAppClient.loginByLocalToken(new LifecycleMVPResultCallback<Void>(mSplashView,false) {
             @Override
-            protected void onSuccess(UserEntity result) {
+            protected void onSuccess(Void result) {
                 mSplashView.startHomeActivity();
             }
 

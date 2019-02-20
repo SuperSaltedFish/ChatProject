@@ -126,11 +126,16 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         }
 
         @Override
-        public void onDisconnected(String reason) {
+        public void onDisconnected() {
             if (isConnected) {
                 isConnected = false;
                 mConversationView.setEnableDisconnectionHint(true);
             }
+        }
+
+        @Override
+        public void onUserInvalid() {
+
         }
     };
 
