@@ -91,7 +91,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
+                        animation.removeListener(this);
                         mBtnLogin.setVisibility(View.INVISIBLE);
                     }
                 });
@@ -106,7 +106,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
+                        animation.removeListener(this);
                         mPbLoginProgress.setVisibility(View.INVISIBLE);
                         setDisableInputState(false);
                     }
@@ -122,7 +122,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginTelephone.clearFocus();
         mEtLoginPassword.clearFocus();
         isDisableInput = isDisable;
-        LoginActivity.setEnableBackPressed((LoginActivity) mContext, !isDisable);
+        LoginActivity.setDisableBackPressed((LoginActivity) mContext, isDisable);
     }
 
     private void tryLogin() {
@@ -207,7 +207,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         AnimationUtil.circularRevealShowByFullActivityAnim((Activity) mContext, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                animation.removeAllListeners();
+                animation.removeListener(this);
                 LoginActivity.startHomeActivity((Activity) mContext);
             }
         });

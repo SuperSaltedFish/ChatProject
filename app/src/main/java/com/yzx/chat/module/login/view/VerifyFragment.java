@@ -147,7 +147,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mIvBack.setEnabled(!isDisable);
         mBtnResend.setEnabled((!isDisable) && isAllowResendVerifyCode);
         isDisableInput = isDisable;
-        LoginActivity.setEnableBackPressed((LoginActivity) mContext, isDisable);
+        LoginActivity.setDisableBackPressed((LoginActivity) mContext, isDisable);
     }
 
     private void setAllowResendVerifyCode(boolean isAllow) {
@@ -275,7 +275,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                animation.removeAllListeners();
+                animation.removeListener(this);
                 LoginActivity.startHomeActivity((Activity) mContext);
             }
         });

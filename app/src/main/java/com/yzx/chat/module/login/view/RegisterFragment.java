@@ -101,7 +101,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
+                        animation.removeListener(this);
                         mBtnRegister.setVisibility(View.INVISIBLE);
                     }
                 });
@@ -116,7 +116,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
+                        animation.removeListener(this);
                         mPbRegisterProgress.setVisibility(View.INVISIBLE);
                         setDisableInputState(false);
                     }
@@ -139,7 +139,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mEtRegisterPassword.clearFocus();
         mEtRegisterConfirmPassword.clearFocus();
         isDisableInput = isDisable;
-        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), isDisable);
+        LoginActivity.setDisableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), isDisable);
     }
 
 

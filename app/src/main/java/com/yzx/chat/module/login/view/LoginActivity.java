@@ -32,12 +32,12 @@ public class LoginActivity extends BaseCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (isEnableBackPressed) {
+        if (!isEnableBackPressed) {
             super.onBackPressed();
         }
     }
 
-    static void setEnableBackPressed(LoginActivity activity, boolean isEnable) {
+    static void setDisableBackPressed(LoginActivity activity, boolean isEnable) {
         activity.isEnableBackPressed = isEnable;
     }
 
