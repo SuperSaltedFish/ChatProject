@@ -23,6 +23,6 @@ public class ProfilePresenter implements ProfileContract.Presenter {
 
     @Override
     public void initUserInfo() {
-        mProfileView.showUserInfo(AppClient.getInstance().getUserManager().getUser());
+        mProfileView.showUserInfo(AppClient.getInstance().getUserManager().getCurrentUser());
     }
 }

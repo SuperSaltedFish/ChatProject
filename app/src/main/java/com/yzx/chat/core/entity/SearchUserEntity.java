@@ -1,6 +1,5 @@
 package com.yzx.chat.core.entity;
 
-import com.yzx.chat.core.entity.UserEntity;
 
 import java.util.ArrayList;
 

@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.Service;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.Editable;
@@ -20,14 +19,13 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.module.login.contract.LoginContract;
 import com.yzx.chat.module.login.presenter.LoginPresenter;
-import com.yzx.chat.module.main.view.SplashActivity;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.RegexUtil;
 import com.yzx.chat.util.ViewUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
 
-import java.util.Objects;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * Created by YZX on 2018年07月08日.
@@ -43,8 +41,6 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     private TextView mTvErrorHint;
     private Button mBtnLogin;
     private ProgressBar mPbLoginProgress;
-    private View mTelephoneUnderline;
-    private View mPasswordUnderline;
 
     private boolean isDisableInput;
 
@@ -57,8 +53,6 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     protected void init(View parentView) {
         mEtLoginTelephone = parentView.findViewById(R.id.mEtTelephone);
         mEtLoginPassword = parentView.findViewById(R.id.mEtPassword);
-        mTelephoneUnderline = parentView.findViewById(R.id.mTelephoneUnderline);
-        mPasswordUnderline = parentView.findViewById(R.id.mPasswordUnderline);
         mTvJumpToRegister = parentView.findViewById(R.id.mTvJumpToRegister);
         mPbLoginProgress = parentView.findViewById(R.id.mPbLoginProgress);
         mBtnLogin = parentView.findViewById(R.id.mBtnLogin);
@@ -69,8 +63,6 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     protected void setup(Bundle savedInstanceState) {
         mTvJumpToRegister.setOnClickListener(mOnViewClickListener);
         mBtnLogin.setOnClickListener(mOnViewClickListener);
-        mEtLoginTelephone.setOnFocusChangeListener(mOnInputFocusChangeListener);
-        mEtLoginPassword.setOnFocusChangeListener(mOnInputFocusChangeListener);
         mEtLoginTelephone.addTextChangedListener(mTextWatcher);
         mEtLoginPassword.addTextChangedListener(mTextWatcher);
     }
@@ -130,7 +122,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginTelephone.clearFocus();
         mEtLoginPassword.clearFocus();
         isDisableInput = isDisable;
-        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), !isDisable);
+        LoginActivity.setEnableBackPressed((LoginActivity) mContext, !isDisable);
     }
 
     private void tryLogin() {
@@ -174,20 +166,6 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         }
     };
 
-    private final View.OnFocusChangeListener mOnInputFocusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            switch (v.getId()) {
-                case R.id.mEtTelephone:
-                    mTelephoneUnderline.setSelected(hasFocus);
-                    break;
-                case R.id.mEtPassword:
-                    mPasswordUnderline.setSelected(hasFocus);
-                    break;
-            }
-        }
-    };
-
     private final TextWatcher mTextWatcher = new SimpleTextWatcher() {
         @Override
         public void afterTextChanged(Editable s) {
@@ -206,12 +184,12 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         VerifyFragment.VerifyInfo info = new VerifyFragment.VerifyInfo();
         info.telephone = mEtLoginTelephone.getText().toString();
         info.password = mEtLoginPassword.getText().toString();
-        LoginActivity.jumpToVerifyPage(Objects.requireNonNull(getActivity()), info);
+        LoginActivity.jumpToVerifyPage((FragmentActivity) mContext, info);
     }
 
 
     private void jumpToRegisterPage() {
-        LoginActivity.jumpToRegisterPage(Objects.requireNonNull(getActivity()));
+        LoginActivity.jumpToRegisterPage((FragmentActivity) mContext);
     }
 
     @Override
@@ -226,17 +204,11 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
 
     @Override
     public void startHomeActivity() {
-        final Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
+        AnimationUtil.circularRevealShowByFullActivityAnim((Activity) mContext, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
-                startActivity(new Intent(mContext, SplashActivity.class));
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                activity.finish();
+                LoginActivity.startHomeActivity((Activity) mContext);
             }
         });
     }

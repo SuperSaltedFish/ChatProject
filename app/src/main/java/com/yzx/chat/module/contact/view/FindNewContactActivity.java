@@ -125,7 +125,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     private void setData() {
-        UserEntity user = AppClient.getInstance().getUserManager().getUser();
+        UserEntity user = AppClient.getInstance().getUserManager().getCurrentUser();
         mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
     }
 

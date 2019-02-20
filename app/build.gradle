@@ -35,6 +35,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':IMLib')
+
     implementation config.deps.androidx.constraintLayout
     implementation config.deps.androidx.appcompat
     implementation config.deps.androidx.design
@@ -50,5 +51,7 @@ dependencies {
     implementation config.deps.ext.glide
     implementation config.deps.ext.leakcanaryAndroid
     implementation config.deps.ext.leakcanaryFragment
+
     annotationProcessor config.deps.annotation.glide
+    annotationProcessor 'androidx.annotation:annotation:1.0.1'
 }

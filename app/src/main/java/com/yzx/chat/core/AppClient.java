@@ -87,14 +87,71 @@ public class AppClient {
         mLoginLock = new Semaphore(1);
         mStorageHelper = new StorageHelper(mAppContext, mAppContext.getPackageName());
 
+        initIM();
+    }
+
+    private void initIM() {
         RongIMClient.init(mAppContext);
         try {
             RongIMClient.registerMessageType(VideoMessage.class);
             RongIMClient.registerMessageType(ContactNotificationMessageEx.class);
         } catch (AnnotationNotFoundException ignored) {
         }
-        RongIMClient.setOnReceiveMessageListener(mOnReceiveMessageListener);
-        RongIMClient.setConnectionStatusListener(mConnectionStatusListener);
+        RongIMClient.setOnReceiveMessageListener(new RongIMClient.OnReceiveMessageListener() {
+            @Override
+            public boolean onReceived(Message message, int remainder) {
+                switch (message.getObjectName()) {
+                    case "RC:TxtMsg":
+                    case "RC:VcMsg":
+                    case "RC:ImgMsg":
+                    case "RC:LBSMsg":
+                    case "RC:FileMsg":
+                    case "Custom:VideoMsg":
+                        mChatManager.onReceiveContactNotificationMessage(message, remainder);
+                        break;
+                    case "Custom:ContactNtf"://该类型不会保存期起来
+                        mContactManager.onReceiveContactNotificationMessage((ContactNotificationMessageEx) message.getContent());
+                        break;
+                    case "RC:GrpNtf":
+                        mGroupManager.onReceiveGroupNotificationMessage((GroupNotificationMessage) message.getContent());
+                        break;
+                    default:
+                        LogUtil.e("Unknown Message ObjectName:" + message.getObjectName());
+                }
+                if (remainder == 0 && mConversationManager != null && mContactManager != null) {
+                    mConversationManager.updateChatUnreadCount();
+                    mContactManager.updateContactUnreadCount();
+                }
+                return true;
+            }
+        });
+        RongIMClient.setConnectionStatusListener(new RongIMClient.ConnectionStatusListener() {
+            @Override
+            public void onChanged(ConnectionStatus connectionStatus) {
+                switch (connectionStatus) {
+                    case CONNECTED:
+                    case CONNECTING:
+                        for (OnConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
+                            listener.onConnected();
+                        }
+                        break;
+                    case NETWORK_UNAVAILABLE:
+                    case DISCONNECTED:
+                        for (OnConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
+                            listener.onDisconnected();
+                        }
+                        break;
+                    case KICKED_OFFLINE_BY_OTHER_CLIENT:
+                    case TOKEN_INCORRECT:
+                    case SERVER_INVALID:
+                    case CONN_USER_BLOCKED:
+                        for (OnConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
+                            listener.onUserInvalid();
+                        }
+                        break;
+                }
+            }
+        });
     }
 
     public void obtainSMSOfLoginType(String telephone, ResultCallback<Void> callback) {
@@ -112,7 +169,7 @@ public class AppClient {
                 .enqueue(new ResponseHandler<>(callback));
     }
 
-    public void login(String account, String password, String verifyCode, final ResultCallback<LoginResponseEntity> callback) {
+    public void login(String account, String password, String verifyCode, final ResultCallback<Void> callback) {
         try {
             mLoginLock.acquire();
         } catch (InterruptedException e) {
@@ -157,7 +214,7 @@ public class AppClient {
                             public void onSuccess(String s) {
                                 init(result.getToken(), result.getUserProfile());
                                 mLoginLock.release();
-                                CallbackUtil.callResult(result, callback);
+                                CallbackUtil.callResult(null, callback);
                             }
 
                             @Override
@@ -178,7 +235,7 @@ public class AppClient {
     }
 
 
-    public void loginByLocalToken(final ResultCallback<UserEntity> callback) {
+    public void loginByLocalToken(final ResultCallback<Void> callback) {
         try {
             mLoginLock.acquire();
         } catch (InterruptedException e) {
@@ -213,7 +270,7 @@ public class AppClient {
                 public void onSuccess(String s) {
                     init(token, userInfo);
                     mLoginLock.release();
-                    CallbackUtil.callResult(userInfo, callback);
+                    CallbackUtil.callResult(null, callback);
                 }
 
                 @Override
@@ -342,7 +399,7 @@ public class AppClient {
             if (isConnected()) {
                 listener.onConnected();
             } else {
-                listener.onDisconnected(mRongIMClient.getCurrentConnectionStatus().getMessage());
+                listener.onDisconnected();
             }
         }
     }
@@ -351,63 +408,14 @@ public class AppClient {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
 
-    private final RongIMClient.ConnectionStatusListener mConnectionStatusListener = new RongIMClient.ConnectionStatusListener() {
-
-        private boolean isConnected;
-
-        @Override
-        public void onChanged(ConnectionStatus connectionStatus) {
-            boolean isConnectionSuccess;
-            isConnectionSuccess = connectionStatus == ConnectionStatus.CONNECTED;
-            if (isConnected == isConnectionSuccess) {
-                return;
-            }
-            isConnected = isConnectionSuccess;
-            for (OnConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
-                if (isConnected) {
-                    listener.onConnected();
-                } else {
-                    listener.onDisconnected(connectionStatus.getMessage());
-                }
-            }
-        }
-    };
-
-    private final RongIMClient.OnReceiveMessageListener mOnReceiveMessageListener = new RongIMClient.OnReceiveMessageListener() {
-        @Override
-        public boolean onReceived(Message message, int i) {
-            switch (message.getObjectName()) {
-                case "RC:TxtMsg":
-                case "RC:VcMsg":
-                case "RC:ImgMsg":
-                case "RC:LBSMsg":
-                case "RC:FileMsg":
-                case "Custom:VideoMsg":
-                    mChatManager.onReceiveContactNotificationMessage(message, i);
-                    break;
-                case "Custom:ContactNtf"://该类型不会保存期起来
-                    mContactManager.onReceiveContactNotificationMessage((ContactNotificationMessageEx) message.getContent());
-                    break;
-                case "RC:GrpNtf":
-                    mGroupManager.onReceiveGroupNotificationMessage((GroupNotificationMessage) message.getContent());
-                    break;
-                default:
-                    LogUtil.e("Unknown Message ObjectName:" + message.getObjectName());
-            }
-            if (i == 0 && mConversationManager != null && mContactManager != null) {
-                mConversationManager.updateChatUnreadCount();
-                mContactManager.updateContactUnreadCount();
-            }
-            return true;
-        }
-    };
 
     public interface OnConnectionStateChangeListener {
 
         void onConnected();
 
-        void onDisconnected(String reason);
+        void onDisconnected();
 
+        void onUserInvalid();
     }
 }
 

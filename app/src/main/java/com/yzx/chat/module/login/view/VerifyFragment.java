@@ -4,8 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.Service;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.Vibrator;
@@ -20,9 +20,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.module.login.contract.VerifyContract;
 import com.yzx.chat.module.login.presenter.VerifyPresenter;
-import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.util.AnimationUtil;
-import com.yzx.chat.util.CountDownTimer;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.VerifyEditView;
 
@@ -149,7 +147,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mIvBack.setEnabled(!isDisable);
         mBtnResend.setEnabled((!isDisable) && isAllowResendVerifyCode);
         isDisableInput = isDisable;
-        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), isDisable);
+        LoginActivity.setEnableBackPressed((LoginActivity) mContext, isDisable);
     }
 
     private void setAllowResendVerifyCode(boolean isAllow) {
@@ -278,9 +276,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeAllListeners();
-                startActivity(new Intent(mContext, HomeActivity.class));
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                activity.finish();
+                LoginActivity.startHomeActivity((Activity) mContext);
             }
         });
     }

@@ -127,7 +127,7 @@ public class ContactManager {
     }
 
     public void requestContact(final String userID, final String reason, final ResultCallback<Void> callback) {
-        mAppClient.getUserManager().getUserProfileByID(userID, new ResultCallback<GetUserProfileEntity>() {
+        mAppClient.getUserManager().findUserProfileByID(userID, new ResultCallback<GetUserProfileEntity>() {
             @Override
             public void onResult(final GetUserProfileEntity profile) {
                 mContactApi.requestContact(userID, reason)
@@ -194,7 +194,7 @@ public class ContactManager {
     }
 
     public void acceptContact(final String userID, final ResultCallback<Void> callback) {
-        mAppClient.getUserManager().getUserProfileByID(userID, new ResultCallback<GetUserProfileEntity>() {
+        mAppClient.getUserManager().findUserProfileByID(userID, new ResultCallback<GetUserProfileEntity>() {
             @Override
             public void onResult(final GetUserProfileEntity user) {
                 mContactApi.acceptContact(userID)

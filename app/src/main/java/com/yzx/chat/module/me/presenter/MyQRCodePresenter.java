@@ -53,7 +53,7 @@ public class MyQRCodePresenter implements MyQRCodeContract.Presenter {
 
     @Override
     public UserEntity getUserInfo() {
-        return AppClient.getInstance().getUserManager().getUser();
+        return AppClient.getInstance().getUserManager().getCurrentUser();
     }
 
     @Override

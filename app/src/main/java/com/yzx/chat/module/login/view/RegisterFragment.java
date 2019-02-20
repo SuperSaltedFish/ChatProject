@@ -23,8 +23,11 @@ import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.util.RegexUtil;
 import com.yzx.chat.util.ViewUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
+import com.yzx.chat.widget.listener.SimpleTextWatcher;
 
 import java.util.Objects;
+
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * Created by YZX on 2018年07月08日.
@@ -42,10 +45,6 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
     private TextView mTvJumpToLogin;
     private TextView mTvLoginHint;
     private TextView mTvErrorHint;
-    private View mTelephoneUnderline;
-    private View mNicknameUnderline;
-    private View mPasswordUnderline;
-    private View mConfirmPasswordUnderline;
     private boolean isDisableInput;
 
     @Override
@@ -62,10 +61,6 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mPbRegisterProgress = parentView.findViewById(R.id.mPbRegisterProgress);
         mBtnRegister = parentView.findViewById(R.id.mBtnRegister);
         mTvJumpToLogin = parentView.findViewById(R.id.mTvJumpToLogin);
-        mTelephoneUnderline = parentView.findViewById(R.id.mTelephoneUnderline);
-        mNicknameUnderline = parentView.findViewById(R.id.mNicknameUnderline);
-        mPasswordUnderline = parentView.findViewById(R.id.mPasswordUnderline);
-        mConfirmPasswordUnderline = parentView.findViewById(R.id.mConfirmPasswordUnderline);
         mTvLoginHint = parentView.findViewById(R.id.mTvLoginHint);
         mTvErrorHint = parentView.findViewById(R.id.mTvErrorHint);
         mIvBack = parentView.findViewById(R.id.mIvBack);
@@ -77,10 +72,6 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mEtRegisterNickname.addTextChangedListener(mTextWatcher);
         mEtRegisterPassword.addTextChangedListener(mTextWatcher);
         mEtRegisterConfirmPassword.addTextChangedListener(mTextWatcher);
-        mEtRegisterTelephone.setOnFocusChangeListener(mOnInputFocusChangeListener);
-        mEtRegisterNickname.setOnFocusChangeListener(mOnInputFocusChangeListener);
-        mEtRegisterPassword.setOnFocusChangeListener(mOnInputFocusChangeListener);
-        mEtRegisterConfirmPassword.setOnFocusChangeListener(mOnInputFocusChangeListener);
         mBtnRegister.setOnClickListener(mOnViewClickListener);
         mTvJumpToLogin.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
@@ -148,7 +139,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mEtRegisterPassword.clearFocus();
         mEtRegisterConfirmPassword.clearFocus();
         isDisableInput = isDisable;
-        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()),isDisable);
+        LoginActivity.setEnableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), isDisable);
     }
 
 
@@ -200,35 +191,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         });
     }
 
-    private final View.OnFocusChangeListener mOnInputFocusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            switch (v.getId()) {
-                case R.id.mEtTelephone:
-                    mTelephoneUnderline.setSelected(hasFocus);
-                    break;
-                case R.id.mEtNickname:
-                    mNicknameUnderline.setSelected(hasFocus);
-                    break;
-                case R.id.mEtPassword:
-                    mPasswordUnderline.setSelected(hasFocus);
-                    break;
-                case R.id.mEtConfirmPassword:
-                    mConfirmPasswordUnderline.setSelected(hasFocus);
-                    break;
-            }
-        }
-    };
-
-    private final TextWatcher mTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
+    private final TextWatcher mTextWatcher = new SimpleTextWatcher() {
         @Override
         public void afterTextChanged(Editable s) {
             showErrorDialog(null);
@@ -247,7 +210,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         info.telephone = mEtRegisterTelephone.getText().toString();
         info.password = mEtRegisterPassword.getText().toString();
         info.nickname = mEtRegisterNickname.getText().toString();
-        LoginActivity.jumpToVerifyPage(Objects.requireNonNull(getActivity()), info);
+        LoginActivity.jumpToVerifyPage((FragmentActivity) mContext, info);
     }
 
     private void backPressed() {

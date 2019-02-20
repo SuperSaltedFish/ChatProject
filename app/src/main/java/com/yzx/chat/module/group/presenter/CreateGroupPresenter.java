@@ -64,7 +64,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             stringBuilder.append("、");
             membersID[i] = user.getUserID();
         }
-        stringBuilder.append(AppClient.getInstance().getUserManager().getUser().getNickname()).append("的群聊");
+        stringBuilder.append(AppClient.getInstance().getUserManager().getCurrentUser().getNickname()).append("的群聊");
 
         mGroupManager.createGroup(stringBuilder.toString(), membersID, new LifecycleMVPResultCallback<Void>(mCreateGroupView) {
             @Override

@@ -112,7 +112,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (conversation.getUnreadMessageCount() != 0) {
             mAppClient.getConversationManager().clearConversationUnreadStatus(mConversationType, mConversationID);
         }
-        List<Message> messageList = mAppClient.getChatManager().getHistoryMessages(mConversationType, mConversationID, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
+        List<Message> messageList = mAppClient.getChatManager().getHistoryMessagesBlock(mConversationType, mConversationID, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
         mChatView.enableLoadMoreHint(mHasMoreMessage);
         mChatView.addNewMessage(messageList);
@@ -185,7 +185,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     @Override
     public void loadMoreMessage(int lastMessageID) {
         mIsLoadingMore = true;
-        mAppClient.getChatManager().asyncGetHistoryMessages(
+        mAppClient.getChatManager().getHistoryMessages(
                 mConversationType, mConversationID,
                 lastMessageID,
                 Constants.CHAT_MESSAGE_PAGE_SIZE,

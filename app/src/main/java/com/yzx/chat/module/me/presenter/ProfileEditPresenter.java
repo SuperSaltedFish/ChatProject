@@ -31,7 +31,7 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
 
     @Override
     public UserEntity getUserInfo() {
-        return AppClient.getInstance().getUserManager().getUser();
+        return AppClient.getInstance().getUserManager().getCurrentUser();
     }
 
     @Override

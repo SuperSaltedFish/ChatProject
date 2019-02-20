@@ -54,7 +54,7 @@
         android:id="@+id/mTelephoneUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@drawable/selector_bg_underline" />
+        android:background="@color/textSecondaryColorBlackLight" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -99,7 +99,7 @@
         android:id="@+id/mPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@drawable/selector_bg_underline" />
+        android:background="@color/textSecondaryColorBlackLight" />
 
 
     <TextView

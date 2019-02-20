@@ -1,16 +1,14 @@
 package com.yzx.chat.core;
 
 
-import com.yzx.chat.core.database.AbstractDao;
-import com.yzx.chat.core.database.UserDao;
 import com.yzx.chat.core.entity.GetUserProfileEntity;
 import com.yzx.chat.core.entity.SearchUserEntity;
+import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.listener.ResultCallback;
-import com.yzx.chat.core.entity.UploadAvatarEntity;
+import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.core.net.api.UserApi;
-import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.util.CallbackUtil;
 
 import androidx.annotation.Nullable;
@@ -74,7 +72,7 @@ public class UserManager {
                 }));
     }
 
-    public void findUser(String nicknameOrTelephone, final ResultCallback<SearchUserEntity> callback) {
+    public void searchUser(String nicknameOrTelephone, final ResultCallback<SearchUserEntity> callback) {
         mUserApi.searchUser(nicknameOrTelephone)
                 .enqueue(new ResponseHandler<>(new ResultCallback<SearchUserEntity>() {
                     @Override
@@ -89,7 +87,7 @@ public class UserManager {
                 }));
     }
 
-    public void getUserProfileByID(String userID, final ResultCallback<GetUserProfileEntity> callback) {
+    public void findUserProfileByID(String userID, final ResultCallback<GetUserProfileEntity> callback) {
         mUserApi.getUserProfile(userID)
                 .enqueue(new ResponseHandler<>(new ResultCallback<GetUserProfileEntity>() {
                     @Override
@@ -109,12 +107,8 @@ public class UserManager {
         return mUserEntity.getUserID();
     }
 
-    public UserEntity getUser() {
+    public UserEntity getCurrentUser() {
         return UserEntity.copy(mUserEntity);
-    }
-
-    static boolean replace(UserEntity userInfo, AbstractDao.ReadWriteHelper readWriteHelper) {
-        return new UserDao(readWriteHelper).replace(userInfo);
     }
 
      void destroy() {
