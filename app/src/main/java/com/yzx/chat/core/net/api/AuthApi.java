@@ -1,10 +1,8 @@
 package com.yzx.chat.core.net.api;
 
-import com.yzx.chat.core.entity.GetSecretKeyEntity;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.net.framework.Call;
-import com.yzx.chat.core.net.framework.annotation.GET;
 import com.yzx.chat.core.net.framework.annotation.POST;
 import com.yzx.chat.core.net.framework.annotation.Param;
 
@@ -13,9 +11,6 @@ public interface AuthApi {
 
     String SMS_CODE_TYPE_LOGIN = "Login";
     String SMS_CODE_TYPE_REGISTER = "Register";
-
-    @GET("auth/getSecretKey")
-    Call<JsonResponse<GetSecretKeyEntity>> getSignature();
 
     @POST("auth/login")
     Call<JsonResponse<LoginResponseEntity>> login(@Param("telephone") String account,

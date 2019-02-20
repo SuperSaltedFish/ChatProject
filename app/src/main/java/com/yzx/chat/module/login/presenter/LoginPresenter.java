@@ -1,7 +1,6 @@
 package com.yzx.chat.module.login.presenter;
 
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.module.login.contract.LoginContract;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
@@ -35,7 +34,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
             @Override
             protected boolean onError(int code, String error) {
-                if (code == ResponseHandler.ERROR_CODE_SERVER_SEND_LOGIN_VERIFU_CODE) {
+                if (code == ResponseHandler.ERROR_CODE_SERVER_SEND_LOGIN_VERIFY_CODE) {
                    AppClient.getInstance().obtainSMSOfLoginType(username, new LifecycleMVPResultCallback<Void>(mLoginView,false) {
                        @Override
                        protected void onSuccess(Void result) {

@@ -26,7 +26,7 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
     public static final int ERROR_CODE_NETWORK_UNKNOWN = -200;
     public static final int ERROR_CODE_NETWORK_TIMEOUT = -300;
     public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -400;
-    public static final int ERROR_CODE_SERVER_SEND_LOGIN_VERIFU_CODE = 200001;
+    public static final int ERROR_CODE_SERVER_SEND_LOGIN_VERIFY_CODE = 200001;
 
 
     private ResultCallback<T> mResultCallback;

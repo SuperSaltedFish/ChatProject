@@ -11,7 +11,6 @@ public class JsonRequest {
 
     private String token;
     private String deviceID;
-    private int status = 200;
     private Object params;
 
     public String getToken() {
@@ -28,14 +27,6 @@ public class JsonRequest {
 
     public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public Object getParams() {
