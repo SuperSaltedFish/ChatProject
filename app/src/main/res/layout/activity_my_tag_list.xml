@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".module.me.view.MyTagListActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        app:theme="@style/ToolbarTheme"
-        app:title="@string/MyTagListActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+    <include layout="@layout/include_toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MyTagListActivity_mRvTags"

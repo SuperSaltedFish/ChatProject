@@ -6,30 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".module.common.view.ImageViewPagerActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/colorAccent"
-        android:elevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
-
-
-        <TextView
-            android:id="@+id/ImageViewpagerActivity_mTvConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="16dp"
-            android:background="@null"
-            android:text="@string/Send"
-            android:textColor="@color/selector_text_enable_change_light"
-            android:textSize="15sp" />
-
-    </androidx.appcompat.widget.Toolbar>
+    <include layout="@layout/include_toolbar"/>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/ImageViewpagerActivity_mViewPager"

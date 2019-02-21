@@ -16,14 +16,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/Default_mToolbar"
+        <include layout="@layout/include_toolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:elevation="0dp"
-            app:theme="@style/ToolbarTheme"
-            app:title="@string/LocationMapActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+            android:elevation="0dp"/>
 
     </FrameLayout>
 

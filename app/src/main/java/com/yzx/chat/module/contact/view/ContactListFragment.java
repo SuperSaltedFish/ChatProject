@@ -81,6 +81,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private View mLlTags;
     private TextView mTvTags;
     private BadgeView mBadgeView;
+
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
@@ -120,6 +121,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        mToolbar.setTitle(R.string.app_name);
         setSearchBar();
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();

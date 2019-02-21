@@ -87,6 +87,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.ImageSingleSelectorActivity_Title);
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

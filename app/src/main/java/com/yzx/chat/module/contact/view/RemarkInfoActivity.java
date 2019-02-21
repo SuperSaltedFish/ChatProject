@@ -64,6 +64,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.RemarkInfoActivity_Title);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

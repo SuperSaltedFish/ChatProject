@@ -78,6 +78,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.QrCodeScanActivity_Title);
         setBrightness(0.9f);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (getSupportActionBar() != null) {

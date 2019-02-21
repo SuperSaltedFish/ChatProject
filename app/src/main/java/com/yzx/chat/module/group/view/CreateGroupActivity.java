@@ -94,6 +94,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        setTitle(R.string.CreateGroupActivity_Title);
 
         mFilterContactList.addAll(mAllContactList);
 
@@ -205,14 +206,14 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 ImageView avatar = new ImageView(CreateGroupActivity.this);
                 avatar.setId(position);
                 avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this,avatar,mFilterContactList.get(position-1).getUserProfile().getAvatar());
+                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this, avatar, mFilterContactList.get(position - 1).getUserProfile().getAvatar());
                 mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidHelper.dip2px(40), (int) AndroidHelper.dip2px(40)));
             } else {
                 mSelectedContactList.remove(mAllContactList.get(position - 1));
                 ImageView needRemoveView = mFlowLayout.findViewById(position);
                 if (needRemoveView != null) {
                     mFlowLayout.removeView(needRemoveView);
-                    GlideUtil.clear(CreateGroupActivity.this,needRemoveView);
+                    GlideUtil.clear(CreateGroupActivity.this, needRemoveView);
                 }
             }
             mConfirmMenuItem.setEnabled(mSelectedContactList.size() > 0);

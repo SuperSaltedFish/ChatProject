@@ -3,9 +3,8 @@ package com.yzx.chat.module.common.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -13,7 +12,6 @@ import com.yzx.chat.configure.Constants;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.DirectoryPathAdapter;
 import com.yzx.chat.widget.adapter.FileAndDirectoryAdapter;
-import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
@@ -41,7 +39,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
 
     private RecyclerView mRvFileAndDirectory;
     private RecyclerView mRvDirectoryPath;
-    private TextView mTvConfirm;
+    private MenuItem mSendMenu;
     private LinearLayoutManager mDirectoryPathLayoutManager;
     private FileAndDirectoryAdapter mFileAndDirectoryAdapter;
     private DirectoryPathAdapter mDirectoryPathAdapter;
@@ -60,7 +58,6 @@ public class FileSelectorActivity extends BaseCompatActivity {
     protected void init(Bundle savedInstanceState) {
         mRvFileAndDirectory = findViewById(R.id.FileSelectorActivity_mRvFileAndDirectory);
         mRvDirectoryPath = findViewById(R.id.FileSelectorActivity_mRvDirectoryPath);
-        mTvConfirm = findViewById(R.id.FileSelectorActivity_mTvConfirm);
         mCurrentFileList = new ArrayList<>();
         mDirectoryNameList = new ArrayList<>();
         mSelectedFilePathList = new ArrayList<>();
@@ -70,6 +67,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.FileSelectorActivity_Title);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -86,9 +84,6 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mRvFileAndDirectory.addOnItemTouchListener(mOnFileOrDirectoryItemClickListener);
         mRvFileAndDirectory.setAdapter(mFileAndDirectoryAdapter);
 
-        mTvConfirm.setOnClickListener(mOnViewClickListener);
-        mTvConfirm.setEnabled(false);
-
         mDirectoryNameList.add(getString(R.string.FileSelectorActivity_Storage));
         mOnPathItemClickListener.onItemClick(0, null);
     }
@@ -96,12 +91,22 @@ public class FileSelectorActivity extends BaseCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
+            case R.id.mSendMenu:
+                confirmSelectedResult();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_file_selector, menu);
+        mSendMenu = menu.findItem(R.id.mSendMenu);
+        mSendMenu.setEnabled(false);
+
         return true;
     }
 
@@ -189,27 +194,17 @@ public class FileSelectorActivity extends BaseCompatActivity {
 
     private void addSelectedFile(String path) {
         mSelectedFilePathList.add(path);
-        mTvConfirm.setEnabled(true);
-        mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedFilePathList.size(), MAX_SELECTED_COUNT));
+        mSendMenu.setEnabled(true);
+        mSendMenu.setTitle(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedFilePathList.size(), MAX_SELECTED_COUNT));
 
     }
 
     private void removeSelectedFile(String path) {
         mSelectedFilePathList.remove(path);
-        mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedFilePathList.size(), MAX_SELECTED_COUNT));
-        mTvConfirm.setEnabled(mSelectedFilePathList.size() > 0);
+        mSendMenu.setTitle(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedFilePathList.size(), MAX_SELECTED_COUNT));
+        mSendMenu.setEnabled(mSelectedFilePathList.size() > 0);
     }
 
-    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
-        @Override
-        public void onSingleClick(View v) {
-            switch (v.getId()) {
-                case R.id.FileSelectorActivity_mTvConfirm:
-                    confirmSelectedResult();
-                    break;
-            }
-        }
-    };
 
 
     private final OnRecyclerViewItemClickListener mOnPathItemClickListener = new OnRecyclerViewItemClickListener() {

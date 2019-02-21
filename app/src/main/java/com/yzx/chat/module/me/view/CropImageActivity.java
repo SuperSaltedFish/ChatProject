@@ -40,6 +40,7 @@ public class CropImageActivity extends BaseCompatActivity<CropImageContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.CropActivity_Title);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

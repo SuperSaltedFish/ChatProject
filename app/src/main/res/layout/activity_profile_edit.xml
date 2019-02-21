@@ -61,14 +61,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/Default_mToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="top"
-            app:theme="@style/ToolbarTheme"
-            app:title="@string/ProfileEditActivity_Title"
-            app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+
+        <include layout="@layout/include_toolbar"/>
 
     </FrameLayout>
 

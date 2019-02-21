@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".module.common.view.QrCodeScanActivity">
 
-
     <com.yzx.chat.widget.view.Camera2CaptureView
         android:id="@+id/QrCodeScanActivity_mCamera2CaptureView"
         android:layout_width="match_parent"
@@ -25,17 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:elevation="4dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:theme="@style/ToolbarTheme"
-        app:title="@string/QrCodeScanActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+    <include layout="@layout/include_toolbar"/>
 
     <ImageView
         android:id="@+id/QrCodeScanActivity_mIvToggleFlash"

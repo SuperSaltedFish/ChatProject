@@ -78,6 +78,7 @@ public class ProfileEditActivity extends BaseCompatActivity<ProfileEditContract.
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.ProfileEditActivity_Title);
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -3,19 +3,19 @@ package com.yzx.chat.module.common.view;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ImageSelectedAdapter;
 import com.yzx.chat.widget.adapter.LocalImageViewPagerAdapter;
-import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.SpacesItemDecoration;
 
@@ -45,10 +45,10 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
 
     private ViewPager mViewPager;
     private CheckBox mCbSelected;
-    private TextView mTvConfirm;
     private Switch mOriginalSwitch;
     private RecyclerView mRecyclerView;
     private FrameLayout mFlBottomLayout;
+    private MenuItem mSendMenu;
     private ImageSelectedAdapter mSelectedAdapter;
     private LocalImageViewPagerAdapter mPagerAdapter;
     private ArrayList<String> mImageList;
@@ -57,6 +57,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     private boolean isOriginal;
     private int mMaxSelectedCount;
     private boolean isSending;
+
 
 
     @Override
@@ -68,7 +69,6 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     protected void init(Bundle savedInstanceState) {
         mViewPager = findViewById(R.id.ImageViewpagerActivity_mViewPager);
         mCbSelected = findViewById(R.id.ImageViewPagerActivity_mCbSelected);
-        mTvConfirm = findViewById(R.id.ImageViewpagerActivity_mTvConfirm);
         mRecyclerView = findViewById(R.id.ImageViewpagerActivity_mRecyclerView);
         mOriginalSwitch = findViewById(R.id.ImageViewpagerActivity_mOriginalSwitch);
         mFlBottomLayout = findViewById(R.id.ImageViewpagerActivity_mFlBottomLayout);
@@ -111,7 +111,6 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
 
         mCbSelected.setOnCheckedChangeListener(mOnSelectedChangeListener);
 
-        mTvConfirm.setOnClickListener(mOnViewClickListener);
         mOriginalSwitch.setOnCheckedChangeListener(mOnOriginalSwitchChangeListener);
         mOriginalSwitch.setChecked(isOriginal);
 
@@ -130,6 +129,29 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         finish();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mSendMenu:
+                isSending = true;
+                onBackPressed();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_image_view_pager, menu);
+        mSendMenu = menu.findItem(R.id.mSendMenu);
+        mSendMenu.setEnabled(false);
+        return true;
+    }
+
+
     private void tryShowSelectedView() {
         if (mSelectedList.size() > 0) {
             mRecyclerView.setVisibility(View.VISIBLE);
@@ -143,25 +165,14 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
     private void updateBtnConfirmText() {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
-            mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), selectedCount, mMaxSelectedCount));
-            mTvConfirm.setEnabled(true);
+            mSendMenu.setTitle(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), selectedCount, mMaxSelectedCount));
+            mSendMenu.setEnabled(true);
         } else {
-            mTvConfirm.setText(R.string.ImageSelectorActivity_Send);
-            mTvConfirm.setEnabled(false);
+            mSendMenu.setTitle(R.string.ImageSelectorActivity_Send);
+            mSendMenu.setEnabled(false);
         }
     }
 
-    private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
-        @Override
-        public void onSingleClick(View v) {
-            switch (v.getId()) {
-                case R.id.ImageViewpagerActivity_mTvConfirm:
-                    isSending = true;
-                    onBackPressed();
-                    break;
-            }
-        }
-    };
 
     private final CompoundButton.OnCheckedChangeListener mOnOriginalSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override

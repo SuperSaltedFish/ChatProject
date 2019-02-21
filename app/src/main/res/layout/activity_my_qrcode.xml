@@ -8,17 +8,13 @@
     android:orientation="vertical"
     tools:context=".module.me.view.MyQRCodeActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
+    <include layout="@layout/include_toolbar"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:theme="@style/ToolbarTheme"
-        app:title="@string/MyQRCodeActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MyQRCodeActivity_mClQRCodeLayout"

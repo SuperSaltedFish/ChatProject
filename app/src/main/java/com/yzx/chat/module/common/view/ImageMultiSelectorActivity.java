@@ -8,6 +8,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -54,7 +56,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     private RecyclerView mRvImageDir;
     private Switch mOriginalSwitch;
     private Button mBtnPreview;
-    private TextView mTvConfirm;
+    private MenuItem mSendMenu;
     private LocalMultiImageAdapter mLocalMultiImageAdapter;
     private BottomSheetBehavior mBottomBehavior;
     private ImageDirAdapter mImageDirAdapter;
@@ -83,7 +85,6 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mRvImageDir = findViewById(R.id.ImageMultiSelectorActivity_mRvImageDirList);
         mBtnPreview = findViewById(R.id.ImageMultiSelectorActivity_mBtnPreview);
         mMaskView = findViewById(R.id.ImageMultiSelectorActivity_mMaskView);
-        mTvConfirm = findViewById(R.id.ImageMultiSelectorActivity_mTvConfirm);
 
         mCurrentImagePathList = new ArrayList<>(128);
         mImageDirPath = new ArrayList<>();
@@ -98,11 +99,12 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.ImageSelectorActivity_Title);
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.backgroundColorGrey)));
+        getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.backgroundColorGrey)));
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);
         mRvImage.setAdapter(mLocalMultiImageAdapter);
@@ -124,16 +126,46 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mLocalMultiImageAdapter.setOnImageItemChangeListener(mOnImageItemChangeListener);
         mOriginalSwitch.setOnCheckedChangeListener(mOnOriginalSwitchChangeListener);
         mBtnPreview.setOnClickListener(mOnPreviewClickListener);
-        mTvConfirm.setOnClickListener(mOnConfirmClickListener);
 
         setData();
 
         updateCountText();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mSendMenu:
+                confirm();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_image_multi_selector, menu);
+        mSendMenu = menu.findItem(R.id.mSendMenu);
+        mSendMenu.setEnabled(false);
+        return true;
+    }
+
 
     private void setData() {
         new LoadImageAsyncTask(ImageMultiSelectorActivity.this).execute();
+    }
+
+    private void confirm() {
+        if (mSelectedList.size() != 0) {
+            Intent intent = new Intent();
+            intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_PATH_LIST, mSelectedList);
+            intent.putExtra(INTENT_EXTRA_IS_ORIGINAL, isOriginal);
+            setResult(RESULT_CODE, intent);
+        }
+        finish();
     }
 
     private void loadLocalResource(HashMap<String, List<String>> groupingMap) {
@@ -155,7 +187,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mCurrentShowDir = folder;
         mCurrentImagePathList.clear();
         mSelectedList.clear();
-        mTvConfirm.setText(R.string.ImageSelectorActivity_Send);
+        mSendMenu.setTitle(R.string.ImageSelectorActivity_Send);
         if (folder == null) {
             for (Map.Entry<String, List<String>> entry : mGroupingMap.entrySet()) {
                 mCurrentImagePathList.addAll(entry.getValue());
@@ -171,14 +203,14 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     private void updateCountText() {
         int selectedCount = mSelectedList.size();
         if (selectedCount > 0) {
-            mTvConfirm.setText(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), MAX_SELECTED_COUNT));
+            mSendMenu.setTitle(String.format(Locale.getDefault(), "%s(%d/%d)", getString(R.string.ImageSelectorActivity_Send), mSelectedList.size(), MAX_SELECTED_COUNT));
             mBtnPreview.setText(String.format(Locale.getDefault(), "%s(%d)", getString(R.string.ImageSelectorActivity_Preview), mSelectedList.size()));
-            mTvConfirm.setEnabled(true);
+            mSendMenu.setEnabled(true);
             mBtnPreview.setEnabled(true);
         } else {
-            mTvConfirm.setText(R.string.ImageSelectorActivity_Send);
+            mSendMenu.setTitle(R.string.ImageSelectorActivity_Send);
             mBtnPreview.setText(R.string.ImageSelectorActivity_Preview);
-            mTvConfirm.setEnabled(false);
+            mSendMenu.setEnabled(false);
             mBtnPreview.setEnabled(false);
         }
     }
@@ -196,24 +228,11 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
                 mLocalMultiImageAdapter.notifyDataSetChanged();
             }
             if (data.getBooleanExtra(ImageViewPagerActivity.INTENT_EXTRA_IS_SENDING, false)) {
-                mOnConfirmClickListener.onClick(null);
+                confirm();
             }
         }
     }
 
-    private final View.OnClickListener mOnConfirmClickListener = new OnOnlySingleClickListener() {
-        @Override
-        public void onSingleClick(View v) {
-            if (mSelectedList.size() != 0) {
-                Intent intent = new Intent();
-                intent.putStringArrayListExtra(INTENT_EXTRA_IMAGE_PATH_LIST, mSelectedList);
-                intent.putExtra(INTENT_EXTRA_IS_ORIGINAL, isOriginal);
-                setResult(RESULT_CODE, intent);
-            }
-            finish();
-        }
-
-    };
 
     private final View.OnClickListener mOnChooseDirClickListener = new OnOnlySingleClickListener() {
         @Override

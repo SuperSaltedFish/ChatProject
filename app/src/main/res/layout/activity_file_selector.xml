@@ -1,34 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".module.common.view.FileSelectorActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/colorPrimary"
-        android:elevation="3dp"
-        app:theme="@style/ToolbarTheme"
-        app:title="@string/FileSelectorActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
+    <include layout="@layout/include_toolbar"/>
 
-        <TextView
-            android:id="@+id/FileSelectorActivity_mTvConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="16dp"
-            android:background="@null"
-            android:text="@string/Send"
-            android:textColor="@color/selector_text_enable_change_light"
-            android:textSize="15sp" />
-
-    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/FileSelectorActivity_mRvDirectoryPath"

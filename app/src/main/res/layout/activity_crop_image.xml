@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".module.me.view.CropImageActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="?colorPrimary"
-        android:elevation="4dp"
-        app:theme="@style/ToolbarTheme"
-        app:title="@string/CropActivity_Title"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+    <include layout="@layout/include_toolbar"/>
+
 
     <com.yzx.chat.widget.view.CropImageView
         android:id="@+id/CropActivity_mCropImageView"

@@ -39,7 +39,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     private static final String ARGUMENT = "VerifyInfo";
 
     public static VerifyFragment newInstance(VerifyInfo info) {
-
         Bundle args = new Bundle();
         args.putParcelable(ARGUMENT, info);
         VerifyFragment fragment = new VerifyFragment();

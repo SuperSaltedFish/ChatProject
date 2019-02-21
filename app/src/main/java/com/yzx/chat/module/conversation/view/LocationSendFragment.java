@@ -127,6 +127,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        mToolbar.setTitle(R.string.LocationMapActivity_Title);
         mRvMarker.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         mRvMarker.setAdapter(mMarkerLocationAdapter);
         mRvMarker.setHasFixedSize(true);

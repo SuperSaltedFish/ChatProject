@@ -83,6 +83,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.MyQRCodeActivity_Title);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

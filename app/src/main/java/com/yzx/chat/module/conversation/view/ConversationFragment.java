@@ -74,8 +74,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     protected void setup(Bundle savedInstanceState) {
         mToolbar.setTitle(R.string.app_name);
-//        mToolbar.inflateMenu(R.menu.menu_conversation_overflow);
-//        mToolbar.setOnMenuItemClickListener(mOnOptionsItemSelectedListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(RecyclerView.VERTICAL);

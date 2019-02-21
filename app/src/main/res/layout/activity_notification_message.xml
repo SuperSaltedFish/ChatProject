@@ -7,22 +7,18 @@
     android:orientation="vertical"
     tools:context=".module.contact.view.NotificationMessageActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Default_mToolbar"
+    <include
+        layout="@layout/include_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        app:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
+        android:layout_height="48dp">
 
         <com.yzx.chat.widget.view.SegmentedControlView
             android:id="@+id/NotificationMessageActivity_mSegmentedControlView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
+    </include>
 
-    </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
         android:id="@+id/NotificationMessageActivity_mFlContent"

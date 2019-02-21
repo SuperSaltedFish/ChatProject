@@ -39,6 +39,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        setTitle(R.string.MyTagListActivity_Title);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
