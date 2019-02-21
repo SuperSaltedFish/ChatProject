@@ -7,7 +7,6 @@
 
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/MomentsFragment_mAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="144dp"
         android:fitsSystemWindows="true">

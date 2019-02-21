@@ -20,7 +20,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
@@ -36,7 +35,6 @@ import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.adapter.ContactAdapter;
 import com.yzx.chat.widget.adapter.ContactSearchAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
-import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
@@ -78,7 +76,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private PopupWindow mSearchPopupWindow;
     private FrameLayout mFlToolbarLayout;
     private SearchView mSearchView;
-    private SmartRefreshLayout mSmartRefreshLayout;
     private View mLlContactOperation;
     private View mLlGroup;
     private View mLlTags;
@@ -86,7 +83,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private BadgeView mBadgeView;
     private FloatingActionButton mFBtnAdd;
     private LinearLayoutManager mLinearLayoutManager;
-    private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
     private OverflowPopupMenu mContactMenu;
     private Handler mSearchHandler;
@@ -106,7 +102,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mIndexBarView = parentView.findViewById(R.id.ContactFragmentList_mIndexBarView);
         mTvIndexBarHint = parentView.findViewById(R.id.ContactFragmentList_mTvIndexBarHint);
         mFBtnAdd = parentView.findViewById(R.id.ContactFragmentList_mFBtnAdd);
-        mSmartRefreshLayout = parentView.findViewById(R.id.ContactFragmentList_mSmartRefreshLayout);
         mFlToolbarLayout = parentView.findViewById(R.id.ContactFragmentList_mFlToolbarLayout);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
         mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
@@ -116,7 +111,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mTvTags = mHeaderView.findViewById(R.id.ContactFragmentList_mTvTags);
         mRvSearchContact = new RecyclerView(mContext);
         mContactMenu = new OverflowPopupMenu(mContext);
-        mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
         mContactList = new ArrayList<>(256);
         mContactSearchList = new ArrayList<>(32);
         mContactAdapter = new ContactAdapter(mContactList);
@@ -139,7 +133,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvContact.setAdapter(mContactAdapter);
         mRvContact.setHasFixedSize(true);
         mRvContact.addItemDecoration(mLetterSegmentationItemDecoration);
-        mRvContact.addOnScrollListener(mAutoEnableOverScrollListener);
         mRvContact.addOnScrollListener(new ImageAutoLoadScrollListener());
         mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
 
@@ -347,7 +340,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                 mFBtnAdd.setTag(true);
             }
             mTvIndexBarHint.setText(text);
-            mAutoEnableOverScrollListener.setEnableOverScroll(false);
 
         }
 
@@ -356,7 +348,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
             mFBtnAdd.setTag(null);
             AnimationUtil.scaleAnim(mTvIndexBarHint, 0, 0, 250);
             AnimationUtil.scaleAnim(mFBtnAdd, 1f, 1f, 250);
-            mAutoEnableOverScrollListener.setEnableOverScroll(true);
         }
 
         @Override

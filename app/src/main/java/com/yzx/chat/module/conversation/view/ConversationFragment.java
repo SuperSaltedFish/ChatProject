@@ -9,11 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
@@ -21,7 +19,6 @@ import com.yzx.chat.module.conversation.contract.ConversationContract;
 import com.yzx.chat.module.conversation.presenter.ConversationPresenter;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.adapter.ConversationAdapter;
-import com.yzx.chat.widget.listener.AutoEnableOverScrollListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
@@ -48,15 +45,12 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     public static final String TAG = ConversationFragment.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
-    private SmartRefreshLayout mSmartRefreshLayout;
     private ImageView mIvEmptyHintImage;
     private TextView mITvEmptyHintText;
-    private FrameLayout mFlToolbarLayout;
     private ConversationAdapter mAdapter;
     private Toolbar mToolbar;
     private View mHeaderView;
     private OverflowPopupMenu mConversationMenu;
-    private AutoEnableOverScrollListener mAutoEnableOverScrollListener;
     private List<Conversation> mConversationList;
 
     @Override
@@ -66,17 +60,15 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     protected void init(View parentView) {
-        mRecyclerView = parentView.findViewById(R.id.ConversationFragment_mRecyclerView);
+
+        mRecyclerView = parentView.findViewById(R.id.mRecyclerView);
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
-        mSmartRefreshLayout = parentView.findViewById(R.id.FindNewContactActivity_mSmartRefreshLayout);
-        mIvEmptyHintImage = parentView.findViewById(R.id.ConversationFragment_mIvEmptyHintImage);
-        mITvEmptyHintText = parentView.findViewById(R.id.ConversationFragment_mITvEmptyHintText);
-        mFlToolbarLayout = parentView.findViewById(R.id.ConversationFragment_mFlToolbarLayout);
+        mIvEmptyHintImage = parentView.findViewById(R.id.mIvEmptyHintImage);
+        mITvEmptyHintText = parentView.findViewById(R.id.mITvEmptyHintText);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_conversation_header, (ViewGroup) parentView, false);
         mConversationMenu = new OverflowPopupMenu(mContext);
         mConversationList = new ArrayList<>(128);
         mAdapter = new ConversationAdapter(mConversationList);
-        mAutoEnableOverScrollListener = new AutoEnableOverScrollListener(mSmartRefreshLayout);
     }
 
     @Override
@@ -93,7 +85,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mContext, R.anim.layout_alpha));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
-        mRecyclerView.addOnScrollListener(mAutoEnableOverScrollListener);
         ((DefaultItemAnimator) (mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
 
         setOverflowMenu();

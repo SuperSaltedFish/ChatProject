@@ -25,10 +25,6 @@
         <item name="android:windowBackground">@null</item>
     </style>
 
-    <style name="NoBackgroundDarkTheme" parent="DefaultDarkTheme">
-        <item name="android:windowBackground">@null</item>
-    </style>
-
 
     <style name="SplashTheme" parent="DefaultLightTheme">
         <item name="android:windowBackground">@drawable/src_bg_splash</item>
@@ -46,10 +42,6 @@
     </style>
 
     <style name="ToolbarPopupLightTheme" parent="ThemeOverlay.AppCompat.Light">
-        <item name="overlapAnchor">false</item>
-    </style>
-
-    <style name="ToolbarPopupDarkTheme" parent="ThemeOverlay.AppCompat">
         <item name="overlapAnchor">false</item>
     </style>
 

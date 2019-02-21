@@ -6,7 +6,6 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/ConversationFragment_mFlToolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -29,7 +28,7 @@
 
 
     <ImageView
-        android:id="@+id/ConversationFragment_mIvEmptyHintImage"
+        android:id="@+id/mIvEmptyHintImage"
         android:layout_width="128dp"
         android:layout_height="128dp"
         android:background="@drawable/conversation_list_empty"
@@ -39,33 +38,22 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ConversationFragment_mITvEmptyHintText"
+        android:id="@+id/mITvEmptyHintText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/ConversationFragment_EmptyListHint"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/ConversationFragment_mIvEmptyHintImage"
-        app:layout_constraintStart_toStartOf="@+id/ConversationFragment_mIvEmptyHintImage"
-        app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mIvEmptyHintImage" />
-
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/FindNewContactActivity_mSmartRefreshLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ConversationFragment_mFlToolbarLayout"
-        app:srlEnablePureScrollMode="true">
+        app:layout_constraintEnd_toEndOf="@+id/mIvEmptyHintImage"
+        app:layout_constraintStart_toStartOf="@+id/mIvEmptyHintImage"
+        app:layout_constraintTop_toBottomOf="@+id/mIvEmptyHintImage" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/ConversationFragment_mRecyclerView"
+            android:id="@+id/mRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never" />
 
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

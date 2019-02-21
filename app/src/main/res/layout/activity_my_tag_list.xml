@@ -17,18 +17,10 @@
         app:title="@string/MyTagListActivity_Title"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MyTagListActivity_mRvTags"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srlEnablePureScrollMode="true">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MyTagListActivity_mRvTags"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:overScrollMode="never" />
-
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
-
+        android:overScrollMode="never" />
 
 </LinearLayout>

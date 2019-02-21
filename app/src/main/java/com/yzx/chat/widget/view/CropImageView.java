@@ -31,6 +31,8 @@ public class CropImageView extends ImageView
         implements View.OnTouchListener,
         ScaleGestureDetector.OnScaleGestureListener {
 
+    private static final int MAX_CROP_SIZE = 200;
+
     private static final float MAX_SCALE = 4.0f;
     private static float MIN_SCALE = 1.0f;
 
@@ -49,6 +51,7 @@ public class CropImageView extends ImageView
 
     private boolean isUninitialized;
     private boolean isCropping;
+    private boolean isPreviewMode;
 
     public CropImageView(Context context) {
         this(context, null);
@@ -61,16 +64,41 @@ public class CropImageView extends ImageView
     public CropImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOnTouchListener(this);
-        setScaleType(ScaleType.MATRIX);
         setPadding(0, 0, 0, 0);
         mScaleDetector = new ScaleGestureDetector(context, this);
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        super.setScaleType(ScaleType.MATRIX);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        initDefaultMode(context);
+    }
+
+    private void initDefaultMode(Context context) {
         mStrokeColor = Color.WHITE;
         mMaskColor = Color.argb(96, 0, 0, 0);
         mStrokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, context.getResources().getDisplayMetrics());
         mCropPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, context.getResources().getDisplayMetrics());
         mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
+    }
+
+    private void initPreviewMode() {
+        mStrokeColor = Color.TRANSPARENT;
+        mMaskColor = Color.TRANSPARENT;
+        mStrokeWidth = 0;
+        mCropPadding = 0;
+        mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
+    }
+
+    public void setEnablePreviewMode(boolean isEnable) {
+        if (isPreviewMode == isEnable) {
+            return;
+        }
+        isPreviewMode = isEnable;
+        if (isEnable) {
+            initPreviewMode();
+        } else {
+            initDefaultMode(getContext());
+        }
     }
 
     @Override
@@ -285,11 +313,15 @@ public class CropImageView extends ImageView
         super.draw(new Canvas(bitmap));
         isCropping = false;
         int size = (int) (mCropRadius * 2);
+        if (size > MAX_CROP_SIZE) {
+            size = MAX_CROP_SIZE;
+        }
         Bitmap crop = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(crop);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        canvas.drawCircle(size / 2f, size / 2f, mCropRadius, paint);
+        paint.setColor(Color.RED);
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, new Rect(cx - radius, cy - radius, cx + radius, cy + radius), new Rect(0, 0, size, size), paint);
         bitmap.recycle();

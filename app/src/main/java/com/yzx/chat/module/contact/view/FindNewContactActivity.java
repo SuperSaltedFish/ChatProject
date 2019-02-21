@@ -57,13 +57,13 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     protected void init(Bundle savedInstanceState) {
-        mClScan = findViewById(R.id.FindNewContactActivity_mClScan);
-        mRecyclerView = findViewById(R.id.FindNewContactActivity_mRecyclerView);
-        mEtSearch = findViewById(R.id.FindNewContactActivity_mEtSearch);
-        mTvMyPhoneNumber = findViewById(R.id.FindNewContactActivity_mTvMyPhoneNumber);
-        mClCreateGroup = findViewById(R.id.FindNewContactActivity_mClCreateGroup);
-        mIvSearchIcon = findViewById(R.id.FindNewContactActivity_mIvSearchIcon);
-        mIvEnterIcon = findViewById(R.id.FindNewContactActivity_mIvEnterIcon);
+        mClScan = findViewById(R.id.mClScan);
+        mRecyclerView = findViewById(R.id.mRecyclerView);
+        mEtSearch = findViewById(R.id.mEtSearch);
+        mTvMyPhoneNumber = findViewById(R.id.mTvMyPhoneNumber);
+        mClCreateGroup = findViewById(R.id.mClCreateGroup);
+        mIvSearchIcon = findViewById(R.id.mIvSearchIcon);
+        mIvEnterIcon = findViewById(R.id.mIvEnterIcon);
         mAdapter = new MaybeKnowAdapter();
     }
 
@@ -126,7 +126,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     private void setData() {
         UserEntity user = AppClient.getInstance().getUserManager().getCurrentUser();
-        mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.FindNewContactActivity_MyPhoneNumber), user.getTelephone()));
+        mTvMyPhoneNumber.setText(String.format(Locale.getDefault(), "%s:%s", getString(R.string.myPhoneNumber), user.getTelephone()));
     }
 
     @Override

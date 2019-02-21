@@ -12,11 +12,11 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Sha256Util {
 
-    public static String sha256WithSalt(String string,String hashSaly) {
+    public static String sha256WithSalt(String string,String hashSalt) {
         if (TextUtils.isEmpty(string)) {
             return null;
         }
-        string = string +hashSaly;
+        string = string +hashSalt;
         byte[] hash;
         try {
             hash = MessageDigest.getInstance("SHA-256").digest(string.getBytes());

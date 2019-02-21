@@ -30,22 +30,26 @@ public class SplashPresenter implements SplashContract.Presenter {
 
     @Override
     public void checkLogin() {
-        mAppClient.loginByLocalToken(new LifecycleMVPResultCallback<Void>(mSplashView,false) {
-            @Override
-            protected void onSuccess(Void result) {
-                mSplashView.startHomeActivity();
-            }
-
-            @Override
-            protected boolean onError(int code, String error) {
-                if (SharePreferenceHelper.getConfigurePreferences().isFirstGuide()) {
-                    mSplashView.startGuide();
-                } else {
-                    mSplashView.startLoginActivity();
+        if (mAppClient.isLogged()) {
+            mSplashView.startHomeActivity();
+        } else {
+            mAppClient.loginByLocalToken(new LifecycleMVPResultCallback<Void>(mSplashView, false) {
+                @Override
+                protected void onSuccess(Void result) {
+                    mSplashView.startHomeActivity();
                 }
-                return true;
-            }
-        });
+
+                @Override
+                protected boolean onError(int code, String error) {
+                    if (SharePreferenceHelper.getConfigurePreferences().isFirstGuide()) {
+                        mSplashView.startGuide();
+                    } else {
+                        mSplashView.startLoginActivity();
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
 }

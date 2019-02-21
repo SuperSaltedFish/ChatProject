@@ -46,11 +46,9 @@
     <string name="LoginActivity_Error_NoneVerify">请将验证码输入完整</string>
     <string name="LoginActivity_Layout_Register">注册</string>
     <string name="LoginActivity_Layout_Login">登录</string>
-    <string name="LoginActivity_Layout_Back">返回上一步</string>
     <string name="LoginActivity_Layout_Username">手机号</string>
     <string name="LoginActivity_Layout_InputPassword">密码</string>
     <string name="LoginActivity_Layout_NonUsernameHint">你还没有一个帐号？</string>
-    <string name="LoginActivity_Layout_LoginOtherHint">登录其他账号？</string>
     <string name="LoginActivity_Layout_InputNick">昵称</string>
     <string name="LoginActivity_Layout_Confirm">再次输入密码</string>
     <string name="LoginActivity_Layout_HasUsernameHint">你已经有一个帐号？</string>
@@ -74,23 +72,13 @@
     <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短</string>
 
     <string name="ProgressHint_Default">正在处理...</string>
-    <string name="ProgressHint_Search">正在搜索...</string>
     <string name="ProgressHint_Send">正在发送...</string>
-    <string name="ProgressHint_Add">正在添加...</string>
-    <string name="ProgressHint_Delete">正在删除...</string>
-    <string name="ProgressHint_Save">正在保存...</string>
-    <string name="ProgressHint_Create">正在创建...</string>
-    <string name="ProgressHint_Modify">正在修改...</string>
-    <string name="ProgressHint_Quit">正在退出...</string>
-    <string name="ProgressHint_Crop">正在裁剪...</string>
-    <string name="ProgressHint_Decode">正在解析...</string>
     <string name="ProgressHint_DownloadVideo">正在下载视频\n(%d%%)</string>
 
     <string name="MessageSummary_LocationInfo">[位置信息]</string>
     <string name="MessageSummary_ImageInfo">[图片信息]</string>
     <string name="MessageSummary_VoiceInfo">[语音信息]</string>
     <string name="MessageSummary_VideoInfo">[视频信息]</string>
-    <string name="MessageSummary_EmotionInfo">[表情]</string>
     <string name="MessageSummary_FileInfo">[文件信息]</string>
     <string name="MessageSummary_ContactNtf_Accept">你已添加了%s,现在可以开始聊天了。</string>
 
@@ -99,7 +87,6 @@
     <string name="AlertDialogChat_Cancel">取消发送</string>
     <string name="AlertDialogChat_Resend">重新发送</string>
 
-    <string name="SplashPresenter_TokenIncorrect">签名过期，请尝试重新登录！</string>
     <string name="ConversationFragment_EmptyListHint">暂无聊天信息</string>
     <string name="EMMessageUtil_Draft">[草稿]</string>
     <string name="ConversationMenu_Top">置顶聊天</string>
@@ -107,7 +94,6 @@
     <string name="ConversationMenu_Remove">删除会话</string>
     <string name="ConversationMenu_CancelTop">取消置顶</string>
     <string name="ContactMenu_UpdateRemarkName">修改备注信息</string>
-    <string name="RemarkInfoActivity_Confirm">确定</string>
     <string name="RemarkInfoActivity_Title">备注信息</string>
     <string name="ContactMenu_DeleteContact">删除好友</string>
     <string name="FindNewContactActivity_Title">添加好友</string>
@@ -135,10 +121,8 @@
     <string name="ImageViewPagerActivity_Selected">选择</string>
     <string name="ImageSelectorActivity_Original">原图</string>
     <string name="ImageSelectorActivity_Preview">预览</string>
-    <string name="FindNewContactActivity_MyPhoneNumber">我的号码</string>
+    <string name="myPhoneNumber">我的号码</string>
     <string name="FindNewContactActivity_SearchHint">手机号/群号/昵称</string>
-    <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
-    <string name="FindNewContactActivity_SearchFail">搜索失败，请稍后再试</string>
     <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过！</string>
     <string name="ProfileEditActivity_Title">编辑资料</string>
     <string name="ProfileEditActivity_BirthdayDialogTitle">请选择生日日期</string>
@@ -154,8 +138,6 @@
     <string name="ChatActivity_ImageAlreadyOverdue">图片已经过期，无法查看</string>
     <string name="ChatActivity_VideoAlreadyOverdue">视频已经过期，无法播放</string>
     <string name="Profile_LabelNickname">昵称</string>
-    <string name="Profile_LabelLocation">所在地区</string>
-    <string name="Profile_LabelBirthday">出生日期</string>
     <string name="ProfileEditActivity_ReadCityInfoError">读取城市信息失败</string>
     <string name="ChatSetup_LabelSetTop">置顶</string>
     <string name="ChatSetup_HintSetTop">消息将始终显示在会话列表顶部</string>
@@ -180,7 +162,6 @@
     <string name="LocationMapActivity_Title">发送位置</string>
     <string name="Send">发送</string>
     <string name="Search">搜索</string>
-    <string name="LocationMapActivity_SearchHint">请输入搜索内容...</string>
     <string name="GroupListActivity_Title">群聊</string>
     <string name="GroupProfileActivity_NoticeDialogTitle">群公告</string>
     <string name="GroupProfileActivity_NoticeDialogHint">编辑群公告，该公告只有群主才能编辑。</string>
@@ -210,9 +191,7 @@
     <string name="Unit_Second">秒</string>
     <string name="Unit_Meters">米</string>
     <string name="Unit_Kilometre">公里</string>
-    <string name="StrangerProfileActivity_AllowViewMoment">允许查看我的动态</string>
     <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
-    <string name="StrangerProfileActivity_AcceptAdd">同意添加</string>
     <string name="None">无</string>
     <string name="ProfileEditActivity_SignatureHint">一句话介绍自己，签名会显示在个人主页上</string>
     <string name="ProfileEditActivity_SignatureLabel">个性签名</string>
@@ -224,7 +203,6 @@
     <string name="ProfileEditActivity_NicknameLabel">昵称</string>
     <string name="Details">详情</string>
     <string name="QrCodeScanActivity_Title">二维码扫描</string>
-    <string name="MyQRCodePresenter_GenerateQRCodeFail">获取二维码失败，请稍后再试</string>
     <string name="QrCodePresenter_Unrecognized">无法识别该二维码</string>
     <string name="QrCodePresenter_UnableFind">没有在照片中找到二维码</string>
     <string name="People">人</string>
@@ -236,14 +214,12 @@
 
     <string name="Error_Client">操作错误，请稍候再试！</string>
     <string name="Error_Server1">服务器繁忙，请稍候再试！</string>
-    <string name="Error_Server2">服务器繁忙，请尝试重新登录！</string>
     <string name="Error_Server3">服务器返回的数据错误，请稍候再试！</string>
     <string name="Error_Server4">当前网络不可用，请检查网络状态！</string>
     <string name="Error_Server6">连接超时，请检查当前网络状态是否正常！</string>
     <string name="Error_Server7">不能连接到服务器，请稍后再试！</string>
 
     <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
-    <string name="Error_NetworkTimeout">网络访问超时，请检查网络连接</string>
     <string name="StrangerProfileActivity_DefaultReason">添加理由：无</string>
     <string name="CropImageActivity_CropFail">当前无法裁剪头像，请稍后再试！</string>
     <string name="LocationShareFragment_Navigation">到这里</string>

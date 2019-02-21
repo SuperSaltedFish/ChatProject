@@ -15,7 +15,6 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/PrivateMomentsAdapter_mTvTimeMonth"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -23,7 +22,6 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/PrivateMomentsAdapter_mTvTimeDay"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:gravity="center"

@@ -5,8 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.github.chrisbanes.photoview.PhotoView;
 import com.yzx.chat.util.GlideUtil;
+import com.yzx.chat.widget.view.CropImageView;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
@@ -60,7 +60,9 @@ public class LocalImageViewPagerAdapter extends PagerAdapter {
         if (weakReference != null && weakReference.get() != null) {
             itemView = weakReference.get();
         } else {
-            itemView = new PhotoView(mContext);
+            CropImageView view = new CropImageView(mContext);
+            view.setEnablePreviewMode(true);
+            itemView = view;
         }
         container.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         GlideUtil.loadFromUrl(mContext, itemView, String.format("file://%s", mPicUrlList.get(position)));

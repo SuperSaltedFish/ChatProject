@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ContactOperationFragment_mRecyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:srlEnablePureScrollMode="true">
+    android:overScrollMode="never" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ContactOperationFragment_mRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never" />
-
-</com.scwang.smartrefresh.layout.SmartRefreshLayout>

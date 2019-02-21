@@ -26,8 +26,6 @@ ext {
             ext       : [
                     gson              : "com.google.code.gson:gson:2.8.5",
                     materialDialogs   : "com.afollestad.material-dialogs:core:0.9.6.0",
-                    SmartRefreshLayout: "com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1",
-                    PhotoView         : "com.github.chrisbanes:PhotoView:2.1.4",
                     zxing             : "com.google.zxing:core:3.3.3",
                     map3D             : "com.amap.api:3dmap:${depVersions.mapVersion}",
                     mapSearch         : "com.amap.api:search:${depVersions.mapVersion}",

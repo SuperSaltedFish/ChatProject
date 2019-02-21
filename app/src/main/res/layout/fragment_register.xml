@@ -78,7 +78,6 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/mTelephoneUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/textSecondaryColorBlackLight" />
@@ -113,7 +112,6 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/mNicknameUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/textSecondaryColorBlackLight" />
@@ -148,7 +146,6 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/mPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/textSecondaryColorBlackLight" />
@@ -181,7 +178,6 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/mConfirmPasswordUnderline"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/textSecondaryColorBlackLight" />

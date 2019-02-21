@@ -142,7 +142,7 @@ public class ApiHelper {
                 } catch (Exception e) {
                     LogUtil.w(e.toString(), e);
                 } finally {
-                    LogUtil.e(String.format(
+                    LogUtil.d(String.format(
                             Locale.getDefault(),
                             "\n正在处理响应：url = %s\n打印响应内容：%s\n解密响应内容：%s",
                             url,
@@ -154,9 +154,12 @@ public class ApiHelper {
             }
         });
 
-        KeyPair ecKeyPair = ECCUtil.generateECCKeyPair("P-256");
-        PublicKey clientPublicKey = ecKeyPair.getPublic();
-        PrivateKey clientPrivateKey = ecKeyPair.getPrivate();
+        KeyPair ecKeyPair = ECCUtil.generateECCKeyPair("secp256r1");
+        PublicKey clientPublicKey = ECCUtil.loadECPublicKey(Base64Util.decode("MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK5txd+iIlJMWJNnr9Iwl/99MaOfuH050Vs3NYSCS\n" +
+                "+1jpKctixugvZlNj1URhpd/jChCac8CLcW+7DdnK6nrb9A==\n"));
+        PrivateKey clientPrivateKey = ECCUtil.loadECPrivateKey(Base64Util.decode("MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgcGWf6S5mZT+XsCwy0J6JLElEsn1M\n" +
+                "2r/ziiYMZlKOWpehRANCAAQrm3F36IiUkxYk2ev0jCX/30xo5+4fTnRWzc1hIJL7WOkpy2LG6C9m\n" +
+                "U2PVRGGl3+MKEJpzwItxb7sN2crqetv0\n"));
         PublicKey serverPublicKey = ECCUtil.loadECPublicKey(Base64Util.decode(Constants.SERVER_PUBLIC_KEY));
 
         CLIENT_PUBLIC_KEY = Base64Util.encodeToString(clientPublicKey.getEncoded());
