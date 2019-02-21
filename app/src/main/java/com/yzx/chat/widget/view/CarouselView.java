@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 
-import com.github.chrisbanes.photoview.PhotoView;
 import com.yzx.chat.util.GlideUtil;
 
 import java.lang.ref.WeakReference;
@@ -119,7 +118,7 @@ public class CarouselView extends ViewPager {
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            PhotoView itemView = (PhotoView) object;
+            ImageView itemView = (ImageView) object;
             container.removeView(itemView);
             GlideUtil.clear(mContext, itemView);
             itemView.setImageBitmap(null);
@@ -135,7 +134,7 @@ public class CarouselView extends ViewPager {
             if (weakReference != null && weakReference.get() != null) {
                 itemView = weakReference.get();
             } else {
-                itemView = new PhotoView(mContext);
+                itemView = new ImageView(mContext);
             }
             container.addView(itemView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             int listSize = mPicUrlList.size();

@@ -27,6 +27,8 @@ import com.yzx.chat.widget.view.VerifyEditView;
 import java.util.Locale;
 import java.util.Objects;
 
+import androidx.fragment.app.FragmentActivity;
+
 
 /**
  * Created by YZX on 2018年07月09日.
@@ -282,8 +284,8 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     }
 
     @Override
-    public void goBack() {
-        backPressed();
+    public void jumpToLoginPage() {
+        LoginActivity.jumpToLoginPage((FragmentActivity) mContext);
     }
 
     public static final class VerifyInfo implements Parcelable {

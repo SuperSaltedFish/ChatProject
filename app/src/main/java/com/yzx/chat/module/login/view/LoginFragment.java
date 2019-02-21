@@ -33,6 +33,8 @@ import androidx.fragment.app.FragmentActivity;
  */
 public class LoginFragment extends BaseFragment<LoginContract.Presenter> implements LoginContract.View {
 
+    public static final String TAG = LoginFragment.class.getName();
+
     private final static int MIN_PASSWORD_LENGTH = 8;
 
     private EditText mEtLoginTelephone;

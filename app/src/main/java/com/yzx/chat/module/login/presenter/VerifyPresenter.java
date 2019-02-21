@@ -26,7 +26,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
 
     @Override
     public void login(String username, String password, String verifyCode) {
-        AppClient.getInstance().login(username, password, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView) {
+        AppClient.getInstance().login(username, password, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView, false) {
             @Override
             protected void onSuccess(Void result) {
                 mVerifyView.startHomeActivity();
@@ -36,10 +36,10 @@ public class VerifyPresenter implements VerifyContract.Presenter {
 
     @Override
     public void register(String username, String password, String nickname, String verifyCode) {
-        AppClient.getInstance().register(username, password, nickname, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView) {
+        AppClient.getInstance().register(username, password, nickname, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView, false) {
             @Override
             protected void onSuccess(Void result) {
-                mVerifyView.goBack();
+                mVerifyView.jumpToLoginPage();
             }
         });
     }

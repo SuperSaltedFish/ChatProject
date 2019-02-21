@@ -14,7 +14,7 @@ public class VerifyContract {
 
         void startHomeActivity();
 
-        void goBack();
+        void jumpToLoginPage();
     }
 
 

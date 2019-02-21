@@ -3,7 +3,9 @@ package com.yzx.chat.module.me.view;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -81,6 +83,7 @@ public class MyQRCodeActivity extends BaseCompatActivity<MyQRCodeContract.Presen
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

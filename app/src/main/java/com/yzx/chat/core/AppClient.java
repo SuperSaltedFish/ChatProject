@@ -24,7 +24,6 @@ import com.yzx.chat.core.util.CallbackUtil;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.core.util.MD5Util;
 import com.yzx.chat.core.util.ResourcesHelper;
-import com.yzx.chat.core.util.Sha256Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -166,7 +165,7 @@ public class AppClient {
     }
 
     public void register(String account, String password, String nickname, String verifyCode, ResultCallback<Void> callback) {
-        mAuthApi.register(account, Sha256Util.sha256WithSalt(password, account), nickname, verifyCode)
+        mAuthApi.register(account, password, nickname, verifyCode)
                 .enqueue(new ResponseHandler<>(callback));
     }
 
@@ -180,7 +179,7 @@ public class AppClient {
             mLoginLock.release();
             throw new RuntimeException("The user has already logged in, please do not log in again！");
         }
-        mAuthApi.login(account, Sha256Util.sha256WithSalt(password, account), verifyCode)
+        mAuthApi.login(account, password, verifyCode)
                 .enqueue(new ResponseHandler<>(new ResultCallback<LoginResponseEntity>() {
                     @Override
                     public void onResult(final LoginResponseEntity result) {

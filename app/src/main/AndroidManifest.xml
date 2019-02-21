@@ -67,7 +67,6 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".module.main.view.HomeActivity"
-            android:theme="@style/NoBackgroundLightTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".module.conversation.view.ChatActivity"
@@ -93,14 +92,12 @@
             android:name=".module.group.view.CreateGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".module.me.view.MyQRCodeActivity"
-            android:theme="@style/NoBackgroundLightTheme" />
+            android:name=".module.me.view.MyQRCodeActivity" />
         <activity
             android:name=".module.common.view.LocationMapActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".module.conversation.view.VideoRecorderActivity"
-            android:theme="@style/NoBackgroundLightTheme" />
+            android:name=".module.conversation.view.VideoRecorderActivity" />
         <activity android:name=".module.group.view.GroupListActivity" />
         <activity android:name=".module.me.view.CropImageActivity" />
         <activity android:name=".module.common.view.FileSelectorActivity" />

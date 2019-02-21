@@ -137,8 +137,7 @@ public class ApiHelper {
                         return null;
                     }
                     decryptData = new String(originalData);
-                    decryptedResponse = GSON.fromJson(decryptData, DecryptedResponse.class);
-                    return decryptedResponse;
+                    return GSON.fromJson(decryptData, genericType);
                 } catch (Exception e) {
                     LogUtil.w(e.toString(), e);
                 } finally {
@@ -155,11 +154,8 @@ public class ApiHelper {
         });
 
         KeyPair ecKeyPair = ECCUtil.generateECCKeyPair("secp256r1");
-        PublicKey clientPublicKey = ECCUtil.loadECPublicKey(Base64Util.decode("MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK5txd+iIlJMWJNnr9Iwl/99MaOfuH050Vs3NYSCS\n" +
-                "+1jpKctixugvZlNj1URhpd/jChCac8CLcW+7DdnK6nrb9A==\n"));
-        PrivateKey clientPrivateKey = ECCUtil.loadECPrivateKey(Base64Util.decode("MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgcGWf6S5mZT+XsCwy0J6JLElEsn1M\n" +
-                "2r/ziiYMZlKOWpehRANCAAQrm3F36IiUkxYk2ev0jCX/30xo5+4fTnRWzc1hIJL7WOkpy2LG6C9m\n" +
-                "U2PVRGGl3+MKEJpzwItxb7sN2crqetv0\n"));
+        PublicKey clientPublicKey = ecKeyPair.getPublic();
+        PrivateKey clientPrivateKey = ecKeyPair.getPrivate();
         PublicKey serverPublicKey = ECCUtil.loadECPublicKey(Base64Util.decode(Constants.SERVER_PUBLIC_KEY));
 
         CLIENT_PUBLIC_KEY = Base64Util.encodeToString(clientPublicKey.getEncoded());

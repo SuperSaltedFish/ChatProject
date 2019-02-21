@@ -9,6 +9,7 @@ import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 public class LoginActivity extends BaseCompatActivity {
 
@@ -42,10 +43,14 @@ public class LoginActivity extends BaseCompatActivity {
     }
 
     static void jumpToLoginPage(FragmentActivity activity) {
-        activity.getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.mFlContent, new LoginFragment())
-                .commitAllowingStateLoss();
+        FragmentManager manager = activity.getSupportFragmentManager();
+        if (manager.findFragmentByTag(LoginFragment.TAG) != null) {
+            manager.popBackStack(null, 1);
+        } else {
+            manager.beginTransaction()
+                    .replace(R.id.mFlContent, new LoginFragment(), LoginFragment.TAG)
+                    .commitAllowingStateLoss();
+        }
     }
 
     static void jumpToRegisterPage(FragmentActivity activity) {

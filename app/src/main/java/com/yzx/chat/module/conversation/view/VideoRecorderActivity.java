@@ -2,6 +2,8 @@ package com.yzx.chat.module.conversation.view;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -71,6 +73,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         setBrightness(0.9f);

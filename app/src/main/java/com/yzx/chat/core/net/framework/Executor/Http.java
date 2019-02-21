@@ -66,7 +66,7 @@ public class Http {
 
     private static void setDefaultAttribute(HttpURLConnection conn) {
         conn.setRequestProperty("Charset", "UTF-8");
-        conn.setRequestProperty("Content-Type", "text/plain");
+        conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Connection", "Keep-Alive");
         conn.setConnectTimeout(CONNECT_TIMEOUT);
         conn.setReadTimeout(READ_TIMEOUT);

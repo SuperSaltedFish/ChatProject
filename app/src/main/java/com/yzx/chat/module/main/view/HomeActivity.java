@@ -54,6 +54,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     protected void setup(Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawable(null);
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
 
         mFragmentManager.beginTransaction()

@@ -4,6 +4,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Callback;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.core.util.ResourcesHelper;
 
 import java.lang.reflect.ParameterizedType;
@@ -17,6 +18,8 @@ import java.net.UnknownHostException;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCallback<T> {
+
+    private static final String TAG = ResponseHandler.class.getName();
 
     private static final int STATUS_CODE_SUCCESSFUL = 200;
     private static final int STATUS_CODE_UNKNOWN_RESPONSE_DATA = 0;
@@ -63,6 +66,7 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
         if (mResultCallback == null) {
             return;
         }
+        LogUtil.d(TAG,t);
         if (t instanceof SocketTimeoutException) {
             mResultCallback.onFailure(ERROR_CODE_NETWORK_TIMEOUT, ResourcesHelper.getString(R.string.Error_Server6));
         } else if (t instanceof ConnectException) {

@@ -71,51 +71,50 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
     @SuppressWarnings("unchecked")
     @Override
     public void onResponse(int responseCode, @Nullable final byte[] body) {
-        if (isCancel) {
+        if (isCancel || mCallback == null) {
             return;
         }
         if (responseCode != HttpURLConnection.HTTP_OK) {
             onError(new ResponseException("Http Response " + responseCode));
         } else {
-            if (mCallback != null) {
+            try {
+                final T result = (T) mHttpConverter.convertResponseBody(mRequestParams.url(), body, mGenericType);
                 if (isCallbackRunOnMainThread) {
                     mUIHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                mCallback.onResponse((T) mHttpConverter.convertResponseBody(mRequestParams.url(),body, mGenericType));
-                            } catch (Exception e) {
-                                onError(e);
+                            if (isCancel || mCallback == null) {
+                                return;
                             }
+                            mCallback.onResponse(result);
                         }
                     });
                 } else {
-                    try {
-                        mCallback.onResponse((T) mHttpConverter.convertResponseBody(mRequestParams.url(),body, mGenericType));
-                    } catch (Exception e) {
-                        onError(e);
-                    }
+                    mCallback.onResponse(result);
                 }
+            } catch (Exception e) {
+                onError(e);
             }
         }
     }
 
     @Override
     public void onError(final Throwable error) {
-        if (isCancel) {
+        if (isCancel || mCallback == null) {
             return;
         }
-        if (mCallback != null) {
-            if (isCallbackRunOnMainThread) {
-                mUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCallback.onError(error);
+        if (isCallbackRunOnMainThread) {
+            mUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (isCancel || mCallback == null) {
+                        return;
                     }
-                });
-            } else {
-                mCallback.onError(error);
-            }
+                    mCallback.onError(error);
+                }
+            });
+        } else {
+            mCallback.onError(error);
         }
     }
 
@@ -131,7 +130,7 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
                 for (Map.Entry<String, Map<String, Object>> entry : params.paramsPartMap.entrySet()) {
                     String partName = entry.getKey();
                     Map<String, Object> paramsMap = entry.getValue();
-                    PartContent partContent = converter.convertMultipartRequest(request.getUrl(),partName, paramsMap);
+                    PartContent partContent = converter.convertMultipartRequest(request.getUrl(), partName, paramsMap);
                     if (partContent != null) {
                         request.addPart(partName, partContent.getContentType(), partContent.getContent());
                     }
@@ -145,7 +144,7 @@ class CallImpl<T> implements Call<T>, ResponseCallback {
                 }
                 return request;
             } else {
-                return new PostRequest(params.url(), converter.convertRequest(params.url(),params.params));
+                return new PostRequest(params.url(), converter.convertRequest(params.url(), params.params));
             }
         } else {
             throw new RuntimeException("Unknown http method：" + params.method);
