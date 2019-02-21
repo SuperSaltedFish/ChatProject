@@ -24,7 +24,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
 
     @Override
     public void obtainRegisterVerifyCode(String username) {
-        AppClient.getInstance().obtainSMSOfRegisterType(username, new LifecycleMVPResultCallback<Void>(mRegisterView) {
+        AppClient.getInstance().obtainSMSOfRegisterType(username, new LifecycleMVPResultCallback<Void>(mRegisterView,false) {
             @Override
             protected void onSuccess(Void result) {
                 mRegisterView.jumpToVerifyPage();
