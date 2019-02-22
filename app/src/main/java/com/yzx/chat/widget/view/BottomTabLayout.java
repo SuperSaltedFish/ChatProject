@@ -2,7 +2,7 @@ package com.yzx.chat.widget.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -339,7 +338,13 @@ public class BottomTabLayout extends LinearLayout {
             mMaxTranslationY = metrics.density * 2;
             mMaxTitleSizeOverflow = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 2, metrics);
 
-            setBackground(new RippleDrawable(new ColorStateList(new int[][]{{}}, new int[]{0x56000000}), null, null));
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true);
+            int[] attribute = new int[]{android.R.attr.selectableItemBackground};
+            TypedArray typedArray = context.getTheme().obtainStyledAttributes(typedValue.resourceId, attribute);
+            setBackground(typedArray.getDrawable(0));
+            typedArray.recycle();
+
             initAnimator();
             initDefaultValue(context);
         }

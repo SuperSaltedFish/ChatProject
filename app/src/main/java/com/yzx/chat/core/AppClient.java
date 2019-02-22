@@ -186,14 +186,14 @@ public class AppClient {
                     @Override
                     public void onResult(final LoginResponseEntity result) {
                         String token = result.getToken();
-                        UserEntity userEntity = result.getUserProfile();
+                        UserEntity userInfo = result.getUserProfile();
                         ArrayList<ContactEntity> contacts = result.getContacts();
                         ArrayList<GroupEntity> groups = result.getGroups();
-                        if (userEntity == null || userEntity.isEmpty() || TextUtils.isEmpty(token)) {
+                        if (userInfo == null || userInfo.isEmpty() || TextUtils.isEmpty(token)) {
                             onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, ResourcesHelper.getString(R.string.Error_Server3));
                             return;
                         }
-                        mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userEntity.getUserID()), Constants.DATABASE_VERSION);
+                        mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userInfo.getUserID()), Constants.DATABASE_VERSION);
                         boolean isUpdateSuccess = true;
                         if (!ContactManager.insertAll(contacts, mDBHelper.getReadWriteHelper())) {
                             isUpdateSuccess = false;
@@ -201,6 +201,9 @@ public class AppClient {
                         } else if (!GroupManager.insertAll(groups, mDBHelper.getReadWriteHelper())) {
                             isUpdateSuccess = false;
                             LogUtil.e("insertAll groups fail");
+                        } else if (!UserManager.replaceUserInfoOnDB(userInfo, mDBHelper.getReadWriteHelper())) {
+                            isUpdateSuccess = false;
+                            LogUtil.e("insertAll userInfo fail");
                         }
                         if (!isUpdateSuccess) {
                             onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, ResourcesHelper.getString(R.string.Error_Client));
@@ -254,13 +257,6 @@ public class AppClient {
             CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
             return;
         }
-        mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userID), Constants.DATABASE_VERSION);
-        final UserEntity userInfo = UserManager.getUserInfoFromDB(mDBHelper.getReadWriteHelper(),userID);
-        if (userInfo == null || userInfo.isEmpty()) {
-            mLoginLock.release();
-            CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
-            return;
-        }
         RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
@@ -270,7 +266,8 @@ public class AppClient {
 
             @Override
             public void onSuccess(String s) {
-                init(token, userInfo);
+                mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userID), Constants.DATABASE_VERSION);
+                init(token, UserManager.getUserInfoFromDB(userID, mDBHelper.getReadWriteHelper()));
                 mLoginLock.release();
                 CallbackUtil.callResult(null, callback);
             }
@@ -392,7 +389,7 @@ public class AppClient {
         return mUserManager;
     }
 
-     AbstractDao.ReadWriteHelper getDBReadWriteHelper() {
+    AbstractDao.ReadWriteHelper getDBReadWriteHelper() {
         return mDBHelper.getReadWriteHelper();
     }
 

@@ -38,7 +38,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayoutt
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/MomentsFragment_mSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -50,7 +50,7 @@
             android:layout_height="match_parent"
             android:overScrollMode="never" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayoutt>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

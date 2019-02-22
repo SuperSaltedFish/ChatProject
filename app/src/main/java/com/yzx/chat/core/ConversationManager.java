@@ -1,5 +1,8 @@
 package com.yzx.chat.core;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.listener.ResultCallback;
@@ -35,6 +38,7 @@ public class ConversationManager {
 
     private AppClient mAppClient;
     private RongIMClient mRongIMClient;
+    private Handler mUIHandler;
 
     private List<OnConversationChangeListener> mConversationChangeListeners;
     private List<OnConversationUnreadCountListener> mConversationUnreadCountListeners;
@@ -47,6 +51,7 @@ public class ConversationManager {
         mConversationUnreadCountListeners = Collections.synchronizedList(new LinkedList<OnConversationUnreadCountListener>());
         mConversationChangeListeners = Collections.synchronizedList(new LinkedList<OnConversationChangeListener>());
         mRongIMClient = RongIMClient.getInstance();
+        mUIHandler = new Handler(Looper.getMainLooper());
     }
 
     public List<Conversation> getAllConversationsBlock() {
@@ -292,9 +297,14 @@ public class ConversationManager {
             void callUpdateUnreadCountChange(int newCount) {
                 if (mUnreadChatMessageCount != newCount) {
                     mUnreadChatMessageCount = newCount;
-                    for (OnConversationUnreadCountListener listener : mConversationUnreadCountListeners) {
-                        listener.OnConversationUnreadCountChange(mUnreadChatMessageCount);
-                    }
+                    mUIHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (OnConversationUnreadCountListener listener : mConversationUnreadCountListeners) {
+                                listener.OnConversationUnreadCountChange(mUnreadChatMessageCount);
+                            }
+                        }
+                    });
                 }
             }
         }, SUPPORT_CONVERSATION_TYPE);
@@ -321,13 +331,19 @@ public class ConversationManager {
     }
 
 
-    void callbackConversationChange(Conversation conversation, int typeCode) {
-        for (OnConversationChangeListener listener : mConversationChangeListeners) {
-            listener.onConversationChange(conversation, typeCode);
-        }
+    void callbackConversationChange(final Conversation conversation, final int typeCode) {
+        mUIHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (OnConversationChangeListener listener : mConversationChangeListeners) {
+                    listener.onConversationChange(conversation, typeCode);
+                }
+            }
+        });
     }
 
     void destroy() {
+        mUIHandler.removeCallbacksAndMessages(null);
         mConversationUnreadCountListeners.clear();
         mConversationUnreadCountListeners = null;
         mConversationChangeListeners.clear();

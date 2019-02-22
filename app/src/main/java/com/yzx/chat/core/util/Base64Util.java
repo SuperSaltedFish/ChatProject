@@ -15,7 +15,7 @@ public class Base64Util {
         if(data==null){
             return null;
         }
-        return Base64.decode(data,Base64.DEFAULT);
+        return Base64.decode(data,Base64.NO_WRAP);
     }
 
     public static byte[] decode(String data){

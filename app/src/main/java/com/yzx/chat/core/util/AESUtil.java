@@ -38,12 +38,10 @@ public class AESUtil {
     private final static String PROVIDER;
     private final static int DEFAULT_KEY_SIZE;
     private final static String ALGORITHM;
-    private final static byte[] IV_BYTES;
 
     static {
         PROVIDER = "AndroidKeyStore";
         DEFAULT_KEY_SIZE = 192;
-        IV_BYTES = new byte[16];
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             AES = "AES";
             BLOCK_MODE = "CBC";
@@ -58,17 +56,17 @@ public class AESUtil {
 
     private static KeyStore sKeyStore;
 
-    public static byte[] generateAESKey() {
+    public static Key generateAESKey() {
         return generateAESKey(DEFAULT_KEY_SIZE);
     }
 
-    public static byte[] generateAESKey(int keySize) {
+    public static SecretKey generateAESKey(int keySize) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(AES);
             keyGenerator.init(keySize);
-            return keyGenerator.generateKey().getEncoded();
+            return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException e) {
-            LogUtil.d(e.toString(),e);
+            LogUtil.d(e.toString(), e);
         }
         return null;
     }
@@ -77,7 +75,7 @@ public class AESUtil {
     @Nullable
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static Key generateAESKeyInAndroidKeyStoreApi23(String keyAlias) {
+    public static SecretKey generateAESKeyInAndroidKeyStoreApi23(String keyAlias) {
         return generateAESKeyInAndroidKeyStoreApi23(keyAlias, DEFAULT_KEY_SIZE);
     }
 
@@ -85,7 +83,7 @@ public class AESUtil {
     @Nullable
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static Key generateAESKeyInAndroidKeyStoreApi23(String keyAlias, int keySize) {
+    public static SecretKey generateAESKeyInAndroidKeyStoreApi23(String keyAlias, int keySize) {
         if (sKeyStore == null && !initKeyStore()) {
             return null;
         }
@@ -95,21 +93,22 @@ public class AESUtil {
                 KeyGenerator generator = KeyGenerator.getInstance(AES, PROVIDER);
                 KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(
                         keyAlias,
-                        KeyProperties.PURPOSE_DECRYPT | KeyProperties.PURPOSE_ENCRYPT);
-                builder.setBlockModes(BLOCK_MODE);
-                builder.setEncryptionPaddings(ENCRYPTION_PADDING);
-                builder.setKeySize(keySize);
-                builder.setCertificateSubject(new X500Principal("CN=" + keyAlias));
+                        KeyProperties.PURPOSE_DECRYPT | KeyProperties.PURPOSE_ENCRYPT)
+                        .setBlockModes(BLOCK_MODE)
+                        .setEncryptionPaddings(ENCRYPTION_PADDING)
+                        .setKeySize(keySize)
+                        .setCertificateSubject(new X500Principal("CN=" + keyAlias))
+                        .setRandomizedEncryptionRequired(false);//不使用随机IV
                 generator.init(builder.build());
                 key = generator.generateKey();
             }
-            return key;
+            return (SecretKey) key;
         } catch (KeyStoreException
                 | NoSuchAlgorithmException
                 | UnrecoverableKeyException
                 | NoSuchProviderException
                 | InvalidAlgorithmParameterException e) {
-            LogUtil.d(e.toString(),e);
+            LogUtil.d(e.toString(), e);
         }
         return null;
     }
@@ -118,20 +117,36 @@ public class AESUtil {
         return new SecretKeySpec(keyBytes, AES);
     }
 
-    @Nullable
-    public static byte[] encrypt(byte[] content, byte[] keyBytes) {
-        return encrypt(content, loadKey(keyBytes));
+    public static byte[] getIVFromSecretKey(SecretKey key) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return cipher.getIV();
+        } catch (NoSuchAlgorithmException
+                | NoSuchPaddingException
+                | InvalidKeyException e) {
+            LogUtil.d(e.toString(), e);
+        }
+        return null;
     }
 
     @Nullable
-    public static byte[] encrypt(byte[] content, SecretKey key) {
+    public static byte[] encrypt(byte[] content, byte[] keyBytes, @Nullable byte[] iv) {
+        return encrypt(content, loadKey(keyBytes), iv);
+    }
+
+    @Nullable
+    public static byte[] encrypt(byte[] content, SecretKey key, @Nullable byte[] iv) {
         if (content == null || key == null) {
             return null;
         }
         try {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(IV_BYTES));
-//            cipher.init(Cipher.ENCRYPT_MODE, key);
+            if (iv != null) {
+                cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
+            } else {
+                cipher.init(Cipher.ENCRYPT_MODE, key);
+            }
             return cipher.doFinal(content);
         } catch (NoSuchAlgorithmException
                 | NoSuchPaddingException
@@ -139,25 +154,28 @@ public class AESUtil {
                 | BadPaddingException
                 | InvalidAlgorithmParameterException
                 | IllegalBlockSizeException e) {
-            LogUtil.d(e.toString(),e);
+            LogUtil.d(e.toString(), e);
         }
         return null;
     }
 
     @Nullable
-    public static byte[] decrypt(byte[] content, byte[] keyBytes) {
-        return decrypt(content, loadKey(keyBytes));
+    public static byte[] decrypt(byte[] content, byte[] keyBytes, @Nullable byte[] iv) {
+        return decrypt(content, loadKey(keyBytes), iv);
     }
 
     @Nullable
-    public static byte[] decrypt(byte[] content, SecretKey key) {
+    public static byte[] decrypt(byte[] content, SecretKey key, @Nullable byte[] iv) {
         if (content == null || key == null) {
             return null;
         }
         try {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
-//            cipher.init(Cipher.DECRYPT_MODE, key);
-            cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(IV_BYTES));
+            if (iv != null) {
+                cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+            } else {
+                cipher.init(Cipher.DECRYPT_MODE, key);
+            }
             return cipher.doFinal(content);
         } catch (NoSuchAlgorithmException
                 | NoSuchPaddingException
@@ -165,7 +183,7 @@ public class AESUtil {
                 | InvalidKeyException
                 | InvalidAlgorithmParameterException
                 | BadPaddingException e) {
-            LogUtil.d(e.toString(),e);
+            LogUtil.d(e.toString(), e);
         }
         return null;
     }
@@ -179,7 +197,7 @@ public class AESUtil {
                 | CertificateException
                 | NoSuchAlgorithmException
                 | IOException e) {
-            LogUtil.d(e.toString(),e);
+            LogUtil.d(e.toString(), e);
             sKeyStore = null;
             return false;
         }

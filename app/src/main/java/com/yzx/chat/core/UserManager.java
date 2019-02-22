@@ -121,7 +121,11 @@ public class UserManager {
 
     }
 
-    static UserEntity getUserInfoFromDB(AbstractDao.ReadWriteHelper helper, String userID) {
+    static UserEntity getUserInfoFromDB(String userID, AbstractDao.ReadWriteHelper helper) {
         return new UserDao(helper).loadByKey(userID);
+    }
+
+    static boolean replaceUserInfoOnDB(UserEntity userInfo, AbstractDao.ReadWriteHelper helper) {
+        return new UserDao(helper).replace(userInfo);
     }
 }

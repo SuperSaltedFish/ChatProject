@@ -50,6 +50,7 @@ public class ApiHelper {
     private static final SecretKey AES_KEY;
     private static final Signature CLIENT_SIGNATURE;
     private static final Signature SERVER_SIGNATURE;
+    private static final byte[] AES_IV;
 
     static {
         GSON = new GsonBuilder()
@@ -90,7 +91,7 @@ public class ApiHelper {
                 EncryptedRequest encryptedRequest = new EncryptedRequest();
                 encryptedRequest.setSecretKey(CLIENT_PUBLIC_KEY);
                 encryptedRequest.setSignature(Base64Util.encodeToString(ECCUtil.sign(CLIENT_SIGNATURE, strData.getBytes())));
-                encryptedRequest.setData(Base64Util.encodeToString(AESUtil.encrypt(strData.getBytes(), AES_KEY)));
+                encryptedRequest.setData(Base64Util.encodeToString(AESUtil.encrypt(strData.getBytes(), AES_KEY,AES_IV)));
                 String strEncryptedData = GSON.toJson(encryptedRequest);
                 LogUtil.d(String.format(
                         Locale.getDefault(),
@@ -129,7 +130,7 @@ public class ApiHelper {
                     if (TextUtils.isEmpty(data)) {
                         return null;
                     }
-                    byte[] originalData = AESUtil.decrypt(Base64Util.decode(data), AES_KEY);
+                    byte[] originalData = AESUtil.decrypt(Base64Util.decode(data), AES_KEY,AES_IV);
                     if (originalData == null || originalData.length == 0) {
                         return null;
                     }
@@ -162,6 +163,7 @@ public class ApiHelper {
         AES_KEY = AESUtil.loadKey(ECDHUtil.ecdh(clientPrivateKey, serverPublicKey));
         CLIENT_SIGNATURE = ECCUtil.loadSignature(clientPrivateKey);
         SERVER_SIGNATURE = ECCUtil.loadSignature(serverPublicKey);
+        AES_IV = new byte[16];
     }
 
     public static <T> T getProxyInstance(Class<T> interfaceClass) {
