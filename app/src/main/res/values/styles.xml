@@ -10,6 +10,8 @@
         <item name="android:textColorTertiary">@color/textSecondaryColorBlack</item>
         <item name="android:windowBackground">@color/backgroundColorWhite</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowDisablePreview">true</item>
     </style>
 

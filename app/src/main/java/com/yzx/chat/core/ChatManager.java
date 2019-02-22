@@ -50,6 +50,17 @@ public class ChatManager {
         mMessageSendStateChangeListenerMap = new HashMap<>();
     }
 
+    void init() {
+
+    }
+
+
+    void destroy() {
+        mUIHandler.removeCallbacksAndMessages(null);
+        mMessageListenerMap.clear();
+        mMessageSendStateChangeListenerMap.clear();
+    }
+
     public List<Message> getHistoryMessagesBlock(final Conversation.ConversationType type, final String targetId, int oldestMessageId, int count) {
         return mRongIMClient.getHistoryMessages(type, targetId, oldestMessageId, count);
     }
@@ -181,13 +192,6 @@ public class ChatManager {
 
     public void removeOnMessageSendStateChangeListener(OnMessageSendListener listener) {
         mMessageSendStateChangeListenerMap.remove(listener);
-    }
-
-    void destroy() {
-        mMessageListenerMap.clear();
-        mMessageSendStateChangeListenerMap.clear();
-        mMessageListenerMap = null;
-        mMessageSendStateChangeListenerMap = null;
     }
 
     void onReceiveContactNotificationMessage(final Message message, final int untreatedCount) {

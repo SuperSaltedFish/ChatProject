@@ -1,6 +1,7 @@
 package com.yzx.chat.core.net;
 
 import com.yzx.chat.R;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.framework.Callback;
@@ -30,17 +31,21 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
     public static final int ERROR_CODE_NETWORK_TIMEOUT = -300;
     public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -400;
     public static final int ERROR_CODE_SERVER_SEND_LOGIN_VERIFY_CODE = 200001;
-
+    public static final int ERROR_CODE_SERVER_TOKEN_INVALID= 400001;
 
     private ResultCallback<T> mResultCallback;
 
-    public ResponseHandler(ResultCallback<T> resultCallback) {
+    public ResponseHandler(ResultCallback<T> resultCallback ) {
         mResultCallback = resultCallback;
     }
 
     @Override
     public void onResponse(JsonResponse<T> response) {
         if (mResultCallback == null) {
+            return;
+        }
+        if(response==null){
+            onFailure(STATUS_CODE_UNKNOWN_RESPONSE_DATA, ResourcesHelper.getString(R.string.Error_Server3));
             return;
         }
         if (response.getStatus() == STATUS_CODE_SUCCESSFUL) {
@@ -87,9 +92,14 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
 
     @Override
     public void onFailure(int code, String error) {
-        if (mResultCallback != null) {
-            mResultCallback.onFailure(code, error);
+        if(code==ERROR_CODE_SERVER_TOKEN_INVALID){
+            AppClient.getInstance().getLoginExpiredListener().onLoginExpired();
+        }else {
+            if (mResultCallback != null) {
+                mResultCallback.onFailure(code, error);
+            }
         }
+
     }
 
 }

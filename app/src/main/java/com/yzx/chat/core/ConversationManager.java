@@ -54,6 +54,17 @@ public class ConversationManager {
         mUIHandler = new Handler(Looper.getMainLooper());
     }
 
+    void init() {
+
+    }
+
+    void destroy() {
+        mUIHandler.removeCallbacksAndMessages(null);
+        mConversationUnreadCountListeners.clear();
+        mConversationChangeListeners.clear();
+        mUnreadChatMessageCount = 0;
+    }
+
     public List<Conversation> getAllConversationsBlock() {
         List<Conversation> conversationList = mRongIMClient.getConversationList(SUPPORT_CONVERSATION_TYPE);
         if (conversationList != null) {
@@ -340,14 +351,6 @@ public class ConversationManager {
                 }
             }
         });
-    }
-
-    void destroy() {
-        mUIHandler.removeCallbacksAndMessages(null);
-        mConversationUnreadCountListeners.clear();
-        mConversationUnreadCountListeners = null;
-        mConversationChangeListeners.clear();
-        mConversationChangeListeners = null;
     }
 
     public interface OnConversationUnreadCountListener {

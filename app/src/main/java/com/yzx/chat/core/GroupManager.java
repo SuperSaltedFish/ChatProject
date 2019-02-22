@@ -50,20 +50,22 @@ public class GroupManager {
 
     private Map<String, GroupEntity> mGroupsMap;
     private GroupDao mGroupDao;
-    private GroupMemberDao mGroupMemberDao;
     private List<OnGroupOperationListener> mOnGroupOperationListeners;
 
     private GroupApi mGroupApi;
 
-    GroupManager(AppClient appClient, AbstractDao.ReadWriteHelper helper) {
+    GroupManager(AppClient appClient) {
         mAppClient = appClient;
         mRongIMClient = mAppClient.getRongIMClient();
         mUIHandler = new Handler(Looper.getMainLooper());
-        mGroupDao = new GroupDao(helper);
-        mGroupMemberDao = new GroupMemberDao(helper);
+
         mOnGroupOperationListeners = Collections.synchronizedList(new LinkedList<OnGroupOperationListener>());
         mGroupApi = ApiHelper.getProxyInstance(GroupApi.class);
         mGroupsMap = new HashMap<>(24);
+    }
+
+    void init(AbstractDao.ReadWriteHelper helper) {
+        mGroupDao = new GroupDao(helper);
         List<GroupEntity> groups = mGroupDao.loadAllGroup();
         if (groups != null) {
             for (GroupEntity group : groups) {
@@ -78,6 +80,12 @@ public class GroupManager {
             }
         }
     }
+
+    void destroy() {
+        mUIHandler.removeCallbacksAndMessages(null);
+        mGroupsMap.clear();
+    }
+
 
     public GroupEntity getGroup(String groupID) {
         return GroupEntity.copy(mGroupsMap.get(groupID));
@@ -131,8 +139,8 @@ public class GroupManager {
                     public void onResult(QuitGroupEntity result) {
                         GroupEntity group = mGroupsMap.get(groupID);
                         mGroupsMap.remove(groupID);
-                        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID,null);
-                        mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.GROUP, groupID,null);
+                        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID, null);
+                        mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.GROUP, groupID, null);
                         for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
                             listener.onQuitGroup(group);
                         }
@@ -287,11 +295,6 @@ public class GroupManager {
                 }
             }
         });
-    }
-
-    void destroy() {
-        mGroupsMap.clear();
-        mGroupsMap = null;
     }
 
     public void addGroupChangeListener(OnGroupOperationListener listener) {

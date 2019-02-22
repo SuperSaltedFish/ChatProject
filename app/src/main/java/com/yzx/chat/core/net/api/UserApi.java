@@ -2,15 +2,15 @@ package com.yzx.chat.core.net.api;
 
 import com.yzx.chat.core.entity.GetTempUserIDEntity;
 import com.yzx.chat.core.entity.GetUserProfileEntity;
-import com.yzx.chat.core.entity.SearchUserEntity;
+import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.annotation.FilePart;
 import com.yzx.chat.core.net.framework.annotation.POST;
 import com.yzx.chat.core.net.framework.annotation.Param;
-import com.yzx.chat.core.net.framework.annotation.Part;
+
+import java.util.ArrayList;
 
 /**
  * Created by YZX on 2017年11月17日.
@@ -24,7 +24,7 @@ public interface UserApi {
     Call<JsonResponse<GetUserProfileEntity>> getUserProfile(@Param("targetUserID") String userID);
 
     @POST("user/searchUser")
-    Call<JsonResponse<SearchUserEntity>> searchUser(@Param("queryCondition") String nicknameOrTelephone);
+    Call<JsonResponse<ArrayList<UserEntity>>> searchUser(@Param("queryCondition") String nicknameOrTelephone);
 
 
     @POST("user/getTempUserID")

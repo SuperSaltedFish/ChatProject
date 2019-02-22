@@ -232,4 +232,6 @@
     <string name="FileSelectorActivity_Storage">手机存储</string>
     <string name="FileSelectorActivity_MaxSelectedCountHint">最多选择%d个文件</string>
     <string name="FileSelectorActivity_MaxSelectedFileSize">只能选择大小为%dMB以内的文件</string>
+    <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
+    <string name="AppApplication_LoginExpired">登陆过期，请重新登陆！</string>
 </resources>

@@ -75,11 +75,12 @@ public class ContactManager {
     private ContactDao mContactDao;
     private UserDao mUserDao;
 
+
     private ContactApi mContactApi;
 
     private volatile int mContactOperationUnreadNumber;
 
-    ContactManager(AppClient appClient, AbstractDao.ReadWriteHelper helper) {
+    ContactManager(AppClient appClient) {
         mAppClient = appClient;
         mRongIMClient = mAppClient.getRongIMClient();
         mUIHandler = new Handler(Looper.getMainLooper());
@@ -91,12 +92,13 @@ public class ContactManager {
         mContactTagChangeListeners = Collections.synchronizedList(new LinkedList<OnContactTagChangeListener>());
 
         mContactApi = ApiHelper.getProxyInstance(ContactApi.class);
+    }
 
+
+    void init(AbstractDao.ReadWriteHelper helper) {
         mContactOperationDao = new ContactOperationDao(helper);
         mContactDao = new ContactDao(helper);
         mUserDao = new UserDao(helper);
-
-
         mContactTags = mContactDao.getAllTagsType();
         List<ContactEntity> contacts = mContactDao.loadAllContacts();
         if (contacts != null) {
@@ -105,6 +107,15 @@ public class ContactManager {
             }
         }
     }
+
+    void destroy() {
+        mContactsMap.clear();
+        mContactChangeListeners.clear();
+        mContactOperationListeners.clear();
+        mContactOperationUnreadCountChangeListeners.clear();
+        mContactsMap.clear();
+    }
+
 
     public List<ContactEntity> getAllContacts() {
         if (mContactsMap == null) {
@@ -325,8 +336,8 @@ public class ContactManager {
 
     private void deleteContact(String userID) {
         mContactDao.deleteByKey(userID);
-        mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.PRIVATE, userID,null);
-        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, userID,null);
+        mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.PRIVATE, userID, null);
+        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, userID, null);
         ContactOperationEntity contactOperation = mContactOperationDao.loadByKey(userID);
         if (contactOperation != null) {
             boolean needUpdate = contactOperation.isRemind();
@@ -473,18 +484,6 @@ public class ContactManager {
         mContactTagChangeListeners.remove(listener);
     }
 
-    void destroy() {
-        mContactsMap.clear();
-        mContactChangeListeners.clear();
-        mContactOperationListeners.clear();
-        mContactOperationUnreadCountChangeListeners.clear();
-        mContactsMap.clear();
-
-        mContactsMap = null;
-        mContactChangeListeners = null;
-        mContactOperationListeners = null;
-        mContactOperationUnreadCountChangeListeners = null;
-    }
 
     void onReceiveContactNotificationMessage(ContactNotificationMessageEx contactMessage) {
         String operation = contactMessage.getOperation();

@@ -5,7 +5,9 @@ import android.app.Application;
 import android.content.Context;
 
 import com.squareup.leakcanary.LeakCanary;
+import com.yzx.chat.R;
 import com.yzx.chat.core.AppClient;
+import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.util.AndroidHelper;
 
 import java.util.List;
@@ -22,14 +24,14 @@ public class AppApplication extends Application {
 
     private static Context sApplicationContext;
 
-    public static Context getAppContext(){
+    public static Context getAppContext() {
         return sApplicationContext;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        if(sApplicationContext ==null){
+        if (sApplicationContext == null) {
             sApplicationContext = this;
         }
         String processAppName = getProcessName(this, android.os.Process.myPid());
@@ -40,6 +42,12 @@ public class AppApplication extends Application {
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
 
             AppClient.init(this);
+            AppClient.getInstance().setLoginExpiredListener(new AppClient.LoginExpiredListener() {
+                @Override
+                public void onLoginExpired() {
+                    LoginActivity.startActivityOfNewTaskType(AppApplication.this, getResources().getString(R.string.AppApplication_LoginExpired));
+                }
+            });
 
             LeakCanary.install(this);
         }

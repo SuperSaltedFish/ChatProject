@@ -166,7 +166,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     }
 
     @Override
-    public void searchSuccess(UserEntity user, boolean isContact) {
+    public void showSearchResult(UserEntity user, boolean isContact) {
         if (isContact) {
             Intent intent = new Intent(this, ContactProfileActivity.class);
             intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, user.getUserID());
@@ -180,24 +180,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
 
     @Override
     public void searchNotExist() {
-//        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchNotExist);
-//        mPbSearch.setVisibility(View.GONE);
-
-    }
-
-    @Override
-    public void searchFail() {
-//        mTvSearchHint.setText(R.string.FindNewContactActivity_SearchFail);
-//        mPbSearch.setVisibility(View.GONE);
-
-    }
-
-
-    public  void sendData(){
-
-    }
-
-    public  void sendHeart(){
+        showErrorDialog(getString(R.string.FindNewContactActivity_SearchNotExist));
 
     }
 }

@@ -8,7 +8,6 @@ import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.DBHelper;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
@@ -66,6 +65,7 @@ public class AppClient {
     private RongIMClient mRongIMClient;
     private AuthApi mAuthApi;
     private List<OnConnectionStateChangeListener> mOnConnectionStateChangeListenerList;
+    private LoginExpiredListener mLoginExpiredListener;
 
     private UserManager mUserManager;
     private ChatManager mChatManager;
@@ -85,8 +85,14 @@ public class AppClient {
         mRongIMClient = RongIMClient.getInstance();
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
         mAuthApi = ApiHelper.getProxyInstance(AuthApi.class);
+        mLoginExpiredListener = new LoginExpiredListenerwapper(null);
         mLoginLock = new Semaphore(1);
         mStorageHelper = new StorageHelper(mAppContext, mAppContext.getPackageName());
+        mUserManager = new UserManager(this);
+        mChatManager = new ChatManager(this);
+        mConversationManager = new ConversationManager(this);
+        mContactManager = new ContactManager(this);
+        mGroupManager = new GroupManager(this);
 
         initIM();
     }
@@ -287,39 +293,24 @@ public class AppClient {
         mToken = token;
         mStorageHelper.saveToken(token);
         mStorageHelper.saveUserID(userInfo.getUserID());
-        mUserManager = new UserManager(this, userInfo);
-        mChatManager = new ChatManager(this);
-        mConversationManager = new ConversationManager(this);
-        mContactManager = new ContactManager(this, mDBHelper.getReadWriteHelper());
-        mGroupManager = new GroupManager(this, mDBHelper.getReadWriteHelper());
+        mUserManager.init(mDBHelper.getReadWriteHelper(), userInfo);
+        mChatManager.init();
+        mConversationManager.init();
+        mContactManager.init(mDBHelper.getReadWriteHelper());
+        mGroupManager.init(mDBHelper.getReadWriteHelper());
         mContactManager.updateContactUnreadCount();
         mConversationManager.updateChatUnreadCount();
     }
 
     private void destroy() {
-        if (mChatManager != null) {
-            mChatManager.destroy();
-            mChatManager = null;
-        }
-        if (mConversationManager != null) {
-            mConversationManager.destroy();
-            mConversationManager = null;
-        }
-        if (mContactManager != null) {
-            mContactManager.destroy();
-            mContactManager = null;
-        }
-        if (mGroupManager != null) {
-            mGroupManager.destroy();
-            mGroupManager = null;
-        }
-        if (mUserManager != null) {
-            mUserManager.destroy();
-            mUserManager = null;
-        }
-        if (mDBHelper != null) {
+        mChatManager.destroy();
+        mConversationManager.destroy();
+        mContactManager.destroy();
+        mGroupManager.destroy();
+        mUserManager.destroy();
+        if(mDBHelper!=null){
             mDBHelper.destroy();
-            mDBHelper = null;
+            mDBHelper=null;
         }
         isLogged = false;
     }
@@ -389,8 +380,12 @@ public class AppClient {
         return mUserManager;
     }
 
-    AbstractDao.ReadWriteHelper getDBReadWriteHelper() {
-        return mDBHelper.getReadWriteHelper();
+    public LoginExpiredListener getLoginExpiredListener() {
+        return mLoginExpiredListener;
+    }
+
+    public void setLoginExpiredListener(LoginExpiredListener listener) {
+        mLoginExpiredListener = new LoginExpiredListenerwapper(listener);
     }
 
     public void addConnectionListener(OnConnectionStateChangeListener listener) {
@@ -408,6 +403,25 @@ public class AppClient {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
 
+    private class LoginExpiredListenerwapper implements LoginExpiredListener {
+        private LoginExpiredListener mLoginExpiredListener;
+
+        public LoginExpiredListenerwapper(LoginExpiredListener loginExpiredListener) {
+            mLoginExpiredListener = loginExpiredListener;
+        }
+
+        @Override
+        public void onLoginExpired() {
+            logout();
+            if (mLoginExpiredListener != null) {
+                mLoginExpiredListener.onLoginExpired();
+            }
+        }
+    }
+
+    public interface LoginExpiredListener {
+        void onLoginExpired();
+    }
 
     public interface OnConnectionStateChangeListener {
 
@@ -417,5 +431,6 @@ public class AppClient {
 
         void onUserInvalid();
     }
+
 }
 

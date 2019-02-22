@@ -12,11 +12,9 @@ import com.yzx.chat.core.entity.UserEntity;
 
 public class FindNewContactContract {
     public interface View extends BaseView<Presenter> {
-        void searchSuccess(UserEntity user, boolean isContact);
+        void showSearchResult(UserEntity user, boolean isContact);
 
         void searchNotExist();
-
-        void searchFail();
     }
 
 

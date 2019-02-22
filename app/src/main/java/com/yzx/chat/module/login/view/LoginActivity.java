@@ -1,8 +1,10 @@
 package com.yzx.chat.module.login.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -12,6 +14,16 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 public class LoginActivity extends BaseCompatActivity {
+
+
+    private static final String INTENT_EXTRA_MESSAGE = "Message";
+
+    public static void startActivityOfNewTaskType(Context context, String message) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(INTENT_EXTRA_MESSAGE, message);
+        context.startActivity(intent);
+    }
 
     private boolean isEnableBackPressed;
 
@@ -29,6 +41,11 @@ public class LoginActivity extends BaseCompatActivity {
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
         jumpToLoginPage(this);
+
+        String message = getIntent().getStringExtra(INTENT_EXTRA_MESSAGE);
+        if (!TextUtils.isEmpty(message)) {
+            showErrorDialog(message);
+        }
     }
 
     @Override
