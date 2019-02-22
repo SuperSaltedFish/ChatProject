@@ -15,8 +15,11 @@ import com.yzx.chat.widget.view.NineGridAvatarView;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.emoji.text.EmojiCompat;
+import androidx.recyclerview.widget.AsyncDifferConfig;
+import androidx.recyclerview.widget.AsyncListDiffer;
+import androidx.recyclerview.widget.DiffUtil;
 import io.rong.imlib.model.Conversation;
 
 /**
@@ -27,13 +30,7 @@ import io.rong.imlib.model.Conversation;
 
 public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAdapter.ConversationHolder> {
 
-
-    private List<Conversation> mConversationList;
-    private EmojiCompat mEmojiCompat;
-
-    public ConversationAdapter(List<Conversation> conversationList) {
-        mConversationList = conversationList;
-        mEmojiCompat = EmojiCompat.get();
+    public ConversationAdapter() {
     }
 
 
@@ -45,9 +42,9 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public void bindDataToViewHolder(ConversationHolder holder, int position) {
-        Conversation conversation = mConversationList.get(position);
+        Conversation conversation = getItem(position);
         holder.mTvName.setText(conversation.getConversationTitle());
-        holder.mTvLastRecord.setText(mEmojiCompat.process(IMMessageHelper.getMessageDigest(conversation)));
+        holder.mTvLastRecord.setText(IMMessageHelper.getMessageDigest(conversation));
         holder.mTvTime.setText(DateUtil.msecToTime_HH_mm(conversation.getSentTime()));
 
         String avatarUri = conversation.getPortraitUrl();
@@ -71,13 +68,54 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
     @Override
     public int getViewHolderCount() {
-        return mConversationList == null ? 0 : mConversationList.size();
+        return mAsyncListDiffer.getCurrentList().size();
     }
 
     @Override
     public int getViewHolderType(int position) {
-        return mConversationList.get(position).getConversationType().getValue();
+        return getItem(position).getConversationType().getValue();
     }
+
+    public Conversation getItem(int position) {
+        return mAsyncListDiffer.getCurrentList().get(position);
+    }
+
+    public void submitList(List<Conversation> conversationList) {
+        mAsyncListDiffer.submitList(conversationList);
+    }
+
+    private final AsyncListDiffer<Conversation> mAsyncListDiffer = new AsyncListDiffer<>(
+            new BaseRecyclerViewAdapter.ListUpdateCallback(this),
+            new AsyncDifferConfig.Builder<>(new DiffUtil.ItemCallback<Conversation>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull Conversation oldItem, @NonNull Conversation newItem) {
+                    return oldItem.getTargetId().equals(newItem.getTargetId());
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull Conversation oldItem, @NonNull Conversation newItem) {
+                    if (oldItem.getLatestMessageId() != newItem.getLatestMessageId()) {
+                        return false;
+                    }
+                    if (oldItem.getUnreadMessageCount() != newItem.getUnreadMessageCount()) {
+                        return false;
+                    }
+                    if (oldItem.getSentTime() != newItem.getSentTime()) {
+                        return false;
+                    }
+                    if (!oldItem.getConversationTitle().equals(newItem.getConversationTitle())) {
+                        return false;
+                    }
+                    if (!oldItem.getNotificationStatus().equals(newItem.getNotificationStatus())) {
+                        return false;
+                    }
+                    if (!TextUtils.equals(oldItem.getDraft(), newItem.getDraft())) {
+                        return false;
+                    }
+                    return true;
+                }
+
+            }).build());
 
 
     static class ConversationHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
@@ -90,11 +128,11 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
 
         ConversationHolder(View itemView) {
             super(itemView);
-            mIvAvatar = itemView.findViewById(R.id.ConversationAdapter_mIvAvatar);
-            mTvName = itemView.findViewById(R.id.ConversationAdapter_mTvName);
-            mTvLastRecord = itemView.findViewById(R.id.ConversationAdapter_mTvLastMessage);
-            mTvTime = itemView.findViewById(R.id.ConversationAdapter_mTvTime);
-            mTvBadge = itemView.findViewById(R.id.ConversationAdapter_mTvBadge);
+            mIvAvatar = itemView.findViewById(R.id.mIvAvatar);
+            mTvName = itemView.findViewById(R.id.mTvName);
+            mTvLastRecord = itemView.findViewById(R.id.mTvLastMessage);
+            mTvTime = itemView.findViewById(R.id.mTvTime);
+            mTvBadge = itemView.findViewById(R.id.mTvBadge);
         }
 
     }

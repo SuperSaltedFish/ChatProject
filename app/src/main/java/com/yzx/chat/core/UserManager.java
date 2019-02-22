@@ -1,6 +1,8 @@
 package com.yzx.chat.core;
 
 
+import com.yzx.chat.core.database.AbstractDao;
+import com.yzx.chat.core.database.UserDao;
 import com.yzx.chat.core.entity.GetUserProfileEntity;
 import com.yzx.chat.core.entity.SearchUserEntity;
 import com.yzx.chat.core.entity.UploadAvatarEntity;
@@ -26,6 +28,7 @@ public class UserManager {
 
     private UserEntity mUserEntity;
     private UserApi mUserApi;
+    private UserDao mUserDao;
 
     UserManager(AppClient appClient, UserEntity userEntity) {
         if (userEntity == null || userEntity.isEmpty()) {
@@ -34,6 +37,7 @@ public class UserManager {
         mAppClient = appClient;
         mUserEntity = userEntity;
         mUserApi = ApiHelper.getProxyInstance(UserApi.class);
+        mUserDao = new UserDao(mAppClient.getDBReadWriteHelper());
     }
 
     public void updateProfile(final String nickname, final int sex, final String birthday, final String location, final String signature, final ResultCallback<Void> callback) {
@@ -46,6 +50,7 @@ public class UserManager {
                         mUserEntity.setBirthday(birthday);
                         mUserEntity.setLocation(location);
                         mUserEntity.setSignature(signature);
+                        mUserDao.update(mUserEntity);
                         CallbackUtil.callResult(result, callback);
                     }
 
@@ -62,6 +67,7 @@ public class UserManager {
                     @Override
                     public void onResult(UploadAvatarEntity result) {
                         mUserEntity.setAvatar(result.getAvatarUrl());
+                        mUserDao.update(mUserEntity);
                         CallbackUtil.callResult(result, callback);
                     }
 
@@ -111,7 +117,11 @@ public class UserManager {
         return UserEntity.copy(mUserEntity);
     }
 
-     void destroy() {
+    void destroy() {
 
+    }
+
+    static UserEntity getUserInfoFromDB(AbstractDao.ReadWriteHelper helper, String userID) {
+        return new UserDao(helper).loadByKey(userID);
     }
 }

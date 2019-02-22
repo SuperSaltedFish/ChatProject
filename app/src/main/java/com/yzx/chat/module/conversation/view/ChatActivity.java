@@ -2,6 +2,7 @@ package com.yzx.chat.module.conversation.view;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -89,11 +90,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private static final int REQUEST_PERMISSION_CAMERA = 4;
     private static final int REQUEST_PERMISSION_FILE = 5;
 
-    public static final String INTENT_EXTRA_CONVERSATION_ID = "ConversationID";
-    public static final String INTENT_EXTRA_CONVERSATION_TYPE_CODE = "ConversationTypeCode";
+    private static final String INTENT_EXTRA_CONVERSATION_ID = "ConversationID";
+    private static final String INTENT_EXTRA_CONVERSATION_TYPE_CODE = "ConversationTypeCode";
 
-    public static final int CONVERSATION_PRIVATE = 1;
-    public static final int CONVERSATION_GROUP = 2;
+    public static final int CONVERSATION_TYPE_PRIVATE = 1;
+    public static final int CONVERSATION_TYPE_GROUP = 2;
+
+    public static void startActivity(Context context,String conversationID,int conversationType){
+        Intent intent = new Intent(context, ChatActivity.class);
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, conversationType);
+        context.startActivity(intent);
+    }
 
 
     private RecyclerView mRvChatView;
@@ -314,7 +322,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private void setData(Intent intent) {
         String conversationID = intent.getStringExtra(INTENT_EXTRA_CONVERSATION_ID);
         int conversationTypeCode = intent.getIntExtra(INTENT_EXTRA_CONVERSATION_TYPE_CODE, -1);
-        if (TextUtils.isEmpty(conversationID) || (conversationTypeCode != CONVERSATION_PRIVATE && conversationTypeCode != CONVERSATION_GROUP)) {
+        if (TextUtils.isEmpty(conversationID) || (conversationTypeCode != CONVERSATION_TYPE_PRIVATE && conversationTypeCode != CONVERSATION_TYPE_GROUP)) {
             finish();
             return;
         }
@@ -323,7 +331,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
         mCurrentConversationType = conversationTypeCode;
         BasicInfoProvider basicInfoProvider;
-        if (mCurrentConversationType == CONVERSATION_PRIVATE) {
+        if (mCurrentConversationType == CONVERSATION_TYPE_PRIVATE) {
             basicInfoProvider = mPresenter.initPrivateChat(conversationID);
         } else {
             basicInfoProvider = mPresenter.initGroupChat(conversationID);
@@ -333,7 +341,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             return;
         }
         mAdapter.setBasicInfoProvider(basicInfoProvider);
-        mAdapter.setEnableNameDisplay(mCurrentConversationType == CONVERSATION_GROUP);
+        mAdapter.setEnableNameDisplay(mCurrentConversationType == CONVERSATION_TYPE_GROUP);
 
         mEtContent.setText(mPresenter.getMessageDraft());
     }
@@ -728,12 +736,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void enterProfile() {
         switch (mCurrentConversationType) {
-            case CONVERSATION_PRIVATE:
+            case CONVERSATION_TYPE_PRIVATE:
                 Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
                 intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mPresenter.getConversationID());
                 startActivity(intent);
                 break;
-            case CONVERSATION_GROUP:
+            case CONVERSATION_TYPE_GROUP:
                 intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
                 intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getConversationID());
                 startActivity(intent);

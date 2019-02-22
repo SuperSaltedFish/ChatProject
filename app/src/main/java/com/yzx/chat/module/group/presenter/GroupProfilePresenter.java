@@ -70,13 +70,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
             mConversation.setConversationType(Conversation.ConversationType.GROUP);
         }
         mGroupProfileView.switchTopState(mConversation.isTop());
-        mConversationManager.isEnableConversationNotification(mConversation, new LifecycleMVPResultCallback<Conversation.ConversationNotificationStatus>(mGroupProfileView) {
-            @Override
-            protected void onSuccess(Conversation.ConversationNotificationStatus result) {
-                mGroupProfileView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
-
-            }
-        });
+        mGroupProfileView.switchRemindState(  mConversationManager.isEnableConversationNotification(Conversation.ConversationType.GROUP, groupID));
     }
 
     @Override
@@ -152,17 +146,17 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void enableConversationNotification(boolean isEnable) {
-        mConversationManager.setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable);
+        mConversationManager.setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable,null);
     }
 
     @Override
     public void setConversationToTop(boolean isTop) {
-        mConversationManager.setConversationTop(mConversation.getConversationType(), mConversation.getTargetId(), isTop);
+        mConversationManager.setTopConversation(mConversation.getConversationType(), mConversation.getTargetId(), isTop,null);
     }
 
     @Override
     public void clearChatMessages() {
-        mConversationManager.clearAllConversationMessages(mConversation.getConversationType(), mConversation.getTargetId());
+        mConversationManager.clearConversationMessages(mConversation.getConversationType(), mConversation.getTargetId(),null);
     }
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {

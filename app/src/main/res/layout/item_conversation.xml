@@ -9,7 +9,7 @@
     android:paddingStart="12dp">
 
     <com.yzx.chat.widget.view.NineGridAvatarView
-        android:id="@+id/ConversationAdapter_mIvAvatar"
+        android:id="@+id/mIvAvatar"
         android:layout_width="52dp"
         android:layout_height="52dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ConversationAdapter_mTvName"
+        android:id="@+id/mTvName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -27,25 +27,25 @@
         android:paddingStart="8dp"
         android:textColor="@color/textPrimaryColorBlack"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/ConversationAdapter_mTvLastMessage"
-        app:layout_constraintEnd_toStartOf="@id/ConversationAdapter_mTvTime"
-        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mIvAvatar"
+        app:layout_constraintBottom_toTopOf="@id/mTvLastMessage"
+        app:layout_constraintEnd_toStartOf="@id/mTvTime"
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/mIvAvatar"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/ConversationAdapter_mTvTime"
+        android:id="@+id/mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:gravity="center_vertical"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mTvName"
+        app:layout_constraintBottom_toBottomOf="@id/mTvName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mTvName" />
+        app:layout_constraintTop_toTopOf="@id/mTvName" />
 
 
-    <TextView
-        android:id="@+id/ConversationAdapter_mTvLastMessage"
+    <androidx.emoji.widget.EmojiTextView
+        android:id="@+id/mTvLastMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -54,19 +54,19 @@
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mIvAvatar"
-        app:layout_constraintEnd_toStartOf="@id/ConversationAdapter_mTvBadge"
-        app:layout_constraintStart_toEndOf="@id/ConversationAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ConversationAdapter_mTvName" />
+        app:layout_constraintBottom_toBottomOf="@id/mIvAvatar"
+        app:layout_constraintEnd_toStartOf="@id/mTvBadge"
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toBottomOf="@id/mTvName" />
 
     <com.yzx.chat.widget.view.BadgeView
-        android:id="@+id/ConversationAdapter_mTvBadge"
+        android:id="@+id/mTvBadge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="1dp"
-        app:layout_constraintBottom_toBottomOf="@id/ConversationAdapter_mTvLastMessage"
+        app:layout_constraintBottom_toBottomOf="@id/mTvLastMessage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/ConversationAdapter_mTvLastMessage" />
+        app:layout_constraintTop_toTopOf="@id/mTvLastMessage" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

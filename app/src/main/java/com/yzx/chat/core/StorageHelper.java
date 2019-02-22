@@ -22,7 +22,7 @@ class StorageHelper {
 
     private static final String RSA_KET_ALIAS = StorageHelper.class.getName() + ".ECC";
     private static final String STORAGE_KEY_TOKEN = "Token";
-    private static final String STORAGE_KEY_USER_INFO = "UserInfo";
+    private static final String STORAGE_KEY_USER_ID = "UserID";
     private static final String STORAGE_KEY_DEVICE_ID = "DeviceID";
 
     private SharedPreferences mConfigurationPreferences;
@@ -41,12 +41,12 @@ class StorageHelper {
         return getFromConfigurationPreferences(STORAGE_KEY_TOKEN);
     }
 
-    boolean saveUserInfo(String userInfo) {
-        return putToConfigurationPreferences(STORAGE_KEY_USER_INFO, userInfo);
+    boolean saveUserID(String userInfo) {
+        return putToConfigurationPreferences(STORAGE_KEY_USER_ID, userInfo);
     }
 
-    String getUserInfo() {
-        return getFromConfigurationPreferences(STORAGE_KEY_USER_INFO);
+    String getUserID() {
+        return getFromConfigurationPreferences(STORAGE_KEY_USER_ID);
     }
 
     boolean saveDeviceID(String deviceID) {

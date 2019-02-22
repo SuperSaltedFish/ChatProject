@@ -110,7 +110,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         sConversationID = mConversationID;
         mChatView.clearMessage();
         if (conversation.getUnreadMessageCount() != 0) {
-            mAppClient.getConversationManager().clearConversationUnreadStatus(mConversationType, mConversationID);
+            mAppClient.getConversationManager().clearConversationUnreadStatus(mConversationType, mConversationID,null);
         }
         List<Message> messageList = mAppClient.getChatManager().getHistoryMessagesBlock(mConversationType, mConversationID, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
@@ -119,7 +119,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mAppClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
         mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
-        mAppClient.getConversationManager().addConversationStateChangeListener(mOnConversationStateChangeListener);
+        mAppClient.getConversationManager().addConversationStateChangeListener(mOnConversationChangeListener);
         NotificationHelper.getInstance().cancelNotification(mConversationID.hashCode());
     }
 
@@ -127,7 +127,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mAppClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mAppClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mAppClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
-        mAppClient.getConversationManager().removeConversationStateChangeListener(mOnConversationStateChangeListener);
+        mAppClient.getConversationManager().removeConversationStateChangeListener(mOnConversationChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         sConversationID = null;
         mHasMoreMessage = true;
@@ -226,7 +226,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         if (TextUtils.equals(mMessageDraft, draft) && !mIsConversationStateChange) {
             return;
         }
-        mAppClient.getConversationManager().saveConversationDraft(mConversationType, mConversationID, draft);
+        mAppClient.getConversationManager().saveConversationDraft(mConversationType, mConversationID, draft,null);
     }
 
     @Override
@@ -299,9 +299,9 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
     };
 
-    private final ConversationManager.OnConversationStateChangeListener mOnConversationStateChangeListener = new ConversationManager.OnConversationStateChangeListener() {
+    private final ConversationManager.OnConversationChangeListener mOnConversationChangeListener = new ConversationManager.OnConversationChangeListener() {
         @Override
-        public void onConversationStateChange(final Conversation conversation, int typeCode) {
+        public void onConversationChange(final Conversation conversation, int typeCode) {
             if (conversation.getTargetId().equals(sConversationID)) {
                 switch (typeCode) {
                     case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:

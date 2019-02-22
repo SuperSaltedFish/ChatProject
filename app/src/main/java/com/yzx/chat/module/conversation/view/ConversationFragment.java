@@ -1,10 +1,8 @@
 package com.yzx.chat.module.conversation.view;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.module.conversation.contract.ConversationContract;
 import com.yzx.chat.module.conversation.presenter.ConversationPresenter;
 import com.yzx.chat.util.AndroidHelper;
@@ -24,13 +21,12 @@ import com.yzx.chat.widget.view.DividerItemDecoration;
 import com.yzx.chat.widget.view.OverflowMenuShowHelper;
 import com.yzx.chat.widget.view.OverflowPopupMenu;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.rong.imlib.model.Conversation;
@@ -51,7 +47,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private Toolbar mToolbar;
     private View mHeaderView;
     private OverflowPopupMenu mConversationMenu;
-    private List<Conversation> mConversationList;
 
     @Override
     protected int getLayoutID() {
@@ -60,15 +55,13 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     @Override
     protected void init(View parentView) {
-
         mRecyclerView = parentView.findViewById(R.id.mRecyclerView);
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
         mIvEmptyHintImage = parentView.findViewById(R.id.mIvEmptyHintImage);
         mITvEmptyHintText = parentView.findViewById(R.id.mITvEmptyHintText);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_conversation_header, (ViewGroup) parentView, false);
         mConversationMenu = new OverflowPopupMenu(mContext);
-        mConversationList = new ArrayList<>(128);
-        mAdapter = new ConversationAdapter(mConversationList);
+        mAdapter = new ConversationAdapter();
     }
 
     @Override
@@ -83,7 +76,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mContext, R.anim.layout_alpha));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
-        ((DefaultItemAnimator) (mRecyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
+        ((DefaultItemAnimator) (Objects.requireNonNull(mRecyclerView.getItemAnimator()))).setSupportsChangeAnimations(false);
 
         setOverflowMenu();
         setEnableDisconnectionHint(!mPresenter.isConnectedToServer());
@@ -98,8 +91,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(int position, int menuID) {
-                int index = (int) mRecyclerView.getTag();
-                Conversation conversation = mConversationList.get(index);
+                Conversation conversation = (Conversation) mRecyclerView.getTag();
                 switch (menuID) {
                     case R.id.ConversationMenu_Top:
                         mPresenter.setConversationTop(conversation, !conversation.isTop());
@@ -120,13 +112,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mPresenter.refreshAllConversations();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.refreshAllConversationsIfNeed();
-    }
-
-    private void enableEmptyListHint(boolean isEnable) {
+    private void setEnableEmptyListHint(boolean isEnable) {
         if (isEnable) {
             mIvEmptyHintImage.setVisibility(View.VISIBLE);
             mITvEmptyHintText.setVisibility(View.VISIBLE);
@@ -139,40 +125,32 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
         public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(mContext, ChatActivity.class);
-                    Conversation conversation;
-                    if (!mAdapter.isHasHeaderView()) {
-                        conversation = mConversationList.get(position);
-                        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, mConversationList.get(position));
-                    } else if (position != 0) {
-                        conversation = mConversationList.get(position - 1);
-                    } else return;
-                    intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversation.getTargetId());
-                    switch (conversation.getConversationType()) {
-                        case PRIVATE:
-                            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_PRIVATE);
-                            break;
-                        case GROUP:
-                            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
-                            break;
-                        default:
-                            return;
-                    }
-                    startActivity(intent);
-                }
-            });
+            Conversation conversation;
+            if (!mAdapter.isHasHeaderView()) {
+                conversation = mAdapter.getItem(position);
+            } else if (position != 0) {
+                conversation = mAdapter.getItem(position - 1);
+            } else return;
+            switch (conversation.getConversationType()) {
+                case PRIVATE:
+                    ChatActivity.startActivity(mContext, conversation.getTargetId(), ChatActivity.CONVERSATION_TYPE_PRIVATE);
+                    break;
+                case GROUP:
+                    ChatActivity.startActivity(mContext, conversation.getTargetId(), ChatActivity.CONVERSATION_TYPE_GROUP);
+                    break;
+            }
         }
 
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
-            if (mAdapter.isHasHeaderView()) {
-                position--;
-            }
-            mRecyclerView.setTag(position);
-            if (mConversationList.get(position).isTop()) {
+            Conversation conversation;
+            if (!mAdapter.isHasHeaderView()) {
+                conversation = mAdapter.getItem(position);
+            } else if (position != 0) {
+                conversation = mAdapter.getItem(position - 1);
+            } else return;
+            mRecyclerView.setTag(conversation);
+            if (conversation.isTop()) {
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_CancelTop);
             } else {
                 mConversationMenu.findMenuById(R.id.ConversationMenu_Top).setTitle(R.string.ConversationMenu_Top);
@@ -186,37 +164,14 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         return new ConversationPresenter();
     }
 
-
     @Override
-    public void updateConversationsFromUI(DiffUtil.DiffResult diffResult, List<Conversation> newConversationList) {
-        int oldSize = mConversationList.size();
-        mConversationList.clear();
-        if (newConversationList == null || newConversationList.size() == 0) {
-            enableEmptyListHint(true);
-            mAdapter.notifyDataSetChanged();
-        } else {
-            enableEmptyListHint(false);
-            if (oldSize == 0) {
-                mAdapter.notifyDataSetChanged();
-            } else {
-                diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mAdapter));
-            }
-            mConversationList.addAll(newConversationList);
-        }
-        mConversationMenu.dismiss();
+    public void showConversationList(List<Conversation> conversationList) {
+        setEnableEmptyListHint(conversationList.isEmpty());
     }
 
-
     @Override
-    public void removeConversationFromUI(Conversation conversation) {
-        for (int i = 0, size = mConversationList.size(); i < size; i++) {
-            if (mConversationList.get(i).getTargetId().equals(conversation.getTargetId())) {
-                mConversationList.remove(i);
-                mAdapter.notifyItemRemoved(i);
-                break;
-            }
-        }
-        enableEmptyListHint(mConversationList.size() == 0);
+    public boolean isForeground() {
+        return false;
     }
 
     @Override

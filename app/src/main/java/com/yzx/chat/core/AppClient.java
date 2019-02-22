@@ -6,9 +6,9 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.Constants;
+import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.DBHelper;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
@@ -24,6 +24,7 @@ import com.yzx.chat.core.util.CallbackUtil;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.core.util.MD5Util;
 import com.yzx.chat.core.util.ResourcesHelper;
+import com.yzx.chat.core.util.Sha256Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,9 +119,10 @@ public class AppClient {
                     default:
                         LogUtil.e("Unknown Message ObjectName:" + message.getObjectName());
                 }
-                if (remainder == 0 && mConversationManager != null && mContactManager != null) {
-                    mConversationManager.updateChatUnreadCount();
+                if (remainder == 0) {
                     mContactManager.updateContactUnreadCount();
+                    mConversationManager.updateChatUnreadCount();
+                    mConversationManager.onConversationListChange();
                 }
                 return true;
             }
@@ -165,7 +167,7 @@ public class AppClient {
     }
 
     public void register(String account, String password, String nickname, String verifyCode, ResultCallback<Void> callback) {
-        mAuthApi.register(account, password, nickname, verifyCode)
+        mAuthApi.register(account, Sha256Util.sha256WithSalt(password, account), nickname, verifyCode)
                 .enqueue(new ResponseHandler<>(callback));
     }
 
@@ -179,7 +181,7 @@ public class AppClient {
             mLoginLock.release();
             throw new RuntimeException("The user has already logged in, please do not log in again！");
         }
-        mAuthApi.login(account, password, verifyCode)
+        mAuthApi.login(account, Sha256Util.sha256WithSalt(password, account), verifyCode)
                 .enqueue(new ResponseHandler<>(new ResultCallback<LoginResponseEntity>() {
                     @Override
                     public void onResult(final LoginResponseEntity result) {
@@ -246,43 +248,39 @@ public class AppClient {
             throw new RuntimeException("The user has already logged in, please do not log in again！");
         }
         final String token = mStorageHelper.getToken();
-        String strUserInfo = mStorageHelper.getUserInfo();
-        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(strUserInfo)) {
+        final String userID = mStorageHelper.getUserID();
+        if (TextUtils.isEmpty(token) || TextUtils.isEmpty(userID)) {
             mLoginLock.release();
             CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
             return;
         }
-        try {
-            final UserEntity userInfo = ApiHelper.GSON.fromJson(strUserInfo, UserEntity.class);
-            if (userInfo == null || userInfo.isEmpty()) {
-                mLoginLock.release();
-                CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
-                return;
-            }
-            RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
-                @Override
-                public void onTokenIncorrect() {
-                    mLoginLock.release();
-                    CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
-                }
-
-                @Override
-                public void onSuccess(String s) {
-                    init(token, userInfo);
-                    mLoginLock.release();
-                    CallbackUtil.callResult(null, callback);
-                }
-
-                @Override
-                public void onError(RongIMClient.ErrorCode errorCode) {
-                    mLoginLock.release();
-                    CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_UNKNOWN, errorCode.getMessage(), callback);
-                }
-            });
-        } catch (JsonSyntaxException e) {
+        mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userID), Constants.DATABASE_VERSION);
+        final UserEntity userInfo = UserManager.getUserInfoFromDB(mDBHelper.getReadWriteHelper(),userID);
+        if (userInfo == null || userInfo.isEmpty()) {
             mLoginLock.release();
             CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
+            return;
         }
+        RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
+            @Override
+            public void onTokenIncorrect() {
+                mLoginLock.release();
+                CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                init(token, userInfo);
+                mLoginLock.release();
+                CallbackUtil.callResult(null, callback);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                mLoginLock.release();
+                CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_UNKNOWN, errorCode.getMessage(), callback);
+            }
+        });
 
     }
 
@@ -290,6 +288,8 @@ public class AppClient {
     private void init(String token, UserEntity userInfo) {
         isLogged = true;
         mToken = token;
+        mStorageHelper.saveToken(token);
+        mStorageHelper.saveUserID(userInfo.getUserID());
         mUserManager = new UserManager(this, userInfo);
         mChatManager = new ChatManager(this);
         mConversationManager = new ConversationManager(this);
@@ -392,6 +392,9 @@ public class AppClient {
         return mUserManager;
     }
 
+     AbstractDao.ReadWriteHelper getDBReadWriteHelper() {
+        return mDBHelper.getReadWriteHelper();
+    }
 
     public void addConnectionListener(OnConnectionStateChangeListener listener) {
         if (!mOnConnectionStateChangeListenerList.contains(listener)) {

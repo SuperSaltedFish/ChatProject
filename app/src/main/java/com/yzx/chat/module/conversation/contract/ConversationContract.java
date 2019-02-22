@@ -6,7 +6,6 @@ import com.yzx.chat.base.BaseView;
 
 import java.util.List;
 
-import androidx.recyclerview.widget.DiffUtil;
 import io.rong.imlib.model.Conversation;
 
 /**
@@ -18,19 +17,15 @@ import io.rong.imlib.model.Conversation;
 public class ConversationContract {
 
     public interface View extends BaseView<Presenter> {
+        void showConversationList(List<Conversation> conversationList);
 
-        void updateConversationsFromUI(DiffUtil.DiffResult diffResult, List<Conversation> conversationList);
-
-        void removeConversationFromUI(Conversation conversation);
+        boolean isForeground();
 
         void setEnableDisconnectionHint(boolean isEnable);
-
     }
 
 
     public interface Presenter extends BasePresenter<View> {
-        void refreshAllConversationsIfNeed();
-
         void refreshAllConversations();
 
         void setConversationTop(Conversation conversation, boolean isTop);

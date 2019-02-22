@@ -296,19 +296,15 @@ public class NotificationHelper {
                     if (ActivityHelper.getStackTopActivityClass() != ChatActivity.class) {
                         ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
                     }
-                    Intent startActivityIntent = new Intent(homeActivity, ChatActivity.class);
-                    startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
                     switch (type) {
                         case PRIVATE:
-                            startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_PRIVATE);
+                            ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_PRIVATE);
+
                             break;
                         case GROUP:
-                            startActivityIntent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
+                            ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_GROUP);
                             break;
-                        default:
-                            return;
                     }
-                    homeActivity.startActivity(startActivityIntent);
                 }
             }
         }

@@ -325,8 +325,8 @@ public class ContactManager {
 
     private void deleteContact(String userID) {
         mContactDao.deleteByKey(userID);
-        mAppClient.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.PRIVATE, userID);
-        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, userID);
+        mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.PRIVATE, userID,null);
+        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, userID,null);
         ContactOperationEntity contactOperation = mContactOperationDao.loadByKey(userID);
         if (contactOperation != null) {
             boolean needUpdate = contactOperation.isRemind();

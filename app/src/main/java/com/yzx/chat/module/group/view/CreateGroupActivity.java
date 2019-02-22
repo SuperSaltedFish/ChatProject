@@ -1,6 +1,5 @@
 package com.yzx.chat.module.group.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -269,11 +268,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     public void launchChatActivity(GroupEntity group) {
         ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
         mProgressDialog.dismiss();
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
-        startActivity(intent);
-
+        ChatActivity.startActivity(this, group.getGroupID(), ChatActivity.CONVERSATION_TYPE_GROUP);
     }
 
 

@@ -1,5 +1,8 @@
 package com.yzx.chat.core.util;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.yzx.chat.core.listener.ResultCallback;
 
 /**
@@ -7,15 +10,35 @@ import com.yzx.chat.core.listener.ResultCallback;
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
 public class CallbackUtil {
-    public static <T> void callResult(T result, ResultCallback<T> callback) {
+    private static Handler sUIHandler = new Handler(Looper.getMainLooper());
+
+    public static <T> void callResult(final T result, final ResultCallback<T> callback) {
         if (callback != null) {
-            callback.onResult(result);
+            if (Thread.currentThread().getId() != Looper.getMainLooper().getThread().getId()) {
+                sUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onResult(result);
+                    }
+                });
+            } else {
+                callback.onResult(result);
+            }
         }
     }
 
-    public static void callFailure(int code, String error, ResultCallback callback) {
+    public static void callFailure(final int code, final String error, final ResultCallback callback) {
         if (callback != null) {
-            callback.onFailure(code, error);
+            if (Thread.currentThread().getId() != Looper.getMainLooper().getThread().getId()) {
+                sUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFailure(code, error);
+                    }
+                });
+            } else {
+                callback.onFailure(code, error);
+            }
         }
     }
 }

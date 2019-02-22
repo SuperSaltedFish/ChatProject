@@ -188,10 +188,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     private void startChatActivity() {
-        Intent intent = new Intent(ContactProfileActivity.this, ChatActivity.class);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, mContactID);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_PRIVATE);
-        startActivity(intent);
+        ChatActivity.startActivity(this, mContactID, ChatActivity.CONVERSATION_TYPE_PRIVATE);
         finish();
     }
 

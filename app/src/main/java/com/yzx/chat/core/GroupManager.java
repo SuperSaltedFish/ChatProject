@@ -131,8 +131,8 @@ public class GroupManager {
                     public void onResult(QuitGroupEntity result) {
                         GroupEntity group = mGroupsMap.get(groupID);
                         mGroupsMap.remove(groupID);
-                        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID);
-                        mAppClient.getConversationManager().clearAllConversationMessages(Conversation.ConversationType.GROUP, groupID);
+                        mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.GROUP, groupID,null);
+                        mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.GROUP, groupID,null);
                         for (OnGroupOperationListener listener : mOnGroupOperationListeners) {
                             listener.onQuitGroup(group);
                         }

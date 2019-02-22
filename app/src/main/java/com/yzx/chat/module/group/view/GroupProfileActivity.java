@@ -165,11 +165,8 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     private final View.OnClickListener mOnStartChatClickListener = new OnOnlySingleClickListener() {
         @Override
         public void onSingleClick(View v) {
-            Intent intent = new Intent(GroupProfileActivity.this, ChatActivity.class);
             GroupEntity group = mPresenter.getGroup();
-            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, group.getGroupID());
-            intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, ChatActivity.CONVERSATION_GROUP);
-            startActivity(intent);
+            ChatActivity.startActivity(GroupProfileActivity.this, group.getGroupID(), ChatActivity.CONVERSATION_TYPE_GROUP);
             finish();
         }
     };

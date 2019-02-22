@@ -1,5 +1,7 @@
 package com.yzx.chat.core;
 
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.util.CallbackUtil;
 import com.yzx.chat.core.util.LogUtil;
@@ -29,11 +31,12 @@ public class ConversationManager {
     public static final int UPDATE_TYPE_CLEAR_MESSAGE = 5;
     public static final int UPDATE_TYPE_NOTIFICATION_CHANGE = 6;
     public static final int UPDATE_TYPE_UPDATE = 7;
+    public static final int UPDATE_LIST_CHANGE = 8;
 
     private AppClient mAppClient;
     private RongIMClient mRongIMClient;
 
-    private List<OnConversationStateChangeListener> mConversationStateChangeListeners;
+    private List<OnConversationChangeListener> mConversationChangeListeners;
     private List<OnConversationUnreadCountListener> mConversationUnreadCountListeners;
 
     private volatile int mUnreadChatMessageCount;
@@ -42,103 +45,131 @@ public class ConversationManager {
         mAppClient = appClient;
         mRongIMClient = mAppClient.getRongIMClient();
         mConversationUnreadCountListeners = Collections.synchronizedList(new LinkedList<OnConversationUnreadCountListener>());
-        mConversationStateChangeListeners = Collections.synchronizedList(new LinkedList<OnConversationStateChangeListener>());
+        mConversationChangeListeners = Collections.synchronizedList(new LinkedList<OnConversationChangeListener>());
         mRongIMClient = RongIMClient.getInstance();
     }
 
-    public List<Conversation> getAllConversations() {
-        return getAllConversations(SUPPORT_CONVERSATION_TYPE);
+    public List<Conversation> getAllConversationsBlock() {
+        List<Conversation> conversationList = mRongIMClient.getConversationList(SUPPORT_CONVERSATION_TYPE);
+        if (conversationList != null) {
+            for (Conversation conversation : conversationList) {
+                setupTitleAndAvatar(conversation);
+            }
+        }
+        return conversationList;
     }
 
-    public List<Conversation> getAllConversations(Conversation.ConversationType... type) {
-        return mRongIMClient.getConversationList(type);
+    public void getAllConversations(final ResultCallback<List<Conversation>> callback) {
+        mRongIMClient.getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
+            @Override
+            public void onSuccess(List<Conversation> conversations) {
+                if (conversations != null) {
+                    for (Conversation conversation : conversations) {
+                        setupTitleAndAvatar(conversation);
+                    }
+                }
+                CallbackUtil.callResult(conversations, callback);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
+            }
+        }, SUPPORT_CONVERSATION_TYPE);
     }
 
     public Conversation getConversation(Conversation.ConversationType type, String targetId) {
-        return mRongIMClient.getConversation(type, targetId);
+        Conversation conversation = mRongIMClient.getConversation(type, targetId);
+        if (conversation != null) {
+            setupTitleAndAvatar(conversation);
+        }
+        return conversation;
     }
 
-    public void setConversationTop(final Conversation.ConversationType type, final String targetId, boolean isTop) {
+    private void setupTitleAndAvatar(Conversation conversation) {
+        String conversationID = conversation.getTargetId();
+        switch (conversation.getConversationType()) {
+            case PRIVATE:
+                ContactEntity contactEntity = mAppClient.getContactManager().getContact(conversationID);
+                if (contactEntity != null) {
+                    conversation.setConversationTitle(contactEntity.getName());
+                    conversation.setPortraitUrl(contactEntity.getUserProfile().getAvatar());
+                }
+                break;
+            case GROUP:
+                GroupEntity group = mAppClient.getGroupManager().getGroup(conversationID);
+                if (group != null) {
+                    conversation.setConversationTitle(group.getName());
+                    conversation.setPortraitUrl(group.getAvatarUrlFromMembers());
+                }
+                break;
+        }
+    }
+
+    public void setTopConversation(final Conversation.ConversationType type, final String targetId, boolean isTop, final ResultCallback<Void> callback) {
         mRongIMClient.setConversationToTop(type, targetId, isTop, new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
                     callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_SET_TOP);
                 } else {
-                    LogUtil.e("setConversationTop fail");
+                    LogUtil.e("setTopConversation fail");
                 }
+                CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
                 LogUtil.e(errorCode.getMessage());
             }
         });
     }
 
-    public void clearConversationUnreadStatus(final Conversation.ConversationType type, final String targetId) {
+    public void clearConversationUnreadStatus(final Conversation.ConversationType type, final String targetId, final ResultCallback<Void> callback) {
         mRongIMClient.clearMessagesUnreadStatus(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_CLEAR_UNREAD_STATUS);
                     updateChatUnreadCount();
+                    callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_CLEAR_UNREAD_STATUS);
                 } else {
                     LogUtil.e("clearMessagesUnreadStatus error");
                 }
+                CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
                 LogUtil.e(errorCode.getMessage());
             }
         });
     }
 
-    public void updateConversationTitle(final Conversation.ConversationType type, final String targetId, String title) {
-        mRongIMClient.updateConversationInfo(type, targetId, title, "null", new RongIMClient.ResultCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                if (aBoolean) {
-                    callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_UPDATE);
-                } else {
-                    LogUtil.e("updateConversationTitle error");
-                }
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
-            }
-        });
-    }
-
-    public void removeConversation(Conversation.ConversationType type, String targetId) {
-        removeConversation(type, targetId, true);
-    }
-
-    public void removeConversation(final Conversation.ConversationType type, final String targetId, final boolean isCallbackListener) {
+    public void removeConversation(final Conversation.ConversationType type, final String targetId, final ResultCallback<Void> callback) {
+        final Conversation conversation = getConversation(type, targetId);
         mRongIMClient.removeConversation(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
-                    if (isCallbackListener) {
-                        callbackConversationChange(Conversation.obtain(type, targetId, null), UPDATE_TYPE_REMOVE);
-                    }
+                    callbackConversationChange(conversation, UPDATE_TYPE_REMOVE);
                     updateChatUnreadCount();
                 } else {
                     LogUtil.e("removeConversation fail");
                 }
+                CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
                 LogUtil.e(errorCode.getMessage());
             }
         });
     }
 
-    public void saveConversationDraft(final Conversation.ConversationType type, final String targetId, final String draft) {
+    public void saveConversationDraft(final Conversation.ConversationType type, final String targetId, final String draft, final ResultCallback<Void> callback) {
         mRongIMClient.saveTextMessageDraft(type, targetId, draft, new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
@@ -147,16 +178,18 @@ public class ConversationManager {
                 } else {
                     LogUtil.e("saveConversationDraft fail");
                 }
+                CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
                 LogUtil.e(errorCode.getMessage());
             }
         });
     }
 
-    public void clearAllConversationMessages(final Conversation.ConversationType type, final String targetId) {
+    public void clearConversationMessages(final Conversation.ConversationType type, final String targetId, final ResultCallback<Void> callback) {
         mRongIMClient.deleteMessages(type, targetId, new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
@@ -166,47 +199,53 @@ public class ConversationManager {
                 } else {
                     LogUtil.e("saveConversationDraft fail");
                 }
+                CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
                 LogUtil.e(errorCode.getMessage());
             }
         });
     }
 
-    public void setEnableConversationNotification(final Conversation.ConversationType type, final String targetId, boolean isEnable) {
+    public void setEnableConversationNotification(final Conversation.ConversationType type, final String targetId, boolean isEnable, final ResultCallback<Void> callback) {
         Conversation.ConversationNotificationStatus status = isEnable ? Conversation.ConversationNotificationStatus.NOTIFY : Conversation.ConversationNotificationStatus.DO_NOT_DISTURB;
         mRongIMClient.setConversationNotificationStatus(type, targetId, status, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
             @Override
             public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
                 callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_NOTIFICATION_CHANGE);
                 updateChatUnreadCount();
-            }
-
-            @Override
-            public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtil.e(errorCode.getMessage());
-            }
-        });
-    }
-
-    public void isEnableConversationNotification(Conversation conversation, final ResultCallback<Conversation.ConversationNotificationStatus> callback) {
-        mRongIMClient.getConversationNotificationStatus(conversation.getConversationType(), conversation.getTargetId(), new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
-            @Override
-            public void onSuccess(Conversation.ConversationNotificationStatus conversationNotificationStatus) {
-                CallbackUtil.callResult(conversationNotificationStatus, callback);
+                CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
                 CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
+                LogUtil.e(errorCode.getMessage());
             }
         });
     }
 
+    public boolean isEnableConversationNotification(final Conversation.ConversationType type, final String targetId) {
+        Conversation conversation = getConversation(type, targetId);
+        if (conversation != null) {
+            return conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY;
+        }
+        return false;
+    }
+
     public int getConversationUnreadCount() {
         return mUnreadChatMessageCount;
+    }
+
+    void updateConversationTitle(final Conversation.ConversationType type, final String targetId, String title) {
+        callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_UPDATE);
+    }
+
+    void onConversationListChange() {
+        callbackConversationChange(null, UPDATE_LIST_CHANGE);
     }
 
     void updateChatUnreadCount() {
@@ -214,7 +253,7 @@ public class ConversationManager {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 if (conversations == null || conversations.size() == 0) {
-                    updateUnreadCount(0);
+                    callUpdateUnreadCountChange(0);
                     return;
                 }
                 Iterator<Conversation> it = conversations.iterator();
@@ -225,7 +264,7 @@ public class ConversationManager {
                     }
                 }
                 if (conversations.size() == 0) {
-                    updateUnreadCount(0);
+                    callUpdateUnreadCountChange(0);
                     return;
                 }
 
@@ -234,7 +273,7 @@ public class ConversationManager {
                 mRongIMClient.getTotalUnreadCount(new RongIMClient.ResultCallback<Integer>() {
                     @Override
                     public void onSuccess(Integer integer) {
-                        updateUnreadCount(integer);
+                        callUpdateUnreadCountChange(integer);
                     }
 
                     @Override
@@ -250,7 +289,7 @@ public class ConversationManager {
                 LogUtil.e(errorCode.getMessage());
             }
 
-            void updateUnreadCount(int newCount) {
+            void callUpdateUnreadCountChange(int newCount) {
                 if (mUnreadChatMessageCount != newCount) {
                     mUnreadChatMessageCount = newCount;
                     for (OnConversationUnreadCountListener listener : mConversationUnreadCountListeners) {
@@ -259,17 +298,16 @@ public class ConversationManager {
                 }
             }
         }, SUPPORT_CONVERSATION_TYPE);
-
     }
 
-    public void addConversationStateChangeListener(OnConversationStateChangeListener listener) {
-        if (!mConversationStateChangeListeners.contains(listener)) {
-            mConversationStateChangeListeners.add(listener);
+    public void addConversationStateChangeListener(OnConversationChangeListener listener) {
+        if (!mConversationChangeListeners.contains(listener)) {
+            mConversationChangeListeners.add(listener);
         }
     }
 
-    public void removeConversationStateChangeListener(OnConversationStateChangeListener listener) {
-        mConversationStateChangeListeners.remove(listener);
+    public void removeConversationStateChangeListener(OnConversationChangeListener listener) {
+        mConversationChangeListeners.remove(listener);
     }
 
     public void addConversationUnreadCountListener(OnConversationUnreadCountListener listener) {
@@ -283,24 +321,24 @@ public class ConversationManager {
     }
 
 
-    private void callbackConversationChange(Conversation conversation, int typeCode) {
-        for (OnConversationStateChangeListener listener : mConversationStateChangeListeners) {
-            listener.onConversationStateChange(conversation, typeCode);
+    void callbackConversationChange(Conversation conversation, int typeCode) {
+        for (OnConversationChangeListener listener : mConversationChangeListeners) {
+            listener.onConversationChange(conversation, typeCode);
         }
     }
 
     void destroy() {
         mConversationUnreadCountListeners.clear();
         mConversationUnreadCountListeners = null;
-        mConversationStateChangeListeners.clear();
-        mConversationStateChangeListeners = null;
+        mConversationChangeListeners.clear();
+        mConversationChangeListeners = null;
     }
 
     public interface OnConversationUnreadCountListener {
         void OnConversationUnreadCountChange(int count);
     }
 
-    public interface OnConversationStateChangeListener {
-        void onConversationStateChange(Conversation conversation, int typeCode);
+    public interface OnConversationChangeListener {
+        void onConversationChange(Conversation conversation, int typeCode);
     }
 }

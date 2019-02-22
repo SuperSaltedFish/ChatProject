@@ -4,7 +4,6 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
-import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import io.rong.imlib.model.Conversation;
 
@@ -45,14 +44,8 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
         }
 
         mContactChatSettingView.switchTopState(mConversation.isTop());
-        mAppClient.getConversationManager().isEnableConversationNotification(mConversation, new LifecycleMVPResultCallback<Conversation.ConversationNotificationStatus>(mContactChatSettingView, false) {
-            @Override
-            protected void onSuccess(Conversation.ConversationNotificationStatus result) {
-                mContactChatSettingView.switchRemindState(result == Conversation.ConversationNotificationStatus.DO_NOT_DISTURB);
+        mContactChatSettingView.switchRemindState(mAppClient.getConversationManager().isEnableConversationNotification(Conversation.ConversationType.PRIVATE, contactID));
 
-            }
-
-        });
     }
 
     @Override
@@ -62,18 +55,18 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
 
     @Override
     public void enableConversationNotification(boolean isEnable) {
-        mAppClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable);
+        mAppClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable,null);
     }
 
     @Override
     public void setConversationToTop(boolean isTop) {
-        mAppClient.getConversationManager().setConversationTop(mConversation.getConversationType(), mConversation.getTargetId(), isTop);
+        mAppClient.getConversationManager().setTopConversation(mConversation.getConversationType(), mConversation.getTargetId(), isTop, null);
     }
 
 
     @Override
     public void clearChatMessages() {
-        mAppClient.getConversationManager().clearAllConversationMessages(mConversation.getConversationType(), mConversation.getTargetId());
+        mAppClient.getConversationManager().clearConversationMessages(mConversation.getConversationType(), mConversation.getTargetId(),null);
     }
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
