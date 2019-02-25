@@ -47,11 +47,11 @@ public class ProfileEditPresenter implements ProfileEditContract.Presenter {
 
     @Override
     public void uploadAvatar(final String avatarPath) {
-        AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new LifecycleMVPResultCallback<UploadAvatarEntity>(mProfileModifyView) {
+        AppClient.getInstance().getUserManager().uploadAvatar(avatarPath, new LifecycleMVPResultCallback<String>(mProfileModifyView) {
             @Override
-            protected void onSuccess(UploadAvatarEntity result) {
+            protected void onSuccess(String result) {
                 deleteFile(avatarPath);
-                mProfileModifyView.showNewAvatar(result.getAvatarUrl());
+                mProfileModifyView.showNewAvatar(result);
             }
 
             @Override

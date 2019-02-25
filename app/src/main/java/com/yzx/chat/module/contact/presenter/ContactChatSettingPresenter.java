@@ -34,7 +34,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
     @Override
     public void init(String contactID) {
         mContactID = contactID;
-        mContactChatSettingView.updateContactInfo(mAppClient.getContactManager().getContact(contactID).getRemark());
+        mContactChatSettingView.updateContactInfo(mAppClient.getContactManager().getContact(contactID));
         mConversation = mAppClient.getConversationManager().getConversation(Conversation.ConversationType.PRIVATE, contactID);
         if (mConversation == null) {
             mConversation = new Conversation();
@@ -76,14 +76,14 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
         }
 
         @Override
-        public void onContactDeleted(ContactEntity contact) {
+        public void onContactDeleted(String contactID) {
 
         }
 
         @Override
         public void onContactUpdate(ContactEntity contact) {
             if (mContactID.equals(contact.getUserProfile().getUserID())) {
-                mContactChatSettingView.updateContactInfo(contact.getRemark());
+                mContactChatSettingView.updateContactInfo(contact);
             }
         }
     };

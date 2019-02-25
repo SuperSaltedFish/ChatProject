@@ -2,12 +2,15 @@ package com.yzx.chat.module.contact.view;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.ViewGroup;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.widget.view.SegmentedControlView;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
@@ -16,6 +19,7 @@ public class NotificationMessageActivity extends BaseCompatActivity {
     private SegmentedControlView mSegmentedControlView;
     private ContactOperationFragment mContactOperationFragment;
     private SystemMessageFragment mSystemMessageFragment;
+    private Toolbar mToolbar;
     private FragmentManager mFragmentManager;
 
     @Override
@@ -25,7 +29,8 @@ public class NotificationMessageActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mSegmentedControlView = findViewById(R.id.NotificationMessageActivity_mSegmentedControlView);
+        mToolbar = findViewById(R.id.Default_mToolbar);
+        mSegmentedControlView =new SegmentedControlView(this);
         mContactOperationFragment = new ContactOperationFragment();
         mSystemMessageFragment = new SystemMessageFragment();
         mFragmentManager = getSupportFragmentManager();
@@ -49,6 +54,7 @@ public class NotificationMessageActivity extends BaseCompatActivity {
                 .setDefaultSelectedPosition(0)
                 .setOnSelectionChangedListener(mOnSelectedChangedListener)
                 .update();
+        mToolbar.addView(mSegmentedControlView,new Toolbar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
         mFragmentManager.beginTransaction()
                 .add(R.id.NotificationMessageActivity_mFlContent, mContactOperationFragment)

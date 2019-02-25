@@ -8,8 +8,6 @@ import com.yzx.chat.core.entity.ContactOperationEntity;
 
 import java.util.List;
 
-import androidx.recyclerview.widget.DiffUtil;
-
 /**
  * Created by YZX on 2018年01月20日.
  * 每一个不曾起舞的日子 都是对生命的辜负
@@ -19,27 +17,19 @@ import androidx.recyclerview.widget.DiffUtil;
 public class ContactOperationContract {
 
     public interface View extends BaseView<Presenter> {
-        void addContactOperationToList(ContactOperationEntity ContactOperation);
-
-        void removeContactOperationFromList(ContactOperationEntity ContactOperation);
-
-        void updateContactOperationFromList(ContactOperationEntity ContactOperation);
-
-        void updateAllContactOperationList(DiffUtil.DiffResult diffResult, List<ContactOperationEntity> newDataList);
+        void showContactOperation(List<ContactOperationEntity> contactOperationList);
     }
 
 
     public interface Presenter extends BasePresenter<View> {
 
-        void init();
+        void loadAllAndMakeAllAsRead();
 
         void acceptContactRequest(ContactOperationEntity contactOperation);
 
         void refusedContactRequest(ContactOperationEntity contactOperation);
 
         void removeContactOperation(ContactOperationEntity ContactOperation);
-
-        void loadAllContactOperation();
 
         ContactEntity findContact(String userID);
 

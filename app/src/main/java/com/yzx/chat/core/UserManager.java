@@ -11,9 +11,13 @@ import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.core.net.api.UserApi;
 import com.yzx.chat.core.util.CallbackUtil;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 
@@ -27,25 +31,31 @@ import androidx.annotation.Nullable;
 public class UserManager {
 
     private AppClient mAppClient;
-    private UserEntity mUserEntity;
+    private UserEntity mCurrentUser;
     private UserApi mUserApi;
     private UserDao mUserDao;
+    private Map<String, UserEntity> mUserCacheMap;
 
-    UserManager(AppClient appClient ) {
+    UserManager(AppClient appClient) {
         mAppClient = appClient;
         mUserApi = ApiHelper.getProxyInstance(UserApi.class);
+        mUserCacheMap = Collections.synchronizedMap(new HashMap<String, UserEntity>(256));
     }
 
     void init(AbstractDao.ReadWriteHelper helper, UserEntity userEntity) {
         if (userEntity == null || userEntity.isEmpty()) {
             throw new RuntimeException("token or user can't be empty");
         }
-        mUserEntity = userEntity;
+        mCurrentUser = userEntity;
         mUserDao = new UserDao(helper);
+        List<UserEntity> userList = mUserDao.loadAll();
+        for (UserEntity user : userList) {
+            mUserCacheMap.put(user.getUserID(), user);
+        }
     }
 
     void destroy() {
-        mUserEntity = null;
+        mCurrentUser = null;
         mUserDao = null;
     }
 
@@ -55,12 +65,15 @@ public class UserManager {
                 .enqueue(new ResponseHandler<>(new ResultCallback<Void>() {
                     @Override
                     public void onResult(Void result) {
-                        mUserEntity.setNickname(nickname);
-                        mUserEntity.setSex(sex);
-                        mUserEntity.setBirthday(birthday);
-                        mUserEntity.setLocation(location);
-                        mUserEntity.setSignature(signature);
-                        mUserDao.update(mUserEntity);
+                        mCurrentUser.setNickname(nickname);
+                        mCurrentUser.setSex(sex);
+                        mCurrentUser.setBirthday(birthday);
+                        mCurrentUser.setLocation(location);
+                        mCurrentUser.setSignature(signature);
+                        mUserCacheMap.put(mCurrentUser.getUserID(), mCurrentUser);
+                        if (!mUserDao.update(mCurrentUser)) {
+                            LogUtil.e("update userInfo fail");
+                        }
                         CallbackUtil.callResult(result, callback);
                     }
 
@@ -68,24 +81,27 @@ public class UserManager {
                     public void onFailure(int code, String error) {
                         CallbackUtil.callFailure(code, error, callback);
                     }
-                }));
+                }), false);
     }
 
-    public void uploadAvatar(String imagePath, final ResultCallback<UploadAvatarEntity> callback) {
+    public void uploadAvatar(String imagePath, final ResultCallback<String> callback) {
         mUserApi.uploadAvatar(imagePath, null)
                 .enqueue(new ResponseHandler<>(new ResultCallback<UploadAvatarEntity>() {
                     @Override
                     public void onResult(UploadAvatarEntity result) {
-                        mUserEntity.setAvatar(result.getAvatarUrl());
-                        mUserDao.update(mUserEntity);
-                        CallbackUtil.callResult(result, callback);
+                        mCurrentUser.setAvatar(result.getAvatarUrl());
+                        mUserCacheMap.put(mCurrentUser.getUserID(), mCurrentUser);
+                        if (!mUserDao.update(mCurrentUser)) {
+                            LogUtil.e("update avatar fail");
+                        }
+                        CallbackUtil.callResult(result.getAvatarUrl(), callback);
                     }
 
                     @Override
                     public void onFailure(int code, String error) {
                         CallbackUtil.callFailure(code, error, callback);
                     }
-                }));
+                }), false);
     }
 
     public void searchUser(String nicknameOrTelephone, final ResultCallback<List<UserEntity>> callback) {
@@ -93,6 +109,14 @@ public class UserManager {
                 .enqueue(new ResponseHandler<>(new ResultCallback<ArrayList<UserEntity>>() {
                     @Override
                     public void onResult(ArrayList<UserEntity> result) {
+                        if (result != null && result.size() != 0) {
+                            for (UserEntity user : result) {
+                                mUserCacheMap.put(user.getUserID(), user);
+                            }
+                            if (!mUserDao.replaceAll(result)) {
+                                LogUtil.e("replaceAll userList fail");
+                            }
+                        }
                         CallbackUtil.callResult(result, callback);
                     }
 
@@ -100,31 +124,40 @@ public class UserManager {
                     public void onFailure(int code, String error) {
                         CallbackUtil.callFailure(code, error, callback);
                     }
-                }));
+                }), false);
     }
 
-    public void findUserProfileByID(String userID, final ResultCallback<GetUserProfileEntity> callback) {
+    public UserEntity findUserInfoFromLocal(String userID) {
+        return mUserCacheMap.get(userID);
+    }
+
+    public void findUserInfoByID(String userID, final ResultCallback<UserEntity> callback) {
         mUserApi.getUserProfile(userID)
                 .enqueue(new ResponseHandler<>(new ResultCallback<GetUserProfileEntity>() {
                     @Override
                     public void onResult(GetUserProfileEntity result) {
-                        CallbackUtil.callResult(result, callback);
+                        UserEntity user = result.getUserProfile();
+                        mUserCacheMap.put(user.getUserID(), user);
+                        if (!mUserDao.replace(user)) {
+                            LogUtil.e("replace userList fail");
+                        }
+                        CallbackUtil.callResult(user, callback);
                     }
 
                     @Override
                     public void onFailure(int code, String error) {
                         CallbackUtil.callFailure(code, error, callback);
                     }
-                }));
+                }), false);
     }
 
     @Nullable
     public String getUserID() {
-        return mUserEntity.getUserID();
+        return mCurrentUser.getUserID();
     }
 
     public UserEntity getCurrentUser() {
-        return UserEntity.copy(mUserEntity);
+        return UserEntity.copy(mCurrentUser);
     }
 
     static UserEntity getUserInfoFromDB(String userID, AbstractDao.ReadWriteHelper helper) {

@@ -1,6 +1,5 @@
 package com.yzx.chat.widget.adapter;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -19,6 +18,8 @@ import com.yzx.chat.widget.view.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
@@ -67,7 +68,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         }
 
         holder.mTagsFlowLayout.removeAllViews();
-        ArrayList<String> tags = contactEntity.getRemark().getTags();
+        ArrayList<String> tags = contactEntity.getTags();
         if (tags != null && tags.size() != 0) {
             TextView label;
             for (String tag : tags) {

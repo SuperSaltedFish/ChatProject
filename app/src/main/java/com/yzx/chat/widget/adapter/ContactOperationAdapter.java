@@ -17,7 +17,11 @@ import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.AsyncDifferConfig;
+import androidx.recyclerview.widget.AsyncListDiffer;
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by YZX on 2018年01月18日.
@@ -27,11 +31,10 @@ import androidx.core.content.ContextCompat;
 
 public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOperationAdapter.ContactMessageHolder> {
 
-    private List<ContactOperationEntity> mContactOperationList;
     private OnContactRequestListener mOnContactRequestListener;
 
-    public ContactOperationAdapter(List<ContactOperationEntity> contactOperationList) {
-        mContactOperationList = contactOperationList;
+    public ContactOperationAdapter() {
+
     }
 
     @Override
@@ -41,7 +44,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
 
     @Override
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
-        ContactOperationEntity contactMessage = mContactOperationList.get(position);
+        ContactOperationEntity contactMessage = getItem(position);
         holder.setOnContactRequestListener(mOnContactRequestListener);
         holder.mTvName.setText(contactMessage.getUser().getNickname());
         String reason = contactMessage.getReason();
@@ -99,13 +102,37 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
 
     @Override
     public int getViewHolderCount() {
-        return mContactOperationList == null ? 0 : mContactOperationList.size();
+        return mAsyncListDiffer.getCurrentList().size();
     }
 
     public void setOnContactRequestListener(OnContactRequestListener onContactRequestListener) {
         mOnContactRequestListener = onContactRequestListener;
         notifyDataSetChanged();
     }
+
+    public ContactOperationEntity getItem(int position) {
+        return mAsyncListDiffer.getCurrentList().get(position);
+    }
+
+    public void submitList(List<ContactOperationEntity> contactOperationList) {
+        mAsyncListDiffer.submitList(contactOperationList);
+    }
+
+
+    private final AsyncListDiffer<ContactOperationEntity> mAsyncListDiffer = new AsyncListDiffer<>(
+            new BaseRecyclerViewAdapter.ListUpdateCallback(this),
+            new AsyncDifferConfig.Builder<>(new DiffUtil.ItemCallback<ContactOperationEntity>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull ContactOperationEntity oldItem, @NonNull ContactOperationEntity newItem) {
+                    return TextUtils.equals(oldItem.getContactOperationID(), newItem.getContactOperationID());
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull ContactOperationEntity oldItem, @NonNull ContactOperationEntity newItem) {
+                    return oldItem.getType().equals(newItem.getType()) && oldItem.getReason().equals(newItem.getReason());
+                }
+
+            }).build());
 
     static final class ContactMessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
 

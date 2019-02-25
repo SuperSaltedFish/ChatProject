@@ -20,6 +20,7 @@ import java.util.Locale;
 
 
 public class UserEntity implements Parcelable {
+    public static final int SEX_NOT_SET = 0;
     public static final int SEX_MAN = 1;
     public static final int SEX_WOMAN = 2;
 
@@ -173,7 +174,7 @@ public class UserEntity implements Parcelable {
                 Date birthDay = isoFormat.parse(strBirthday);
                 Calendar cal = Calendar.getInstance();
                 if (cal.before(birthDay)) {
-                    return "0"+ AndroidHelper.getString(R.string.Unit_Age);
+                    return "0" + AndroidHelper.getString(R.string.Unit_Age);
                 }
                 int yearNow = cal.get(Calendar.YEAR);
                 int monthNow = cal.get(Calendar.MONTH);
@@ -193,7 +194,7 @@ public class UserEntity implements Parcelable {
                         age--;
                     }
                 }
-                return String.valueOf(age)+ AndroidHelper.getString(R.string.Unit_Age);
+                return String.valueOf(age) + AndroidHelper.getString(R.string.Unit_Age);
             } catch (ParseException e) {
                 e.printStackTrace();
 

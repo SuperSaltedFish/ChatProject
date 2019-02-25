@@ -162,7 +162,7 @@ public class NotificationHelper {
     }
 
     public void showContactOperationNotification(ContactOperationEntity contactOperation, boolean isFullScreen) {
-        String id = contactOperation.getUserID();
+        String id = contactOperation.getContactOperationID();
         String title = contactOperation.getUser().getNickname();
         String content = contactOperation.getReason();
         if (TextUtils.isEmpty(content)) {
@@ -315,8 +315,8 @@ public class NotificationHelper {
         @Override
         public void onReceive(Context context, Intent intent) {
             ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
-            if (contactOperation != null && TextUtils.isEmpty(contactOperation.getUserID())) {
-                recycleNotification(contactOperation.getUserID().hashCode());
+            if (contactOperation != null && TextUtils.isEmpty(contactOperation.getContactOperationID())) {
+                recycleNotification(contactOperation.getContactOperationID().hashCode());
                 Activity topActivity = ActivityHelper.getStackTopActivityInstance();
                 if (topActivity != null) {
 

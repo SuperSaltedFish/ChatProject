@@ -92,7 +92,7 @@ public class ContactListPresenter implements ContactListContract.Presenter {
         }
 
         @Override
-        public void onContactDeleted(final ContactEntity contact) {
+        public void onContactDeleted(final String contactID) {
             loadAllContact();
         }
 

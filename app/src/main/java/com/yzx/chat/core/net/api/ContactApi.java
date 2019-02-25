@@ -1,6 +1,5 @@
 package com.yzx.chat.core.net.api;
 
-import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.core.entity.GetUserContactsEntity;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.net.framework.Call;
@@ -31,5 +30,8 @@ public interface ContactApi {
 
     @POST("contact/updateRemark")
     Call<JsonResponse<Void>> updateRemark(@Param("contactID") String friendUserID,
-                                          @Param("remark") ContactRemarkEntity contactRemark);
+                                          @Param("remarkName") String contactRemark,
+                                          @Param("remarkName") String description,
+                                          @Param("remarkName") String telephones,
+                                          @Param("remarkName") String tags);
 }

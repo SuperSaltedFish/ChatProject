@@ -17,7 +17,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.core.entity.ContactRemarkEntity;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
 import com.yzx.chat.module.contact.presenter.ContactChatSettingPresenter;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
@@ -155,18 +155,18 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
     }
 
     @Override
-    public void updateContactInfo(ContactRemarkEntity contactRemark) {
+    public void updateContactInfo(ContactEntity contact) {
         boolean isShowRemarkTitle = false;
-        if (!TextUtils.isEmpty(contactRemark.getRemarkName())) {
+        if (!TextUtils.isEmpty(contact.getRemarkName())) {
             mNicknameLayout.setVisibility(View.VISIBLE);
-            mTvRemarkName.setText(contactRemark.getRemarkName());
+            mTvRemarkName.setText(contact.getRemarkName());
             isShowRemarkTitle = true;
         } else {
             mNicknameLayout.setVisibility(View.GONE);
         }
 
         mLlContentTelephone.removeAllViews();
-        List<String> telephones = contactRemark.getTelephone();
+        List<String> telephones = contact.getTelephones();
         if (telephones != null && telephones.size() > 0) {
             isShowRemarkTitle = true;
             mTelephoneLayout.setVisibility(View.VISIBLE);
@@ -204,7 +204,7 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
             mTelephoneLayout.setVisibility(View.GONE);
         }
 
-        String description = contactRemark.getDescription();
+        String description = contact.getDescription();
         if (!TextUtils.isEmpty(description)) {
             isShowRemarkTitle = true;
             mDescriptionLayout.setVisibility(View.VISIBLE);

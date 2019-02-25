@@ -1,9 +1,11 @@
 package com.yzx.chat.core.database;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by YZX on 2017年11月17日.
@@ -31,6 +33,18 @@ public abstract class AbstractDao<T> {
         mReadWriteHelper = readWriteHelper;
     }
 
+    public List<T> loadAll() {
+        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        Cursor cursor = database.query(getTableName(), null, null, null, null, null, null);
+        List<T> list = new ArrayList<>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            list.add(toEntity(cursor));
+        }
+        cursor.close();
+        mReadWriteHelper.closeReadableDatabase();
+        return list;
+    }
+
     public T loadByKey(String... keyValues) {
         if (keyValues == null || keyValues.length == 0) {
             return null;
@@ -50,7 +64,7 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        ContentValues values =new ContentValues();
+        ContentValues values = new ContentValues();
         parseToContentValues(entity, values);
         boolean result = mReadWriteHelper.openWritableDatabase().insert(getTableName(), null, values) > 0;
         mReadWriteHelper.closeWritableDatabase();
@@ -88,7 +102,7 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        ContentValues values =new ContentValues();
+        ContentValues values = new ContentValues();
         parseToContentValues(entity, values);
         boolean result = mReadWriteHelper.openWritableDatabase().replace(getTableName(), null, values) > 0;
         mReadWriteHelper.closeWritableDatabase();
@@ -126,7 +140,7 @@ public abstract class AbstractDao<T> {
         if (entity == null) {
             return false;
         }
-        ContentValues values =new ContentValues();
+        ContentValues values = new ContentValues();
         parseToContentValues(entity, values);
         boolean result = mReadWriteHelper.openWritableDatabase().update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0;
         mReadWriteHelper.closeWritableDatabase();

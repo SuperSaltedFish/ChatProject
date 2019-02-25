@@ -39,7 +39,7 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void acceptContactRequest(ContactOperationEntity contactOperation) {
-        AppClient.getInstance().getContactManager().acceptContact(contactOperation.getUserID(), new LifecycleMVPResultCallback<Void>(mStrangerProfileView) {
+        AppClient.getInstance().getContactManager().acceptContact(contactOperation.getUser().getUserID(), new LifecycleMVPResultCallback<Void>(mStrangerProfileView) {
             @Override
             protected void onSuccess(Void result) {
                 mStrangerProfileView.goBack();

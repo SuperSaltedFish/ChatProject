@@ -334,8 +334,8 @@ public class ChatPresenter implements ChatContract.Presenter {
         }
 
         @Override
-        public void onContactDeleted(ContactEntity contact) {
-            if (TextUtils.equals(mConversationID, contact.getUserProfile().getUserID())) {
+        public void onContactDeleted(String contactID) {
+            if (TextUtils.equals(mConversationID, contactID)) {
                 mChatView.goBack();
             }
         }

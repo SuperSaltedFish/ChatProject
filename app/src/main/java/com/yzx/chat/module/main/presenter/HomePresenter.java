@@ -115,7 +115,7 @@ public class HomePresenter implements HomeContract.Presenter {
         }
 
         @Override
-        public void onContactDeleted(ContactEntity contact) {
+        public void onContactDeleted(String contactID) {
 
         }
 
@@ -141,7 +141,7 @@ public class HomePresenter implements HomeContract.Presenter {
         }
 
         @Override
-        public void onContactOperationRemove(final ContactOperationEntity contactOperation) {
+        public void onContactOperationRemove(final String contactOperationID) {
 
         }
     };

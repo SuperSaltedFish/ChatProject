@@ -5,7 +5,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.Expose;
 import com.yzx.chat.util.PinYinUtil;
+
+import java.util.ArrayList;
 
 
 /**
@@ -14,18 +17,21 @@ import com.yzx.chat.util.PinYinUtil;
  */
 
 
-public class ContactEntity implements Parcelable,BasicInfoProvider {
+public class ContactEntity implements BasicInfoProvider, Parcelable {
 
+    private String contactID;
+    private String description;
+    private String remarkName;
+    private ArrayList<String> telephones;
+    private ArrayList<String> tags;
     private UserEntity userProfile;
-    private ContactRemarkEntity remark;
+
+    @Expose
+    private int uploadFlag;
 
     private String abbreviation;
 
     public String getName() {
-        String remarkName = null;
-        if (remark != null) {
-            remarkName = remark.getRemarkName();
-        }
         return TextUtils.isEmpty(remarkName) ? userProfile.getNickname() : remarkName;
     }
 
@@ -36,7 +42,7 @@ public class ContactEntity implements Parcelable,BasicInfoProvider {
 
     @Override
     public String getAvatar() {
-        return userProfile==null?null:userProfile.getAvatar();
+        return userProfile == null ? null : userProfile.getAvatar();
     }
 
     @Override
@@ -53,17 +59,62 @@ public class ContactEntity implements Parcelable,BasicInfoProvider {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof ContactEntity)) {
+        if (!(obj instanceof ContactEntity)) {
             return false;
         }
         if (this == obj) {
             return true;
         }
         ContactEntity contact = (ContactEntity) obj;
-        if (userProfile == null || !userProfile.equals(contact.getUserProfile())) {
-            return false;
-        }
-        return true;
+        return TextUtils.equals(contactID, contact.contactID);
+    }
+
+    public String getContactID() {
+        return contactID;
+    }
+
+    public void setContactID(String contactID) {
+        this.contactID = contactID;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRemarkName() {
+        return remarkName;
+    }
+
+    public void setRemarkName(String remarkName) {
+        this.remarkName = remarkName;
+    }
+
+    public ArrayList<String> getTelephones() {
+        return telephones;
+    }
+
+    public void setTelephones(ArrayList<String> telephones) {
+        this.telephones = telephones;
+    }
+
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
+
+    public int getUploadFlag() {
+        return uploadFlag;
+    }
+
+    public void setUploadFlag(int uploadFlag) {
+        this.uploadFlag = uploadFlag;
     }
 
     public UserEntity getUserProfile() {
@@ -74,14 +125,6 @@ public class ContactEntity implements Parcelable,BasicInfoProvider {
         this.userProfile = userProfile;
     }
 
-    public ContactRemarkEntity getRemark() {
-        return remark;
-    }
-
-    public void setRemark(ContactRemarkEntity remark) {
-        this.remark = remark;
-    }
-
 
     @Override
     public int describeContents() {
@@ -90,8 +133,13 @@ public class ContactEntity implements Parcelable,BasicInfoProvider {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.contactID);
+        dest.writeString(this.description);
+        dest.writeString(this.remarkName);
+        dest.writeStringList(this.telephones);
+        dest.writeStringList(this.tags);
         dest.writeParcelable(this.userProfile, flags);
-        dest.writeParcelable(this.remark, flags);
+        dest.writeInt(this.uploadFlag);
         dest.writeString(this.abbreviation);
     }
 
@@ -99,12 +147,17 @@ public class ContactEntity implements Parcelable,BasicInfoProvider {
     }
 
     protected ContactEntity(Parcel in) {
+        this.contactID = in.readString();
+        this.description = in.readString();
+        this.remarkName = in.readString();
+        this.telephones = in.createStringArrayList();
+        this.tags = in.createStringArrayList();
         this.userProfile = in.readParcelable(UserEntity.class.getClassLoader());
-        this.remark = in.readParcelable(ContactRemarkEntity.class.getClassLoader());
+        this.uploadFlag = in.readInt();
         this.abbreviation = in.readString();
     }
 
-    public static final Creator<ContactEntity> CREATOR = new Creator<ContactEntity>() {
+    public static final Parcelable.Creator<ContactEntity> CREATOR = new Parcelable.Creator<ContactEntity>() {
         @Override
         public ContactEntity createFromParcel(Parcel source) {
             return new ContactEntity(source);

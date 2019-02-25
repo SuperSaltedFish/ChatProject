@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".module.contact.view.NotificationMessageActivity">
 
-    <include
-        layout="@layout/include_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp">
-
-        <com.yzx.chat.widget.view.SegmentedControlView
-            android:id="@+id/NotificationMessageActivity_mSegmentedControlView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </include>
-
+    <include layout="@layout/include_toolbar" />
 
     <FrameLayout
         android:id="@+id/NotificationMessageActivity_mFlContent"

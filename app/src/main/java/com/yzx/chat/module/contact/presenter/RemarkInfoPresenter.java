@@ -3,6 +3,7 @@ package com.yzx.chat.module.contact.presenter;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
 import com.yzx.chat.core.AppClient;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -15,20 +16,26 @@ import java.util.Set;
 
 public class RemarkInfoPresenter implements RemarkInfoContract.Presenter {
 
+    private RemarkInfoContract.View mRemarkInfoView;
 
     @Override
     public void attachView(RemarkInfoContract.View view) {
-
+        mRemarkInfoView = view;
     }
 
     @Override
     public void detachView() {
-
+        mRemarkInfoView = null;
     }
 
     @Override
     public void save(ContactEntity contact) {
-        AppClient.getInstance().getContactManager().updateContactRemark(contact, null);
+        AppClient.getInstance().getContactManager().updateContactRemark(contact.getContactID(), contact.getRemarkName(), contact.getDescription(), contact.getTelephones(), contact.getTags(), new LifecycleMVPResultCallback<Void>(mRemarkInfoView) {
+            @Override
+            protected void onSuccess(Void result) {
+
+            }
+        });
     }
 
     @Override

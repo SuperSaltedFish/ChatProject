@@ -17,7 +17,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.contract.ContactProfileContract;
@@ -173,9 +172,9 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         if (resultCode == EditContactTagsActivity.RESULT_CODE) {
             ContactEntity contact = mPresenter.getContact();
             ArrayList<String> newTags = data.getStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL);
-            ArrayList<String> oldTags = contact.getRemark().getTags();
+            ArrayList<String> oldTags = contact.getTags();
             if (!StringUtil.isEquals(newTags, oldTags, true)) {
-                contact.getRemark().setTags(newTags);
+                contact.setTags(newTags);
                 mPresenter.saveRemarkInfo(contact);
             }
         }
@@ -194,7 +193,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
     private void startEditContactLabelActivity() {
         Intent intent = new Intent(ContactProfileActivity.this, EditContactTagsActivity.class);
-        intent.putExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mPresenter.getContact().getRemark().getTags());
+        intent.putExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mPresenter.getContact().getTags());
         intent.putExtra(EditContactTagsActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
         startActivityForResult(intent, 0);
     }
@@ -262,8 +261,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         GlideUtil.loadAvatarFromUrl(this, mIvAvatar, user.getAvatar());
         mLabelFlowLayout.removeAllViews();
 
-        ContactRemarkEntity contactRemark = contact.getRemark();
-        List<String> tags = contactRemark.getTags();
+        List<String> tags = contact.getTags();
         if (tags != null && tags.size() != 0) {
             for (String tag : tags) {
                 TextView label = (TextView) getLayoutInflater().inflate(R.layout.item_label_normal, mLabelFlowLayout, false);

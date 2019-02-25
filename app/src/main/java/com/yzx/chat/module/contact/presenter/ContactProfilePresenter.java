@@ -1,6 +1,8 @@
 package com.yzx.chat.module.contact.presenter;
 
 
+import android.text.TextUtils;
+
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactEntity;
@@ -74,7 +76,12 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void saveRemarkInfo(ContactEntity contact) {
-        AppClient.getInstance().getContactManager().updateContactRemark(contact, null);
+        AppClient.getInstance().getContactManager().updateContactRemark(contact.getContactID(), contact.getRemarkName(), contact.getDescription(), contact.getTelephones(), contact.getTags(), new LifecycleMVPResultCallback<Void>(mContactProfileView) {
+            @Override
+            protected void onSuccess(Void result) {
+
+            }
+        });
     }
 
 
@@ -85,8 +92,8 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
         }
 
         @Override
-        public void onContactDeleted(ContactEntity contact) {
-            if (contact.equals(mContactEntity)) {
+        public void onContactDeleted(String contactID) {
+            if (TextUtils.equals(mContactEntity.getContactID(),contactID)) {
                 mContactProfileView.goBack();
             }
         }

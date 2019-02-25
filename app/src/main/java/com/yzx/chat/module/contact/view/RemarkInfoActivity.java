@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.ContactRemarkEntity;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.contract.RemarkInfoContract;
 import com.yzx.chat.module.contact.presenter.RemarkInfoPresenter;
@@ -79,15 +78,14 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     private void setData() {
         mContactEntity = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-        if (mContactEntity == null || mContactEntity.getRemark() == null || mContactEntity.getUserProfile() == null) {
+        if (mContactEntity == null || mContactEntity.getUserProfile() == null) {
             LogUtil.e("mContactEntity == null");
             finish();
         } else {
-            ContactRemarkEntity contactRemark = mContactEntity.getRemark();
             mEtRemarkName.setText(mContactEntity.getName());
-            mEtDescription.setText(contactRemark.getDescription());
-            setTelephones(contactRemark.getTelephone());
-            mTags = contactRemark.getTags();
+            mEtDescription.setText(mContactEntity.getDescription());
+            setTelephones(mContactEntity.getTelephones());
+            mTags = mContactEntity.getTags();
             setTags(mTags);
         }
     }
@@ -154,35 +152,34 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     }
 
     private void confirm() {
-        ContactRemarkEntity contactRemark = mContactEntity.getRemark();
         String remarkName = mEtRemarkName.getText().toString();
         String description = mEtDescription.getText().toString();
         ArrayList<String> newTelephones = getTelephones();
-        ArrayList<String> newTags =mTags;
-        ArrayList<String> oldTelephones = contactRemark.getTelephone();
-        ArrayList<String> oldTags = contactRemark.getTags();
+        ArrayList<String> newTags = mTags;
+        ArrayList<String> oldTelephones = mContactEntity.getTelephones();
+        ArrayList<String> oldTags = mContactEntity.getTags();
         boolean isChanged = false;
 
-        if (!remarkName.equals(contactRemark.getRemarkName())) {
+        if (!remarkName.equals(mContactEntity.getRemarkName())) {
             if (!remarkName.equals(mContactEntity.getUserProfile().getNickname())) {
                 isChanged = true;
-                contactRemark.setRemarkName(remarkName);
-            } else if (!TextUtils.isEmpty(contactRemark.getRemarkName())) {
+                mContactEntity.setRemarkName(remarkName);
+            } else if (!TextUtils.isEmpty(mContactEntity.getRemarkName())) {
                 isChanged = true;
-                contactRemark.setRemarkName(null);
+                mContactEntity.setRemarkName(null);
             }
         }
-        if (isChanged || !description.equals(contactRemark.getDescription())) {
+        if (isChanged || !description.equals(mContactEntity.getDescription())) {
             isChanged = true;
-            contactRemark.setDescription(description);
+            mContactEntity.setDescription(description);
         }
-        if (isChanged || !StringUtil.isEquals(newTelephones, oldTelephones,true)) {
+        if (isChanged || !StringUtil.isEquals(newTelephones, oldTelephones, true)) {
             isChanged = true;
-            contactRemark.setTelephone(newTelephones);
+            mContactEntity.setTelephones(newTelephones);
         }
-        if (isChanged || !StringUtil.isEquals(newTags, oldTags,true)) {
+        if (isChanged || !StringUtil.isEquals(newTags, oldTags, true)) {
             isChanged = true;
-            contactRemark.setTags(newTags);
+            mContactEntity.setTags(newTags);
         }
         if (isChanged) {
             mPresenter.save(mContactEntity);
@@ -234,7 +231,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         @Override
         public void onSingleClick(View v) {
             Intent intent = new Intent(RemarkInfoActivity.this, EditContactTagsActivity.class);
-            intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mContactEntity.getRemark().getTags());
+            intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_LABEL, mContactEntity.getTags());
             intent.putStringArrayListExtra(EditContactTagsActivity.INTENT_EXTRA_SELECTABLE_LABEL, mPresenter.getAllTags());
             startActivityForResult(intent, 0);
 

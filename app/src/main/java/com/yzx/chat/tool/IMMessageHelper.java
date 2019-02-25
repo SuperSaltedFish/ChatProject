@@ -10,6 +10,7 @@ import android.text.style.ForegroundColorSpan;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.UserEntity;
@@ -90,11 +91,11 @@ public class IMMessageHelper {
             case ContactManager.CONTACT_OPERATION_ACCEPT:
             case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
                 try {
-                    ContactManager.ContactMessageExtra extra = GSON.fromJson(message.getExtra(), ContactManager.ContactMessageExtra.class);
-                    if (extra != null && extra.userProfile != null) {
-                        return String.format(AndroidHelper.getString(R.string.MessageSummary_ContactNtf_Accept), extra.userProfile.getNickname());
+                    ContactEntity contact = AppClient.getInstance().getContactManager().getContact(message.getTargetUserId());
+                    if (contact != null) {
+                        return String.format(AndroidHelper.getString(R.string.MessageSummary_ContactNtf_Accept), contact.getName());
                     } else {
-                        LogUtil.e("extra==null || extra.userProfile==null,data:" + message.getExtra());
+                        LogUtil.e("contact==null " + message.getExtra());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
