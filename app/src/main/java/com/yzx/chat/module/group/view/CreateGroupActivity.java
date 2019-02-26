@@ -129,7 +129,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
             ContactEntity contact;
             for (GroupMemberEntity member : groupMemberList) {
                 contact = new ContactEntity();
-                contact.setUserProfile(member.getUserProfile());
+                contact.setUserInfo(member.getUserProfile());
                 mAlreadyJoinContactList.add(contact);
             }
             mAlreadyJoinContactList.retainAll(mAllContactList);
@@ -205,7 +205,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 ImageView avatar = new ImageView(CreateGroupActivity.this);
                 avatar.setId(position);
                 avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this, avatar, mFilterContactList.get(position - 1).getUserProfile().getAvatar());
+                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this, avatar, mFilterContactList.get(position - 1).getUserInfo().getAvatar());
                 mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidHelper.dip2px(40), (int) AndroidHelper.dip2px(40)));
             } else {
                 mSelectedContactList.remove(mAllContactList.get(position - 1));

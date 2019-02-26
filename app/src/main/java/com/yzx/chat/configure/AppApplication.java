@@ -8,6 +8,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.yzx.chat.R;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.login.view.LoginActivity;
+import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.util.AndroidHelper;
 
 import java.util.List;
@@ -38,10 +39,10 @@ public class AppApplication extends Application {
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
 
             AndroidHelper.init(this);
-
+            ActivityHelper.init(this);
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
-
             AppClient.init(this);
+
             AppClient.getInstance().setLoginExpiredListener(new AppClient.LoginExpiredListener() {
                 @Override
                 public void onLoginExpired() {

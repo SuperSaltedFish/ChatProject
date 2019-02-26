@@ -287,10 +287,11 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         LoginActivity.jumpToLoginPage((FragmentActivity) mContext);
     }
 
-    public static final class VerifyInfo implements Parcelable {
+    static final class VerifyInfo implements Parcelable {
         String telephone;
         String password;
         String nickname;
+
 
         @Override
         public int describeContents() {

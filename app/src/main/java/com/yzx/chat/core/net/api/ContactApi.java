@@ -2,6 +2,7 @@ package com.yzx.chat.core.net.api;
 
 import com.yzx.chat.core.entity.GetUserContactsEntity;
 import com.yzx.chat.core.entity.JsonResponse;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.net.framework.Call;
 import com.yzx.chat.core.net.framework.annotation.POST;
 import com.yzx.chat.core.net.framework.annotation.Param;
@@ -23,15 +24,15 @@ public interface ContactApi {
     Call<JsonResponse<Void>> refusedContact(@Param("contactID") String contactID, @Param("reason") String reason);
 
     @POST("contact/acceptContact")
-    Call<JsonResponse<Void>> acceptContact(@Param("contactID") String contactID);
+    Call<JsonResponse<UserEntity>> acceptContact(@Param("contactID") String contactID);
 
     @POST("contact/deleteContact")
     Call<JsonResponse<Void>> deleteContact(@Param("contactID") String contactID);
 
     @POST("contact/updateRemark")
-    Call<JsonResponse<Void>> updateRemark(@Param("contactID") String friendUserID,
-                                          @Param("remarkName") String contactRemark,
-                                          @Param("remarkName") String description,
-                                          @Param("remarkName") String telephones,
-                                          @Param("remarkName") String tags);
+    Call<JsonResponse<Void>> updateRemark(@Param("contactID") String contactID,
+                                          @Param("contactRemark") String contactRemark,
+                                          @Param("description") String description,
+                                          @Param("telephones") String telephones,
+                                          @Param("tags") String tags);
 }

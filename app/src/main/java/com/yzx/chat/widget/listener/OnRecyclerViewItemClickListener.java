@@ -60,7 +60,7 @@ public abstract class OnRecyclerViewItemClickListener implements RecyclerView.On
     }
 
     private class ItemTouchHelperGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final int MAX_CLICK_INTERVAL = 300;
+        private static final int MAX_CLICK_INTERVAL = 600;
 
         private long lastClickTime;
 

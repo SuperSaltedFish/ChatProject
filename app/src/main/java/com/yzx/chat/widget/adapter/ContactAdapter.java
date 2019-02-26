@@ -54,7 +54,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             holder.itemView.setTag(null);
         }
         ContactEntity contactEntity = mContactList.get(position);
-        UserEntity user = contactEntity.getUserProfile();
+        UserEntity user = contactEntity.getUserInfo();
         holder.mTvName.setText(contactEntity.getName());
         holder.mIvSex.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
         holder.mTvAge.setText(user.getAge());
@@ -77,7 +77,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
                 holder.mTagsFlowLayout.addView(label);
             }
         }
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getUserProfile().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getUserInfo().getAvatar());
     }
 
     @Override

@@ -111,14 +111,14 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         @Override
         public void enterDetails(int position) {
             ContactOperationEntity contactOperation = mAdapter.getItem(position);
-            ContactEntity contact = mPresenter.findContact(contactOperation.getUser().getUserID());
+            ContactEntity contact = mPresenter.findContact(contactOperation.getUserInfo().getUserID());
             Intent intent;
             if (contact == null) {
                 intent = new Intent(mContext, StrangerProfileActivity.class);
                 intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, contactOperation);
             } else {
                 intent = new Intent(mContext, ContactProfileActivity.class);
-                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserProfile().getUserID());
+                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserInfo().getUserID());
             }
             startActivity(intent);
         }

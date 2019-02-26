@@ -168,7 +168,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                     @Override
                     public void run() {
                         Intent intent = new Intent(mContext, ContactProfileActivity.class);
-                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactSearchList.get(position).getUserProfile().getUserID());
+                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactSearchList.get(position).getUserInfo().getUserID());
                         startActivity(intent);
                         mSearchView.setQuery(null, false);
                         mSearchView.setIconified(true);
@@ -315,7 +315,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
                 return;
             }
             Intent intent = new Intent(mContext, ContactProfileActivity.class);
-            intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactList.get(position - 1).getUserProfile().getUserID());
+            intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactList.get(position - 1).getUserInfo().getUserID());
             startActivity(intent);
         }
 

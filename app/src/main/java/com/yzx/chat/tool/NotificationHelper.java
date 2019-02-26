@@ -118,10 +118,10 @@ public class NotificationHelper {
     }
 
     public void showPrivateMessageNotification(Message message, ContactEntity contact, boolean isFullScreen) {
-        String conversationID = contact.getUserProfile().getUserID();
+        String conversationID = contact.getUserInfo().getUserID();
         String title = contact.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
-        String avatarUrl = contact.getUserProfile().getAvatar();
+        String avatarUrl = contact.getUserInfo().getAvatar();
         int notificationID = conversationID.hashCode();
         long time = message.getSentTime();
         Intent contentIntent = new Intent(ACTION_CHAT_MESSAGE);
@@ -162,13 +162,13 @@ public class NotificationHelper {
     }
 
     public void showContactOperationNotification(ContactOperationEntity contactOperation, boolean isFullScreen) {
-        String id = contactOperation.getContactOperationID();
-        String title = contactOperation.getUser().getNickname();
+        String id = contactOperation.getContactID();
+        String title = contactOperation.getUserInfo().getNickname();
         String content = contactOperation.getReason();
         if (TextUtils.isEmpty(content)) {
             content = AndroidHelper.getString(R.string.ContactOperationAdapter_DefaultReason);
         }
-        String avatarUrl = contactOperation.getUser().getAvatar();
+        String avatarUrl = contactOperation.getUserInfo().getAvatar();
         int notificationID = id.hashCode();
         long time = contactOperation.getTime();
         Intent contentIntent = new Intent(ACTION_CONTACT_OPERATION);
@@ -315,8 +315,8 @@ public class NotificationHelper {
         @Override
         public void onReceive(Context context, Intent intent) {
             ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
-            if (contactOperation != null && TextUtils.isEmpty(contactOperation.getContactOperationID())) {
-                recycleNotification(contactOperation.getContactOperationID().hashCode());
+            if (contactOperation != null && TextUtils.isEmpty(contactOperation.getContactID())) {
+                recycleNotification(contactOperation.getContactID().hashCode());
                 Activity topActivity = ActivityHelper.getStackTopActivityInstance();
                 if (topActivity != null) {
 

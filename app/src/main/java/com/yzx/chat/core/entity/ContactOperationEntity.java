@@ -12,11 +12,10 @@ import android.text.TextUtils;
 
 public class ContactOperationEntity implements Parcelable {
 
-
-    private String contactOperationID;
+    private String contactID;
     private String type;
     private String reason;
-    private UserEntity mUser;
+    private UserEntity userInfo;
     private boolean isRemind;
     private int time;
 
@@ -29,15 +28,20 @@ public class ContactOperationEntity implements Parcelable {
             return true;
         }
         ContactOperationEntity operation = (ContactOperationEntity) obj;
-        return TextUtils.equals(contactOperationID, operation.contactOperationID);
+        return TextUtils.equals(getContactID(), operation.getContactID());
     }
 
-    public String getContactOperationID() {
-        return contactOperationID;
+    public String getContactID() {
+        if(!TextUtils.isEmpty(contactID)){
+            return contactID;
+        }else if(userInfo !=null){
+            return userInfo.getUserID();
+        }
+        return "";
     }
 
-    public void setContactOperationID(String contactOperationID) {
-        this.contactOperationID = contactOperationID;
+    public void setContactID(String contactID) {
+        this.contactID = contactID;
     }
 
     public String getType() {
@@ -56,12 +60,12 @@ public class ContactOperationEntity implements Parcelable {
         this.reason = reason;
     }
 
-    public UserEntity getUser() {
-        return mUser;
+    public UserEntity getUserInfo() {
+        return userInfo;
     }
 
-    public void setUser(UserEntity user) {
-        mUser = user;
+    public void setUserInfo(UserEntity userInfo) {
+        this.userInfo = userInfo;
     }
 
     public boolean isRemind() {
@@ -88,10 +92,10 @@ public class ContactOperationEntity implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.contactOperationID);
+        dest.writeString(this.contactID);
         dest.writeString(this.type);
         dest.writeString(this.reason);
-        dest.writeParcelable(this.mUser, flags);
+        dest.writeParcelable(this.userInfo, flags);
         dest.writeByte(this.isRemind ? (byte) 1 : (byte) 0);
         dest.writeInt(this.time);
     }
@@ -100,10 +104,10 @@ public class ContactOperationEntity implements Parcelable {
     }
 
     protected ContactOperationEntity(Parcel in) {
-        this.contactOperationID = in.readString();
+        this.contactID = in.readString();
         this.type = in.readString();
         this.reason = in.readString();
-        this.mUser = in.readParcelable(UserEntity.class.getClassLoader());
+        this.userInfo = in.readParcelable(UserEntity.class.getClassLoader());
         this.isRemind = in.readByte() != 0;
         this.time = in.readInt();
     }

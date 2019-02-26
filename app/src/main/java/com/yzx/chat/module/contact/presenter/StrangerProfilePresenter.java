@@ -1,6 +1,7 @@
 package com.yzx.chat.module.contact.presenter;
 
 import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.contact.contract.StrangerProfileContract;
@@ -39,9 +40,9 @@ public class StrangerProfilePresenter implements StrangerProfileContract.Present
 
     @Override
     public void acceptContactRequest(ContactOperationEntity contactOperation) {
-        AppClient.getInstance().getContactManager().acceptContact(contactOperation.getUser().getUserID(), new LifecycleMVPResultCallback<Void>(mStrangerProfileView) {
+        AppClient.getInstance().getContactManager().acceptContact(contactOperation.getUserInfo().getUserID(), new LifecycleMVPResultCallback<ContactEntity>(mStrangerProfileView) {
             @Override
-            protected void onSuccess(Void result) {
+            protected void onSuccess(ContactEntity result) {
                 mStrangerProfileView.goBack();
             }
         });

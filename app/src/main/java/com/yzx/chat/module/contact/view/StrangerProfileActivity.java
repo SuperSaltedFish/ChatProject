@@ -115,7 +115,7 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         }
 
         if (mContactOperationEntity != null) {
-            mUser = mContactOperationEntity.getUser();
+            mUser = mContactOperationEntity.getUserInfo();
             boolean isOperable = true;
             switch (mContactOperationEntity.getType()) {
                 case ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE:

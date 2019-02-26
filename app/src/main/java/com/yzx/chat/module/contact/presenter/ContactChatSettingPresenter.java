@@ -82,7 +82,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
 
         @Override
         public void onContactUpdate(ContactEntity contact) {
-            if (mContactID.equals(contact.getUserProfile().getUserID())) {
+            if (mContactID.equals(contact.getUserInfo().getUserID())) {
                 mContactChatSettingView.updateContactInfo(contact);
             }
         }

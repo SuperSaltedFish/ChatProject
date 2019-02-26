@@ -1,7 +1,6 @@
 package com.yzx.chat.core.net.api;
 
 import com.yzx.chat.core.entity.GetTempUserIDEntity;
-import com.yzx.chat.core.entity.GetUserProfileEntity;
 import com.yzx.chat.core.entity.JsonResponse;
 import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.entity.UserEntity;
@@ -20,8 +19,8 @@ import java.util.ArrayList;
 
 public interface UserApi {
 
-    @POST("user/getUserProfile")
-    Call<JsonResponse<GetUserProfileEntity>> getUserProfile(@Param("targetUserID") String userID);
+    @POST("user/getUserInfo")
+    Call<JsonResponse<UserEntity>> getUserProfile(@Param("targetUserID") String userID);
 
     @POST("user/searchUser")
     Call<JsonResponse<ArrayList<UserEntity>>> searchUser(@Param("queryCondition") String nicknameOrTelephone);

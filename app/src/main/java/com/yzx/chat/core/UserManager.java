@@ -3,7 +3,6 @@ package com.yzx.chat.core;
 
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.UserDao;
-import com.yzx.chat.core.entity.GetUserProfileEntity;
 import com.yzx.chat.core.entity.UploadAvatarEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.listener.ResultCallback;
@@ -133,15 +132,14 @@ public class UserManager {
 
     public void findUserInfoByID(String userID, final ResultCallback<UserEntity> callback) {
         mUserApi.getUserProfile(userID)
-                .enqueue(new ResponseHandler<>(new ResultCallback<GetUserProfileEntity>() {
+                .enqueue(new ResponseHandler<>(new ResultCallback<UserEntity>() {
                     @Override
-                    public void onResult(GetUserProfileEntity result) {
-                        UserEntity user = result.getUserProfile();
-                        mUserCacheMap.put(user.getUserID(), user);
-                        if (!mUserDao.replace(user)) {
+                    public void onResult(UserEntity result) {
+                        mUserCacheMap.put(result.getUserID(), result);
+                        if (!mUserDao.replace(result)) {
                             LogUtil.e("replace userList fail");
                         }
-                        CallbackUtil.callResult(user, callback);
+                        CallbackUtil.callResult(result, callback);
                     }
 
                     @Override

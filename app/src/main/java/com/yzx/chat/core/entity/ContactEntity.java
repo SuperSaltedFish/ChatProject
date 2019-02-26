@@ -24,7 +24,7 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
     private String remarkName;
     private ArrayList<String> telephones;
     private ArrayList<String> tags;
-    private UserEntity userProfile;
+    private UserEntity userInfo;
 
     @Expose
     private int uploadFlag;
@@ -32,7 +32,12 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
     private String abbreviation;
 
     public String getName() {
-        return TextUtils.isEmpty(remarkName) ? userProfile.getNickname() : remarkName;
+        if(!TextUtils.isEmpty(remarkName)){
+            return remarkName;
+        }else if(userInfo!=null){
+            return userInfo.getNickname();
+        }
+        return "";
     }
 
     @Override
@@ -42,7 +47,7 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
 
     @Override
     public String getAvatar() {
-        return userProfile == null ? null : userProfile.getAvatar();
+        return userInfo == null ? null : userInfo.getAvatar();
     }
 
     @Override
@@ -70,7 +75,12 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
     }
 
     public String getContactID() {
-        return contactID;
+        if(!TextUtils.isEmpty(contactID)){
+            return contactID;
+        }else if(userInfo!=null){
+            return userInfo.getUserID();
+        }
+        return "";
     }
 
     public void setContactID(String contactID) {
@@ -117,12 +127,12 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
         this.uploadFlag = uploadFlag;
     }
 
-    public UserEntity getUserProfile() {
-        return userProfile;
+    public UserEntity getUserInfo() {
+        return userInfo;
     }
 
-    public void setUserProfile(UserEntity userProfile) {
-        this.userProfile = userProfile;
+    public void setUserInfo(UserEntity userInfo) {
+        this.userInfo = userInfo;
     }
 
 
@@ -138,7 +148,7 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
         dest.writeString(this.remarkName);
         dest.writeStringList(this.telephones);
         dest.writeStringList(this.tags);
-        dest.writeParcelable(this.userProfile, flags);
+        dest.writeParcelable(this.userInfo, flags);
         dest.writeInt(this.uploadFlag);
         dest.writeString(this.abbreviation);
     }
@@ -152,7 +162,7 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
         this.remarkName = in.readString();
         this.telephones = in.createStringArrayList();
         this.tags = in.createStringArrayList();
-        this.userProfile = in.readParcelable(UserEntity.class.getClassLoader());
+        this.userInfo = in.readParcelable(UserEntity.class.getClassLoader());
         this.uploadFlag = in.readInt();
         this.abbreviation = in.readString();
     }

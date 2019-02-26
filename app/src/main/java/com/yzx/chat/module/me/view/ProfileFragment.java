@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.module.me.contract.ProfileContract;
 import com.yzx.chat.module.me.presenter.ProfilePresenter;
-import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.AlbumPagerAdapter;
@@ -117,7 +117,7 @@ public class ProfileFragment extends BaseFragment<ProfileContract.Presenter> imp
                     startActivity(new Intent(mContext, ProfileEditActivity.class));
                     break;
                 case R.id.ProfileFragment_mIvSetting:
-                    SharePreferenceHelper.getConfigurePreferences().putFirstGuide(true);
+                    AppClient.getInstance().logout();
                     startActivity(new Intent(mContext, LoginActivity.class));
                     getActivity().finish();
                     break;

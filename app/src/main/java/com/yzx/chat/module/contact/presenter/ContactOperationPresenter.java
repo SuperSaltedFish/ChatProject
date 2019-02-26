@@ -44,9 +44,9 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void acceptContactRequest(final ContactOperationEntity contactOperation) {
-        mAppClient.getContactManager().acceptContact(contactOperation.getUser().getUserID(), new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
+        mAppClient.getContactManager().acceptContact(contactOperation.getUserInfo().getUserID(), new LifecycleMVPResultCallback<ContactEntity>(mContactOperationContractView) {
             @Override
-            protected void onSuccess(Void result) {
+            protected void onSuccess(ContactEntity result) {
 
             }
 
@@ -55,7 +55,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void refusedContactRequest(ContactOperationEntity contactOperation) {
-        mAppClient.getContactManager().refusedContact(contactOperation.getUser().getUserID(), "", new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
+        mAppClient.getContactManager().refusedContact(contactOperation.getUserInfo().getUserID(), "", new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
             @Override
             protected void onSuccess(Void result) {
 
@@ -65,7 +65,7 @@ public class ContactOperationPresenter implements ContactOperationContract.Prese
 
     @Override
     public void removeContactOperation(ContactOperationEntity ContactOperation) {
-        mAppClient.getContactManager().removeContactOperation(ContactOperation.getContactOperationID(), new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
+        mAppClient.getContactManager().removeContactOperation(ContactOperation.getContactID(), new LifecycleMVPResultCallback<Void>(mContactOperationContractView) {
             @Override
             protected void onSuccess(Void result) {
 

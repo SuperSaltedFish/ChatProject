@@ -254,7 +254,7 @@ public class GroupManager {
                     case GROUP_OPERATION_QUIT:
                         GroupMessageExtra.Quit quitExtra = (GroupMessageExtra.Quit) finalExtra;
                         if (quitExtra.member == null || quitExtra.member.getUserProfile() == null) {
-                            LogUtil.e("quitExtra.member == null || quitExtra.member.getUserProfile() == null");
+                            LogUtil.e("quitExtra.member == null || quitExtra.member.getUserInfo() == null");
                             break;
                         }
                         for (OnGroupOperationListener listener : mOnGroupOperationListeners) {

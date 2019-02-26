@@ -46,7 +46,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
         ContactOperationEntity contactMessage = getItem(position);
         holder.setOnContactRequestListener(mOnContactRequestListener);
-        holder.mTvName.setText(contactMessage.getUser().getNickname());
+        holder.mTvName.setText(contactMessage.getUserInfo().getNickname());
         String reason = contactMessage.getReason();
         if (TextUtils.isEmpty(reason)) {
             holder.mTvReason.setText(R.string.ContactOperationAdapter_DefaultReason);
@@ -96,7 +96,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
                 break;
         }
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUser().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUserInfo().getAvatar());
 
     }
 
@@ -124,7 +124,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
             new AsyncDifferConfig.Builder<>(new DiffUtil.ItemCallback<ContactOperationEntity>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull ContactOperationEntity oldItem, @NonNull ContactOperationEntity newItem) {
-                    return TextUtils.equals(oldItem.getContactOperationID(), newItem.getContactOperationID());
+                    return TextUtils.equals(oldItem.getContactID(), newItem.getContactID());
                 }
 
                 @Override

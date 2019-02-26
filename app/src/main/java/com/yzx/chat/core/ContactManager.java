@@ -98,7 +98,7 @@ public class ContactManager {
         List<ContactEntity> contacts = mContactDao.loadAllContacts();
         if (contacts != null) {
             for (ContactEntity contact : contacts) {
-                mContactsMap.put(contact.getUserProfile().getUserID(), contact);
+                mContactsMap.put(contact.getUserInfo().getUserID(), contact);
             }
         }
     }
@@ -158,7 +158,7 @@ public class ContactManager {
                     public void onResult(Void result) {
                         final ContactOperationEntity operation = new ContactOperationEntity();
                         operation.setReason(reason);
-                        operation.setUser(user);
+                        operation.setUserInfo(user);
                         operation.setTime((int) (System.currentTimeMillis() / 1000));
                         operation.setType(ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE);
                         operation.setRemind(false);
@@ -216,51 +216,41 @@ public class ContactManager {
                 }), false);
     }
 
-    public void acceptContact(final String userID, final ResultCallback<Void> callback) {
-        mAppClient.getUserManager().findUserInfoByID(userID, new ResultCallback<UserEntity>() {
-            @Override
-            public void onResult(final UserEntity user) {
-                mContactApi.acceptContact(userID)
-                        .enqueue(new ResponseHandler<>(new ResultCallback<Void>() {
-                            @Override
-                            public void onResult(Void result) {
-                                final ContactOperationEntity operation = mContactOperationDao.loadByKey(userID);
-                                operation.setTime((int) (System.currentTimeMillis() / 1000));
-                                operation.setType(ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE);
-                                operation.setRemind(false);
+    public void acceptContact(final String userID, final ResultCallback<ContactEntity> callback) {
+        mContactApi.acceptContact(userID)
+                .enqueue(new ResponseHandler<>(new ResultCallback<UserEntity>() {
+                    @Override
+                    public void onResult(UserEntity result) {
+                        final ContactOperationEntity operation = mContactOperationDao.loadByKey(userID);
+                        operation.setTime((int) (System.currentTimeMillis() / 1000));
+                        operation.setType(ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE);
+                        operation.setRemind(false);
 
-                                final ContactEntity contact = new ContactEntity();
-                                contact.setContactID(user.getUserID());
-                                contact.setUserProfile(user);
+                         ContactEntity contact = new ContactEntity();
+                        contact.setContactID(result.getUserID());
+                        contact.setUserInfo(result);
 
-                                if (mContactOperationDao.replace(operation) & addContactToDB(contact)) {
-                                    mUIHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            for (OnContactOperationListener listener : mContactOperationListeners) {
-                                                listener.onContactOperationUpdate(operation);
-                                            }
-                                        }
-                                    });
-                                    CallbackUtil.callResult(result, callback);
-                                } else {
-                                    LogUtil.e("acceptContact : Failure of operating database");
-                                    onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, ResourcesHelper.getString(R.string.Error_Client));
+                        if (mContactOperationDao.replace(operation) & addContactToDB(contact)) {
+                            mUIHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (OnContactOperationListener listener : mContactOperationListeners) {
+                                        listener.onContactOperationUpdate(operation);
+                                    }
                                 }
-                            }
+                            });
+                            CallbackUtil.callResult(contact, callback);
+                        } else {
+                            LogUtil.e("acceptContact : Failure of operating database");
+                            onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, ResourcesHelper.getString(R.string.Error_Client));
+                        }
+                    }
 
-                            @Override
-                            public void onFailure(int code, String error) {
-                                CallbackUtil.callFailure(code, error, callback);
-                            }
-                        }));
-            }
-
-            @Override
-            public void onFailure(int code, String error) {
-                CallbackUtil.callFailure(code, error, callback);
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String error) {
+                        CallbackUtil.callFailure(code, error, callback);
+                    }
+                }));
 
     }
 
@@ -336,7 +326,7 @@ public class ContactManager {
 
     private boolean addContactToDB(final ContactEntity contact) {
         if (mContactDao.insert(contact)) {
-            mContactsMap.put(contact.getUserProfile().getUserID(), contact);
+            mContactsMap.put(contact.getUserInfo().getUserID(), contact);
             ContactNotificationMessage ntfMessage = ContactNotificationMessage.obtain(CONTACT_OPERATION_ACCEPT_ACTIVE, mAppClient.getUserManager().getUserID(), contact.getContactID(), "");
             Message hintMessage = Message.obtain(contact.getContactID(), Conversation.ConversationType.PRIVATE, ntfMessage);
             hintMessage.setSentTime(System.currentTimeMillis());
@@ -535,7 +525,7 @@ public class ContactManager {
         }
 
         final ContactOperationEntity contactOperation = new ContactOperationEntity();
-        contactOperation.setUser(extraContent.userProfile);
+        contactOperation.setUserInfo(extraContent.userProfile);
         contactOperation.setTime((int) (System.currentTimeMillis() / 1000));
         contactOperation.setType(operation);
 
@@ -543,7 +533,7 @@ public class ContactManager {
             case CONTACT_OPERATION_ACCEPT:
                 contactOperation.setRemind(false);
                 ContactEntity contact = new ContactEntity();
-                contact.setUserProfile(extraContent.userProfile);
+                contact.setUserInfo(extraContent.userProfile);
                 addContactToDB(contact);
                 break;
             case CONTACT_OPERATION_DELETE:

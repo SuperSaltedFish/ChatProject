@@ -109,7 +109,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         database.beginTransactionNonExclusive();
         try {
-            UserEntity userInfo = entity.getUser();
+            UserEntity userInfo = entity.getUserInfo();
             if (database.insert(getTableName(), null, values) > 0 && (userInfo == null || UserDao.replaceUser(database, userInfo, values))) {
                 database.setTransactionSuccessful();
                 result = true;
@@ -132,7 +132,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
         database.beginTransactionNonExclusive();
         try {
-            UserEntity userInfo = entity.getUser();
+            UserEntity userInfo = entity.getUserInfo();
             if (database.replace(getTableName(), null, values) > 0 && (userInfo == null || UserDao.replaceUser(database, userInfo, values))) {
                 database.setTransactionSuccessful();
                 result = true;
@@ -148,7 +148,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         if (entity == null) {
             return false;
         }
-        UserEntity userInfo = entity.getUser();
+        UserEntity userInfo = entity.getUserInfo();
         if (userInfo == null) {
             return false;
         }
@@ -181,12 +181,12 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
 
     @Override
     protected String[] toWhereArgsOfKey(ContactOperationEntity entity) {
-        return new String[]{entity.getContactOperationID()};
+        return new String[]{entity.getContactID()};
     }
 
     @Override
     protected void parseToContentValues(ContactOperationEntity entity, ContentValues values) {
-        values.put(ContactOperationDao.COLUMN_NAME_ContactID, entity.getContactOperationID());
+        values.put(ContactOperationDao.COLUMN_NAME_ContactID, entity.getContactID());
         values.put(ContactOperationDao.COLUMN_NAME_Type, entity.getType());
         values.put(ContactOperationDao.COLUMN_NAME_Reason, entity.getReason());
         values.put(ContactOperationDao.COLUMN_NAME_IsRemind, entity.isRemind() ? 1 : 0);
@@ -200,8 +200,8 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         bean.setReason(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Reason)));
         bean.setRemind(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_IsRemind)) == 1);
         bean.setTime(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_Time)));
-        bean.setContactOperationID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Time)));
-        bean.setUser(UserDao.toEntityFromCursor(cursor));
+        bean.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Time)));
+        bean.setUserInfo(UserDao.toEntityFromCursor(cursor));
         return bean;
     }
 

@@ -158,10 +158,10 @@ public class ContactListPresenter implements ContactListContract.Presenter {
                     if (!oldItem.getName().equals(newItem.getName())) {
                         return false;
                     }
-                    if (!oldItem.getUserProfile().getAvatar().equals(newItem.getUserProfile().getAvatar())) {
+                    if (!oldItem.getUserInfo().getAvatar().equals(newItem.getUserInfo().getAvatar())) {
                         return false;
                     }
-                    if (!oldItem.getUserProfile().getNickname().equals(newItem.getUserProfile().getNickname())) {
+                    if (!oldItem.getUserInfo().getNickname().equals(newItem.getUserInfo().getNickname())) {
                         return false;
                     }
                     return true;
