@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactListContract;
@@ -51,7 +49,6 @@ import java.util.Locale;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -74,7 +71,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private TextView mTvIndexBarHint;
     private Toolbar mToolbar;
     private PopupWindow mSearchPopupWindow;
-    private FrameLayout mFlToolbarLayout;
     private SearchView mSearchView;
     private View mLlContactOperation;
     private View mLlGroup;
@@ -87,7 +83,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private LetterSegmentationItemDecoration mLetterSegmentationItemDecoration;
     private OverflowPopupMenu mContactMenu;
     private Handler mSearchHandler;
-    private List<ContactEntity> mContactList;
     private List<ContactEntity> mContactSearchList;
 
 
@@ -103,7 +98,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mIndexBarView = parentView.findViewById(R.id.ContactFragmentList_mIndexBarView);
         mTvIndexBarHint = parentView.findViewById(R.id.ContactFragmentList_mTvIndexBarHint);
         mFBtnAdd = parentView.findViewById(R.id.ContactFragmentList_mFBtnAdd);
-        mFlToolbarLayout = parentView.findViewById(R.id.ContactFragmentList_mFlToolbarLayout);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
         mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
         mLlGroup = mHeaderView.findViewById(R.id.ContactFragmentList_mLlGroup);
@@ -112,17 +106,15 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mTvTags = mHeaderView.findViewById(R.id.ContactFragmentList_mTvTags);
         mRvSearchContact = new RecyclerView(mContext);
         mContactMenu = new OverflowPopupMenu(mContext);
-        mContactList = new ArrayList<>(256);
         mContactSearchList = new ArrayList<>(32);
-        mContactAdapter = new ContactAdapter(mContactList);
-        mSearchAdapter = new ContactSearchAdapter(mContactList, mContactSearchList);
+        mContactAdapter = new ContactAdapter();
+        mSearchAdapter = new ContactSearchAdapter(mContactSearchList);
         mSearchHandler = new Handler();
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
         mToolbar.setTitle(R.string.app_name);
-        setSearchBar();
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack));
@@ -141,13 +133,14 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mLlContactOperation.setOnClickListener(mOnViewClickListener);
         mLlGroup.setOnClickListener(mOnViewClickListener);
         mLlTags.setOnClickListener(mOnViewClickListener);
+        mFBtnAdd.setOnClickListener(mOnViewClickListener);
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
-        mFBtnAdd.setOnClickListener(mOnViewClickListener);
-
         mContactAdapter.setHeaderView(mHeaderView);
+
+        setSearchBar();
         setOverflowMenu();
 
         BackPressedReceive.registerBackPressedListener(mBackPressedListener);
@@ -155,7 +148,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
 
     private void setSearchBar() {
-
         mRvSearchContact.setLayoutManager(new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false));
         mRvSearchContact.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
@@ -164,17 +156,10 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvSearchContact.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(mContext, ContactProfileActivity.class);
-                        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactSearchList.get(position).getUserInfo().getUserID());
-                        startActivity(intent);
-                        mSearchView.setQuery(null, false);
-                        mSearchView.setIconified(true);
-                        mSearchPopupWindow.dismiss();
-                    }
-                });
+                ContactProfileActivity.startActivity(mContext, mContactSearchList.get(position).getContactID());
+                mSearchView.setQuery(null, false);
+                mSearchView.setIconified(true);
+                mSearchPopupWindow.dismiss();
             }
         });
 
@@ -239,13 +224,11 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(int position, int menuID) {
-                int index = (int) mRvContact.getTag();
-                if (index < mContactList.size()) {
+                ContactEntity contact = (ContactEntity) mRvContact.getTag();
+                if (contact != null) {
                     switch (menuID) {
                         case R.id.ContactMenu_UpdateRemarkInfo:
-                            Intent intent = new Intent(mContext, RemarkInfoActivity.class);
-                            intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mContactList.get(index));
-                            startActivityForResult(intent, 0);
+                            RemarkInfoActivity.startActivityForResult(ContactListFragment.this, contact);
                             break;
                     }
                 }
@@ -311,21 +294,19 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
         public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
-            if (position == 0 && mContactAdapter.isHasHeaderView()) {
+            if (position == 0) {
                 return;
             }
-            Intent intent = new Intent(mContext, ContactProfileActivity.class);
-            intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mContactList.get(position - 1).getUserInfo().getUserID());
-            startActivity(intent);
+            ContactProfileActivity.startActivity(mContext, mContactAdapter.getItem(position - 1).getContactID());
         }
 
         @Override
         public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
-            if (position == 0 && mContactAdapter.isHasHeaderView()) {
+            if (position == 0) {
                 return;
             }
 
-            mRvContact.setTag(position - 1);
+            mRvContact.setTag(mContactAdapter.getItem(position - 1));
             OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mRvContact.getHeight(), (int) touchX, (int) touchY);
         }
     };
@@ -381,19 +362,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     }
 
     @Override
-    public void updateContactItem(ContactEntity contactEntity) {
-        int updatePosition = mContactList.indexOf(contactEntity);
-        if (updatePosition != -1) {
-            mContactList.set(updatePosition, contactEntity);
-            mContactAdapter.notifyItemChangedEx(updatePosition);
-        }
-    }
-
-    @Override
-    public void updateContactListView(DiffUtil.DiffResult diffResult, List<ContactEntity> newFriendList) {
-        mContactList.clear();
-        mContactList.addAll(newFriendList);
-        diffResult.dispatchUpdatesTo(new BaseRecyclerViewAdapter.ListUpdateCallback(mContactAdapter));
+    public void showContactList(List<ContactEntity> contactList) {
+        mSearchAdapter.setContactList(contactList);
+        mContactAdapter.submitList(contactList);
     }
 
     @Override

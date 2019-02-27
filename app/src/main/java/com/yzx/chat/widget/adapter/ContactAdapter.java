@@ -19,6 +19,10 @@ import com.yzx.chat.widget.view.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.AsyncDifferConfig;
+import androidx.recyclerview.widget.AsyncListDiffer;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -30,11 +34,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.ContactHolder> {
 
-    private List<ContactEntity> mContactList;
     private SparseArray<String> mIdentitySparseArray;
 
-    public ContactAdapter(List<ContactEntity> contactList) {
-        mContactList = contactList;
+    public ContactAdapter() {
         mIdentitySparseArray = new SparseArray<>(32);
         registerAdapterDataObserver(mDataObserver);
     }
@@ -53,7 +55,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         } else {
             holder.itemView.setTag(null);
         }
-        ContactEntity contactEntity = mContactList.get(position);
+        ContactEntity contactEntity = getItem(position);
         UserEntity user = contactEntity.getUserInfo();
         holder.mTvName.setText(contactEntity.getName());
         holder.mIvSex.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
@@ -82,7 +84,19 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
 
     @Override
     public int getViewHolderCount() {
-        return mContactList == null ? 0 : mContactList.size();
+        return mAsyncListDiffer.getCurrentList().size();
+    }
+
+    public void submitList(List<ContactEntity> contactList) {
+        mAsyncListDiffer.submitList(contactList);
+    }
+
+    public List<ContactEntity> getContactList(){
+        return mAsyncListDiffer.getCurrentList();
+    }
+
+    public ContactEntity getItem(int position) {
+        return mAsyncListDiffer.getCurrentList().get(position);
     }
 
     public int findPositionByLetter(String letter) {
@@ -95,13 +109,14 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
 
     private void resetLetter() {
         mIdentitySparseArray.clear();
-        if (mContactList != null && mContactList.size() != 0) {
+        List<ContactEntity> contactList = mAsyncListDiffer.getCurrentList();
+        if (contactList.size() != 0) {
             String identity;
             String abbreviation;
             String currentIdentity = null;
-            for (int i = 0, length = mContactList.size(); i < length; i++) {
-                abbreviation = mContactList.get(i).getAbbreviation();
-                if (abbreviation != null) {
+            for (int i = 0, length = contactList.size(); i < length; i++) {
+                abbreviation = contactList.get(i).getAbbreviation();
+                if (!TextUtils.isEmpty(abbreviation)) {
                     identity = abbreviation.substring(0, 1);
                     if (!identity.equals(currentIdentity)) {
                         mIdentitySparseArray.append(i, identity.toUpperCase().intern());
@@ -111,6 +126,30 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             }
         }
     }
+
+    private final AsyncListDiffer<ContactEntity> mAsyncListDiffer = new AsyncListDiffer<>(
+            new BaseRecyclerViewAdapter.ListUpdateCallback(this),
+            new AsyncDifferConfig.Builder<>(new DiffUtil.ItemCallback<ContactEntity>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull ContactEntity oldItem, @NonNull ContactEntity newItem) {
+                    return oldItem.equals(newItem);
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull ContactEntity oldItem, @NonNull ContactEntity newItem) {
+                    if (!oldItem.getName().equals(newItem.getName())) {
+                        return false;
+                    }
+                    if (!oldItem.getUserInfo().getAvatar().equals(newItem.getUserInfo().getAvatar())) {
+                        return false;
+                    }
+                    if (!oldItem.getUserInfo().getNickname().equals(newItem.getUserInfo().getNickname())) {
+                        return false;
+                    }
+                    return true;
+                }
+
+            }).build());
 
     private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
 

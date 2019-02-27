@@ -1,5 +1,6 @@
 package com.yzx.chat.module.contact.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -40,7 +41,13 @@ import androidx.viewpager.widget.ViewPager;
 
 public class ContactProfileActivity extends BaseCompatActivity<ContactProfileContract.Presenter> implements ContactProfileContract.View {
 
-    public static final String INTENT_EXTRA_CONTACT_ID = "ContactID";
+    private static final String INTENT_EXTRA_CONTACT_ID = "ContactID";
+
+    public static void startActivity(Context context,String contactID){
+        Intent intent = new Intent(context, ContactProfileActivity.class);
+        intent.putExtra(INTENT_EXTRA_CONTACT_ID,contactID);
+        context.startActivity(intent);
+    }
 
     private ImageView mIvStartChat;
     private ImageView mIvAvatar;
@@ -181,9 +188,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     private void startRemarkInfoActivity() {
-        Intent intent = new Intent(this, RemarkInfoActivity.class);
-        intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mPresenter.getContact());
-        startActivityForResult(intent, 0);
+        RemarkInfoActivity.startActivityForResult(this, mPresenter.getContact());
     }
 
     private void startChatActivity() {

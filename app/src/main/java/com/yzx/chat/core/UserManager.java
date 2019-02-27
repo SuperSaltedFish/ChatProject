@@ -58,6 +58,12 @@ public class UserManager {
         mUserDao = null;
     }
 
+    boolean replaceUserInfoOnDB(UserEntity userInfo) {
+        if (mUserDao == null) {
+            return false;
+        }
+        return mUserDao.replace(userInfo);
+    }
 
     public void updateProfile(final String nickname, final int sex, final String birthday, final String location, final String signature, final ResultCallback<Void> callback) {
         mUserApi.updateUserProfile(nickname, sex, birthday, location, signature)

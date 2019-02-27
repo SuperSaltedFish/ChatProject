@@ -1,5 +1,6 @@
 package com.yzx.chat.module.contact.view;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -28,6 +29,8 @@ import com.yzx.chat.widget.view.FlowLayout;
 
 import java.util.ArrayList;
 
+import androidx.fragment.app.Fragment;
+
 /**
  * Created by YZX on 2018年01月15日.
  * 优秀的代码是它自己最好的文档,当你考虑要添加一个注释时,问问自己:"如何能改进这段代码，以让它不需要注释？"
@@ -36,7 +39,19 @@ import java.util.ArrayList;
 
 public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Presenter> implements RemarkInfoContract.View {
 
-    public static final String INTENT_EXTRA_CONTACT = "Contact";
+    private static final String INTENT_EXTRA_CONTACT = "Contact";
+
+    public static void startActivityForResult(Fragment fragment, ContactEntity contact){
+        Intent intent = new Intent(fragment.getContext(), RemarkInfoActivity.class);
+        intent.putExtra(INTENT_EXTRA_CONTACT,contact);
+        fragment.startActivityForResult(intent,0);
+    }
+
+    public static void startActivityForResult(Activity activity, ContactEntity contact){
+        Intent intent = new Intent(activity, RemarkInfoActivity.class);
+        intent.putExtra(INTENT_EXTRA_CONTACT,contact);
+        activity.startActivityForResult(intent,0);
+    }
 
     private ContactEntity mContactEntity;
     private EditText mEtRemarkName;

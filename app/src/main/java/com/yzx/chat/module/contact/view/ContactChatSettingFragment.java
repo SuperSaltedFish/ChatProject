@@ -113,9 +113,7 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
     }
 
     private void startRemarkInfoActivity() {
-        Intent intent = new Intent(mContext, RemarkInfoActivity.class);
-        intent.putExtra(RemarkInfoActivity.INTENT_EXTRA_CONTACT, mPresenter.getContact());
-        startActivityForResult(intent, 0);
+        RemarkInfoActivity.startActivityForResult(this,mPresenter.getContact());
     }
 
     private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {

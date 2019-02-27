@@ -168,9 +168,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     @Override
     public void showSearchResult(UserEntity user, boolean isContact) {
         if (isContact) {
-            Intent intent = new Intent(this, ContactProfileActivity.class);
-            intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, user.getUserID());
-            startActivity(intent);
+            ContactProfileActivity.startActivity(this,user.getUserID());
         } else {
             Intent intent = new Intent(this, StrangerProfileActivity.class);
             intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);

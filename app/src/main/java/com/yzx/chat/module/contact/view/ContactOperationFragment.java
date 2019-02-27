@@ -116,11 +116,10 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
             if (contact == null) {
                 intent = new Intent(mContext, StrangerProfileActivity.class);
                 intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, contactOperation);
+                startActivity(intent);
             } else {
-                intent = new Intent(mContext, ContactProfileActivity.class);
-                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contact.getUserInfo().getUserID());
+                ContactProfileActivity.startActivity(mContext,contact.getContactID());
             }
-            startActivity(intent);
         }
     };
 

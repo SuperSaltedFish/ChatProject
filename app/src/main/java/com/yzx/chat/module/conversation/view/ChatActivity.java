@@ -96,7 +96,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     public static final int CONVERSATION_TYPE_PRIVATE = 1;
     public static final int CONVERSATION_TYPE_GROUP = 2;
 
-    public static void startActivity(Context context,String conversationID,int conversationType){
+    public static void startActivity(Context context, String conversationID, int conversationType) {
         Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, conversationType);
@@ -251,8 +251,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
         } else if (resultCode == FileSelectorActivity.RESULT_CODE) {
             ArrayList<String> filePathList = data.getStringArrayListExtra(FileSelectorActivity.INTENT_EXTRA_SELECTED_FILE_PATH);
-            if (filePathList != null&&filePathList.size()>0) {
-                for(String path:filePathList){
+            if (filePathList != null && filePathList.size() > 0) {
+                for (String path : filePathList) {
                     mPresenter.sendFileMessage(path);
                 }
             }
@@ -737,12 +737,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private void enterProfile() {
         switch (mCurrentConversationType) {
             case CONVERSATION_TYPE_PRIVATE:
-                Intent intent = new Intent(ChatActivity.this, ContactProfileActivity.class);
-                intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, mPresenter.getConversationID());
-                startActivity(intent);
+                ContactProfileActivity.startActivity(ChatActivity.this, mPresenter.getConversationID());
                 break;
             case CONVERSATION_TYPE_GROUP:
-                intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
+                Intent intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
                 intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getConversationID());
                 startActivity(intent);
         }

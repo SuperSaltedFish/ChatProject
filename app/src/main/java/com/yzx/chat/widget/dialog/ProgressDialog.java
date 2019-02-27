@@ -33,6 +33,7 @@ public class ProgressDialog extends Dialog {
 
     public ProgressDialog(@NonNull Context context, CharSequence hintText, boolean isCancelable) {
         super(context);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         mContext = context;
         setContentView(R.layout.dialog_progress);
         setCancelable(isCancelable);

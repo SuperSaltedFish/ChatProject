@@ -25,8 +25,7 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
     private List<ContactEntity> mContactList;
     private List<ContactEntity> mSearchContactList;
 
-    public ContactSearchAdapter(List<ContactEntity> contactList, List<ContactEntity> searchContactList) {
-        mContactList = contactList;
+    public ContactSearchAdapter( List<ContactEntity> searchContactList) {
         mSearchContactList = searchContactList;
     }
 
@@ -46,6 +45,11 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
     @Override
     public int getViewHolderCount() {
         return mSearchContactList == null ? 0 : mSearchContactList.size();
+    }
+
+    public void setContactList(List<ContactEntity> contactList) {
+        mContactList = contactList;
+        notifyDataSetChanged();
     }
 
     public int setFilterText(String text) {

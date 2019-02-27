@@ -271,9 +271,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     public void startContactProfileActivity(String contactID) {
-        Intent intent = new Intent(this, ContactProfileActivity.class);
-        intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, contactID);
-        startActivity(intent);
+        ContactProfileActivity.startActivity(this,contactID);
         finish();
     }
 

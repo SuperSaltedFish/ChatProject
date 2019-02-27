@@ -295,11 +295,10 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
                 String userID = mGroupMemberList.get(position).getUserProfile().getUserID();
                 if (mPresenter.isMySelf(userID)) {
                     intent = new Intent(GroupProfileActivity.this, ProfileEditActivity.class);
+                    startActivity(intent);
                 } else {
-                    intent = new Intent(GroupProfileActivity.this, ContactProfileActivity.class);
-                    intent.putExtra(ContactProfileActivity.INTENT_EXTRA_CONTACT_ID, userID);
+                    ContactProfileActivity.startActivity(GroupProfileActivity.this, userID);
                 }
-                startActivity(intent);
             }
         }
     };
@@ -361,7 +360,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     @Override
     public void showMembers(List<GroupMemberEntity> groupMemberList) {
         mGroupMemberList.clear();
-        if(groupMemberList!=null&&groupMemberList.size()>0){
+        if (groupMemberList != null && groupMemberList.size() > 0) {
             mGroupMemberList.addAll(groupMemberList);
         }
         mAdapter.notifyDataSetChanged();

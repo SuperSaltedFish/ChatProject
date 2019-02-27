@@ -10,7 +10,6 @@ import com.yzx.chat.R;
 import com.yzx.chat.core.database.AbstractDao;
 import com.yzx.chat.core.database.ContactDao;
 import com.yzx.chat.core.database.ContactOperationDao;
-import com.yzx.chat.core.database.UserDao;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.TagEntity;
@@ -68,7 +67,6 @@ public class ContactManager {
     private List<OnContactTagChangeListener> mContactTagChangeListeners;
     private ContactOperationDao mContactOperationDao;
     private ContactDao mContactDao;
-    private UserDao mUserDao;
 
 
     private ContactApi mContactApi;
@@ -93,7 +91,6 @@ public class ContactManager {
     void init(AbstractDao.ReadWriteHelper helper) {
         mContactOperationDao = new ContactOperationDao(helper);
         mContactDao = new ContactDao(helper);
-        mUserDao = new UserDao(helper);
         mContactTags = mContactDao.getAllTagsType();
         List<ContactEntity> contacts = mContactDao.loadAllContacts();
         if (contacts != null) {
@@ -519,7 +516,7 @@ public class ContactManager {
             LogUtil.e("extraContent == null || extraContent.userProfile == null");
             return;
         }
-        if (!mUserDao.replace(extraContent.userProfile)) {
+        if (!mAppClient.getUserManager().replaceUserInfoOnDB(extraContent.userProfile)) {
             LogUtil.e(" ContactOperation : replace user fail");
             return;
         }
