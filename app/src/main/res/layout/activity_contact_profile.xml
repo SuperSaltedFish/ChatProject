@@ -65,8 +65,7 @@
                     android:textSize="17sp" />
 
             </androidx.appcompat.widget.Toolbar>
-
-
+            
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <LinearLayout
@@ -167,7 +166,6 @@
         app:layout_anchor="@id/ContactProfileActivity_mLlContactInfoLayout"
         app:layout_anchorGravity="top|end" />
 
-
     <com.yzx.chat.widget.view.CircleImageView
         android:id="@+id/ContactProfileActivity_mIvStartChat"
         android:layout_width="48dp"
@@ -179,6 +177,5 @@
         android:elevation="4dp"
         android:padding="12dp"
         android:src="@drawable/ic_chat" />
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
