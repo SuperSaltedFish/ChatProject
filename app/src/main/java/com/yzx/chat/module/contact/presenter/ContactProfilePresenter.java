@@ -55,7 +55,7 @@ public class ContactProfilePresenter implements ContactProfileContract.Presenter
 
     @Override
     public void deleteContact() {
-        mAppClient.getContactManager().deleteContact(mContactEntity.getUserInfo().getUserID(), new LifecycleMVPResultCallback<Void>(mContactProfileView) {
+        mAppClient.getContactManager().deleteContact(mContactEntity.getUserProfile().getUserID(), new LifecycleMVPResultCallback<Void>(mContactProfileView) {
             @Override
             protected void onSuccess(Void result) {
 

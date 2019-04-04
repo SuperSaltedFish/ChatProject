@@ -55,7 +55,7 @@
     <string name="LoginActivity_Layout_InputVerifyCode">请输入验证码</string>
     <string name="LoginActivity_Layout_VerifyCodeHint">验证码已经发送至：+86 </string>
     <string name="LoginActivity_Layout_Resend">重新发送</string>
-    <string name="LoginActivity_Layout_CopyrightHint">Copyright © 2017-2018 咸鱼科技 版权所有</string>
+    <string name="LoginActivity_Layout_CopyrightHint">Copyright © 2017-2019 咸鱼科技 版权所有</string>
     <string name="LoginActivity_Error_Resending">正在发送</string>
 
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public interface UserApi {
 
-    @POST("user/getUserInfo")
+    @POST("user/getUserProfile")
     Call<JsonResponse<UserEntity>> getUserProfile(@Param("targetUserID") String userID);
 
     @POST("user/searchUser")

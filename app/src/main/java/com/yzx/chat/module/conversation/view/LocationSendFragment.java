@@ -131,7 +131,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         mRvMarker.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         mRvMarker.setAdapter(mMarkerLocationAdapter);
         mRvMarker.setHasFixedSize(true);
-        mRvMarker.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
+        mRvMarker.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRvMarker.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
@@ -159,7 +159,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         mRvSearch.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         mRvSearch.setRecycledViewPool(mRvMarker.getRecycledViewPool());
         mRvSearch.setAdapter(mSearchLocationAdapter);
-        mRvSearch.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
+        mRvSearch.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRvSearch.addOnScrollListener(new AutoCloseKeyboardScrollListener((Activity) mContext));
         mRvSearch.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -44,7 +45,10 @@ public class AndroidHelper {
     public synchronized static void init(Context context) {
         sAppContext = context.getApplicationContext();
 
-        DisplayMetrics dm = sAppContext.getResources().getDisplayMetrics();
+        WindowManager manager = (WindowManager) sAppContext.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dm = new DisplayMetrics();
+        Display display = manager.getDefaultDisplay();
+        display.getRealMetrics(dm);
         sScreenWidth = dm.widthPixels;
         sScreenHeight = dm.heightPixels;
         sScreenDensity = dm.densityDpi;
@@ -136,31 +140,24 @@ public class AndroidHelper {
             }
             outputStream.flush();
         } catch (IOException e) {
-            Log.d(TAG,e.toString(),e);
+            Log.d(TAG, e.toString(), e);
             return false;
         } finally {
             if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Log.d(TAG,e.toString(),e);
+                    Log.d(TAG, e.toString(), e);
                 }
             }
             try {
                 inputStream.close();
             } catch (IOException e) {
-                Log.d(TAG,e.toString(),e);
+                Log.d(TAG, e.toString(), e);
             }
         }
         return true;
     }
 
-
-    public static void showKeyboard(Activity activity, EditText editText) {
-        editText.setFocusable(true);
-        editText.setFocusableInTouchMode(true);
-        editText.requestFocus();
-        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-    }
 
 }

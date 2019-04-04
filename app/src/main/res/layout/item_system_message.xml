@@ -14,7 +14,7 @@
         android:gravity="start|center_vertical"
         android:singleLine="true"
         android:text="系统通知"
-        android:textColor="@color/textPrimaryColorBlack"
+
         app:layout_constraintBottom_toTopOf="@id/SystemMessageAdapter_mTvDescribe"
         app:layout_constraintEnd_toStartOf="@id/SystemMessageAdapter_mIvArrow"
         app:layout_constraintStart_toStartOf="parent"

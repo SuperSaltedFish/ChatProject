@@ -342,7 +342,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
         @Override
         public void onContactUpdate(ContactEntity contact) {
-            if (TextUtils.equals(mConversationID, contact.getUserInfo().getUserID())) {
+            if (TextUtils.equals(mConversationID, contact.getUserProfile().getUserID())) {
                 mChatView.showChatTitle(contact.getName());
             }
         }

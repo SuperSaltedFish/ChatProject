@@ -10,7 +10,7 @@
         android:layout_height="1px"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
-        android:background="@color/dividerColorBlack" />
+        android:background="@color/dividerColor" />
 
     <TextView
         android:id="@+id/LoadMoreView_mTvLoadMoreHint"
@@ -21,7 +21,7 @@
         android:layout_marginStart="8dp"
         android:gravity="center"
         android:text="@string/LoadMoreHint_LoadingMore"
-        android:textColor="@color/dividerColorBlack"
+        android:textColor="@color/dividerColor"
         android:textSize="12sp" />
 
     <View
@@ -29,6 +29,6 @@
         android:layout_height="1px"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
-        android:background="@color/dividerColorBlack" />
+        android:background="@color/dividerColor" />
 
 </LinearLayout>

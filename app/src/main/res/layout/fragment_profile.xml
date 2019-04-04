@@ -113,7 +113,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="我的相册"
-                android:textColor="@color/textPrimaryColorBlack"
                 android:textSize="16sp" />
 
 

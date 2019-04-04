@@ -92,7 +92,7 @@ public class ContactDao extends AbstractDao<ContactEntity> {
         }
         List<UserEntity> userList = new LinkedList<>();
         for (ContactEntity contact : contactList) {
-            userList.add(contact.getUserInfo());
+            userList.add(contact.getUserProfile());
         }
         return new UserDao(mReadWriteHelper).replaceAll(userList) && insertAll(contactList);
     }
@@ -153,7 +153,7 @@ public class ContactDao extends AbstractDao<ContactEntity> {
 
     @Override
     protected String[] toWhereArgsOfKey(ContactEntity entity) {
-        return new String[]{entity.getUserInfo().getUserID()};
+        return new String[]{entity.getUserProfile().getUserID()};
     }
 
     @Override
@@ -172,7 +172,7 @@ public class ContactDao extends AbstractDao<ContactEntity> {
         contact.setRemarkName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_RemarkName)));
         contact.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Description)));
         contact.setUploadFlag(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_UploadFlag)));
-        contact.setUserInfo(UserDao.toEntityFromCursor(cursor));
+        contact.setUserProfile(UserDao.toEntityFromCursor(cursor));
 
         String telephone = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Telephone));
         if (!TextUtils.isEmpty(telephone)) {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetTop="4dp"
+    android:insetBottom="4dp">
+    <selector xmlns:android="http://schemas.android.com/apk/res/android">
+        <item
+            android:drawable="@drawable/bg_et_underline_focus"
+            android:state_pressed="true" />
+        <item
+            android:drawable="@drawable/bg_et_underline_focus"
+            android:state_focused="true" />
+        <item android:drawable="@drawable/bg_et_underline_unfocus" />
+    </selector>
+
+</inset>

@@ -23,7 +23,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:singleLine="true"
-        android:textColor="@color/textPrimaryColorBlack"
+
         app:layout_constraintBottom_toTopOf="@id/FileAndDirectoryAdapter_mTvFileInfo"
         app:layout_constraintEnd_toStartOf="@id/FileAndDirectoryAdapter_mCbSelected"
         app:layout_constraintStart_toEndOf="@id/FileAndDirectoryAdapter_mIvFileTypeIcon"

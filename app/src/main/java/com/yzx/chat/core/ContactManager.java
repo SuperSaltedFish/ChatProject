@@ -95,7 +95,7 @@ public class ContactManager {
         List<ContactEntity> contacts = mContactDao.loadAllContacts();
         if (contacts != null) {
             for (ContactEntity contact : contacts) {
-                mContactsMap.put(contact.getUserInfo().getUserID(), contact);
+                mContactsMap.put(contact.getUserProfile().getUserID(), contact);
             }
         }
     }
@@ -225,7 +225,7 @@ public class ContactManager {
 
                          ContactEntity contact = new ContactEntity();
                         contact.setContactID(result.getUserID());
-                        contact.setUserInfo(result);
+                        contact.setUserProfile(result);
 
                         if (mContactOperationDao.replace(operation) & addContactToDB(contact)) {
                             mUIHandler.post(new Runnable() {
@@ -323,7 +323,7 @@ public class ContactManager {
 
     private boolean addContactToDB(final ContactEntity contact) {
         if (mContactDao.insert(contact)) {
-            mContactsMap.put(contact.getUserInfo().getUserID(), contact);
+            mContactsMap.put(contact.getUserProfile().getUserID(), contact);
             ContactNotificationMessage ntfMessage = ContactNotificationMessage.obtain(CONTACT_OPERATION_ACCEPT_ACTIVE, mAppClient.getUserManager().getUserID(), contact.getContactID(), "");
             Message hintMessage = Message.obtain(contact.getContactID(), Conversation.ConversationType.PRIVATE, ntfMessage);
             hintMessage.setSentTime(System.currentTimeMillis());
@@ -530,7 +530,7 @@ public class ContactManager {
             case CONTACT_OPERATION_ACCEPT:
                 contactOperation.setRemind(false);
                 ContactEntity contact = new ContactEntity();
-                contact.setUserInfo(extraContent.userProfile);
+                contact.setUserProfile(extraContent.userProfile);
                 addContactToDB(contact);
                 break;
             case CONTACT_OPERATION_DELETE:

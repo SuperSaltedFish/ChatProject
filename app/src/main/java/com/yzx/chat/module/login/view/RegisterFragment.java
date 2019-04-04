@@ -24,6 +24,7 @@ import com.yzx.chat.util.RegexUtil;
 import com.yzx.chat.util.ViewUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
+import com.yzx.chat.widget.view.ProgressButton;
 
 import java.util.Objects;
 
@@ -39,8 +40,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
     private EditText mEtRegisterPassword;
     private EditText mEtRegisterConfirmPassword;
     private EditText mEtRegisterNickname;
-    private ProgressBar mPbRegisterProgress;
-    private Button mBtnRegister;
+    private ProgressButton mPBtnRegister;
     private ImageView mIvBack;
     private TextView mTvJumpToLogin;
     private TextView mTvLoginHint;
@@ -58,8 +58,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mEtRegisterNickname = parentView.findViewById(R.id.mEtNickname);
         mEtRegisterPassword = parentView.findViewById(R.id.mEtPassword);
         mEtRegisterConfirmPassword = parentView.findViewById(R.id.mEtConfirmPassword);
-        mPbRegisterProgress = parentView.findViewById(R.id.mPbRegisterProgress);
-        mBtnRegister = parentView.findViewById(R.id.mBtnRegister);
+        mPBtnRegister = parentView.findViewById(R.id.mPBtnRegister);
         mTvJumpToLogin = parentView.findViewById(R.id.mTvJumpToLogin);
         mTvLoginHint = parentView.findViewById(R.id.mTvLoginHint);
         mTvErrorHint = parentView.findViewById(R.id.mTvErrorHint);
@@ -72,7 +71,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         mEtRegisterNickname.addTextChangedListener(mTextWatcher);
         mEtRegisterPassword.addTextChangedListener(mTextWatcher);
         mEtRegisterConfirmPassword.addTextChangedListener(mTextWatcher);
-        mBtnRegister.setOnClickListener(mOnViewClickListener);
+        mPBtnRegister.setOnClickListener(mOnViewClickListener);
         mTvJumpToLogin.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
     }
@@ -80,7 +79,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
     @Override
     public void onResume() {
         super.onResume();
-        ViewUtil.registerAutoScrollAtInput(getView(), mBtnRegister);
+        ViewUtil.registerAutoScrollAtInput(getView(), mPBtnRegister);
     }
 
     @Override
@@ -89,66 +88,13 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
         ViewUtil.unregisterAutoScrollAtInput(getView());
     }
 
-    private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
-        if (isCloseAnim) {
-            if (mBtnRegister.getVisibility() == View.VISIBLE) {
-                setDisableInputState(true);
-                AnimationUtil.circularRevealHideAnim(mBtnRegister, listener, new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mPbRegisterProgress.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animation.removeListener(this);
-                        mBtnRegister.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-        } else {
-            if (mBtnRegister.getVisibility() == View.INVISIBLE) {
-                AnimationUtil.circularRevealShowAnim(mBtnRegister, listener, new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mBtnRegister.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animation.removeListener(this);
-                        mPbRegisterProgress.setVisibility(View.INVISIBLE);
-                        setDisableInputState(false);
-                    }
-                });
-            }
-        }
-    }
-
-    private void setDisableInputState(boolean isDisable) {
-        mEtRegisterTelephone.setEnabled(!isDisable);
-        mEtRegisterPassword.setEnabled(!isDisable);
-        mEtRegisterConfirmPassword.setEnabled(!isDisable);
-        mEtRegisterNickname.setEnabled(!isDisable);
-        mBtnRegister.setEnabled(!isDisable);
-        mTvJumpToLogin.setEnabled(!isDisable);
-        mTvLoginHint.setEnabled(!isDisable);
-        mIvBack.setEnabled(!isDisable);
-        mEtRegisterTelephone.clearFocus();
-        mEtRegisterNickname.clearFocus();
-        mEtRegisterPassword.clearFocus();
-        mEtRegisterConfirmPassword.clearFocus();
-        isDisableInput = isDisable;
-        LoginActivity.setDisableBackPressed((LoginActivity) Objects.requireNonNull(getActivity()), isDisable);
-    }
-
 
     private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
         public void onSingleClick(View v) {
             if (!isDisableInput) {
                 switch (v.getId()) {
-                    case R.id.mBtnRegister:
+                    case R.id.mPBtnRegister:
                         tryRegister();
                         break;
                     case R.id.mTvJumpToLogin:
@@ -183,7 +129,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
             showErrorDialog(getString(R.string.LoginActivity_Error_IllegalPassword));
             return;
         }
-        startProgressAnim(true, new AnimatorListenerAdapter() {
+        mPBtnRegister.startHideAnim(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mPresenter.obtainRegisterVerifyCode(username);
@@ -205,7 +151,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
 
     @Override
     public void jumpToVerifyPage() {
-        startProgressAnim(false, null);
+        mPBtnRegister.startShowAnim(null);
         VerifyFragment.VerifyInfo info = new VerifyFragment.VerifyInfo();
         info.telephone = mEtRegisterTelephone.getText().toString();
         info.password = mEtRegisterPassword.getText().toString();
@@ -224,7 +170,7 @@ public class RegisterFragment extends BaseFragment<RegisterContract.Presenter> i
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
             ((Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE)).vibrate(50);
         }
-        startProgressAnim(false, null);
+        mPBtnRegister.startShowAnim(null);
     }
 
 }

@@ -247,8 +247,8 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     @Override
     public void updateContactInfo(ContactEntity contact) {
         mTvTitle.setText(contact.getName());
-        mTvNickname.setText(contact.getUserInfo().getNickname());
-        UserEntity user = contact.getUserInfo();
+        mTvNickname.setText(contact.getUserProfile().getNickname());
+        UserEntity user = contact.getUserProfile();
         mIvSexIcon.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
         StringBuilder locationAndAge = new StringBuilder();
         locationAndAge.append(user.getAge());

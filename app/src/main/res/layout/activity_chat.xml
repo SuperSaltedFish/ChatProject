@@ -76,7 +76,6 @@
                 android:paddingStart="4dp"
                 android:paddingTop="2dp"
                 android:textColor="#9e000000"
-                android:textColorHint="@color/textSecondaryColorBlackLight"
                 android:textSize="16sp" />
 
 
@@ -94,7 +93,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/textSecondaryColorBlackLight" />
+            android:background="@color/textColorSecondaryBlackLight" />
 
         <LinearLayout
             android:id="@+id/ChatActivity_mLlRecorderLayout"

@@ -74,7 +74,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mContext, R.anim.layout_alpha));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         ((DefaultItemAnimator) (Objects.requireNonNull(mRecyclerView.getItemAnimator()))).setSupportsChangeAnimations(false);
 
@@ -85,7 +85,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     private void setOverflowMenu() {
         mConversationMenu.setWidth((int) AndroidHelper.dip2px(152));
         mConversationMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        mConversationMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
+        mConversationMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textColorPrimary));
         mConversationMenu.setElevation(AndroidHelper.dip2px(4));
         mConversationMenu.inflate(R.menu.menu_conversation_overflow);
         mConversationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {

@@ -16,7 +16,7 @@ import java.io.File;
 
 public class DirectoryHelper {
 
-    public static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath() + "/Chat";
+    public static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath() + File.separator + "MyChat";
 
     private static final String PRIVATE_DATA_BASE_PATH = AppApplication.getAppContext().getFilesDir().getPath();
 
@@ -55,7 +55,7 @@ public class DirectoryHelper {
         if (TextUtils.isEmpty(md5)) {
             throw new IllegalArgumentException("userID is null");
         }
-        sUserDirectory = "/" + md5;
+        sUserDirectory =File.separator + md5;
         File file;
         file = new File(getPrivateUserVoiceRecorderPath());
         if (!file.exists()) {

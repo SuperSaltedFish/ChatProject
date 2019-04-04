@@ -51,5 +51,5 @@ dependencies {
     implementation config.deps.ext.leakcanaryFragment
 
     annotationProcessor config.deps.annotation.glide
-    annotationProcessor 'androidx.annotation:annotation:1.0.1'
+    annotationProcessor 'androidx.annotation:annotation:1.0.2'
 }

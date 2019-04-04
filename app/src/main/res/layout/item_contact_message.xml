@@ -25,7 +25,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"
-        android:textColor="@color/textPrimaryColorBlack"
+
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/ContactMessageAdapter_mTvReason"
         app:layout_constraintStart_toEndOf="@id/ContactMessageAdapter_mIvAvatar"

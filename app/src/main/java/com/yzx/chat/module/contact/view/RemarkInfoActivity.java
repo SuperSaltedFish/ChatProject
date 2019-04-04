@@ -93,7 +93,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
 
     private void setData() {
         mContactEntity = getIntent().getParcelableExtra(INTENT_EXTRA_CONTACT);
-        if (mContactEntity == null || mContactEntity.getUserInfo() == null) {
+        if (mContactEntity == null || mContactEntity.getUserProfile() == null) {
             LogUtil.e("mContactEntity == null");
             finish();
         } else {
@@ -176,7 +176,7 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
         boolean isChanged = false;
 
         if (!remarkName.equals(mContactEntity.getRemarkName())) {
-            if (!remarkName.equals(mContactEntity.getUserInfo().getNickname())) {
+            if (!remarkName.equals(mContactEntity.getUserProfile().getNickname())) {
                 isChanged = true;
                 mContactEntity.setRemarkName(remarkName);
             } else if (!TextUtils.isEmpty(mContactEntity.getRemarkName())) {

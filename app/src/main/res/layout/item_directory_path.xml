@@ -10,7 +10,7 @@
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:src="@drawable/ic_arrow_right2"
-        android:tint="@color/textPrimaryColorBlack2"
+        android:tint="@color/textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="6dp"
         android:gravity="center"
-        android:textColor="@color/textPrimaryColorBlack2"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

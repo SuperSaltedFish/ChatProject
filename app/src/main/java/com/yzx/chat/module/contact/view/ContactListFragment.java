@@ -117,9 +117,9 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mToolbar.setTitle(R.string.app_name);
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
-        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack));
+        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.dividerColor));
         mLetterSegmentationItemDecoration.setLineWidth(1);
-        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlackLight));
+        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlackLight));
         mLetterSegmentationItemDecoration.setTextSize(AndroidHelper.sp2px(15));
 
         mLinearLayoutManager = new LinearLayoutManager(mContext, RecyclerView.VERTICAL, false);
@@ -135,7 +135,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mLlTags.setOnClickListener(mOnViewClickListener);
         mFBtnAdd.setOnClickListener(mOnViewClickListener);
 
-        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
+        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
         mContactAdapter.setHeaderView(mHeaderView);
@@ -218,7 +218,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     private void setOverflowMenu() {
         mContactMenu.setWidth((int) AndroidHelper.dip2px(152));
         mContactMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        mContactMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textPrimaryColorBlack));
+        mContactMenu.setTitleTextColor(ContextCompat.getColor(mContext, R.color.textColorPrimary));
         mContactMenu.setElevation(AndroidHelper.dip2px(4));
         mContactMenu.inflate(R.menu.menu_contact_overflow);
         mContactMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {

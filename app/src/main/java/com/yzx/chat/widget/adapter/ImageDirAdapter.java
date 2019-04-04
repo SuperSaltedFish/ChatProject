@@ -44,7 +44,7 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
             holder.mTvDirPath.setTextColor(AndroidHelper.getColor(R.color.colorAccent));
         } else {
             holder.mIvSelectedIcon.setVisibility(View.INVISIBLE);
-            holder.mTvDirPath.setTextColor(AndroidHelper.getColor(R.color.textPrimaryColorBlack));
+            holder.mTvDirPath.setTextColor(AndroidHelper.getColor(R.color.textColorPrimary));
         }
         if (position == 0) {
             holder.mTvDirPath.setText(R.string.ImageSelectorActivity_AllImage);

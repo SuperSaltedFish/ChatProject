@@ -16,7 +16,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/backgroundColorWhite"
+        android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/MomentsAdapter_mGuideline"
         app:layout_constraintEnd_toEndOf="parent"

@@ -25,7 +25,7 @@
         android:maxLines="1"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        android:textColor="@color/textPrimaryColorBlack"
+
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/mTvLastMessage"
         app:layout_constraintEnd_toStartOf="@id/mTvTime"

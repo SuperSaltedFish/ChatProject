@@ -1,6 +1,7 @@
 package com.yzx.chat.module.contact.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -54,7 +55,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
@@ -70,7 +71,7 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
 
     private void setOverflowMenu() {
         mContactOperationMenu.setWidth((int) AndroidHelper.dip2px(128));
-        mContactOperationMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(mContext, R.color.backgroundColorWhite)));
+        mContactOperationMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mContactOperationMenu.setElevation(AndroidHelper.dip2px(2));
         mContactOperationMenu.inflate(R.menu.menu_contact_message_overflow);
         mContactOperationMenu.setOnMenuItemClickListener(new OverflowPopupMenu.OnMenuItemClickListener() {

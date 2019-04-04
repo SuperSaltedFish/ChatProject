@@ -109,7 +109,7 @@ public class ConversationManager {
                 ContactEntity contactEntity = mAppClient.getContactManager().getContact(conversationID);
                 if (contactEntity != null) {
                     conversation.setConversationTitle(contactEntity.getName());
-                    conversation.setPortraitUrl(contactEntity.getUserInfo().getAvatar());
+                    conversation.setPortraitUrl(contactEntity.getUserProfile().getAvatar());
                 }
                 break;
             case GROUP:

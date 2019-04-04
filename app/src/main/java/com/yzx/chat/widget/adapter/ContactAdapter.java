@@ -56,7 +56,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
             holder.itemView.setTag(null);
         }
         ContactEntity contactEntity = getItem(position);
-        UserEntity user = contactEntity.getUserInfo();
+        UserEntity user = contactEntity.getUserProfile();
         holder.mTvName.setText(contactEntity.getName());
         holder.mIvSex.setSelected(user.getSex() == UserEntity.SEX_WOMAN);
         holder.mTvAge.setText(user.getAge());
@@ -79,7 +79,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
                 holder.mTagsFlowLayout.addView(label);
             }
         }
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getUserInfo().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getUserProfile().getAvatar());
     }
 
     @Override
@@ -140,10 +140,10 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
                     if (!oldItem.getName().equals(newItem.getName())) {
                         return false;
                     }
-                    if (!oldItem.getUserInfo().getAvatar().equals(newItem.getUserInfo().getAvatar())) {
+                    if (!oldItem.getUserProfile().getAvatar().equals(newItem.getUserProfile().getAvatar())) {
                         return false;
                     }
-                    if (!oldItem.getUserInfo().getNickname().equals(newItem.getUserInfo().getNickname())) {
+                    if (!oldItem.getUserProfile().getNickname().equals(newItem.getUserProfile().getNickname())) {
                         return false;
                     }
                     return true;

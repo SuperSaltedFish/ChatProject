@@ -22,6 +22,7 @@ import com.yzx.chat.module.login.contract.VerifyContract;
 import com.yzx.chat.module.login.presenter.VerifyPresenter;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
+import com.yzx.chat.widget.view.ProgressButton;
 import com.yzx.chat.widget.view.VerifyEditView;
 
 import java.util.Locale;
@@ -48,13 +49,10 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
 
     private TextView mTvErrorHint;
     private TextView mTvTelephone;
-    private Button mBtnVerify;
     private ImageView mIvBack;
     private VerifyEditView mVerifyEditView;
-    private ProgressBar mPbLoginProgress;
     private Button mBtnResend;
-    private boolean isDisableInput;
-    private boolean isAllowResendVerifyCode;
+    private ProgressButton mPBtnVerify;
 
     private String mInputVerifyCode;
     private VerifyInfo mVerifyInfo;
@@ -66,9 +64,8 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
 
     @Override
     protected void init(View parentView) {
-        mBtnVerify = parentView.findViewById(R.id.mBtnVerify);
+        mPBtnVerify = parentView.findViewById(R.id.mPBtnVerify);
         mVerifyEditView = parentView.findViewById(R.id.mVerifyEditView);
-        mPbLoginProgress = parentView.findViewById(R.id.mPbLoginProgress);
         mBtnResend = parentView.findViewById(R.id.mBtnResend);
         mTvErrorHint = parentView.findViewById(R.id.mTvErrorHint);
         mIvBack = parentView.findViewById(R.id.mIvBack);
@@ -86,7 +83,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             return;
         }
 
-        mBtnVerify.setOnClickListener(mOnViewClickListener);
+        mPBtnVerify.setOnClickListener(mOnViewClickListener);
         mBtnResend.setOnClickListener(mOnViewClickListener);
         mIvBack.setOnClickListener(mOnViewClickListener);
         mVerifyEditView.setOnInputListener(mOnInputListener);
@@ -94,6 +91,8 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         mTvTelephone.setText(mVerifyInfo.telephone);
 
         startVerifyCountDown();
+
+        showSoftKeyboard(mVerifyEditView.getChildAt(0));
     }
 
     @Override
@@ -106,54 +105,8 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         Objects.requireNonNull(getFragmentManager()).popBackStackImmediate();
     }
 
-    private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
-        if (isCloseAnim) {
-            if (mBtnVerify.getVisibility() == View.VISIBLE) {
-                setDisableInputState(true);
-                AnimationUtil.circularRevealHideAnim(mBtnVerify, listener, new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mPbLoginProgress.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
-                        mBtnVerify.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-        } else {
-            if (mBtnVerify.getVisibility() == View.INVISIBLE) {
-                AnimationUtil.circularRevealShowAnim(mBtnVerify, listener, new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mBtnVerify.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
-                        mPbLoginProgress.setVisibility(View.INVISIBLE);
-                        setDisableInputState(false);
-                    }
-                });
-            }
-        }
-    }
-
-    private void setDisableInputState(boolean isDisable) {
-        mBtnVerify.setEnabled(!isDisable);
-        mVerifyEditView.setEnabled(!isDisable);
-        mIvBack.setEnabled(!isDisable);
-        mBtnResend.setEnabled((!isDisable) && isAllowResendVerifyCode);
-        isDisableInput = isDisable;
-        LoginActivity.setDisableBackPressed((LoginActivity) mContext, isDisable);
-    }
-
     private void setAllowResendVerifyCode(boolean isAllow) {
-        isAllowResendVerifyCode = isAllow;
-        mBtnResend.setEnabled((!isDisableInput) && isAllowResendVerifyCode);
+        mBtnResend.setEnabled(isAllow);
         mBtnResend.setText(R.string.LoginActivity_Layout_Resend);
 
     }
@@ -179,7 +132,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             showErrorDialog(getString(R.string.LoginActivity_Error_NoneVerify));
             return;
         }
-        startProgressAnim(true, new AnimatorListenerAdapter() {
+        mPBtnVerify.startHideAnim(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (TextUtils.isEmpty(mVerifyInfo.nickname)) {
@@ -189,7 +142,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
                 }
             }
         });
-
     }
 
     private final CountDownTimer mVerifyCountDown = new CountDownTimer(60000, 1000) {
@@ -214,18 +166,16 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
     private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
         public void onSingleClick(View v) {
-            if (!isDisableInput) {
-                switch (v.getId()) {
-                    case R.id.mIvBack:
-                        backPressed();
-                        break;
-                    case R.id.mBtnVerify:
-                        tryLoginOrRegister();
-                        break;
-                    case R.id.mBtnResend:
-                        resendVerifyCode();
-                        break;
-                }
+            switch (v.getId()) {
+                case R.id.mIvBack:
+                    backPressed();
+                    break;
+                case R.id.mPBtnVerify:
+                    tryLoginOrRegister();
+                    break;
+                case R.id.mBtnResend:
+                    resendVerifyCode();
+                    break;
             }
         }
     };
@@ -258,8 +208,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
             ((Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE)).vibrate(50);
         }
-        startProgressAnim(false, null);
-
+        mPBtnVerify.startShowAnim(null);
     }
 
     @Override
@@ -273,7 +222,7 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         if (activity == null) {
             return;
         }
-        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
+        AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPBtnVerify, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeListener(this);
@@ -305,10 +254,10 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
             dest.writeString(this.nickname);
         }
 
-        public VerifyInfo() {
+        VerifyInfo() {
         }
 
-        protected VerifyInfo(Parcel in) {
+        VerifyInfo(Parcel in) {
             this.telephone = in.readString();
             this.password = in.readString();
             this.nickname = in.readString();

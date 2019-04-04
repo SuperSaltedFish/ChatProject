@@ -29,7 +29,7 @@ public class LocationAdapter extends BaseRecyclerViewAdapter<LocationAdapter.Loc
     public LocationAdapter(List<PoiItem> POIList) {
         mPOIList = POIList;
         mSelectedTextColor = AndroidHelper.getColor(R.color.colorAccent);
-        mUnselectedTextColor = AndroidHelper.getColor(R.color.textPrimaryColorBlack);
+        mUnselectedTextColor = AndroidHelper.getColor(R.color.textColorPrimary);
     }
 
     @Override

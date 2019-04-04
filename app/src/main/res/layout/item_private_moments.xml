@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="16"
-            android:textColor="@color/textPrimaryColorBlack2"
+            android:textColor="@color/textColorPrimary"
             android:textSize="21sp" />
 
     </LinearLayout>
@@ -38,7 +38,7 @@
         android:layout_height="0dp"
         android:layout_marginBottom="12dp"
         android:layout_marginTop="12dp"
-        android:background="@color/dividerColorBlack"
+        android:background="@color/dividerColor"
         app:layout_constraintBottom_toBottomOf="@id/PrivateMomentsAdapter_mLlTimeLayout"
         app:layout_constraintStart_toEndOf="@id/PrivateMomentsAdapter_mLlTimeLayout"
         app:layout_constraintTop_toTopOf="@id/PrivateMomentsAdapter_mLlTimeLayout" />
@@ -53,7 +53,7 @@
         android:gravity="start|center_vertical"
         android:maxLines="3"
         android:text="每个不曾起舞的日子，都是对生命的辜负dwdwdwdwdww等你恩服务可能付款dwdwd!"
-        android:textColor="@color/textPrimaryColorBlack2"
+        android:textColor="@color/textColorPrimary"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/PrivateMomentsAdapter_Divider"
         app:layout_constraintEnd_toEndOf="parent"

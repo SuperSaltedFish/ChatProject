@@ -41,7 +41,6 @@
         android:elevation="3dp"
         android:padding="5dp"
         android:src="@drawable/ic_my_location"
-        android:tint="@color/textPrimaryColorBlack2"
         app:layout_constraintBottom_toTopOf="@id/LocationSendFragment_mCvMarkerLayout"
         app:layout_constraintEnd_toEndOf="@id/LocationSendFragment_mCvMarkerLayout" />
 
@@ -92,7 +91,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="@string/LocationSendFragment_SearchNone"
-            android:textColor="@color/textPrimaryColorBlack" />
+             />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/LocationSendFragment_mRvSearch"

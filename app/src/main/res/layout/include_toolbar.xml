@@ -4,9 +4,8 @@
     android:id="@+id/Default_mToolbar"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:background="@color/colorPrimary"
-    android:elevation="4dp"
-    app:popupTheme="@style/ToolbarPopupLightTheme"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light" />
+    android:background="?colorPrimary"
+    android:theme="@style/ToolbarStyle"
+    app:popupTheme="@style/ToolbarPopupTheme"
+    app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Dark" />
 

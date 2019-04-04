@@ -59,7 +59,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         String[] membersID = new String[members.size()];
         UserEntity user;
         for (int i = 0, count = members.size(); i < count; i++) {
-            user = members.get(i).getUserInfo();
+            user = members.get(i).getUserProfile();
             stringBuilder.append(user.getNickname());
             stringBuilder.append("、");
             membersID[i] = user.getUserID();
@@ -93,7 +93,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
         }
         mAddingMembersID = new String[members.size()];
         for (int i = 0, count = members.size(); i < count; i++) {
-            mAddingMembersID[i] = members.get(i).getUserInfo().getUserID();
+            mAddingMembersID[i] = members.get(i).getUserProfile().getUserID();
         }
         mGroupManager.addMember(groupID, mAddingMembersID, new LifecycleMVPResultCallback<Void>(mCreateGroupView) {
 

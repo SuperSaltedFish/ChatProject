@@ -31,7 +31,7 @@
         android:layout_width="1px"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:background="@color/textSecondaryColorBlack"
+
         app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mTvMyLocation"
         app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mTvMyLocation"
         app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mTvMyLocation" />
@@ -55,7 +55,7 @@
         android:layout_height="12dp"
         android:layout_marginBottom="6dp"
         android:src="@drawable/ic_location2"
-        android:tint="@color/textSecondaryColorBlack"
+        android:tint="@color/textColorSecondaryBlack"
         app:layout_constraintBottom_toTopOf="@id/LocationShareFragment_mTvMyLocation"
         app:layout_constraintStart_toStartOf="@id/LocationShareFragment_mTvMyLocation" />
 
@@ -75,7 +75,7 @@
         android:layout_width="1px"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:background="@color/textSecondaryColorBlack"
+
         app:layout_constraintBottom_toBottomOf="@id/LocationShareFragment_mIvLocationIcon"
         app:layout_constraintStart_toEndOf="@id/LocationShareFragment_mTvDistance"
         app:layout_constraintTop_toTopOf="@id/LocationShareFragment_mIvLocationIcon" />
@@ -120,7 +120,7 @@
         android:singleLine="true"
         android:textSize="18.5sp"
         android:textStyle="bold"
-        android:textColor="@color/textPrimaryColorBlack2"
+        android:textColor="@color/textColorPrimary"
         app:layout_constraintBottom_toTopOf="@id/LocationShareFragment_mIvLocationIcon"
         app:layout_constraintEnd_toStartOf="@id/LocationShareFragment_mLlNavigation"
         app:layout_constraintStart_toStartOf="parent" />
@@ -167,7 +167,7 @@
             android:layout_height="56dp"
             android:padding="16dp"
             android:src="@drawable/ic_back"
-            android:tint="@color/textPrimaryColorBlack2" />
+            android:tint="@color/textColorPrimary" />
     </FrameLayout>
 
 

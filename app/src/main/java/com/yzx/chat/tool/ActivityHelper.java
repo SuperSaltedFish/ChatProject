@@ -86,7 +86,7 @@ public class ActivityHelper {
     public static Class<? extends Activity> getStackTopActivityClass() {
         try {
             return sActivityClassStack.peek();
-        }catch (EmptyStackException e){
+        } catch (EmptyStackException e) {
             return null;
         }
     }
@@ -154,7 +154,14 @@ public class ActivityHelper {
 
     public static synchronized void addAppFrontAndBackListener(OnAppFrontAndBackListener listener) {
         if (!sAppFrontAndBackListenerList.contains(listener)) {
-            sAppFrontAndBackListenerList.add(listener);
+            if (listener != null) {
+                if (sActivityForegroundCount == 0) {
+                    listener.onAppBackground();
+                } else {
+                    listener.onAppForeground();
+                }
+                sAppFrontAndBackListenerList.add(listener);
+            }
         }
     }
 

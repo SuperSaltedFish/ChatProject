@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginEnd="16dp"
     android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
     android:clipChildren="false"
     android:gravity="center_horizontal"
     android:orientation="vertical">
@@ -15,11 +15,11 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="start"
-        android:paddingBottom="12dp"
         android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:scaleType="fitStart"
-        android:src="@drawable/ic_back"
-        android:tint="@color/textPrimaryColorBlack2"
+        android:src="?android:attr/homeAsUpIndicator"
+        android:tint="@color/textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,7 +32,7 @@
         android:gravity="center"
         android:singleLine="true"
         android:text="@string/LoginActivity_Layout_InputVerifyCode"
-        android:textColor="@color/textPrimaryColorBlack2"
+        android:textColor="@color/textColorPrimary"
         android:textSize="23sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mIvBack" />
@@ -44,7 +44,7 @@
         android:layout_marginTop="4dp"
         android:gravity="start|center_vertical"
         android:text="@string/LoginActivity_Layout_VerifyCodeHint"
-        android:textColor="@color/textSecondaryColorBlack"
+        android:textColor="@color/textColorSecondaryBlack"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mTvTitle" />
@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
-        android:textColor="@color/textSecondaryColorBlack"
+        android:textColor="@color/textColorSecondaryBlack"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/mTvTelephoneHint"
         app:layout_constraintStart_toEndOf="@id/mTvTelephoneHint"
@@ -95,36 +95,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mBtnResend" />
 
-    <FrameLayout
-        android:id="@+id/mFlLoginLayout"
+    <com.yzx.chat.widget.view.ProgressButton
+        android:id="@+id/mPBtnVerify"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mTvErrorHint">
-
-        <ProgressBar
-            android:id="@+id/mPbLoginProgress"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@id/mBtnVerify"
-            app:layout_constraintEnd_toEndOf="@id/mBtnVerify"
-            app:layout_constraintStart_toStartOf="@id/mBtnVerify"
-            app:layout_constraintTop_toTopOf="@id/mBtnVerify" />
-
-        <Button
-            android:id="@+id/mBtnVerify"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:background="@drawable/radius_btn_4dp"
-            android:elevation="3dp"
-            android:text="@string/LoginActivity_Layout_Login"
-            android:textColor="@android:color/white"
-            android:textSize="13sp" />
-    </FrameLayout>
-
+        app:layout_constraintTop_toBottomOf="@id/mTvErrorHint"
+        app:text="@string/LoginActivity_Layout_Login" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -135,7 +113,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mFlLoginLayout" />
+        app:layout_constraintTop_toBottomOf="@id/mPBtnVerify" />
 
     <TextView
         android:layout_width="match_parent"

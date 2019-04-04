@@ -1,40 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <color name="colorAccent">#3f90fe</color>
-    <color name="colorAccentLight">#79A9FE</color>
-    <color name="colorAccentDisable">#a83f90fe</color>
     <color name="colorPrimary">#3f90fe</color>
     <color name="colorPrimaryDark">#3f90fe</color>
+    <color name="colorAccent">#3f90fe</color>
+    <color name="colorAccentLight">#79A9FE</color>
+    <color name="colorAccentDisabled">#a83f90fe</color>
 
+    <color name="textColorPrimary">#353535</color>
+    <color name="textColorSecondaryWhite">#c4ffffff</color>
+    <color name="textColorSecondaryBlack">#9B9B9B</color>
+    <color name="textColorSecondaryBlackLight">#D3D3D3</color>
 
-    <color name="textPrimaryColorBlack">#353535</color>
-    <color name="textPrimaryColorBlack2">#5c6979</color>
-    <color name="textSecondaryColorBlack">#888888</color>
-    <color name="textSecondaryColorBlackLight">#b4b4b4</color>
-
-
-    <color name="backgroundColorWhite">#ffffff</color>
     <color name="backgroundColorWhiteLight">#f7f8fe</color>
-    <color name="backgroundColorDark">#101010</color>
-    <color name="backgroundColorGrey">#f6f7f9</color>
-
-
-    <color name="dividerColorBlack">#e5e5e5</color>
-
+    <color name="backgroundColorGrey">#f5f8f9</color>
+    <color name="dividerColor">#F0F0F0</color>
 
     <color name="textColorWhite">#ffffff</color>
     <color name="textColorWhiteAlpha">#a8ffffff</color>
 
-
     <color name="maskColorBlack">#9c000000</color>
-
     <color name="backgroundColorProgressDialog">#80000000</color>
-
     <color name="red">#FD5B5C</color>
-
     <color name="green">#00cd76</color>
-
     <color name="grey">#ecf1f8</color>
 
 

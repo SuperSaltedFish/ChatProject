@@ -25,7 +25,7 @@
             android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:text="@string/NotificationMessageActivity_Title"
-            android:textColor="@color/textPrimaryColorBlack"
+
             android:textSize="14sp" />
 
         <com.yzx.chat.widget.view.BadgeView
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/GroupListActivity_Title"
-            android:textColor="@color/textPrimaryColorBlack"
+
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/MyTagListActivity_Title"
-            android:textColor="@color/textPrimaryColorBlack"
+
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -96,7 +96,7 @@
         <View
             android:layout_width="40dp"
             android:layout_height="1px"
-            android:background="@color/textSecondaryColorBlack" />
+             />
 
         <TextView
             android:layout_width="wrap_content"
@@ -110,7 +110,7 @@
         <View
             android:layout_width="40dp"
             android:layout_height="1px"
-            android:background="@color/textSecondaryColorBlack" />
+             />
 
     </LinearLayout>
 

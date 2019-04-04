@@ -61,7 +61,7 @@ public class ContactMomentsFragment extends BaseFragment {
     @Override
     protected void setup(Bundle savedInstanceState) {
 
-        mTvLoadMoreHint.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlackLight));
+        mTvLoadMoreHint.setTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlackLight));
 
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
@@ -75,7 +75,7 @@ public class ContactMomentsFragment extends BaseFragment {
         mRecyclerView.addItemDecoration(
                 new TimeLineItemDecoration()
                         .setTimeLineWidth((int) AndroidHelper.dip2px(56))
-                        .setTimeLineColor(ContextCompat.getColor(mContext, R.color.dividerColorBlack))
+                        .setTimeLineColor(ContextCompat.getColor(mContext, R.color.dividerColor))
                         .setLineWidth(1.2f)
                         .setTimePointDrawable(AndroidHelper.getDrawable(R.drawable.src_time_point))
                         .setTimePointOffsetY((int) AndroidHelper.dip2px(4))

@@ -10,7 +10,7 @@ ext {
 
     depVersions = [
             mapVersion       : "latest.integration",
-            leakcanaryVersion: "1.6.2",
+            leakcanaryVersion: "1.6.3",
             glideVersion     : "4.9.0"
     ]
 

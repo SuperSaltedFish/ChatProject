@@ -52,9 +52,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ToolbarPopupLightTheme"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Light">
+                android:theme="@style/ToolbarStyle"
+                app:popupTheme="@style/ToolbarPopupTheme"
+                app:titleTextAppearance="@style/ToolbarTitleTextAppearance.Dark">
 
                 <TextView
                     android:id="@+id/ContactProfileActivity_mTvTitle"
@@ -84,7 +84,6 @@
                 android:paddingEnd="160dp"
                 android:paddingStart="16dp"
                 android:singleLine="true"
-                android:textColor="@color/textPrimaryColorBlack"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 

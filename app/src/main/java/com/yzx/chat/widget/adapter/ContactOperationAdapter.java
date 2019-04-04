@@ -88,7 +88,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
             case ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE:
                 holder.mTvAccept.setText(R.string.ContactMessageAdapter_Verifying);
                 holder.mTvAccept.setBackgroundColor(ContextCompat.getColor(mContext, R.color.grey));
-                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.textSecondaryColorBlack));
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlack));
                 break;
             case ContactManager.CONTACT_OPERATION_DELETE_ACTIVE:
                 holder.mTvAccept.setText(R.string.ContactMessageAdapter_Delete);

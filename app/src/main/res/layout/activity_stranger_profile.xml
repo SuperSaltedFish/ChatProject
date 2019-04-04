@@ -54,7 +54,6 @@
         android:paddingEnd="160dp"
         android:paddingStart="16dp"
         android:singleLine="true"
-        android:textColor="@color/textPrimaryColorBlack"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"

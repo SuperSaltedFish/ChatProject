@@ -8,4 +8,4 @@
     android:gravity="start|center_vertical"
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
-    android:textColor="@color/textPrimaryColorBlack"/>
+    />

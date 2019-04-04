@@ -24,6 +24,7 @@ import com.yzx.chat.util.RegexUtil;
 import com.yzx.chat.util.ViewUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.SimpleTextWatcher;
+import com.yzx.chat.widget.view.ProgressButton;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -41,10 +42,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     private EditText mEtLoginPassword;
     private TextView mTvJumpToRegister;
     private TextView mTvErrorHint;
-    private Button mBtnLogin;
-    private ProgressBar mPbLoginProgress;
-
-    private boolean isDisableInput;
+    private ProgressButton mPBtnLogin;
 
     @Override
     protected int getLayoutID() {
@@ -56,15 +54,14 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
         mEtLoginTelephone = parentView.findViewById(R.id.mEtTelephone);
         mEtLoginPassword = parentView.findViewById(R.id.mEtPassword);
         mTvJumpToRegister = parentView.findViewById(R.id.mTvJumpToRegister);
-        mPbLoginProgress = parentView.findViewById(R.id.mPbLoginProgress);
-        mBtnLogin = parentView.findViewById(R.id.mBtnLogin);
+        mPBtnLogin = parentView.findViewById(R.id.mPBtnLogin);
         mTvErrorHint = parentView.findViewById(R.id.mTvErrorHint);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
         mTvJumpToRegister.setOnClickListener(mOnViewClickListener);
-        mBtnLogin.setOnClickListener(mOnViewClickListener);
+        mPBtnLogin.setOnClickListener(mOnViewClickListener);
         mEtLoginTelephone.addTextChangedListener(mTextWatcher);
         mEtLoginPassword.addTextChangedListener(mTextWatcher);
     }
@@ -72,59 +69,13 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     @Override
     public void onResume() {
         super.onResume();
-        ViewUtil.registerAutoScrollAtInput(getView(), mBtnLogin);
+        ViewUtil.registerAutoScrollAtInput(getView(), mPBtnLogin);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         ViewUtil.unregisterAutoScrollAtInput(getView());
-    }
-
-    private void startProgressAnim(final boolean isCloseAnim, Animator.AnimatorListener listener) {
-        if (isCloseAnim) {
-            if (mBtnLogin.getVisibility() == View.VISIBLE) {
-                setDisableInputState(true);
-                AnimationUtil.circularRevealHideAnim(mBtnLogin, listener, new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mPbLoginProgress.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animation.removeListener(this);
-                        mBtnLogin.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-        } else {
-            if (mBtnLogin.getVisibility() == View.INVISIBLE) {
-                AnimationUtil.circularRevealShowAnim(mBtnLogin, listener, new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mBtnLogin.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animation.removeListener(this);
-                        mPbLoginProgress.setVisibility(View.INVISIBLE);
-                        setDisableInputState(false);
-                    }
-                });
-            }
-        }
-    }
-
-    private void setDisableInputState(boolean isDisable) {
-        mEtLoginTelephone.setEnabled(!isDisable);
-        mEtLoginPassword.setEnabled(!isDisable);
-        mTvJumpToRegister.setEnabled(!isDisable);
-        mEtLoginTelephone.clearFocus();
-        mEtLoginPassword.clearFocus();
-        isDisableInput = isDisable;
-        LoginActivity.setDisableBackPressed((LoginActivity) mContext, isDisable);
     }
 
     private void tryLogin() {
@@ -144,7 +95,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
             return;
         }
 
-        startProgressAnim(true, new AnimatorListenerAdapter() {
+        mPBtnLogin.startHideAnim(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mPresenter.tryLogin(username, password);
@@ -155,15 +106,13 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
     private final View.OnClickListener mOnViewClickListener = new OnOnlySingleClickListener() {
         @Override
         public void onSingleClick(View v) {
-            if (!isDisableInput) {
-                switch (v.getId()) {
-                    case R.id.mBtnLogin:
-                        tryLogin();
-                        break;
-                    case R.id.mTvJumpToRegister:
-                        jumpToRegisterPage();
-                        break;
-                }
+            switch (v.getId()) {
+                case R.id.mPBtnLogin:
+                    tryLogin();
+                    break;
+                case R.id.mTvJumpToRegister:
+                    jumpToRegisterPage();
+                    break;
             }
         }
     };
@@ -182,7 +131,7 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
 
     @Override
     public void jumpToVerifyPage() {
-        startProgressAnim(false, null);
+        mPBtnLogin.startShowAnim(null);
         VerifyFragment.VerifyInfo info = new VerifyFragment.VerifyInfo();
         info.telephone = mEtLoginTelephone.getText().toString();
         info.password = mEtLoginPassword.getText().toString();
@@ -201,12 +150,12 @@ public class LoginFragment extends BaseFragment<LoginContract.Presenter> impleme
             AnimationUtil.errorTranslateAnim(mTvErrorHint);
             ((Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE)).vibrate(50);
         }
-        startProgressAnim(false, null);
+        mPBtnLogin.startShowAnim(null);
     }
 
     @Override
     public void startHomeActivity() {
-        AnimationUtil.circularRevealShowByFullActivityAnim((Activity) mContext, mPbLoginProgress, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
+        AnimationUtil.circularRevealShowByFullActivityAnim((Activity) mContext, mPBtnLogin, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animation.removeListener(this);

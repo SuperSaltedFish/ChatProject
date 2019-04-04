@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/textPrimaryColorBlack"
+
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/LocationAdapter_mTvAddress"
         app:layout_constraintEnd_toStartOf="@id/LocationAdapter_mIvSelectedIcon"

@@ -63,7 +63,7 @@
                 android:paddingStart="8dp"
                 android:paddingTop="8dp"
                 android:singleLine="true"
-                android:textColor="@color/textPrimaryColorBlack"
+
                 android:textSize="15sp"
                 app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvAddress"
                 app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvMapImage"
@@ -80,7 +80,7 @@
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
                 android:singleLine="true"
-                android:textColor="@color/textSecondaryColorBlack"
+                android:textColor="@color/textColorSecondaryBlack"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvMapImage"
                 app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvMapImage"
@@ -89,7 +89,7 @@
             <View
                 android:layout_width="0dp"
                 android:layout_height="1px"
-                android:background="@color/dividerColorBlack"
+                android:background="@color/dividerColor"
                 app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvMapImage"
                 app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvMapImage"
                 app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvMapImage" />

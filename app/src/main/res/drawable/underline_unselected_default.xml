@@ -10,7 +10,7 @@
             <solid android:color="@null" />
             <stroke
                 android:width="1px"
-                android:color="@color/dividerColorBlack" />
+                android:color="@color/dividerColor" />
             <padding android:bottom="4dp" />
         </shape>
     </item>

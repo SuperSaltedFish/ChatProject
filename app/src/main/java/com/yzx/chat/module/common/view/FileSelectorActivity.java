@@ -79,7 +79,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mRvDirectoryPath.setAdapter(mDirectoryPathAdapter);
 
         mRvFileAndDirectory.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        mRvFileAndDirectory.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColorBlack), DividerItemDecoration.HORIZONTAL));
+        mRvFileAndDirectory.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(this, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRvFileAndDirectory.setHasFixedSize(true);
         mRvFileAndDirectory.addOnItemTouchListener(mOnFileOrDirectoryItemClickListener);
         mRvFileAndDirectory.setAdapter(mFileAndDirectoryAdapter);

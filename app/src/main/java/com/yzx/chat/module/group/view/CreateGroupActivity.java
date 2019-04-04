@@ -101,9 +101,9 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mFlowLayout.setLineSpace((int) AndroidHelper.dip2px(4));
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
-        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(this, R.color.dividerColorBlack));
+        mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(this, R.color.dividerColor));
         mLetterSegmentationItemDecoration.setLineWidth(1);
-        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(this, R.color.dividerColorBlack));
+        mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(this, R.color.dividerColor));
         mLetterSegmentationItemDecoration.setTextSize(AndroidHelper.sp2px(16));
 
         mLinearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -114,7 +114,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
         mRecyclerView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
 
-        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.textSecondaryColorBlack));
+        mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.textColorSecondaryBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
 
@@ -129,7 +129,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
             ContactEntity contact;
             for (GroupMemberEntity member : groupMemberList) {
                 contact = new ContactEntity();
-                contact.setUserInfo(member.getUserProfile());
+                contact.setUserProfile(member.getUserProfile());
                 mAlreadyJoinContactList.add(contact);
             }
             mAlreadyJoinContactList.retainAll(mAllContactList);
@@ -205,7 +205,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
                 ImageView avatar = new ImageView(CreateGroupActivity.this);
                 avatar.setId(position);
                 avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this, avatar, mFilterContactList.get(position - 1).getUserInfo().getAvatar());
+                GlideUtil.loadAvatarFromUrl(CreateGroupActivity.this, avatar, mFilterContactList.get(position - 1).getUserProfile().getAvatar());
                 mFlowLayout.addView(avatar, new ViewGroup.MarginLayoutParams((int) AndroidHelper.dip2px(40), (int) AndroidHelper.dip2px(40)));
             } else {
                 mSelectedContactList.remove(mAllContactList.get(position - 1));

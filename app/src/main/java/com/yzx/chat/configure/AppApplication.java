@@ -3,12 +3,17 @@ package com.yzx.chat.configure;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.MessageQueue;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.yzx.chat.R;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.tool.ActivityHelper;
+import com.yzx.chat.tool.CrashHandler;
 import com.yzx.chat.util.AndroidHelper;
 
 import java.util.List;
@@ -37,21 +42,43 @@ public class AppApplication extends Application {
         }
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
-
+            CrashHandler.attachMainThread();
             AndroidHelper.init(this);
             ActivityHelper.init(this);
             EmojiCompat.init(new BundledEmojiCompatConfig(this));
             AppClient.init(this);
 
-            AppClient.getInstance().setLoginExpiredListener(new AppClient.LoginExpiredListener() {
+            setupListener();
+
+//            LeakCanary.install(this);
+
+            Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {//防止message的内存泄漏，详情看https://blog.csdn.net/u012464435/article/details/50774580
+                private MessageQueue.IdleHandler mIdleHandler = this;
+                private Handler mHandler = new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        super.handleMessage(msg);
+                        Looper.myQueue().addIdleHandler(mIdleHandler);
+                    }
+                };
+
                 @Override
-                public void onLoginExpired() {
-                    LoginActivity.startActivityOfNewTaskType(AppApplication.this, getResources().getString(R.string.AppApplication_LoginExpired));
+                public boolean queueIdle() {
+                    mHandler.sendEmptyMessageDelayed(1, 1200);
+                    return false;
                 }
             });
 
-            LeakCanary.install(this);
         }
+    }
+
+    private void setupListener() {
+        AppClient.getInstance().setLoginExpiredListener(new AppClient.LoginExpiredListener() {
+            @Override
+            public void onLoginExpired() {
+                LoginActivity.startActivityOfNewTaskType(AppApplication.this, getResources().getString(R.string.AppApplication_LoginExpired));
+            }
+        });
     }
 
     public static String getProcessName(Context cxt, int pid) {

@@ -57,7 +57,7 @@
         android:paddingEnd="12dp"
         android:paddingStart="12dp"
         android:paddingTop="8dp"
-        android:textColor="@color/textPrimaryColorBlack"
+
         android:textSize="16sp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"

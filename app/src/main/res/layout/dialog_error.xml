@@ -12,7 +12,6 @@
         android:id="@+id/ErrorDialog_mTvHint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/textPrimaryColorBlack"
         android:gravity="center"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/ErrorDialog_mBtnCancel"

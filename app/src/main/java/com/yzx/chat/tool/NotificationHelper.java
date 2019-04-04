@@ -118,10 +118,10 @@ public class NotificationHelper {
     }
 
     public void showPrivateMessageNotification(Message message, ContactEntity contact, boolean isFullScreen) {
-        String conversationID = contact.getUserInfo().getUserID();
+        String conversationID = contact.getUserProfile().getUserID();
         String title = contact.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
-        String avatarUrl = contact.getUserInfo().getAvatar();
+        String avatarUrl = contact.getUserProfile().getAvatar();
         int notificationID = conversationID.hashCode();
         long time = message.getSentTime();
         Intent contentIntent = new Intent(ACTION_CHAT_MESSAGE);

@@ -41,7 +41,7 @@
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/DefaultLightTheme"
+        android:theme="@style/AppTheme"
         tools:targetApi="n">
 
         <meta-data
@@ -54,9 +54,17 @@
             android:name="android.max_aspect"
             android:value="2.2" />
 
-        <activity
-            android:name=".module.main.view.SplashActivity"
-            android:theme="@style/SplashTheme">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity android:name=".module.main.view.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -73,9 +81,7 @@
             android:name=".module.conversation.view.ChatActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".module.common.view.QrCodeScanActivity"
-            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".module.common.view.QrCodeScanActivity" />
         <activity android:name=".module.common.view.ImageMultiSelectorActivity" />
         <activity android:name=".module.common.view.ImageViewPagerActivity" />
         <activity android:name=".module.contact.view.ContactProfileActivity" />
@@ -85,9 +91,7 @@
         <activity android:name=".module.contact.view.StrangerProfileActivity" />
         <activity android:name=".module.me.view.ProfileEditActivity" />
         <activity android:name=".module.common.view.ImageSingleSelectorActivity" />
-        <activity
-            android:name=".module.common.view.ImageOriginalActivity"
-            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".module.common.view.ImageOriginalActivity" />
         <activity android:name=".module.group.view.GroupProfileActivity" />
         <activity
             android:name=".module.group.view.CreateGroupActivity"
@@ -100,9 +104,7 @@
         <activity android:name=".module.group.view.GroupListActivity" />
         <activity android:name=".module.me.view.CropImageActivity" />
         <activity android:name=".module.common.view.FileSelectorActivity" />
-        <activity
-            android:name=".module.conversation.view.VideoPlayActivity"
-            android:theme="@style/DefaultDarkTheme" />
+        <activity android:name=".module.conversation.view.VideoPlayActivity" />
         <activity android:name=".module.contact.view.NotificationMessageActivity" />
 
         <activity android:name=".module.me.view.MyTagListActivity" />
