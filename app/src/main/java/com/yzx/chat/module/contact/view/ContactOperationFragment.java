@@ -1,6 +1,5 @@
 package com.yzx.chat.module.contact.view;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -113,13 +112,10 @@ public class ContactOperationFragment extends BaseFragment<ContactOperationContr
         public void enterDetails(int position) {
             ContactOperationEntity contactOperation = mAdapter.getItem(position);
             ContactEntity contact = mPresenter.findContact(contactOperation.getUserInfo().getUserID());
-            Intent intent;
             if (contact == null) {
-                intent = new Intent(mContext, StrangerProfileActivity.class);
-                intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, contactOperation);
-                startActivity(intent);
+                StrangerProfileActivity.startActivity(mContext, contactOperation);
             } else {
-                ContactProfileActivity.startActivity(mContext,contact.getContactID());
+                ContactProfileActivity.startActivity(mContext, contact.getContactID());
             }
         }
     };

@@ -153,7 +153,7 @@ public class ContactDao extends AbstractDao<ContactEntity> {
 
     @Override
     protected String[] toWhereArgsOfKey(ContactEntity entity) {
-        return new String[]{entity.getUserProfile().getUserID()};
+        return new String[]{entity.getContactID()};
     }
 
     @Override

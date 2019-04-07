@@ -32,9 +32,9 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
     private String abbreviation;
 
     public String getName() {
-        if(!TextUtils.isEmpty(remarkName)){
+        if (!TextUtils.isEmpty(remarkName)) {
             return remarkName;
-        }else if(userProfile !=null){
+        } else if (userProfile != null) {
             return userProfile.getNickname();
         }
         return "";
@@ -75,12 +75,10 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
     }
 
     public String getContactID() {
-        if(!TextUtils.isEmpty(contactID)){
-            return contactID;
-        }else if(userProfile !=null){
-            return userProfile.getUserID();
+        if (TextUtils.isEmpty(contactID)) {
+            contactID = userProfile.getUserID();
         }
-        return "";
+        return contactID;
     }
 
     public void setContactID(String contactID) {
@@ -143,7 +141,7 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.getContactID());
+        dest.writeString(this.contactID);
         dest.writeString(this.description);
         dest.writeString(this.remarkName);
         dest.writeStringList(this.telephones);

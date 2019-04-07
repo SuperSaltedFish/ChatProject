@@ -43,9 +43,9 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
 
     private static final String INTENT_EXTRA_CONTACT_ID = "ContactID";
 
-    public static void startActivity(Context context,String contactID){
+    public static void startActivity(Context context, String contactID) {
         Intent intent = new Intent(context, ContactProfileActivity.class);
-        intent.putExtra(INTENT_EXTRA_CONTACT_ID,contactID);
+        intent.putExtra(INTENT_EXTRA_CONTACT_ID, contactID);
         context.startActivity(intent);
     }
 
@@ -107,9 +107,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
         }
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         setTitle(null);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
 
         fillTestData();
 

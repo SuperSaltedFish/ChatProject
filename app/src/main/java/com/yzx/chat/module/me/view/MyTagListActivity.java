@@ -40,9 +40,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
     @Override
     protected void setup(Bundle savedInstanceState) {
         setTitle(R.string.MyTagListActivity_Title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
 
         mRvTags.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mRvTags.setAdapter(mAdapter);
@@ -69,7 +67,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
     @Override
     public void showAllTags(List<TagEntity> tagList) {
         mTagList.clear();
-        if(tagList!=null&&tagList.size()>0){
+        if (tagList != null && tagList.size() > 0) {
             mTagList.addAll(tagList);
         }
         mAdapter.notifyDataSetChanged();

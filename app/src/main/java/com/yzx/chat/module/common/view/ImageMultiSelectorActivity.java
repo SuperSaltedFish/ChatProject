@@ -101,9 +101,8 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
     protected void setup(Bundle savedInstanceState) {
         setTitle(R.string.ImageSelectorActivity_Title);
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
+
         getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.backgroundColorGrey)));
         mRvImage.setLayoutManager(new GridLayoutManager(this, HORIZONTAL_ITEM_COUNT));
         mRvImage.setHasFixedSize(true);

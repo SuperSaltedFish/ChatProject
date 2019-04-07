@@ -81,9 +81,8 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
         setTitle(R.string.QrCodeScanActivity_Title);
         setBrightness(0.9f);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
+
         mCamera2CaptureView.setCaptureCallback(mCaptureCallback);
 
         mMaskView.setMaskColor(Color.argb(64, 0, 0, 0));
@@ -263,9 +262,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     public void startStrangerProfileActivity(UserEntity user) {
-        Intent intent = new Intent(this, StrangerProfileActivity.class);
-        intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
-        startActivity(intent);
+        StrangerProfileActivity.startActivity(this,user);
         finish();
     }
 

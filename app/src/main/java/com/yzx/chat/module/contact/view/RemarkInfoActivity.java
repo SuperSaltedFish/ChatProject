@@ -79,9 +79,8 @@ public class RemarkInfoActivity extends BaseCompatActivity<RemarkInfoContract.Pr
     @Override
     protected void setup(Bundle savedInstanceState) {
         setTitle(R.string.RemarkInfoActivity_Title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
+
         mLabelFlowLayout.setLineSpace((int) AndroidHelper.dip2px(8));
         mLabelFlowLayout.setItemSpace((int) AndroidHelper.dip2px(8));
         mLabelFlowLayout.setOnClickListener(mOnLabelFlowLayoutClickListener);

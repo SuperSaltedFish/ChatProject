@@ -70,9 +70,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
     @Override
     protected void setup(Bundle savedInstanceState) {
         getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,R.color.colorAccent)));
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -170,9 +168,7 @@ public class FindNewContactActivity extends BaseCompatActivity<FindNewContactCon
         if (isContact) {
             ContactProfileActivity.startActivity(this,user.getUserID());
         } else {
-            Intent intent = new Intent(this, StrangerProfileActivity.class);
-            intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
-            startActivity(intent);
+            StrangerProfileActivity.startActivity(this,user);
         }
     }
 

@@ -230,9 +230,9 @@ public class BottomTabLayout extends LinearLayout {
         }
     }
 
-    private final View.OnClickListener mOnTabClickListener = new OnOnlySingleClickListener() {
+    private final View.OnClickListener mOnTabClickListener = new View.OnClickListener() {
         @Override
-        public void onSingleClick(View v) {
+        public void onClick(View v) {
             int childIndex = (int) v.getTag();
             if (mCurrentSelectedPosition == childIndex) {
                 dispenseRepeatedEvent();

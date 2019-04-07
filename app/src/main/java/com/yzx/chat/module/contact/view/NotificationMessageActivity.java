@@ -38,10 +38,8 @@ public class NotificationMessageActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        if (getSupportActionBar() != null) {
-            setTitle(null);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
+        setTitle(null);
 
         int paddingLeftRight = (int) AndroidHelper.dip2px(10);
         int paddingTopBottom = (int) AndroidHelper.dip2px(5);

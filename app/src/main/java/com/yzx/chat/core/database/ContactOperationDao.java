@@ -106,7 +106,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         boolean result = false;
         ContentValues values = new ContentValues();
         parseToContentValues(entity, values);
-        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             UserEntity userInfo = entity.getUserInfo();
@@ -129,7 +129,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         boolean result = false;
         ContentValues values = new ContentValues();
         parseToContentValues(entity, values);
-        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             UserEntity userInfo = entity.getUserInfo();
@@ -155,7 +155,7 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
         boolean result = false;
         ContentValues values = new ContentValues();
         parseToContentValues(entity, values);
-        SQLiteDatabase database = mReadWriteHelper.openReadableDatabase();
+        SQLiteDatabase database = mReadWriteHelper.openWritableDatabase();
         database.beginTransactionNonExclusive();
         try {
             if (database.update(getTableName(), values, getWhereClauseOfKey(), toWhereArgsOfKey(entity)) > 0 && UserDao.replaceUser(database, userInfo, values)) {
@@ -196,11 +196,11 @@ public class ContactOperationDao extends AbstractDao<ContactOperationEntity> {
     @Override
     protected ContactOperationEntity toEntity(Cursor cursor) {
         ContactOperationEntity bean = new ContactOperationEntity();
+        bean.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_ContactID)));
         bean.setType(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Type)));
         bean.setReason(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Reason)));
         bean.setRemind(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_IsRemind)) == 1);
         bean.setTime(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_Time)));
-        bean.setContactID(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_Time)));
         bean.setUserInfo(UserDao.toEntityFromCursor(cursor));
         return bean;
     }

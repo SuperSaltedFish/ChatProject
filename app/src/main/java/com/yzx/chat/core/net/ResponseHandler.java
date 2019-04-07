@@ -60,7 +60,6 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
             } else {
                 onResult(response.getData());
             }
-            onResult(response.getData());
         } else {
             onFailure(response.getStatus(), response.getMessage());
         }

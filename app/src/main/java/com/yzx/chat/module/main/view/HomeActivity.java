@@ -31,7 +31,6 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     private final static int REQUEST_PERMISSIONS_CAMERA = 0x1;
 
     private FragmentManager mFragmentManager;
-    private Fragment[] mFragments;
     private BottomTabLayout mBottomTabLayout;
     private int mCurrentFragmentIndex = -1;
 
@@ -42,13 +41,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mBottomTabLayout = findViewById(R.id.HomeActivity_mBottomTabLayout);
-
-        mFragments = new Fragment[4];
-        mFragments[0] = new ConversationFragment();
-        mFragments[1] = new ContactListFragment();
-        mFragments[2] = new MomentsFragment();
-        mFragments[3] = new ProfileFragment();
+        mBottomTabLayout = findViewById(R.id.mBottomTabLayout);
         mFragmentManager = getSupportFragmentManager();
     }
 
@@ -57,16 +50,12 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
         getWindow().setBackgroundDrawable(null);
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
 
-        mFragmentManager.beginTransaction()
-                .add(R.id.HomeActivity_mClContent, mFragments[0], String.valueOf(0))
-                .add(R.id.HomeActivity_mClContent, mFragments[1], String.valueOf(1))
-                .add(R.id.HomeActivity_mClContent, mFragments[2], String.valueOf(2))
-                .add(R.id.HomeActivity_mClContent, mFragments[3], String.valueOf(3))
-                .hide(mFragments[0])
-                .hide(mFragments[1])
-                .hide(mFragments[2])
-                .hide(mFragments[3])
-                .commit();
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        addFragment(transaction, new ConversationFragment(), "0");
+        addFragment(transaction, new ContactListFragment(), "1");
+        addFragment(transaction, new MomentsFragment(), "2");
+        addFragment(transaction, new ProfileFragment(), "3");
+        transaction.commitNow();
 
         mBottomTabLayout
                 .addTab(R.drawable.ic_conversation_focus, R.drawable.ic_conversation_unfocus, getString(R.string.HomeBottomNavigationTitle_Chat))
@@ -74,7 +63,32 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 .addTab(R.drawable.ic_moments_focus, R.drawable.ic_moments_unfocus, getString(R.string.HomeBottomNavigationTitle_Moments))
                 .addTab(R.drawable.ic_personal_focus, R.drawable.ic_personal_unfocus, getString(R.string.HomeBottomNavigationTitle_Profile))
                 .setTitleTextSize(AndroidHelper.sp2px(11))
-                .addOnTabItemSelectedListener(mOnTabSelectedListener)
+                .addOnTabItemSelectedListener(new BottomTabLayout.OnTabItemSelectedListener() {
+                    @Override
+                    public void onSelected(int position) {
+                        Fragment show = mFragmentManager.findFragmentByTag(String.valueOf(position));
+                        if (show == null) {
+                            return;
+                        }
+                        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+                        if (mCurrentFragmentIndex >= 0) {
+                            Fragment hide = mFragmentManager.findFragmentByTag(String.valueOf(mCurrentFragmentIndex));
+                            if (hide != null) {
+                                transaction.hide(hide);
+                            }
+                        }
+                        if (show.isHidden()) {
+                            transaction.show(show);
+                        }
+                        transaction.commit();
+                        mCurrentFragmentIndex = position;
+                    }
+
+                    @Override
+                    public void onRepeated(int position) {
+
+                    }
+                })
                 .setSelectPosition(0, false, true);
 
         mBottomTabLayout.setOutlineProvider(new ViewOutlineProvider() {
@@ -88,7 +102,7 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 } else {
                     mRect.set(0, 0, view.getWidth(), view.getHeight());
                 }
-                mRect.offset(0, (int) -AndroidHelper.dip2px(2));
+                mRect.offset(0, (int) -AndroidHelper.dip2px(3));
                 outline.setRect(mRect);
             }
         });
@@ -98,6 +112,15 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
 
     private void setData() {
         mPresenter.loadUnreadCount();
+    }
+
+    private void addFragment(FragmentTransaction transaction, Fragment fragment, String tag) {
+        Fragment old = mFragmentManager.findFragmentByTag(tag);
+        if (old == null) {
+            old = fragment;
+            transaction.add(R.id.mClContent, fragment, tag);
+        }
+        transaction.hide(old);
     }
 
     @Override
@@ -136,23 +159,4 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
     public void updateContactUnreadBadge(int count) {
         mBottomTabLayout.setBadge(1, count);
     }
-
-    private final BottomTabLayout.OnTabItemSelectedListener mOnTabSelectedListener = new BottomTabLayout.OnTabItemSelectedListener() {
-        @Override
-        public void onSelected(int position) {
-            FragmentTransaction transaction = mFragmentManager.beginTransaction();
-            transaction.show(mFragments[position]);
-            if (mCurrentFragmentIndex >= 0) {
-                transaction.hide(mFragments[mCurrentFragmentIndex]);
-            }
-            transaction.commit();
-            mCurrentFragmentIndex = position;
-        }
-
-        @Override
-        public void onRepeated(int position) {
-
-        }
-
-    };
 }

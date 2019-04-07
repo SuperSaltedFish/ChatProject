@@ -164,10 +164,7 @@ public class NotificationHelper {
     public void showContactOperationNotification(ContactOperationEntity contactOperation, boolean isFullScreen) {
         String id = contactOperation.getContactID();
         String title = contactOperation.getUserInfo().getNickname();
-        String content = contactOperation.getReason();
-        if (TextUtils.isEmpty(content)) {
-            content = AndroidHelper.getString(R.string.ContactOperationAdapter_DefaultReason);
-        }
+        String content = AndroidHelper.getString(R.string.ContactOperationAdapter_DefaultReason);
         String avatarUrl = contactOperation.getUserInfo().getAvatar();
         int notificationID = id.hashCode();
         long time = contactOperation.getTime();

@@ -90,9 +90,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
             finish();
             return;
         }
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
         setTitle(R.string.CreateGroupActivity_Title);
 
         mFilterContactList.addAll(mAllContactList);

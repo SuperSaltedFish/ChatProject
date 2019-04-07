@@ -68,7 +68,6 @@ public class ContactManager {
     private ContactOperationDao mContactOperationDao;
     private ContactDao mContactDao;
 
-
     private ContactApi mContactApi;
 
     private volatile int mContactOperationUnreadNumber;
@@ -116,10 +115,10 @@ public class ContactManager {
         List<ContactEntity> contacts = new ArrayList<>(mContactsMap.size() + 4);
         Parcel parcel = Parcel.obtain();
         for (ContactEntity contact : mContactsMap.values()) {
-            contact.writeToParcel(parcel, 0);
-            contacts.add(ContactEntity.CREATOR.createFromParcel(parcel));
             parcel.setDataSize(0);
+            contact.writeToParcel(parcel, 0);
             parcel.setDataPosition(0);
+            contacts.add(ContactEntity.CREATOR.createFromParcel(parcel));
         }
         parcel.recycle();
         return contacts;
@@ -159,7 +158,7 @@ public class ContactManager {
                         operation.setTime((int) (System.currentTimeMillis() / 1000));
                         operation.setType(ContactManager.CONTACT_OPERATION_REQUEST_ACTIVE);
                         operation.setRemind(false);
-                        if (mContactOperationDao.replace(operation)) {
+                        if (mContactOperationDao.replaceEx(operation)) {
                             mUIHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -186,12 +185,12 @@ public class ContactManager {
                 .enqueue(new ResponseHandler<>(new ResultCallback<Void>() {
                     @Override
                     public void onResult(Void result) {
-                        final ContactOperationEntity operation = mContactOperationDao.loadByKey(userID);
+                        final ContactOperationEntity operation = mContactOperationDao.loadByKeyEx(userID);
                         operation.setReason(reason);
                         operation.setTime((int) (System.currentTimeMillis() / 1000));
                         operation.setType(ContactManager.CONTACT_OPERATION_REJECT_ACTIVE);
                         operation.setRemind(false);
-                        if (mContactOperationDao.replace(operation)) {
+                        if (mContactOperationDao.replaceEx(operation)) {
                             mUIHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -218,16 +217,16 @@ public class ContactManager {
                 .enqueue(new ResponseHandler<>(new ResultCallback<UserEntity>() {
                     @Override
                     public void onResult(UserEntity result) {
-                        final ContactOperationEntity operation = mContactOperationDao.loadByKey(userID);
+                        final ContactOperationEntity operation = mContactOperationDao.loadByKeyEx(userID);
                         operation.setTime((int) (System.currentTimeMillis() / 1000));
                         operation.setType(ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE);
                         operation.setRemind(false);
 
-                         ContactEntity contact = new ContactEntity();
+                        ContactEntity contact = new ContactEntity();
                         contact.setContactID(result.getUserID());
                         contact.setUserProfile(result);
 
-                        if (mContactOperationDao.replace(operation) & addContactToDB(contact)) {
+                        if (mContactOperationDao.replaceEx(operation) & addContactToDB(contact)) {
                             mUIHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -247,7 +246,7 @@ public class ContactManager {
                     public void onFailure(int code, String error) {
                         CallbackUtil.callFailure(code, error, callback);
                     }
-                }));
+                }), false);
 
     }
 
@@ -264,7 +263,7 @@ public class ContactManager {
                     public void onFailure(int code, String error) {
                         CallbackUtil.callFailure(code, error, callback);
                     }
-                }));
+                }), false);
     }
 
     public void updateContactRemark(final String contactID, final String remarkName, String description, List<String> telephones, List<String> tags, final ResultCallback<Void> callback) {
@@ -346,12 +345,12 @@ public class ContactManager {
         mContactDao.deleteByKey(userID);
         mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.PRIVATE, userID, null);
         mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, userID, null);
-        ContactOperationEntity contactOperation = mContactOperationDao.loadByKey(userID);
+        ContactOperationEntity contactOperation = mContactOperationDao.loadByKeyEx(userID);
         if (contactOperation != null) {
             boolean needUpdate = contactOperation.isRemind();
             contactOperation.setRemind(false);
             contactOperation.setType(CONTACT_OPERATION_DELETE_ACTIVE);
-            mContactOperationDao.update(contactOperation);
+            mContactOperationDao.updateEx(contactOperation);
             if (needUpdate) {
                 updateContactUnreadCount();
             }
@@ -548,7 +547,7 @@ public class ContactManager {
                 return;
 
         }
-        if (mContactOperationDao.replace(contactOperation)) {
+        if (mContactOperationDao.replaceEx(contactOperation)) {
             updateContactUnreadCount();
             mUIHandler.post(new Runnable() {
                 @Override

@@ -69,9 +69,8 @@ public class EditContactTagsActivity extends BaseCompatActivity {
     @Override
     protected void setup(Bundle savedInstanceState) {
         setTitle(R.string.EditContactLabelActivity_Title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
+
 
         mEtInput.setBackspaceListener(mBackspaceListener);
         mEtInput.setOnEditorActionListener(mOnEditorActionListener);

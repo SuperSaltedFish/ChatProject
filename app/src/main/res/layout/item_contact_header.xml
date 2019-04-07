@@ -2,17 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/ContactFragmentList_mLlContactOperation"
+        android:id="@+id/mLlContactOperation"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <ImageView
             android:layout_width="44dp"
@@ -29,7 +28,7 @@
             android:textSize="14sp" />
 
         <com.yzx.chat.widget.view.BadgeView
-            android:id="@+id/ContactFragmentList_mBadgeView"
+            android:id="@+id/mBadgeView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
@@ -39,13 +38,13 @@
 
 
     <LinearLayout
-        android:id="@+id/ContactFragmentList_mLlGroup"
+        android:id="@+id/mLlGroup"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <ImageView
             android:layout_width="44dp"
@@ -62,13 +61,13 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ContactFragmentList_mLlTags"
+        android:id="@+id/mLlTags"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <ImageView
             android:layout_width="44dp"
@@ -76,7 +75,7 @@
             android:src="@drawable/ic_contact_label" />
 
         <TextView
-            android:id="@+id/ContactFragmentList_mTvTags"
+            android:id="@+id/mTvTags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -88,29 +87,29 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/backgroundColorGrey"
+        android:background="@color/backgroundColorWhiteLight"
         android:gravity="center"
         android:orientation="horizontal">
 
         <View
-            android:layout_width="40dp"
+            android:layout_width="80dp"
             android:layout_height="1px"
-             />
+            android:background="@color/textColorSecondaryBlackLight" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:gravity="center"
-            android:text="好友列表"
+            android:text="@string/ContactListFragment_ContactList"
+            android:textColor="@color/textColorSecondaryBlack"
             android:textSize="12sp" />
 
         <View
-            android:layout_width="40dp"
+            android:layout_width="80dp"
             android:layout_height="1px"
-             />
+            android:background="@color/textColorSecondaryBlackLight" />
 
     </LinearLayout>
 

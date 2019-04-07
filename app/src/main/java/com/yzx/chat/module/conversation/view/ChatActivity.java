@@ -298,9 +298,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
 
         setChatRecyclerViewAndAdapter();
 

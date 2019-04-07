@@ -33,9 +33,7 @@ public class LocationMapActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
 
 
         PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);

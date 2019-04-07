@@ -7,7 +7,7 @@
 
 
     <com.yzx.chat.widget.view.WindowInsetsFrameLayout
-        android:id="@+id/HomeActivity_mClContent"
+        android:id="@+id/mClContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="52dp"
@@ -15,7 +15,7 @@
         android:focusableInTouchMode="true" />
 
     <com.yzx.chat.widget.view.BottomTabLayout
-        android:id="@+id/HomeActivity_mBottomTabLayout"
+        android:id="@+id/mBottomTabLayout"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_gravity="bottom"

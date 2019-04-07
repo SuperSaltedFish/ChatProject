@@ -6,7 +6,7 @@
     android:background="@android:color/white">
 
     <FrameLayout
-        android:id="@+id/ContactFragmentList_mFlToolbarLayout"
+        android:id="@+id/mFlToolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -21,17 +21,17 @@
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ContactFragmentList_mRvContact"
+        android:id="@+id/mRvContact"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ContactFragmentList_mFlToolbarLayout" />
+        app:layout_constraintTop_toBottomOf="@id/mFlToolbarLayout" />
 
     <com.yzx.chat.widget.view.IndexBarView
-        android:id="@+id/ContactFragmentList_mIndexBarView"
+        android:id="@+id/mIndexBarView"
         android:layout_width="16dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -39,12 +39,12 @@
         android:background="@drawable/bg_index_bar"
         android:paddingTop="4dp"
         android:paddingBottom="2dp"
-        app:layout_constraintBottom_toTopOf="@id/ContactFragmentList_mFBtnAdd"
+        app:layout_constraintBottom_toTopOf="@id/mFBtnAdd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ContactFragmentList_mFlToolbarLayout" />
+        app:layout_constraintTop_toBottomOf="@id/mFlToolbarLayout" />
 
     <TextView
-        android:id="@+id/ContactFragmentList_mTvIndexBarHint"
+        android:id="@+id/mTvIndexBarHint"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginEnd="8dp"
@@ -54,11 +54,11 @@
         android:scaleY="0"
         android:textColor="@color/textColorWhite"
         android:textSize="44sp"
-        app:layout_constraintEnd_toStartOf="@id/ContactFragmentList_mIndexBarView"
-        app:layout_constraintTop_toTopOf="@id/ContactFragmentList_mIndexBarView" />
+        app:layout_constraintEnd_toStartOf="@id/mIndexBarView"
+        app:layout_constraintTop_toTopOf="@id/mIndexBarView" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ContactFragmentList_mFBtnAdd"
+        android:id="@+id/mFBtnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

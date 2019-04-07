@@ -94,16 +94,16 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     @Override
     protected void init(View parentView) {
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
-        mRvContact = parentView.findViewById(R.id.ContactFragmentList_mRvContact);
-        mIndexBarView = parentView.findViewById(R.id.ContactFragmentList_mIndexBarView);
-        mTvIndexBarHint = parentView.findViewById(R.id.ContactFragmentList_mTvIndexBarHint);
-        mFBtnAdd = parentView.findViewById(R.id.ContactFragmentList_mFBtnAdd);
+        mRvContact = parentView.findViewById(R.id.mRvContact);
+        mIndexBarView = parentView.findViewById(R.id.mIndexBarView);
+        mTvIndexBarHint = parentView.findViewById(R.id.mTvIndexBarHint);
+        mFBtnAdd = parentView.findViewById(R.id.mFBtnAdd);
         mHeaderView = LayoutInflater.from(mContext).inflate(R.layout.item_contact_header, (ViewGroup) parentView, false);
-        mLlContactOperation = mHeaderView.findViewById(R.id.ContactFragmentList_mLlContactOperation);
-        mLlGroup = mHeaderView.findViewById(R.id.ContactFragmentList_mLlGroup);
-        mLlTags = mHeaderView.findViewById(R.id.ContactFragmentList_mLlTags);
-        mBadgeView = mHeaderView.findViewById(R.id.ContactFragmentList_mBadgeView);
-        mTvTags = mHeaderView.findViewById(R.id.ContactFragmentList_mTvTags);
+        mLlContactOperation = mHeaderView.findViewById(R.id.mLlContactOperation);
+        mLlGroup = mHeaderView.findViewById(R.id.mLlGroup);
+        mLlTags = mHeaderView.findViewById(R.id.mLlTags);
+        mBadgeView = mHeaderView.findViewById(R.id.mBadgeView);
+        mTvTags = mHeaderView.findViewById(R.id.mTvTags);
         mRvSearchContact = new RecyclerView(mContext);
         mContactMenu = new OverflowPopupMenu(mContext);
         mContactSearchList = new ArrayList<>(32);
@@ -261,16 +261,16 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         @Override
         public void onSingleClick(View v) {
             switch (v.getId()) {
-                case R.id.ContactFragmentList_mLlContactOperation:
+                case R.id.mLlContactOperation:
                     startActivity(new Intent(mContext, NotificationMessageActivity.class));
                     break;
-                case R.id.ContactFragmentList_mLlGroup:
+                case R.id.mLlGroup:
                     startActivity(new Intent(mContext, GroupListActivity.class));
                     break;
-                case R.id.ContactFragmentList_mLlTags:
+                case R.id.mLlTags:
                     startActivity(new Intent(mContext, MyTagListActivity.class));
                     break;
-                case R.id.ContactFragmentList_mFBtnAdd:
+                case R.id.mFBtnAdd:
                     startActivity(new Intent(mContext, FindNewContactActivity.class));
                     break;
             }

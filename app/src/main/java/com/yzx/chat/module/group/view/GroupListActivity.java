@@ -50,9 +50,7 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
     @Override
     protected void setup(Bundle savedInstanceState) {
         setTitle(R.string.GroupListActivity_Title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
 
 
         mRvGroup.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));

@@ -68,9 +68,8 @@ public class FileSelectorActivity extends BaseCompatActivity {
     @Override
     protected void setup(Bundle savedInstanceState) {
         setTitle(R.string.FileSelectorActivity_Title);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
+
         mDirectoryPathLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRvDirectoryPath.setLayoutManager(mDirectoryPathLayoutManager);
         mRvDirectoryPath.setHasFixedSize(true);

@@ -1,5 +1,7 @@
 package com.yzx.chat.module.contact.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -36,8 +38,21 @@ import androidx.viewpager.widget.ViewPager;
 
 public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileContract.Presenter> implements StrangerProfileContract.View {
 
-    public static final String INTENT_EXTRA_USER = "User";
-    public static final String INTENT_EXTRA_CONTENT_OPERATION = "ContactOperation";
+    private static final String INTENT_EXTRA_USER = "User";
+    private static final String INTENT_EXTRA_CONTENT_OPERATION = "ContactOperation";
+
+    public static void startActivity(Context context,ContactOperationEntity contactOperation){
+        Intent  intent = new Intent(context, StrangerProfileActivity.class);
+        intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, contactOperation);
+        context.startActivity(intent);
+    }
+
+    public static void startActivity(Context context,UserEntity user){
+        Intent  intent = new Intent(context, StrangerProfileActivity.class);
+        intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
+        context.startActivity(intent);
+    }
+
 
     private EditText mEtReason;
     private ProgressDialog mProgressDialog;
@@ -80,10 +95,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     @Override
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            setTitle(null);
-        }
+        setDisplayHomeAsUpEnabled(true);
+        setTitle(null);
 
         fillTestData();
 

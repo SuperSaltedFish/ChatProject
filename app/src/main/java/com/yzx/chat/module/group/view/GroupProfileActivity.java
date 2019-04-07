@@ -103,9 +103,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
     @Override
     protected void setup(Bundle savedInstanceState) {
         setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setDisplayHomeAsUpEnabled(true);
         mCollapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         mCollapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
 

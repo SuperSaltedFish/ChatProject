@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:paddingBottom="12dp"
-    android:paddingEnd="16dp"
     android:paddingStart="16dp"
-    android:paddingTop="12dp">
+    android:paddingTop="12dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
 
     <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/ContactMessageAdapter_mIvAvatar"
@@ -76,8 +77,8 @@
         android:layout_marginTop="4dp"
         android:background="@drawable/bg_tv_contact_operation_acceptable"
         android:gravity="center"
-        android:paddingBottom="2dp"
         android:paddingTop="2dp"
+        android:paddingBottom="2dp"
         android:text="@string/ContactMessageAdapter_Requesting"
         android:textColor="@android:color/white"
         android:textSize="12sp"
@@ -91,8 +92,8 @@
         android:layout_marginStart="8dp"
         android:background="@drawable/bg_tv_contact_operation_deniable"
         android:gravity="center"
-        android:paddingBottom="2dp"
         android:paddingTop="2dp"
+        android:paddingBottom="2dp"
         android:text="@string/ContactMessageAdapter_Refused"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/ContactMessageAdapter_mTvAccept"
