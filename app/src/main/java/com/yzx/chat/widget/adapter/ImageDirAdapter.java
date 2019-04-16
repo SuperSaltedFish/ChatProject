@@ -60,6 +60,11 @@ public class ImageDirAdapter extends BaseRecyclerViewAdapter<ImageDirAdapter.Ite
     }
 
     @Override
+    public void onViewHolderRecycled(ItemView holder) {
+        GlideUtil.clear(mContext, holder.mIvLowSource);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return mImageDirPath == null ? 1 : mImageDirPath.size() + 1;
     }

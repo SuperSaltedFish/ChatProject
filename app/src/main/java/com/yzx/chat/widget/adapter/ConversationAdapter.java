@@ -10,6 +10,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.DateUtil;
+import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.BadgeView;
 import com.yzx.chat.widget.view.NineGridAvatarView;
 
@@ -63,7 +64,11 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
         } else {
             holder.mTvBadge.setBadgeBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAccentLight));
         }
+    }
 
+    @Override
+    public void onViewHolderRecycled(ConversationHolder holder) {
+        holder.mIvAvatar.setImageUrlList((List<Object>) null);
     }
 
     @Override

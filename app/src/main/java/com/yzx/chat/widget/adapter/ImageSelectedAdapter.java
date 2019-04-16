@@ -38,6 +38,11 @@ public class ImageSelectedAdapter extends BaseRecyclerViewAdapter<ImageSelectedA
     }
 
     @Override
+    public void onViewHolderRecycled(ImageSelectedHolder holder) {
+        GlideUtil.clear(mContext,holder.mSelectedImage);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return mPicSelectedList == null ? 0 : mPicSelectedList.size();
     }

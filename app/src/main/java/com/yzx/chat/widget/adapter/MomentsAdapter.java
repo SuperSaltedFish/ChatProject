@@ -47,6 +47,11 @@ public class MomentsAdapter extends BaseRecyclerViewAdapter<MomentsAdapter.ItemV
     }
 
     @Override
+    public void onViewHolderRecycled(ItemView holder) {
+        GlideUtil.clear(mContext,holder.mIvAvatar);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return 10;
     }

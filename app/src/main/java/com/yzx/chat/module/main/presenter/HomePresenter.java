@@ -2,6 +2,7 @@ package com.yzx.chat.module.main.presenter;
 
 import android.os.Handler;
 
+import com.yzx.chat.R;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ChatManager;
 import com.yzx.chat.core.ContactManager;
@@ -17,6 +18,7 @@ import com.yzx.chat.module.main.contract.HomeContract;
 import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.tool.NotificationHelper;
+import com.yzx.chat.util.AndroidHelper;
 
 import io.rong.imlib.model.Message;
 import io.rong.message.GroupNotificationMessage;
@@ -42,7 +44,6 @@ public class HomePresenter implements HomeContract.Presenter {
         mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, null);
         mAppClient.getContactManager().addContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mAppClient.getContactManager().addContactOperationListener(mOnContactOperationListener);
-        mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
     }
 
     @Override
@@ -51,7 +52,6 @@ public class HomePresenter implements HomeContract.Presenter {
         mAppClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mAppClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mAppClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
-        mAppClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
         mAppClient = null;
@@ -93,13 +93,13 @@ public class HomePresenter implements HomeContract.Presenter {
                         case PRIVATE:
                             ContactEntity contact = AppClient.getInstance().getContactManager().getContact(message.getTargetId());
                             if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
-                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact,!ActivityHelper.isAppForeground());
+                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact, !ActivityHelper.isAppForeground());
                             }
                             break;
                         case GROUP:
                             GroupEntity group = AppClient.getInstance().getGroupManager().getGroup(message.getTargetId());
                             if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
-                                NotificationHelper.getInstance().showGroupMessageNotification(message, group,!ActivityHelper.isAppForeground());
+                                NotificationHelper.getInstance().showGroupMessageNotification(message, group, !ActivityHelper.isAppForeground());
                             }
                             break;
                     }
@@ -108,31 +108,25 @@ public class HomePresenter implements HomeContract.Presenter {
         }
     };
 
-    private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {
-        @Override
-        public void onContactAdded(ContactEntity contact) {
-
-        }
-
-        @Override
-        public void onContactDeleted(String contactID) {
-
-        }
-
-        @Override
-        public void onContactUpdate(ContactEntity contact) {
-
-        }
-    };
-
     private final ContactManager.OnContactOperationListener mOnContactOperationListener = new ContactManager.OnContactOperationListener() {
         @Override
         public void onContactOperationReceive(final ContactOperationEntity contactOperation) {
             Class activityClass = ActivityHelper.getStackTopActivityClass();
-            if ( activityClass == NotificationMessageActivity.class) {
+            if (activityClass == NotificationMessageActivity.class) {
                 return;
             }
-            NotificationHelper.getInstance().showContactOperationNotification(contactOperation,!ActivityHelper.isAppForeground());
+            String hintContent;
+            switch (contactOperation.getType()) {
+                case ContactManager.CONTACT_OPERATION_REQUEST:
+                    hintContent = AndroidHelper.getString(R.string.ContactOperationAdapter_RequestReason);
+                    break;
+                case ContactManager.CONTACT_OPERATION_REJECT:
+                    hintContent = AndroidHelper.getString(R.string.ContactOperationAdapter_RejuctReason);
+                    break;
+                default:
+                    return;
+            }
+            NotificationHelper.getInstance().showContactOperationNotification(contactOperation, hintContent, !ActivityHelper.isAppForeground());
         }
 
         @Override

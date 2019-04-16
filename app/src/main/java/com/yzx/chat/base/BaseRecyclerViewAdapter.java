@@ -13,11 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
  * 生命太短暂,不要去做一些根本没有人想要的东西
  */
 
+@SuppressWarnings("unchecked")
 public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter.BaseViewHolder>
         extends RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseViewHolder> {
 
-    private static final int DEFAULT_HOLDER_TYPE_HEADER = -1;
-    private static final int DEFAULT_HOLDER_TYPE_FOOTER = -2;
+    private static final int HOLDER_TYPE_HEADER = -1;
+    private static final int HOLDER_TYPE_FOOTER = -2;
 
     protected Context mContext;
     private View mHeaderView;
@@ -31,16 +32,19 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
     public abstract int getViewHolderCount();
 
+    public void onViewHolderRecycled(VH holder) {
+    }
+
     public int getViewHolderType(int position) {
         return super.getItemViewType(position);
     }
 
     public int getHeaderViewHolderType() {
-        return DEFAULT_HOLDER_TYPE_HEADER;
+        return HOLDER_TYPE_HEADER;
     }
 
     public int getFooterViewHolderType() {
-        return DEFAULT_HOLDER_TYPE_FOOTER;
+        return HOLDER_TYPE_FOOTER;
     }
 
     @NonNull
@@ -49,28 +53,26 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         if (mContext == null) {
             mContext = parent.getContext();
         }
-        if (viewType == DEFAULT_HOLDER_TYPE_HEADER) {
-            return new BaseViewHolder(mHeaderView);
+        if (viewType == HOLDER_TYPE_HEADER) {
+            return new HeaderHolder(mHeaderView);
         }
-        if (viewType == DEFAULT_HOLDER_TYPE_FOOTER) {
-            return new BaseViewHolder(mFooterView);
+        if (viewType == HOLDER_TYPE_FOOTER) {
+            return new FooterHolder(mFooterView);
         }
         return getViewHolder(parent, viewType);
     }
 
-
-
-    @SuppressWarnings("unchecked")
     @Override
     public final void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
         if (mContext == null) {
             mContext = holder.itemView.getContext();
         }
+        if (holder instanceof HeaderHolder || holder instanceof FooterHolder) {
+            return;
+        }
         if (mHeaderView != null) {
-            if (position != 0) {
-                bindDataToViewHolder((VH) holder, position - 1);
-            }
-        } else if (mFooterView == null || position != getItemCount() - 1) {
+            bindDataToViewHolder((VH) holder, position - 1);
+        } else {
             bindDataToViewHolder((VH) holder, position);
         }
 
@@ -83,6 +85,15 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
             });
         }
         mLastBindPosition = position;
+    }
+
+    @Override
+    public final void onViewRecycled(@NonNull BaseViewHolder holder) {
+        super.onViewRecycled(holder);
+        if (holder instanceof HeaderHolder || holder instanceof FooterHolder) {
+            return;
+        }
+        onViewHolderRecycled((VH) holder);
     }
 
     @Override
@@ -100,10 +111,10 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     @Override
     public final int getItemViewType(int position) {
         if (mHeaderView != null && position == 0) {
-            return DEFAULT_HOLDER_TYPE_HEADER;
+            return HOLDER_TYPE_HEADER;
         }
         if (mFooterView != null && position == getItemCount() - 1) {
-            return DEFAULT_HOLDER_TYPE_FOOTER;
+            return HOLDER_TYPE_FOOTER;
         }
         if (mHeaderView != null) {
             return getViewHolderType(position - 1);
@@ -210,13 +221,23 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
     }
 
-    public interface OnScrollToBottomListener {
-        void OnScrollToBottom();
-    }
-
     public static class BaseViewHolder extends RecyclerView.ViewHolder {
 
         public BaseViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    private static class HeaderHolder extends BaseViewHolder {
+
+        public HeaderHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    private static class FooterHolder extends BaseViewHolder {
+
+        public FooterHolder(View itemView) {
             super(itemView);
         }
     }
@@ -250,4 +271,7 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
     }
 
+    public interface OnScrollToBottomListener {
+        void OnScrollToBottom();
+    }
 }

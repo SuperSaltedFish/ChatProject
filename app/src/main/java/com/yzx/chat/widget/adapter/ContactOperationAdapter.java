@@ -49,7 +49,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         holder.mTvName.setText(contactMessage.getUserInfo().getNickname());
         String reason = contactMessage.getReason();
         if (TextUtils.isEmpty(reason)) {
-            holder.mTvReason.setText(R.string.ContactOperationAdapter_DefaultReason);
+            holder.mTvReason.setText(R.string.ContactOperationAdapter_RequestReason);
         } else {
             holder.mTvReason.setText(contactMessage.getReason());
         }
@@ -98,6 +98,11 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         }
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUserInfo().getAvatar());
 
+    }
+
+    @Override
+    public void onViewHolderRecycled(ContactMessageHolder holder) {
+        GlideUtil.clear(mContext,holder.mIvAvatar);
     }
 
     @Override

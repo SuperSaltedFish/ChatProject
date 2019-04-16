@@ -48,6 +48,11 @@ public class GroupAdapter extends BaseRecyclerViewAdapter<GroupAdapter.GroupHold
     }
 
     @Override
+    public void onViewHolderRecycled(GroupHolder holder) {
+        holder.mIvAvatar.setImageUrlList((List<Object>) null);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return mGroupList == null ? 0 : mGroupList.size();
     }

@@ -62,7 +62,12 @@ public class CreateGroupAdapter extends BaseRecyclerViewAdapter<CreateGroupAdapt
             holder.mCbIsSelected.setEnabled(true);
             holder.mCbIsSelected.setChecked(mSelectedList.contains(contact));
         }
-        GlideUtil.loadAvatarFromUrl(mContext,holder.mIvAvatar,contact.getUserProfile().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contact.getUserProfile().getAvatar());
+    }
+
+    @Override
+    public void onViewHolderRecycled(CreateGroupHolder holder) {
+        GlideUtil.clear(mContext, holder.mIvAvatar);
     }
 
     @Override

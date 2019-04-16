@@ -43,6 +43,11 @@ public class LocalSingleImageAdapter extends BaseRecyclerViewAdapter<LocalSingle
     }
 
     @Override
+    public void onViewHolderRecycled(ItemView holder) {
+        GlideUtil.clear(mContext,holder.mIvImage);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return mImagePathList == null ? 0 : mImagePathList.size();
     }

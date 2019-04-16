@@ -19,8 +19,8 @@ public abstract class OnOnlySingleClickListener implements View.OnClickListener 
     public final void onClick(View v) {
         long nowTime = SystemClock.elapsedRealtime();
         if (nowTime - lastClickTime >= MAX_CLICK_INTERVAL) {
+            lastClickTime = nowTime;
             onSingleClick(v);
         }
-        lastClickTime = nowTime;
     }
 }

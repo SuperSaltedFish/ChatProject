@@ -83,6 +83,11 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
     }
 
     @Override
+    public void onViewHolderRecycled(ContactHolder holder) {
+        GlideUtil.clear(mContext, holder.mIvAvatar);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return mAsyncListDiffer.getCurrentList().size();
     }
@@ -91,7 +96,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         mAsyncListDiffer.submitList(contactList);
     }
 
-    public List<ContactEntity> getContactList(){
+    public List<ContactEntity> getContactList() {
         return mAsyncListDiffer.getCurrentList();
     }
 

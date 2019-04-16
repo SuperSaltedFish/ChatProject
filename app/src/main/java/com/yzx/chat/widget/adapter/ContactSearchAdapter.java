@@ -39,7 +39,12 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
     public void bindDataToViewHolder(ContactHolder holder, int position) {
         ContactEntity contactEntity = mSearchContactList.get(position);
         holder.mTvName.setText(contactEntity.getName());
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvHeadImage, contactEntity.getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getAvatar());
+    }
+
+    @Override
+    public void onViewHolderRecycled(ContactHolder holder) {
+        GlideUtil.clear(mContext,holder.mIvAvatar);
     }
 
     @Override
@@ -72,7 +77,7 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
 
     static class ContactHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         TextView mTvName;
-        ImageView mIvHeadImage;
+        ImageView mIvAvatar;
 
         ContactHolder(View itemView) {
             super(itemView);
@@ -82,7 +87,7 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
 
         private void initView() {
             mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
-            mIvHeadImage = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
+            mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
         }
     }
 

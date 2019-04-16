@@ -39,7 +39,11 @@ public class PrivateMomentsAdapter extends BaseRecyclerViewAdapter<PrivateMoment
             holder.mNineGridImageContent.setVisibility(View.VISIBLE);
         }
         holder.mNineGridImageContent.setImageData(s);
+    }
 
+    @Override
+    public void onViewHolderRecycled(PrivateMomentsHolder holder) {
+        holder.mNineGridImageContent.setImageData(null);
     }
 
     @Override

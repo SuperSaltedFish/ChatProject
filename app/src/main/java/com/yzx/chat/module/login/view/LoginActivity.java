@@ -55,10 +55,6 @@ public class LoginActivity extends BaseCompatActivity {
         }
     }
 
-    static void setDisableBackPressed(LoginActivity activity, boolean isEnable) {
-        activity.isEnableBackPressed = isEnable;
-    }
-
     static void jumpToLoginPage(FragmentActivity activity) {
         FragmentManager manager = activity.getSupportFragmentManager();
         if (manager.findFragmentByTag(LoginFragment.TAG) != null) {

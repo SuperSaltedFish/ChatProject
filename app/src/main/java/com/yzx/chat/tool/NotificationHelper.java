@@ -1,5 +1,6 @@
 package com.yzx.chat.tool;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
@@ -12,11 +13,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.NotificationTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yzx.chat.R;
@@ -26,6 +30,7 @@ import com.yzx.chat.configure.GlideRequest;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.module.contact.view.NotificationMessageActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.util.AndroidHelper;
@@ -52,6 +57,11 @@ public class NotificationHelper {
     private static final String CHANNEL_ID_CONTACT_OPERATION_TYPE = "2";
     private static final String CHANNEL_NAME_CONTACT_OPERATION_TYPE = "ContactOperation";
 
+    private static final String ACTION_RECYCLE = "NotificationHelper.Recycle";
+    private static final String ACTION_CHAT_MESSAGE = "NotificationHelper.ChatMessage";
+    private static final String ACTION_CONTACT_OPERATION = "NotificationHelper.ContactOperation";
+
+    @SuppressLint("StaticFieldLeak")
     private static NotificationHelper sNotificationHelper;
 
 
@@ -98,7 +108,7 @@ public class NotificationHelper {
     private Notification.Builder mChatMessageTypeBuilder;
     private Notification.Builder mContactOperationTypeBuilder;
     private NotificationManager mNotificationMessage;
-    private SparseArray<SimpleTarget<Bitmap>> mSimpleTargetMap;
+    private SparseArray<CustomTarget<Bitmap>> mSimpleTargetMap;
     private SparseArray<String> mNotificationTypeMap;
 
     private NotificationHelper(Context appContext) {
@@ -112,10 +122,61 @@ public class NotificationHelper {
             mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CHAT_MESSAGE_TYPE, CHANNEL_NAME_CHAT_MESSAGE_TYPE));
             mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CONTACT_OPERATION_TYPE, CHANNEL_NAME_CONTACT_OPERATION_TYPE));
         }
-        appContext.registerReceiver(mRecycleNotificationBitmapReceiver, new IntentFilter(ACTION_RECYCLE));
-        appContext.registerReceiver(mChatMessageReceiver, new IntentFilter(ACTION_CHAT_MESSAGE));
-        appContext.registerReceiver(mContactOperationReceiver, new IntentFilter(ACTION_CONTACT_OPERATION));
+        registerReceiver();
     }
+
+    private void registerReceiver() {
+        mAppContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Message message = intent.getParcelableExtra(ACTION_CHAT_MESSAGE);
+                if (message != null) {
+                    String conversationID = message.getTargetId();
+                    Conversation.ConversationType type = message.getConversationType();
+                    HomeActivity homeActivity = ActivityHelper.getActivityInstance(HomeActivity.class);
+                    if (!TextUtils.isEmpty(conversationID) && homeActivity != null) {
+                        recycleNotification(conversationID.hashCode());
+                        if (ActivityHelper.getStackTopActivityClass() != ChatActivity.class) {
+                            ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
+                        }
+                        switch (type) {
+                            case PRIVATE:
+                                ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_PRIVATE);
+                                break;
+                            case GROUP:
+                                ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_GROUP);
+                                break;
+                        }
+                    }
+                }
+            }
+        }, new IntentFilter(ACTION_CHAT_MESSAGE));
+
+        mAppContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
+                if (contactOperation != null && TextUtils.isEmpty(contactOperation.getContactID())) {
+                    recycleNotification(contactOperation.getContactID().hashCode());
+                    Activity topActivity = ActivityHelper.getStackTopActivityInstance();
+                    if (topActivity != null) {
+                        NotificationMessageActivity.startActivity(topActivity);
+                    }
+                }
+            }
+        }, new IntentFilter(ACTION_CONTACT_OPERATION));
+
+        mAppContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int id = intent.getIntExtra(ACTION_RECYCLE, -1);
+                if (id != -1) {
+                    recycleNotification(id);
+                }
+            }
+        }, new IntentFilter(ACTION_RECYCLE));
+    }
+
 
     public void showPrivateMessageNotification(Message message, ContactEntity contact, boolean isFullScreen) {
         String conversationID = contact.getUserProfile().getUserID();
@@ -161,10 +222,9 @@ public class NotificationHelper {
                 isFullScreen);
     }
 
-    public void showContactOperationNotification(ContactOperationEntity contactOperation, boolean isFullScreen) {
+    public void showContactOperationNotification(ContactOperationEntity contactOperation, String content, boolean isFullScreen) {
         String id = contactOperation.getContactID();
         String title = contactOperation.getUserInfo().getNickname();
-        String content = AndroidHelper.getString(R.string.ContactOperationAdapter_DefaultReason);
         String avatarUrl = contactOperation.getUserInfo().getAvatar();
         int notificationID = id.hashCode();
         long time = contactOperation.getTime();
@@ -186,7 +246,7 @@ public class NotificationHelper {
 
     private void showNotification(final Notification.Builder builder, final String channelID, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFullScreen) {
         final CharSequence compatStr = EmojiCompat.get().process(content);
-        SimpleTarget<Bitmap> bitmapTarget = new SimpleTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
+        CustomTarget<Bitmap> customTarget = new CustomTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
             @Override
             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                 Intent recycleIntent = new Intent(ACTION_RECYCLE);
@@ -209,6 +269,10 @@ public class NotificationHelper {
                 mNotificationTypeMap.put(notificationID, channelID);
                 mSimpleTargetMap.put(notificationID, this);
                 mNotificationMessage.notify(notificationID, builder.build());
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
 
             }
         };
@@ -218,10 +282,10 @@ public class NotificationHelper {
             glideRequest.load(largeIconUrl)
                     .transforms(new GlideHexagonTransform())
                     .error(R.mipmap.ic_launcher)
-                    .into(bitmapTarget);
+                    .into(customTarget);
         } else {
             glideRequest.load(R.mipmap.ic_launcher)
-                    .into(bitmapTarget);
+                    .into(customTarget);
         }
     }
 
@@ -232,7 +296,7 @@ public class NotificationHelper {
 
     private void recycleNotification(int notificationID) {
         mNotificationTypeMap.delete(notificationID);
-        SimpleTarget<Bitmap> bitmapTarget = mSimpleTargetMap.get(notificationID);
+        CustomTarget<Bitmap> bitmapTarget = mSimpleTargetMap.get(notificationID);
         if (bitmapTarget != null) {
             GlideApp.with(mAppContext).clear(bitmapTarget);
             mSimpleTargetMap.delete(notificationID);
@@ -267,60 +331,6 @@ public class NotificationHelper {
         mSimpleTargetMap.clear();
         mNotificationTypeMap.clear();
     }
-
-    private static final String ACTION_RECYCLE = "NotificationHelper.Recycle";
-    private final BroadcastReceiver mRecycleNotificationBitmapReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int id = intent.getIntExtra(ACTION_RECYCLE, -1);
-            if (id != -1) {
-                recycleNotification(id);
-            }
-        }
-    };
-
-    private static final String ACTION_CHAT_MESSAGE = "NotificationHelper.ChatMessage";
-    private final BroadcastReceiver mChatMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Message message = intent.getParcelableExtra(ACTION_CHAT_MESSAGE);
-            if (message != null) {
-                String conversationID = message.getTargetId();
-                Conversation.ConversationType type = message.getConversationType();
-                HomeActivity homeActivity = ActivityHelper.getActivityInstance(HomeActivity.class);
-                if (!TextUtils.isEmpty(conversationID) && homeActivity != null) {
-                    recycleNotification(conversationID.hashCode());
-                    if (ActivityHelper.getStackTopActivityClass() != ChatActivity.class) {
-                        ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
-                    }
-                    switch (type) {
-                        case PRIVATE:
-                            ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_PRIVATE);
-
-                            break;
-                        case GROUP:
-                            ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_GROUP);
-                            break;
-                    }
-                }
-            }
-        }
-    };
-
-    private static final String ACTION_CONTACT_OPERATION = "NotificationHelper.ContactOperation";
-    private final BroadcastReceiver mContactOperationReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
-            if (contactOperation != null && TextUtils.isEmpty(contactOperation.getContactID())) {
-                recycleNotification(contactOperation.getContactID().hashCode());
-                Activity topActivity = ActivityHelper.getStackTopActivityInstance();
-                if (topActivity != null) {
-
-                }
-            }
-        }
-    };
 
 
 }

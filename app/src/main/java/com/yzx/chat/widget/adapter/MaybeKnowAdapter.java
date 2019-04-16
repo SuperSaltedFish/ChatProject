@@ -28,6 +28,11 @@ public class MaybeKnowAdapter extends BaseRecyclerViewAdapter<MaybeKnowAdapter.M
     }
 
     @Override
+    public void onViewHolderRecycled(MaybeKnowHolder holder) {
+        GlideUtil.clear(mContext,holder.mIvAvatar);
+    }
+
+    @Override
     public int getViewHolderCount() {
         return 12;
     }

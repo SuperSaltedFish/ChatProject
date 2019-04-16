@@ -45,6 +45,11 @@ public class GroupMembersAdapter extends BaseRecyclerViewAdapter<GroupMembersAda
     }
 
     @Override
+    public void onViewHolderRecycled(GroupMembersHolder holder) {
+        GlideUtil.clear(mContext, holder.mIvAvatar);
+    }
+
+    @Override
     public int getViewHolderCount() {
         if (mGroupMembers == null) {
             return 0;

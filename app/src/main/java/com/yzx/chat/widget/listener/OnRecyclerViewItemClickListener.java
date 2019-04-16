@@ -74,8 +74,8 @@ public abstract class OnRecyclerViewItemClickListener implements RecyclerView.On
                 } else {
                     onItemDecorationClick(event.getX(), event.getY());
                 }
+                lastClickTime = nowTime;
             }
-            lastClickTime = nowTime;
 
             return true;
         }

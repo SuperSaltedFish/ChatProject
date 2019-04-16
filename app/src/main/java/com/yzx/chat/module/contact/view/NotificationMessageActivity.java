@@ -1,5 +1,7 @@
 package com.yzx.chat.module.contact.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -15,6 +17,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 public class NotificationMessageActivity extends BaseCompatActivity {
+
+    public static void startActivity(Context context){
+         Intent intent = new Intent(context,NotificationMessageActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        context.startActivity(intent);
+    }
 
     private SegmentedControlView mSegmentedControlView;
     private ContactOperationFragment mContactOperationFragment;
