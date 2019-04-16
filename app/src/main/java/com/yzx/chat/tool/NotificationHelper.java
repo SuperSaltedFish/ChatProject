@@ -18,6 +18,8 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.widget.Chronometer;
+import android.widget.RemoteViews;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.NotificationTarget;
@@ -30,6 +32,7 @@ import com.yzx.chat.configure.GlideRequest;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.view.NotificationMessageActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
@@ -156,7 +159,7 @@ public class NotificationHelper {
             @Override
             public void onReceive(Context context, Intent intent) {
                 ContactOperationEntity contactOperation = intent.getParcelableExtra(ACTION_CONTACT_OPERATION);
-                if (contactOperation != null && TextUtils.isEmpty(contactOperation.getContactID())) {
+                if (contactOperation != null && !TextUtils.isEmpty(contactOperation.getContactID())) {
                     recycleNotification(contactOperation.getContactID().hashCode());
                     Activity topActivity = ActivityHelper.getStackTopActivityInstance();
                     if (topActivity != null) {
@@ -269,6 +272,7 @@ public class NotificationHelper {
                 mNotificationTypeMap.put(notificationID, channelID);
                 mSimpleTargetMap.put(notificationID, this);
                 mNotificationMessage.notify(notificationID, builder.build());
+                LogUtil.e(notificationID);
             }
 
             @Override

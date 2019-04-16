@@ -62,10 +62,11 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
             holder.mTvAccept.setEnabled(false);
         }
 
+        holder.itemView.setAlpha(1);
+        holder.itemView.setEnabled(true);
         switch (type) {
             case ContactManager.CONTACT_OPERATION_ACCEPT:
             case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
-            case ContactManager.CONTACT_OPERATION_DELETE:
                 holder.mTvAccept.setText(R.string.ContactMessageAdapter_Added);
                 holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_accepted);
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
@@ -94,6 +95,15 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 holder.mTvAccept.setText(R.string.ContactMessageAdapter_Delete);
                 holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_refused);
                 holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
+                holder.itemView.setAlpha(0.4f);
+                holder.itemView.setEnabled(false);
+                break;
+            case ContactManager.CONTACT_OPERATION_DELETE:
+                holder.mTvAccept.setText(R.string.ContactMessageAdapter_BeenDeleted);
+                holder.mTvAccept.setBackgroundResource(R.drawable.bg_tv_contact_operation_refused);
+                holder.mTvAccept.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
+                holder.itemView.setAlpha(0.4f);
+                holder.itemView.setEnabled(false);
                 break;
         }
         GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUserInfo().getAvatar());
@@ -102,7 +112,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
 
     @Override
     public void onViewHolderRecycled(ContactMessageHolder holder) {
-        GlideUtil.clear(mContext,holder.mIvAvatar);
+        GlideUtil.clear(mContext, holder.mIvAvatar);
     }
 
     @Override

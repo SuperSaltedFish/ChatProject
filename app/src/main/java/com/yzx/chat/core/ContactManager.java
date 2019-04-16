@@ -345,12 +345,21 @@ public class ContactManager {
         mContactDao.deleteByKey(userID);
         mAppClient.getConversationManager().clearConversationMessages(Conversation.ConversationType.PRIVATE, userID, null);
         mAppClient.getConversationManager().removeConversation(Conversation.ConversationType.PRIVATE, userID, null);
-        ContactOperationEntity contactOperation = mContactOperationDao.loadByKeyEx(userID);
-        if (contactOperation != null) {
-            boolean needUpdate = contactOperation.isRemind();
-            contactOperation.setRemind(false);
-            contactOperation.setType(CONTACT_OPERATION_DELETE_ACTIVE);
-            mContactOperationDao.updateEx(contactOperation);
+        final ContactOperationEntity operation = mContactOperationDao.loadByKeyEx(userID);
+        if (operation != null) {
+            boolean needUpdate = operation.isRemind();
+            operation.setRemind(false);
+            operation.setType(CONTACT_OPERATION_DELETE_ACTIVE);
+            if (mContactOperationDao.updateEx(operation)) {
+                mUIHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnContactOperationListener listener : mContactOperationListeners) {
+                            listener.onContactOperationUpdate(operation);
+                        }
+                    }
+                });
+            }
             if (needUpdate) {
                 updateContactUnreadCount();
             }
