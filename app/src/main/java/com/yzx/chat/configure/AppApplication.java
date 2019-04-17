@@ -20,6 +20,7 @@ import java.util.List;
 
 import androidx.emoji.bundled.BundledEmojiCompatConfig;
 import androidx.emoji.text.EmojiCompat;
+import me.jessyan.autosize.AutoSizeConfig;
 
 /**
  * Created by YZX on 2017年10月04日.
@@ -42,6 +43,7 @@ public class AppApplication extends Application {
         }
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
+            AutoSizeConfig.getInstance().setDesignWidthInDp(420).setDesignHeightInDp(853).setExcludeFontScale(true);
             CrashHandler.attachMainThread();
             AndroidHelper.init(this);
             ActivityHelper.init(this);

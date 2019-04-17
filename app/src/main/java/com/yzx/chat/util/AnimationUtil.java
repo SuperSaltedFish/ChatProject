@@ -115,10 +115,10 @@ public class AnimationUtil {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                animation.removeListener(this);
                 if (animListener != null) {
                     animListener.onAnimationEnd(animation);
                 }
-                activity.overridePendingTransition(0, 0);
             }
         });
         anim.start();

@@ -207,7 +207,6 @@ public class NotificationHelper {
         String conversationID = group.getGroupID();
         String title = group.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
-        String avatarUrl = null;
         int notificationID = conversationID.hashCode();
         long time = message.getSentTime();
         Intent contentIntent = new Intent(ACTION_CHAT_MESSAGE);
@@ -220,7 +219,7 @@ public class NotificationHelper {
                 title,
                 content,
                 time,
-                avatarUrl,
+                null,
                 contentIntent,
                 isFullScreen);
     }
@@ -266,13 +265,9 @@ public class NotificationHelper {
                 } else {
                     builder.setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
                 }
-                if (mNotificationTypeMap.indexOfKey(notificationID) >= 0) {
-                    cancelNotification(notificationID);
-                }
                 mNotificationTypeMap.put(notificationID, channelID);
                 mSimpleTargetMap.put(notificationID, this);
                 mNotificationMessage.notify(notificationID, builder.build());
-                LogUtil.e(notificationID);
             }
 
             @Override
@@ -285,7 +280,7 @@ public class NotificationHelper {
         if (!TextUtils.isEmpty(largeIconUrl)) {
             glideRequest.load(largeIconUrl)
                     .transforms(new GlideHexagonTransform())
-                    .error(R.mipmap.ic_launcher)
+                    .error(R.drawable.ic_avatar_default)
                     .into(customTarget);
         } else {
             glideRequest.load(R.mipmap.ic_launcher)

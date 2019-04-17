@@ -42,6 +42,7 @@ dependencies {
     implementation config.deps.androidx.emoji
     implementation config.deps.androidx.emojibBundled
     implementation config.deps.ext.gson
+    implementation config.deps.ext.autosize
     implementation config.deps.ext.materialDialogs
     implementation config.deps.ext.zxing
     implementation config.deps.ext.map3D

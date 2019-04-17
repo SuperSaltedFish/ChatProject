@@ -25,8 +25,6 @@ public class LoginActivity extends BaseCompatActivity {
         context.startActivity(intent);
     }
 
-    private boolean isEnableBackPressed;
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_login;
@@ -45,13 +43,6 @@ public class LoginActivity extends BaseCompatActivity {
         String message = getIntent().getStringExtra(INTENT_EXTRA_MESSAGE);
         if (!TextUtils.isEmpty(message)) {
             showErrorDialog(message);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!isEnableBackPressed) {
-            super.onBackPressed();
         }
     }
 

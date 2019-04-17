@@ -27,6 +27,7 @@ ext {
                     gson              : "com.google.code.gson:gson:2.8.5",
                     materialDialogs   : "com.afollestad.material-dialogs:core:0.9.6.0",
                     zxing             : "com.google.zxing:core:3.3.3",
+                    autosize          : "me.jessyan:autosize:1.1.2",
                     map3D             : "com.amap.api:3dmap:${depVersions.mapVersion}",
                     mapSearch         : "com.amap.api:search:${depVersions.mapVersion}",
                     glide             : "com.github.bumptech.glide:glide:${depVersions.glideVersion}",
@@ -35,7 +36,7 @@ ext {
             ],
 
             annotation: [
-                    glide     : "com.github.bumptech.glide:compiler:${depVersions.glideVersion}",
+                    glide: "com.github.bumptech.glide:compiler:${depVersions.glideVersion}",
             ]
     ]
 }
