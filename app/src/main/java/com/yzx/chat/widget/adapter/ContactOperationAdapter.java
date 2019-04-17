@@ -39,7 +39,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
 
     @Override
     public ContactMessageHolder getViewHolder(ViewGroup parent, int viewType) {
-        return new ContactMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_contact_message, parent, false));
+        return new ContactMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_contact_operation, parent, false));
     }
 
     @Override

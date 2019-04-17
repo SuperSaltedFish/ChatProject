@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -41,21 +42,21 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
     private static final String INTENT_EXTRA_USER = "User";
     private static final String INTENT_EXTRA_CONTENT_OPERATION = "ContactOperation";
 
-    public static void startActivity(Context context,ContactOperationEntity contactOperation){
-        Intent  intent = new Intent(context, StrangerProfileActivity.class);
+    public static void startActivity(Context context, ContactOperationEntity contactOperation) {
+        Intent intent = new Intent(context, StrangerProfileActivity.class);
         intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_CONTENT_OPERATION, contactOperation);
         context.startActivity(intent);
     }
 
-    public static void startActivity(Context context,UserEntity user){
-        Intent  intent = new Intent(context, StrangerProfileActivity.class);
+    public static void startActivity(Context context, UserEntity user) {
+        Intent intent = new Intent(context, StrangerProfileActivity.class);
         intent.putExtra(StrangerProfileActivity.INTENT_EXTRA_USER, user);
         context.startActivity(intent);
     }
 
 
+    private Toolbar mToolbar;
     private EditText mEtReason;
-    private ProgressDialog mProgressDialog;
     private Button mBtnConfirm;
     private ViewPager mVpBanner;
     private PageIndicator mPageIndicator;
@@ -78,16 +79,16 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mEtReason = findViewById(R.id.StrangerProfileActivity_mEtReason);
-        mBtnConfirm = findViewById(R.id.StrangerProfileActivity_mBtnConfirm);
-        mTvNickname = findViewById(R.id.StrangerProfileActivity_mTvNickname);
-        mTvSignature = findViewById(R.id.StrangerProfileActivity_mTvSignature);
-        mIvSexIcon = findViewById(R.id.StrangerProfileActivity_mIvSexIcon);
-        mIvAvatar = findViewById(R.id.StrangerProfileActivity_mIvAvatar);
-        mTvLocationAndAge = findViewById(R.id.StrangerProfileActivity_mTvLocationAndAge);
-        mPageIndicator = findViewById(R.id.StrangerProfileActivity_mPageIndicator);
-        mVpBanner = findViewById(R.id.StrangerProfileActivity_mVpBanner);
-        mProgressDialog = new ProgressDialog(this, getString(R.string.ProgressHint_Send));
+        mToolbar = findViewById(R.id.Default_mToolbar);
+        mEtReason = findViewById(R.id.mEtReason);
+        mBtnConfirm = findViewById(R.id.mBtnConfirm);
+        mTvNickname = findViewById(R.id.mTvNickname);
+        mTvSignature = findViewById(R.id.mTvSignature);
+        mIvSexIcon = findViewById(R.id.mIvSexIcon);
+        mIvAvatar = findViewById(R.id.mIvAvatar);
+        mTvLocationAndAge = findViewById(R.id.mTvLocationAndAge);
+        mPageIndicator = findViewById(R.id.mPageIndicator);
+        mVpBanner = findViewById(R.id.mVpBanner);
         mPicUrlList = new ArrayList<>(6);
         mCropImagePagerAdapter = new CenterCropImagePagerAdapter(mPicUrlList);
     }
@@ -99,6 +100,8 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
         setTitle(null);
 
         fillTestData();
+
+        mToolbar.setBackground(null);
 
         mPageIndicator.setIndicatorColorSelected(Color.WHITE);
         mPageIndicator.setIndicatorColorUnselected(ContextCompat.getColor(this, R.color.backgroundColorWhiteLight));
@@ -146,11 +149,6 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
                     mBtnConfirm.setText(R.string.ContactMessageAdapter_Disagree);
                     isOperable = false;
                     break;
-                case ContactManager.CONTACT_OPERATION_ACCEPT_ACTIVE:
-                case ContactManager.CONTACT_OPERATION_DELETE:
-                    mBtnConfirm.setText(R.string.ContactMessageAdapter_Added);
-                    isOperable = false;
-                    break;
                 default:
                     finish();
                     return;
@@ -158,13 +156,13 @@ public class StrangerProfileActivity extends BaseCompatActivity<StrangerProfileC
 
             mEtReason.setEnabled(false);
             mBtnConfirm.setEnabled(isOperable);
-            if(TextUtils.isEmpty(mContactOperationEntity.getReason())){
-                mEtReason.setText(R.string.StrangerProfileActivity_DefaultReason);
-            }else {
+            if (TextUtils.isEmpty(mContactOperationEntity.getReason())) {
+                mEtReason.setText(R.string.DefaultReason);
+            } else {
                 mEtReason.setText(mContactOperationEntity.getReason());
             }
         } else {
-            mBtnConfirm.setText(R.string.StrangerProfileActivity_RequestAddContact);
+            mBtnConfirm.setText(R.string.RequestAddContact);
         }
 
         mTvNickname.setText(mUser.getNickname());

@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:paddingEnd="24dp"
-    android:paddingStart="12dp">
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:paddingStart="12dp"
+    android:paddingEnd="24dp">
 
     <ImageView
         android:id="@+id/ContactAdapter_mIvAvatar"

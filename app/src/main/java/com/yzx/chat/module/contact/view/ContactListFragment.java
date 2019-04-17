@@ -28,6 +28,7 @@ import com.yzx.chat.module.contact.presenter.ContactListPresenter;
 import com.yzx.chat.module.group.view.GroupListActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.module.me.view.MyTagListActivity;
+import com.yzx.chat.module.me.view.ProfileEditActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.adapter.ContactAdapter;

@@ -124,7 +124,7 @@
     <string name="ImageSelectorActivity_Preview">预览</string>
     <string name="myPhoneNumber">我的号码</string>
     <string name="FindNewContactActivity_SearchHint">手机号/群号/昵称</string>
-    <string name="StrangerProfileActivity_VerifyContentHint">您需要填写验证申请,等待对方验证通过！</string>
+    <string name="VerifyContentHint">您需要填写验证申请,等待对方验证通过！</string>
     <string name="ProfileEditActivity_Title">编辑资料</string>
     <string name="ProfileEditActivity_BirthdayDialogTitle">请选择生日日期</string>
     <string name="ProfileEditActivity_SexDialogTitle">性别</string>
@@ -193,7 +193,7 @@
     <string name="Unit_Second">秒</string>
     <string name="Unit_Meters">米</string>
     <string name="Unit_Kilometre">公里</string>
-    <string name="StrangerProfileActivity_RequestAddContact">请求添加好友</string>
+    <string name="RequestAddContact">请求添加好友</string>
     <string name="None">无</string>
     <string name="ProfileEditActivity_SignatureHint">一句话介绍自己，签名会显示在个人主页上</string>
     <string name="ProfileEditActivity_SignatureLabel">个性签名</string>
@@ -222,7 +222,7 @@
     <string name="Error_Server7">不能连接到服务器，请稍后再试！</string>
 
     <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
-    <string name="StrangerProfileActivity_DefaultReason">添加理由：无</string>
+    <string name="DefaultReason">添加理由：无</string>
     <string name="CropImageActivity_CropFail">当前无法裁剪头像，请稍后再试！</string>
     <string name="LocationShareFragment_Navigation">到这里</string>
     <string name="LocationShareFragment_MarkerLocation">标记位置</string>

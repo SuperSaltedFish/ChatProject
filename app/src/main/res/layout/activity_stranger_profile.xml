@@ -6,31 +6,31 @@
     tools:context=".module.contact.view.StrangerProfileActivity">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/StrangerProfileActivity_mGuideline"
+        android:id="@+id/mGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.61" />
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/StrangerProfileActivity_mVpBanner"
+        android:id="@+id/mVpBanner"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@id/StrangerProfileActivity_mGuideline"
+        app:layout_constraintBottom_toTopOf="@id/mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.yzx.chat.widget.view.PageIndicator
-        android:id="@+id/StrangerProfileActivity_mPageIndicator"
+        android:id="@+id/mPageIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@id/StrangerProfileActivity_mVpBanner"
-        app:layout_constraintStart_toStartOf="@id/StrangerProfileActivity_mVpBanner" />
+        app:layout_constraintBottom_toBottomOf="@id/mVpBanner"
+        app:layout_constraintStart_toStartOf="@id/mVpBanner" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -45,7 +45,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/StrangerProfileActivity_mTvNickname"
+        android:id="@+id/mTvNickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -57,10 +57,10 @@
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mGuideline" />
+        app:layout_constraintTop_toBottomOf="@id/mGuideline" />
 
     <ImageView
-        android:id="@+id/StrangerProfileActivity_mIvSexIcon"
+        android:id="@+id/mIvSexIcon"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginStart="16dp"
@@ -68,21 +68,21 @@
         android:padding="1dp"
         android:src="@drawable/selector_src_sex"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvNickname" />
+        app:layout_constraintTop_toBottomOf="@id/mTvNickname" />
 
     <TextView
-        android:id="@+id/StrangerProfileActivity_mTvLocationAndAge"
+        android:id="@+id/mTvLocationAndAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:gravity="center_vertical"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@id/StrangerProfileActivity_mIvSexIcon"
-        app:layout_constraintStart_toEndOf="@id/StrangerProfileActivity_mIvSexIcon"
-        app:layout_constraintTop_toTopOf="@id/StrangerProfileActivity_mIvSexIcon" />
+        app:layout_constraintBottom_toBottomOf="@id/mIvSexIcon"
+        app:layout_constraintStart_toEndOf="@id/mIvSexIcon"
+        app:layout_constraintTop_toTopOf="@id/mIvSexIcon" />
 
     <TextView
-        android:id="@+id/StrangerProfileActivity_mTvSignature"
+        android:id="@+id/mTvSignature"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
@@ -92,10 +92,10 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mIvSexIcon" />
+        app:layout_constraintTop_toBottomOf="@id/mIvSexIcon" />
 
     <EditText
-        android:id="@+id/StrangerProfileActivity_mEtReason"
+        android:id="@+id/mEtReason"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginEnd="16dp"
@@ -103,7 +103,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/selector_bg_edit_dashed_round"
         android:gravity="start|top"
-        android:hint="@string/StrangerProfileActivity_VerifyContentHint"
+        android:hint="@string/VerifyContentHint"
         android:paddingBottom="8dp"
         android:paddingEnd="12dp"
         android:paddingStart="12dp"
@@ -111,34 +111,34 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mTvSignature" />
+        app:layout_constraintTop_toBottomOf="@id/mTvSignature" />
 
     <Button
-        android:id="@+id/StrangerProfileActivity_mBtnConfirm"
+        android:id="@+id/mBtnConfirm"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/selector_bg_btn_radius"
-        android:text="@string/StrangerProfileActivity_RequestAddContact"
+        android:text="@string/RequestAddContact"
         android:textColor="@android:color/white"
         android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/StrangerProfileActivity_mEtReason" />
+        app:layout_constraintTop_toBottomOf="@id/mEtReason" />
 
 
     <com.yzx.chat.widget.view.HexagonAvatarView
-        android:id="@+id/StrangerProfileActivity_mIvAvatar"
+        android:id="@+id/mIvAvatar"
         android:layout_width="76dp"
         android:layout_height="76dp"
         android:layout_marginEnd="32dp"
         android:padding="4dp"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/StrangerProfileActivity_mGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/mGuideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/StrangerProfileActivity_mGuideline" />
+        app:layout_constraintTop_toTopOf="@id/mGuideline" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
