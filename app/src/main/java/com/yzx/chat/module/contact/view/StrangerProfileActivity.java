@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -22,12 +21,12 @@ import com.yzx.chat.module.contact.presenter.StrangerProfilePresenter;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CenterCropImagePagerAdapter;
-import com.yzx.chat.widget.dialog.ProgressDialog;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.PageIndicator;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 

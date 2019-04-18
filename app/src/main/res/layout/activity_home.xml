@@ -17,10 +17,10 @@
     <com.yzx.chat.widget.view.BottomTabLayout
         android:id="@+id/mBottomTabLayout"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="56dp"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
-        android:elevation="4dp" />
+        android:elevation="24dp" />
 
 
 </merge>

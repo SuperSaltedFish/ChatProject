@@ -91,22 +91,6 @@ public class HomeActivity extends BaseCompatActivity<HomeContract.Presenter> imp
                 })
                 .setSelectPosition(0, false, true);
 
-        mBottomTabLayout.setOutlineProvider(new ViewOutlineProvider() {
-            private Rect mRect = new Rect();
-
-            @Override
-            public void getOutline(View view, Outline outline) {
-                Drawable background = view.getBackground();
-                if (background != null) {
-                    background.copyBounds(mRect);
-                } else {
-                    mRect.set(0, 0, view.getWidth(), view.getHeight());
-                }
-                mRect.offset(0, (int) -AndroidHelper.dip2px(3));
-                outline.setRect(mRect);
-            }
-        });
-
         setData();
     }
 

@@ -130,7 +130,8 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvContact.addItemDecoration(mLetterSegmentationItemDecoration);
         mRvContact.addOnScrollListener(new ImageAutoLoadScrollListener());
         mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
-
+        mContactAdapter.setHeaderView(mHeaderView);
+        
         mLlContactOperation.setOnClickListener(mOnViewClickListener);
         mLlGroup.setOnClickListener(mOnViewClickListener);
         mLlTags.setOnClickListener(mOnViewClickListener);
@@ -139,7 +140,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
 
-        mContactAdapter.setHeaderView(mHeaderView);
 
         setSearchBar();
         setOverflowMenu();
