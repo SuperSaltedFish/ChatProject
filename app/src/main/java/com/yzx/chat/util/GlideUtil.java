@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.google.android.material.shape.RoundedCornerTreatment;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
@@ -52,7 +53,7 @@ public class GlideUtil {
         GlideApp.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .format(DecodeFormat.PREFER_RGB_565)
+                .format(DecodeFormat.PREFER_ARGB_8888)
                 .transform(new CircleCrop())
                 .into(view);
     }
