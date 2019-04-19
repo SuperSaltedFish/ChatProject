@@ -124,7 +124,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
             Conversation conversation;
             if (!mAdapter.isHasHeaderView()) {
                 conversation = mAdapter.getItem(position);

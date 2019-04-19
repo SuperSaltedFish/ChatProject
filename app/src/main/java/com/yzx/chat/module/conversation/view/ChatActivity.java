@@ -485,7 +485,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setPadding((int) AndroidHelper.dip2px(8), 0, (int) AndroidHelper.dip2px(8), 0);
         emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
                 mEtContent.getText().append(new String(Character.toChars(mEmojis[position])));
             }
         });

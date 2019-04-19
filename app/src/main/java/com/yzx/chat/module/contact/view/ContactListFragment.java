@@ -28,7 +28,6 @@ import com.yzx.chat.module.contact.presenter.ContactListPresenter;
 import com.yzx.chat.module.group.view.GroupListActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
 import com.yzx.chat.module.me.view.MyTagListActivity;
-import com.yzx.chat.module.me.view.ProfileEditActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.adapter.ContactAdapter;
@@ -156,7 +155,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvSearchContact.addOnScrollListener(new AutoCloseKeyboardScrollListener((Activity) mContext));
         mRvSearchContact.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
+            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
                 ContactProfileActivity.startActivity(mContext, mContactSearchList.get(position).getContactID());
                 mSearchView.setQuery(null, false);
                 mSearchView.setIconified(true);
@@ -294,7 +293,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
             if (position == 0) {
                 return;
             }

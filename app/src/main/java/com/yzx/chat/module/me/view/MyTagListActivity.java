@@ -54,7 +54,7 @@ public class MyTagListActivity extends BaseCompatActivity<MyTagListContract.Pres
 
     private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
 
         }
     };

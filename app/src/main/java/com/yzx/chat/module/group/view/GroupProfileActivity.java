@@ -287,7 +287,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
 
     private final OnRecyclerViewItemClickListener mOnGroupMemberItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             if (position < mGroupMemberList.size()) {
                 Intent intent;
                 String userID = mGroupMemberList.get(position).getUserProfile().getUserID();

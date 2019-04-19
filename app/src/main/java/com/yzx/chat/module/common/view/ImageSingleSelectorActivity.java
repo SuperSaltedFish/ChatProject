@@ -163,7 +163,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
     private final OnRecyclerViewItemClickListener mOnBottomSheetItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             mImageDirAdapter.setSelectedPosition(position);
             if (position == 0) {
                 setAlbumFolder(null);
@@ -176,7 +176,7 @@ public class ImageSingleSelectorActivity extends BaseCompatActivity {
 
     private final OnRecyclerViewItemClickListener mOnImageItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             Intent intent = new Intent();
             intent.putExtra(INTENT_EXTRA_IMAGE_PATH, mCurrentImagePathList.get(position));
             setResult(RESULT_CODE, intent);

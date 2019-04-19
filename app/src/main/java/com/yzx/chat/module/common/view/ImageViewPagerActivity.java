@@ -215,7 +215,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
 
     private final OnRecyclerViewItemClickListener mOnSelectedImageItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             String url = mSelectedList.get(position);
             int index = mImageList.indexOf(url);
             if (index >= 0) {

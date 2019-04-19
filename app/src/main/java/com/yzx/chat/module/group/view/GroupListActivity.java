@@ -83,22 +83,11 @@ public class GroupListActivity extends BaseCompatActivity<GroupListContract.Pres
 
     private final OnRecyclerViewItemClickListener mOnRvGroupItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(GroupListActivity.this, GroupProfileActivity.class);
-                    intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mGroupList.get(position).getGroupID());
-                    startActivity(intent);
-                }
-            });
+        public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
+            Intent intent = new Intent(GroupListActivity.this, GroupProfileActivity.class);
+            intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mGroupList.get(position).getGroupID());
+            startActivity(intent);
         }
-
-        @Override
-        public void onItemLongClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
-
-        }
-
     };
 
     @Override

@@ -134,7 +134,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         mRvMarker.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRvMarker.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
                 mMarkerLocationAdapter.setSelectedPosition(position);
                 PoiItem poiItem = mMarkerLocationList.get(position);
                 LatLonPoint point = poiItem.getLatLonPoint();
@@ -163,7 +163,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         mRvSearch.addOnScrollListener(new AutoCloseKeyboardScrollListener((Activity) mContext));
         mRvSearch.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder) {
+            public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
                 PoiItem poiItem = mSearchLocationList.get(position);
                 LatLonPoint point = poiItem.getLatLonPoint();
                 mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLatitude(), point.getLongitude()), mAMap.getCameraPosition().zoom));

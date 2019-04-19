@@ -84,7 +84,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
         mRvFileAndDirectory.setAdapter(mFileAndDirectoryAdapter);
 
         mDirectoryNameList.add(getString(R.string.FileSelectorActivity_Storage));
-        mOnPathItemClickListener.onItemClick(0, null);
+        mOnPathItemClickListener.onItemClick(0, null,0,0);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
 
     private final OnRecyclerViewItemClickListener mOnPathItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             if (position == 0) {
                 deleteDirectoryNameBehindOf(null);
                 updateCurrentDirectoryContent();
@@ -221,7 +221,7 @@ public class FileSelectorActivity extends BaseCompatActivity {
 
     private final OnRecyclerViewItemClickListener mOnFileOrDirectoryItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             File file = mCurrentFileList.get(position);
             if (file.isDirectory()) {
                 addDirectoryName(mCurrentFileList.get(position).getName());

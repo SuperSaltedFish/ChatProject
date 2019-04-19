@@ -294,7 +294,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
 
     private final OnRecyclerViewItemClickListener mOnBottomSheetItemClickListener = new OnRecyclerViewItemClickListener() {
         @Override
-        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder) {
+        public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
             mImageDirAdapter.setSelectedPosition(position);
             if (position == 0) {
                 setAlbumFolder(null);
