@@ -64,7 +64,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".module.main.view.SplashActivity">
+        <activity android:name=".module.main.view.SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

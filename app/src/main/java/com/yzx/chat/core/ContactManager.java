@@ -509,7 +509,7 @@ public class ContactManager {
             LogUtil.e("contact operation extra is empty");
             return;
         }
-        LogUtil.d("ContactOperationExtra" + contactMessage.getExtra());
+        LogUtil.e("ContactOperationExtra" + contactMessage.getExtra());
 
         ContactMessageExtra extraContent;
 

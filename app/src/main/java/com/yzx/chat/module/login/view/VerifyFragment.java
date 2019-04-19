@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yzx.chat.R;
@@ -225,7 +224,6 @@ public class VerifyFragment extends BaseFragment<VerifyContract.Presenter> imple
         AnimationUtil.circularRevealShowByFullActivityAnim(activity, mPBtnVerify, R.drawable.src_bg_splash, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                animation.removeListener(this);
                 LoginActivity.startHomeActivity((Activity) mContext);
             }
         });

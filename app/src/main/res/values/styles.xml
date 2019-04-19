@@ -30,6 +30,10 @@
         <item name="android:splitMotionEvents">false</item><!--全用多点触控-->
     </style>
 
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/src_bg_splash</item>
+    </style>
+
     <style name="ButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="android:colorButtonNormal">?colorAccent</item>
         <item name="android:minHeight">56dp</item>

@@ -70,7 +70,7 @@ public class VerifyEditView extends LinearLayout {
 
     private void initDefault() {
         mItemSpace = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, mContext.getResources().getDisplayMetrics());
-        mTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 17, mContext.getResources().getDisplayMetrics());
+        mTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, mContext.getResources().getDisplayMetrics());
         mItemMinWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, mContext.getResources().getDisplayMetrics());
         mTextColor = Color.BLACK;
         mItemBackground = null;

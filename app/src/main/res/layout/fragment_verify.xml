@@ -32,8 +32,7 @@
         android:gravity="center"
         android:singleLine="true"
         android:text="@string/LoginActivity_Layout_InputVerifyCode"
-        android:textColor="@color/textColorPrimary"
-        android:textSize="23sp"
+        android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mIvBack" />
 
@@ -45,7 +44,7 @@
         android:gravity="start|center_vertical"
         android:text="@string/LoginActivity_Layout_VerifyCodeHint"
         android:textColor="@color/textColorSecondaryBlack"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mTvTitle" />
 
@@ -55,7 +54,7 @@
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
         android:textColor="@color/textColorSecondaryBlack"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@id/mTvTelephoneHint"
         app:layout_constraintStart_toEndOf="@id/mTvTelephoneHint"
         app:layout_constraintTop_toTopOf="@id/mTvTelephoneHint" />
@@ -74,11 +73,8 @@
         android:id="@+id/mBtnResend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
-        android:minHeight="0dp"
+        style="@style/ButtonStyleNoBackground"
         android:text="@string/LoginActivity_Layout_Resend"
-        android:textAllCaps="false"
-        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mVerifyEditView" />
@@ -90,7 +86,7 @@
         android:layout_marginBottom="4dp"
         android:gravity="center_vertical"
         android:textColor="@android:color/holo_red_light"
-        android:textSize="12sp"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mBtnResend" />

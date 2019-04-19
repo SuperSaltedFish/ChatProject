@@ -92,6 +92,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         SharePreferenceHelper.getConfigurePreferences().putFirstGuide(false);
         startActivity(new Intent(this, LoginActivity.class));
         finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override

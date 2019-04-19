@@ -261,23 +261,27 @@ public class AppClient {
             CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
             return;
         }
+
+        mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userID), Constants.DATABASE_VERSION);
+        init(token, UserManager.getUserInfoFromDB(userID, mDBHelper.getReadWriteHelper()));
+
         RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
             @Override
             public void onTokenIncorrect() {
+                destroy();
                 mLoginLock.release();
                 CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
             }
 
             @Override
             public void onSuccess(String s) {
-                mDBHelper = new DBHelper(mAppContext, MD5Util.encrypt32(userID), Constants.DATABASE_VERSION);
-                init(token, UserManager.getUserInfoFromDB(userID, mDBHelper.getReadWriteHelper()));
                 mLoginLock.release();
                 CallbackUtil.callResult(null, callback);
             }
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
+                destroy();
                 mLoginLock.release();
                 CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_UNKNOWN, errorCode.getMessage(), callback);
             }
@@ -306,9 +310,9 @@ public class AppClient {
         mContactManager.destroy();
         mGroupManager.destroy();
         mUserManager.destroy();
-        if(mDBHelper!=null){
+        if (mDBHelper != null) {
             mDBHelper.destroy();
-            mDBHelper=null;
+            mDBHelper = null;
         }
         isLogged = false;
     }
