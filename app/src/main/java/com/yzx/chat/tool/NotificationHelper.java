@@ -47,11 +47,11 @@ public class NotificationHelper {
 
     private static final int LARGE_ICON_SIZE = (int) AndroidHelper.dip2px(56);
 
-    private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = NotificationHelper.class.getName() + ".ChatMessage";
-    private static final String CHANNEL_NAME_CHAT_MESSAGE_TYPE = "ChatMessage";
+    private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = NotificationHelper.class.getName() + ".聊天通知";
+    private static final String CHANNEL_NAME_CHAT_MESSAGE_TYPE = "聊天通知";
 
     private static final String CHANNEL_ID_CONTACT_OPERATION_TYPE = NotificationHelper.class.getName() + ".ContactOperation";
-    private static final String CHANNEL_NAME_CONTACT_OPERATION_TYPE = "ContactOperation";
+    private static final String CHANNEL_NAME_CONTACT_OPERATION_TYPE = "好友通知";
 
     private static final String ACTION_RECYCLE = "NotificationHelper.Recycle";
     private static final String ACTION_CHAT_MESSAGE = "NotificationHelper.ChatMessage";
@@ -217,6 +217,7 @@ public class NotificationHelper {
         long time = contactOperation.getTime();
         Intent contentIntent = new Intent(ACTION_CONTACT_OPERATION);
         contentIntent.putExtra(ACTION_CONTACT_OPERATION, contactOperation);
+        mContactOperationTypeBuilder.setOnlyAlertOnce(true);
 
         showNotification(
                 mContactOperationTypeBuilder,
