@@ -130,7 +130,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvContact.addOnScrollListener(new ImageAutoLoadScrollListener());
         mRvContact.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         mContactAdapter.setHeaderView(mHeaderView);
-        
+
         mLlContactOperation.setOnClickListener(mOnViewClickListener);
         mLlGroup.setOnClickListener(mOnViewClickListener);
         mLlTags.setOnClickListener(mOnViewClickListener);
@@ -278,7 +278,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
     };
 
     private final BackPressedReceive.BackPressedListener mBackPressedListener = new BackPressedReceive.BackPressedListener() {
-
         @Override
         public boolean onBackPressed(String initiator) {
             if (HomeActivity.class.getSimpleName().equals(initiator)) {
@@ -310,7 +309,6 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
             OverflowMenuShowHelper.show(viewHolder.itemView, mContactMenu, mRvContact.getHeight(), (int) touchX, (int) touchY);
         }
     };
-
 
     private final IndexBarView.OnTouchSelectedListener mIndexBarSelectedListener = new IndexBarView.OnTouchSelectedListener() {
         @Override

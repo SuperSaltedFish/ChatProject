@@ -65,7 +65,7 @@ public class CropImageView extends ImageView
         super(context, attrs, defStyleAttr);
         setOnTouchListener(this);
         setPadding(0, 0, 0, 0);
-        mScaleDetector = new ScaleGestureDetector(context, this);
+        mScaleDetector = new ScaleGestureDetector(context.getApplicationContext(), this);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         super.setScaleType(ScaleType.MATRIX);

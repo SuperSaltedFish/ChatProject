@@ -93,7 +93,7 @@ public class ApiHelper {
                 encryptedRequest.setSignature(Base64Util.encodeToString(ECCUtil.sign(CLIENT_SIGNATURE, strData.getBytes())));
                 encryptedRequest.setData(Base64Util.encodeToString(AESUtil.encrypt(strData.getBytes(), AES_KEY,AES_IV)));
                 String strEncryptedData = GSON.toJson(encryptedRequest);
-                LogUtil.d(String.format(
+                LogUtil.e(String.format(
                         Locale.getDefault(),
                         "\n正在发出请求：url = %s\n打印请求内容：%s\n完整加密内容：%s",
                         url,
@@ -142,7 +142,7 @@ public class ApiHelper {
                 } catch (Exception e) {
                     LogUtil.w(e.toString(), e);
                 } finally {
-                    LogUtil.d(String.format(
+                    LogUtil.e(String.format(
                             Locale.getDefault(),
                             "\n正在处理响应：url = %s\n打印响应内容：%s\n解密响应内容：%s",
                             url,

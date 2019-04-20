@@ -67,14 +67,14 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     protected void setup(Bundle savedInstanceState) {
         mToolbar.setTitle(R.string.app_name);
+        mToolbar.setBackground(null);
+        mToolbar.setElevation(0);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
-        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mContext, R.anim.layout_alpha));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration((int) AndroidHelper.dip2px(1), ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
         mRecyclerView.addOnItemTouchListener(mOnRecyclerViewItemClickListener);
         ((DefaultItemAnimator) (Objects.requireNonNull(mRecyclerView.getItemAnimator()))).setSupportsChangeAnimations(false);
 
@@ -167,6 +167,7 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     @Override
     public void showConversationList(List<Conversation> conversationList) {
         setEnableEmptyListHint(conversationList.isEmpty());
+        mAdapter.submitList(conversationList);
     }
 
     @Override

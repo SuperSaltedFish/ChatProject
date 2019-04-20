@@ -10,7 +10,6 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.DateUtil;
-import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.view.BadgeView;
 import com.yzx.chat.widget.view.NineGridAvatarView;
 
@@ -38,7 +37,6 @@ public class ConversationAdapter extends BaseRecyclerViewAdapter<ConversationAda
     @Override
     public ConversationHolder getViewHolder(ViewGroup parent, int viewType) {
         return new ConversationHolder(LayoutInflater.from(mContext).inflate(R.layout.item_conversation, parent, false));
-
     }
 
     @Override

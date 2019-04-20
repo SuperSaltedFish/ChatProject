@@ -6,6 +6,7 @@
     android:background="@android:color/white">
 
     <FrameLayout
+        android:id="@+id/mFlToolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -25,10 +26,11 @@
         android:layout_width="128dp"
         android:layout_height="128dp"
         android:background="@drawable/conversation_list_empty"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mITvEmptyHintText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/mFlToolbarLayout"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/mITvEmptyHintText"
@@ -37,6 +39,7 @@
         android:gravity="center"
         android:text="@string/ConversationFragment_EmptyListHint"
         android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/mIvEmptyHintImage"
         app:layout_constraintStart_toStartOf="@+id/mIvEmptyHintImage"
         app:layout_constraintTop_toBottomOf="@+id/mIvEmptyHintImage" />
@@ -44,8 +47,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never" />
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mFlToolbarLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

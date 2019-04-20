@@ -12,18 +12,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.media.RingtoneManager;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.SparseArray;
-import android.widget.Chronometer;
-import android.widget.RemoteViews;
 
 import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.NotificationTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.AppApplication;
@@ -32,7 +26,6 @@ import com.yzx.chat.configure.GlideRequest;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.ContactOperationEntity;
 import com.yzx.chat.core.entity.GroupEntity;
-import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.contact.view.NotificationMessageActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.main.view.HomeActivity;
@@ -54,10 +47,10 @@ public class NotificationHelper {
 
     private static final int LARGE_ICON_SIZE = (int) AndroidHelper.dip2px(56);
 
-    private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = "1";
+    private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = NotificationHelper.class.getName() + ".ChatMessage";
     private static final String CHANNEL_NAME_CHAT_MESSAGE_TYPE = "ChatMessage";
 
-    private static final String CHANNEL_ID_CONTACT_OPERATION_TYPE = "2";
+    private static final String CHANNEL_ID_CONTACT_OPERATION_TYPE = NotificationHelper.class.getName() + ".ContactOperation";
     private static final String CHANNEL_NAME_CONTACT_OPERATION_TYPE = "ContactOperation";
 
     private static final String ACTION_RECYCLE = "NotificationHelper.Recycle";
@@ -65,17 +58,9 @@ public class NotificationHelper {
     private static final String ACTION_CONTACT_OPERATION = "NotificationHelper.ContactOperation";
 
     @SuppressLint("StaticFieldLeak")
-    private static NotificationHelper sNotificationHelper;
-
+    private static NotificationHelper sNotificationHelper = new NotificationHelper(AppApplication.getAppContext());
 
     public static NotificationHelper getInstance() {
-        if (sNotificationHelper == null) {
-            synchronized (NotificationHelper.class) {
-                if (sNotificationHelper == null) {
-                    sNotificationHelper = new NotificationHelper(AppApplication.getAppContext());
-                }
-            }
-        }
         return sNotificationHelper;
     }
 
@@ -84,9 +69,8 @@ public class NotificationHelper {
         NotificationChannel channel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
         channel.enableLights(true);
         channel.enableVibration(true);
-        channel.setLightColor(Color.GREEN);
-        channel.setVibrationPattern(new long[]{100, 200});
-        channel.setImportance(NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+        channel.setSound(null, null);
         return channel;
     }
 
@@ -95,15 +79,14 @@ public class NotificationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(context, channelID);
         } else {
-            builder = new Notification.Builder(context);
-            builder.setPriority(Notification.PRIORITY_DEFAULT);
+            builder = new Notification.Builder(context)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setSound(null, null);
         }
         builder
                 .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setSmallIcon(R.drawable.ic_notification);
-
         return builder;
     }
 
@@ -122,6 +105,8 @@ public class NotificationHelper {
         mChatMessageTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_CHAT_MESSAGE_TYPE);
         mContactOperationTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_CONTACT_OPERATION_TYPE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationMessage.deleteNotificationChannel(CHANNEL_ID_CHAT_MESSAGE_TYPE);
+            mNotificationMessage.deleteNotificationChannel(CHANNEL_ID_CONTACT_OPERATION_TYPE);
             mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CHAT_MESSAGE_TYPE, CHANNEL_NAME_CHAT_MESSAGE_TYPE));
             mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CONTACT_OPERATION_TYPE, CHANNEL_NAME_CONTACT_OPERATION_TYPE));
         }
@@ -181,7 +166,7 @@ public class NotificationHelper {
     }
 
 
-    public void showPrivateMessageNotification(Message message, ContactEntity contact, boolean isFullScreen) {
+    public void showPrivateMessageNotification(Message message, ContactEntity contact, boolean isFloatingDisplay) {
         String conversationID = contact.getUserProfile().getUserID();
         String title = contact.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -200,10 +185,10 @@ public class NotificationHelper {
                 time,
                 avatarUrl,
                 contentIntent,
-                isFullScreen);
+                isFloatingDisplay);
     }
 
-    public void showGroupMessageNotification(Message message, GroupEntity group, boolean isFullScreen) {
+    public void showGroupMessageNotification(Message message, GroupEntity group, boolean isFloatingDisplay) {
         String conversationID = group.getGroupID();
         String title = group.getName();
         String content = IMMessageHelper.getMessageDigest(message.getContent()).toString();
@@ -221,10 +206,10 @@ public class NotificationHelper {
                 time,
                 null,
                 contentIntent,
-                isFullScreen);
+                isFloatingDisplay);
     }
 
-    public void showContactOperationNotification(ContactOperationEntity contactOperation, String content, boolean isFullScreen) {
+    public void showContactOperationNotification(ContactOperationEntity contactOperation, String content, boolean isFloatingDisplay) {
         String id = contactOperation.getContactID();
         String title = contactOperation.getUserInfo().getNickname();
         String avatarUrl = contactOperation.getUserInfo().getAvatar();
@@ -242,11 +227,10 @@ public class NotificationHelper {
                 time,
                 avatarUrl,
                 contentIntent,
-                isFullScreen);
+                isFloatingDisplay);
     }
 
-
-    private void showNotification(final Notification.Builder builder, final String channelID, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFullScreen) {
+    private void showNotification(final Notification.Builder builder, final String channelID, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFloatingDisplay) {
         final CharSequence compatStr = EmojiCompat.get().process(content);
         CustomTarget<Bitmap> customTarget = new CustomTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
             @Override
@@ -258,13 +242,10 @@ public class NotificationHelper {
                         .setContentText(compatStr)
                         .setTicker(title + "：" + compatStr)
                         .setWhen(timestamp)
-                        .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+                        .setPriority(isFloatingDisplay ? Notification.PRIORITY_HIGH : Notification.PRIORITY_DEFAULT)
+                        .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+                        .setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
 
-                if (isFullScreen) {
-                    builder.setFullScreenIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT), false);
-                } else {
-                    builder.setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-                }
                 mNotificationTypeMap.put(notificationID, channelID);
                 mSimpleTargetMap.put(notificationID, this);
                 mNotificationMessage.notify(notificationID, builder.build());

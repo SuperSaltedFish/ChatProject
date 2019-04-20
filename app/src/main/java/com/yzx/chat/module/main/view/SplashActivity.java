@@ -58,7 +58,6 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
                 return;
             }
         }
-        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
         Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
             @Override
             public boolean queueIdle() {
@@ -108,6 +107,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         mSplashContent = getString(R.string.SplashActivity_Content);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
         setContentView(R.layout.activity_splash);
 
         final TextSwitcher textSwitcher = findViewById(R.id.mTextSwitcher);
