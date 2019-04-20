@@ -47,11 +47,14 @@ public class NotificationHelper {
 
     private static final int LARGE_ICON_SIZE = (int) AndroidHelper.dip2px(56);
 
-    private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = NotificationHelper.class.getName() + ".聊天通知";
     private static final String CHANNEL_NAME_CHAT_MESSAGE_TYPE = "聊天通知";
+    private static final String CHANNEL_ID_CHAT_MESSAGE_TYPE = AppApplication.getAppContext().getPackageName() + "." + CHANNEL_NAME_CHAT_MESSAGE_TYPE;
 
-    private static final String CHANNEL_ID_CONTACT_OPERATION_TYPE = NotificationHelper.class.getName() + ".ContactOperation";
     private static final String CHANNEL_NAME_CONTACT_OPERATION_TYPE = "好友通知";
+    private static final String CHANNEL_ID_CONTACT_OPERATION_TYPE = AppApplication.getAppContext().getPackageName() + "." + CHANNEL_NAME_CONTACT_OPERATION_TYPE;
+
+    private static final String CHANNEL_NAME_FLOATING_TYPE = "浮动通知";
+    private static final String CHANNEL_ID_FLOATING_TYPE = AppApplication.getAppContext().getPackageName() + "." + CHANNEL_NAME_FLOATING_TYPE;
 
     private static final String ACTION_RECYCLE = "NotificationHelper.Recycle";
     private static final String ACTION_CHAT_MESSAGE = "NotificationHelper.ChatMessage";
@@ -65,12 +68,10 @@ public class NotificationHelper {
     }
 
     @TargetApi(26)
-    private static NotificationChannel getDefaultNotificationChannel(String id, String name) {
-        NotificationChannel channel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
+    private static NotificationChannel getDefaultNotificationChannel(String id, String name, int importance) {
+        NotificationChannel channel = new NotificationChannel(id, name, importance);
         channel.enableLights(true);
         channel.enableVibration(true);
-        channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-        channel.setSound(null, null);
         return channel;
     }
 
@@ -81,8 +82,7 @@ public class NotificationHelper {
         } else {
             builder = new Notification.Builder(context)
                     .setDefaults(Notification.DEFAULT_ALL)
-                    .setPriority(Notification.PRIORITY_HIGH)
-                    .setSound(null, null);
+                    .setPriority(Notification.PRIORITY_HIGH);
         }
         builder
                 .setAutoCancel(true)
@@ -93,6 +93,7 @@ public class NotificationHelper {
     private Context mAppContext;
     private Notification.Builder mChatMessageTypeBuilder;
     private Notification.Builder mContactOperationTypeBuilder;
+    private Notification.Builder mFloatingTypeBuilder;
     private NotificationManager mNotificationMessage;
     private SparseArray<CustomTarget<Bitmap>> mSimpleTargetMap;
     private SparseArray<String> mNotificationTypeMap;
@@ -104,11 +105,11 @@ public class NotificationHelper {
         mNotificationMessage = (NotificationManager) mAppContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mChatMessageTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_CHAT_MESSAGE_TYPE);
         mContactOperationTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_CONTACT_OPERATION_TYPE);
+        mFloatingTypeBuilder = getDefaultNotificationBuilder(mAppContext, CHANNEL_ID_FLOATING_TYPE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationMessage.deleteNotificationChannel(CHANNEL_ID_CHAT_MESSAGE_TYPE);
-            mNotificationMessage.deleteNotificationChannel(CHANNEL_ID_CONTACT_OPERATION_TYPE);
-            mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CHAT_MESSAGE_TYPE, CHANNEL_NAME_CHAT_MESSAGE_TYPE));
-            mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CONTACT_OPERATION_TYPE, CHANNEL_NAME_CONTACT_OPERATION_TYPE));
+            mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CHAT_MESSAGE_TYPE, CHANNEL_NAME_CHAT_MESSAGE_TYPE, NotificationManager.IMPORTANCE_DEFAULT));
+            mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_CONTACT_OPERATION_TYPE, CHANNEL_NAME_CONTACT_OPERATION_TYPE, NotificationManager.IMPORTANCE_DEFAULT));
+            mNotificationMessage.createNotificationChannel(getDefaultNotificationChannel(CHANNEL_ID_FLOATING_TYPE, CHANNEL_NAME_FLOATING_TYPE, NotificationManager.IMPORTANCE_HIGH));
         }
         registerReceiver();
     }
@@ -177,7 +178,7 @@ public class NotificationHelper {
         contentIntent.putExtra(ACTION_CHAT_MESSAGE, message);
 
         showNotification(
-                mChatMessageTypeBuilder,
+                isFloatingDisplay ? mFloatingTypeBuilder : mChatMessageTypeBuilder,
                 CHANNEL_ID_CHAT_MESSAGE_TYPE,
                 notificationID,
                 title,
@@ -185,7 +186,7 @@ public class NotificationHelper {
                 time,
                 avatarUrl,
                 contentIntent,
-                isFloatingDisplay);
+                false);
     }
 
     public void showGroupMessageNotification(Message message, GroupEntity group, boolean isFloatingDisplay) {
@@ -198,7 +199,7 @@ public class NotificationHelper {
         contentIntent.putExtra(ACTION_CHAT_MESSAGE, message);
 
         showNotification(
-                mChatMessageTypeBuilder,
+                isFloatingDisplay ? mFloatingTypeBuilder : mChatMessageTypeBuilder,
                 CHANNEL_ID_CHAT_MESSAGE_TYPE,
                 notificationID,
                 title,
@@ -206,7 +207,7 @@ public class NotificationHelper {
                 time,
                 null,
                 contentIntent,
-                isFloatingDisplay);
+                false);
     }
 
     public void showContactOperationNotification(ContactOperationEntity contactOperation, String content, boolean isFloatingDisplay) {
@@ -220,7 +221,7 @@ public class NotificationHelper {
         mContactOperationTypeBuilder.setOnlyAlertOnce(true);
 
         showNotification(
-                mContactOperationTypeBuilder,
+                isFloatingDisplay ? mFloatingTypeBuilder : mContactOperationTypeBuilder,
                 CHANNEL_ID_CONTACT_OPERATION_TYPE,
                 notificationID,
                 title,
@@ -228,10 +229,10 @@ public class NotificationHelper {
                 time,
                 avatarUrl,
                 contentIntent,
-                isFloatingDisplay);
+                true);
     }
 
-    private void showNotification(final Notification.Builder builder, final String channelID, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isFloatingDisplay) {
+    private void showNotification(final Notification.Builder builder, final String channelID, final int notificationID, final String title, final String content, final long timestamp, final String largeIconUrl, final Intent contentIntent, final boolean isOnlyAlertOnce) {
         final CharSequence compatStr = EmojiCompat.get().process(content);
         CustomTarget<Bitmap> customTarget = new CustomTarget<Bitmap>(LARGE_ICON_SIZE, LARGE_ICON_SIZE) {
             @Override
@@ -243,7 +244,7 @@ public class NotificationHelper {
                         .setContentText(compatStr)
                         .setTicker(title + "：" + compatStr)
                         .setWhen(timestamp)
-                        .setPriority(isFloatingDisplay ? Notification.PRIORITY_HIGH : Notification.PRIORITY_DEFAULT)
+                        .setOnlyAlertOnce(isOnlyAlertOnce)
                         .setDeleteIntent(PendingIntent.getBroadcast(mAppContext, notificationID, recycleIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                         .setContentIntent(PendingIntent.getBroadcast(mAppContext, notificationID, contentIntent, PendingIntent.FLAG_CANCEL_CURRENT));
 
