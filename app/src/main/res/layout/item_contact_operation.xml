@@ -12,14 +12,14 @@
     android:paddingBottom="12dp">
 
     <com.yzx.chat.widget.view.HexagonAvatarView
-        android:id="@+id/ContactMessageAdapter_mIvAvatar"
+        android:id="@+id/mIvAvatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ContactMessageAdapter_mTvName"
+        android:id="@+id/mTvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -27,32 +27,33 @@
         android:maxLines="1"
         android:singleLine="true"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@id/ContactMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/ContactMessageAdapter_mIvAvatar" />
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/mIvAvatar" />
 
     <ImageView
-        android:id="@+id/ContactAdapter_mIvSex"
+        android:id="@+id/mIvSex"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginStart="4dp"
         android:padding="2dp"
         android:src="@drawable/selector_src_sex"
-        app:layout_constraintBottom_toBottomOf="@id/ContactMessageAdapter_mTvName"
-        app:layout_constraintStart_toEndOf="@id/ContactMessageAdapter_mTvName"
-        app:layout_constraintTop_toTopOf="@id/ContactMessageAdapter_mTvName" />
+        app:layout_constraintBottom_toBottomOf="@id/mTvName"
+        app:layout_constraintStart_toEndOf="@id/mTvName"
+        app:layout_constraintTop_toTopOf="@id/mTvName" />
 
     <TextView
+        android:id="@+id/mTvAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:text="23岁"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/ContactMessageAdapter_mTvName"
-        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvSex"
-        app:layout_constraintTop_toTopOf="@id/ContactMessageAdapter_mTvName" />
+        app:layout_constraintBottom_toBottomOf="@id/mTvName"
+        app:layout_constraintStart_toEndOf="@id/mIvSex"
+        app:layout_constraintTop_toTopOf="@id/mTvName" />
 
     <TextView
-        android:id="@+id/ContactMessageAdapter_mTvReason"
+        android:id="@+id/mTvReason"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
@@ -62,11 +63,11 @@
         android:singleLine="true"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/ContactMessageAdapter_mTvName"
-        app:layout_constraintTop_toBottomOf="@id/ContactMessageAdapter_mTvName" />
+        app:layout_constraintStart_toStartOf="@id/mTvName"
+        app:layout_constraintTop_toBottomOf="@id/mTvName" />
 
     <TextView
-        android:id="@+id/ContactMessageAdapter_mTvAccept"
+        android:id="@+id/mTvAccept"
         android:layout_width="104dp"
         android:layout_height="24dp"
         android:layout_marginTop="4dp"
@@ -77,11 +78,11 @@
         android:text="@string/ContactMessageAdapter_Requesting"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@id/ContactMessageAdapter_mTvReason"
-        app:layout_constraintTop_toBottomOf="@id/ContactMessageAdapter_mTvReason" />
+        app:layout_constraintStart_toStartOf="@id/mTvReason"
+        app:layout_constraintTop_toBottomOf="@id/mTvReason" />
 
     <TextView
-        android:id="@+id/ContactMessageAdapter_mTvRefused"
+        android:id="@+id/mTvRefused"
         android:layout_width="104dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -91,12 +92,12 @@
         android:paddingBottom="2dp"
         android:text="@string/ContactMessageAdapter_Refused"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/ContactMessageAdapter_mTvAccept"
-        app:layout_constraintStart_toEndOf="@id/ContactMessageAdapter_mTvAccept"
-        app:layout_constraintTop_toTopOf="@id/ContactMessageAdapter_mTvAccept" />
+        app:layout_constraintBottom_toBottomOf="@id/mTvAccept"
+        app:layout_constraintStart_toEndOf="@id/mTvAccept"
+        app:layout_constraintTop_toTopOf="@id/mTvAccept" />
 
     <!--<Button-->
-    <!--android:id="@+id/ContactMessageAdapter_mBtnState"-->
+    <!--android:id="@+id/mBtnState"-->
     <!--android:layout_width="64dp"-->
     <!--android:layout_height="32dp"-->
     <!--android:background="@drawable/selector_btn_contact_request_state"-->

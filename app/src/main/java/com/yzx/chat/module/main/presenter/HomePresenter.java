@@ -1,7 +1,5 @@
 package com.yzx.chat.module.main.presenter;
 
-import android.os.Handler;
-
 import com.yzx.chat.R;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ChatManager;
@@ -31,13 +29,11 @@ import io.rong.message.GroupNotificationMessage;
 public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View mHomeView;
-    private Handler mHandler;
     private AppClient mAppClient;
 
     @Override
     public void attachView(HomeContract.View view) {
         mHomeView = view;
-        mHandler = new Handler();
         mAppClient = AppClient.getInstance();
         DirectoryHelper.initUserDirectory(mAppClient.getUserManager().getUserID());
         mAppClient.getConversationManager().addConversationUnreadCountListener(mOnConversationUnreadCountListener);
@@ -52,10 +48,8 @@ public class HomePresenter implements HomeContract.Presenter {
         mAppClient.getChatManager().removeOnMessageReceiveListener(mOnChatMessageReceiveListener);
         mAppClient.getContactManager().removeContactOperationUnreadCountChangeListener(mOnContactOperationUnreadCountChangeListener);
         mAppClient.getContactManager().removeContactOperationListener(mOnContactOperationListener);
-        mHandler.removeCallbacksAndMessages(null);
         mHomeView = null;
         mAppClient = null;
-        mHandler = null;
     }
 
 
@@ -86,25 +80,20 @@ public class HomePresenter implements HomeContract.Presenter {
             if (activityClass == ChatActivity.class && message.getTargetId().equals(ChatPresenter.sConversationID)) {
                 return;
             }
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    switch (message.getConversationType()) {
-                        case PRIVATE:
-                            ContactEntity contact = AppClient.getInstance().getContactManager().getContact(message.getTargetId());
-                            if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
-                                NotificationHelper.getInstance().showPrivateMessageNotification(message, contact, !ActivityHelper.isAppForeground());
-                            }
-                            break;
-                        case GROUP:
-                            GroupEntity group = AppClient.getInstance().getGroupManager().getGroup(message.getTargetId());
-                            if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
-                                NotificationHelper.getInstance().showGroupMessageNotification(message, group, !ActivityHelper.isAppForeground());
-                            }
-                            break;
+            switch (message.getConversationType()) {
+                case PRIVATE:
+                    ContactEntity contact = AppClient.getInstance().getContactManager().getContact(message.getTargetId());
+                    if (contact != null && !(message.getContent() instanceof ContactNotificationMessageEx)) {
+                        NotificationHelper.getInstance().showPrivateMessageNotification(message, contact, !ActivityHelper.isAppForeground());
                     }
-                }
-            });
+                    break;
+                case GROUP:
+                    GroupEntity group = AppClient.getInstance().getGroupManager().getGroup(message.getTargetId());
+                    if (group != null && !(message.getContent() instanceof GroupNotificationMessage)) {
+                        NotificationHelper.getInstance().showGroupMessageNotification(message, group, !ActivityHelper.isAppForeground());
+                    }
+                    break;
+            }
         }
     };
 

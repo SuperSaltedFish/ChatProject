@@ -4,8 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
-import com.yzx.chat.core.listener.DownloadCallback;
 import com.yzx.chat.core.extra.VideoMessage;
+import com.yzx.chat.core.listener.DownloadCallback;
 import com.yzx.chat.core.util.LogUtil;
 
 import java.util.HashMap;
@@ -82,12 +82,12 @@ public class ChatManager {
 
     public void insertOutgoingMessage(Message message) {
         mRongIMClient.insertOutgoingMessage(message.getConversationType(), message.getTargetId(), message.getSentStatus(), message.getContent(), message.getSentTime(), null);
-        onReceiveContactNotificationMessage(message, 0);
+        onReceiveChatMessage(message, 0);
     }
 
     public void insertIncomingMessage(Message message) {
         mRongIMClient.insertIncomingMessage(message.getConversationType(), message.getTargetId(), message.getSenderUserId(), message.getReceivedStatus(), message.getContent(), message.getSentTime(), null);
-        onReceiveContactNotificationMessage(message, 0);
+        onReceiveChatMessage(message, 0);
     }
 
     @Nullable
@@ -194,27 +194,27 @@ public class ChatManager {
         mMessageSendStateChangeListenerMap.remove(listener);
     }
 
-    void onReceiveContactNotificationMessage(final Message message, final int untreatedCount) {
-        if (mMessageListenerMap.size() == 0) {
-            return;
-        }
-        mUIHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                OnChatMessageReceiveListener chatListener;
-                String conversationID;
-                for (Map.Entry<OnChatMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
-                    conversationID = entry.getValue();
-                    chatListener = entry.getKey();
-                    if (chatListener == null) {
-                        continue;
-                    }
-                    if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
-                        chatListener.onChatMessageReceived(message, untreatedCount);
+    void onReceiveChatMessage(final Message message, final int remainder) {
+        if (mMessageListenerMap.size() != 0) {
+            mUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    OnChatMessageReceiveListener chatListener;
+                    String conversationID;
+                    for (Map.Entry<OnChatMessageReceiveListener, String> entry : mMessageListenerMap.entrySet()) {
+                        conversationID = entry.getValue();
+                        chatListener = entry.getKey();
+                        if (chatListener == null) {
+                            continue;
+                        }
+                        if (TextUtils.isEmpty(conversationID) || conversationID.equals(message.getTargetId())) {
+                            chatListener.onChatMessageReceived(message, remainder);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+        mAppClient.getConversationManager().onConversationChange(message.getConversationType(),message.getTargetId(),remainder);
     }
 
     private class SendMessageCallbackWrapper extends RongIMClient.SendImageMessageCallback implements IRongCallback.ISendMediaMessageCallback {
@@ -247,6 +247,7 @@ public class ChatManager {
                     entry.getKey().onSuccess(message);
                 }
             }
+            mAppClient.getConversationManager().onConversationChange(message.getConversationType(),message.getTargetId(),0);
         }
 
         @Override
@@ -258,6 +259,7 @@ public class ChatManager {
                     entry.getKey().onError(message);
                 }
             }
+            mAppClient.getConversationManager().onConversationChange(message.getConversationType(),message.getTargetId(),0);
         }
 
         @Override

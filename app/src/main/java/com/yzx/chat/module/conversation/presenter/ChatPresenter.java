@@ -301,7 +301,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     private final ConversationManager.OnConversationChangeListener mOnConversationChangeListener = new ConversationManager.OnConversationChangeListener() {
         @Override
-        public void onConversationChange(final Conversation conversation, int typeCode) {
+        public void onConversationChange(Conversation conversation, int typeCode, int remainder) {
             if (conversation.getTargetId().equals(sConversationID)) {
                 switch (typeCode) {
                     case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:

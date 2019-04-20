@@ -10,7 +10,7 @@
     android:paddingEnd="24dp">
 
     <ImageView
-        android:id="@+id/ContactAdapter_mIvAvatar"
+        android:id="@+id/mIvAvatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ContactAdapter_mTvName"
+        android:id="@+id/mTvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -27,13 +27,13 @@
         android:singleLine="true"
 
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/ContactAdapter_mTvSignature"
-        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mIvAvatar"
+        app:layout_constraintBottom_toTopOf="@id/mTvSignature"
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/mIvAvatar"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/ContactAdapter_mTvSignature"
+        android:id="@+id/mTvSignature"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -42,42 +42,41 @@
         android:singleLine="true"
         android:text="每个不曾起舞的日子，都是对生命的辜负！"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mIvAvatar"
+        app:layout_constraintBottom_toBottomOf="@id/mIvAvatar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ContactAdapter_mTvName" />
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toBottomOf="@id/mTvName" />
 
     <ImageView
-        android:id="@+id/ContactAdapter_mIvSex"
+        android:id="@+id/mIvSex"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginStart="4dp"
         android:padding="2dp"
         android:src="@drawable/selector_src_sex"
-        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mTvName"
-        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mTvName"
-        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mTvName" />
+        app:layout_constraintBottom_toBottomOf="@id/mTvName"
+        app:layout_constraintStart_toEndOf="@id/mTvName"
+        app:layout_constraintTop_toTopOf="@id/mTvName" />
 
     <TextView
-        android:id="@+id/ContactAdapter_mTvAge"
+        android:id="@+id/mTvAge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:text="23岁"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mTvName"
-        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mIvSex"
-        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mTvName" />
+        app:layout_constraintBottom_toBottomOf="@id/mTvName"
+        app:layout_constraintStart_toEndOf="@id/mIvSex"
+        app:layout_constraintTop_toTopOf="@id/mTvName" />
 
     <com.yzx.chat.widget.view.FlowLayout
-        android:id="@+id/ContactAdapter_mTagsFlowLayout"
+        android:id="@+id/mTagsFlowLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@id/ContactAdapter_mTvName"
+        app:layout_constraintBottom_toBottomOf="@id/mTvName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ContactAdapter_mTvAge"
-        app:layout_constraintTop_toTopOf="@id/ContactAdapter_mTvName" />
+        app:layout_constraintStart_toEndOf="@id/mTvAge"
+        app:layout_constraintTop_toTopOf="@id/mTvName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

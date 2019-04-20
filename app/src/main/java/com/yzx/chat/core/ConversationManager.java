@@ -34,7 +34,7 @@ public class ConversationManager {
     public static final int UPDATE_TYPE_CLEAR_MESSAGE = 5;
     public static final int UPDATE_TYPE_NOTIFICATION_CHANGE = 6;
     public static final int UPDATE_TYPE_UPDATE = 7;
-    public static final int UPDATE_LIST_CHANGE = 8;
+    public static final int UPDATE_TYPE_CHANGE = 8;
 
     private AppClient mAppClient;
     private RongIMClient mRongIMClient;
@@ -260,8 +260,8 @@ public class ConversationManager {
         callbackConversationChange(getConversation(type, targetId), UPDATE_TYPE_UPDATE);
     }
 
-    void onConversationListChange() {
-        callbackConversationChange(null, UPDATE_LIST_CHANGE);
+    void onConversationChange(Conversation.ConversationType type,String conversationID,int remainder) {
+        callbackConversationChange(getConversation(type,conversationID), UPDATE_TYPE_CHANGE,remainder);
     }
 
     void updateChatUnreadCount() {
@@ -341,13 +341,16 @@ public class ConversationManager {
         mConversationUnreadCountListeners.remove(listener);
     }
 
+    private void callbackConversationChange(final Conversation conversation, final int typeCode) {
+        callbackConversationChange(conversation,typeCode,0);
+    }
 
-    void callbackConversationChange(final Conversation conversation, final int typeCode) {
+    private void callbackConversationChange(final Conversation conversation, final int typeCode, final int remainder) {
         mUIHandler.post(new Runnable() {
             @Override
             public void run() {
                 for (OnConversationChangeListener listener : mConversationChangeListeners) {
-                    listener.onConversationChange(conversation, typeCode);
+                    listener.onConversationChange(conversation, typeCode,remainder);
                 }
             }
         });
@@ -358,6 +361,6 @@ public class ConversationManager {
     }
 
     public interface OnConversationChangeListener {
-        void onConversationChange(Conversation conversation, int typeCode);
+        void onConversationChange(Conversation conversation, int typeCode,int remainder);
     }
 }

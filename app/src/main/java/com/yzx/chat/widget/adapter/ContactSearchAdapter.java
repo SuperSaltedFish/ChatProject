@@ -86,8 +86,8 @@ public class ContactSearchAdapter extends BaseRecyclerViewAdapter<ContactSearchA
         }
 
         private void initView() {
-            mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
-            mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
+            mTvName = itemView.findViewById(R.id.mTvName);
+            mIvAvatar = itemView.findViewById(R.id.mIvAvatar);
         }
     }
 

@@ -79,7 +79,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
                 holder.mTagsFlowLayout.addView(label);
             }
         }
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactEntity.getUserProfile().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, user.getAvatar());
     }
 
     @Override
@@ -200,12 +200,12 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
         }
 
         private void initView() {
-            mTvName = itemView.findViewById(R.id.ContactAdapter_mTvName);
-            mIvAvatar = itemView.findViewById(R.id.ContactAdapter_mIvAvatar);
-            mIvSex = itemView.findViewById(R.id.ContactAdapter_mIvSex);
-            mTagsFlowLayout = itemView.findViewById(R.id.ContactAdapter_mTagsFlowLayout);
-            mTvSignature = itemView.findViewById(R.id.ContactAdapter_mTvSignature);
-            mTvAge = itemView.findViewById(R.id.ContactAdapter_mTvAge);
+            mTvName = itemView.findViewById(R.id.mTvName);
+            mIvAvatar = itemView.findViewById(R.id.mIvAvatar);
+            mIvSex = itemView.findViewById(R.id.mIvSex);
+            mTagsFlowLayout = itemView.findViewById(R.id.mTagsFlowLayout);
+            mTvSignature = itemView.findViewById(R.id.mTvSignature);
+            mTvAge = itemView.findViewById(R.id.mTvAge);
             mTagsFlowLayout.setMaxLine(1);
             mTagsFlowLayout.setItemSpace((int) AndroidHelper.dip2px(4));
         }

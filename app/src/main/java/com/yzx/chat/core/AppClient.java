@@ -112,7 +112,7 @@ public class AppClient {
                     case "RC:LBSMsg":
                     case "RC:FileMsg":
                     case "Custom:VideoMsg":
-                        mChatManager.onReceiveContactNotificationMessage(message, remainder);
+                        mChatManager.onReceiveChatMessage(message, remainder);
                         break;
                     case "Custom:ContactNtf"://该类型不会保存期起来
                         mContactManager.onReceiveContactNotificationMessage((ContactNotificationMessageEx) message.getContent());
@@ -126,7 +126,6 @@ public class AppClient {
                 if (remainder == 0) {
                     mContactManager.updateContactUnreadCount();
                     mConversationManager.updateChatUnreadCount();
-                    mConversationManager.onConversationListChange();
                 }
                 return true;
             }

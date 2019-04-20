@@ -44,8 +44,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
         }
 
         mContactChatSettingView.switchTopState(mConversation.isTop());
-        mContactChatSettingView.switchRemindState(mAppClient.getConversationManager().isEnableConversationNotification(Conversation.ConversationType.PRIVATE, contactID));
-
+        mContactChatSettingView.switchRemindState(!mAppClient.getConversationManager().isEnableConversationNotification(Conversation.ConversationType.PRIVATE, contactID));
     }
 
     @Override
@@ -55,7 +54,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
 
     @Override
     public void enableConversationNotification(boolean isEnable) {
-        mAppClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable,null);
+        mAppClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable, null);
     }
 
     @Override
@@ -63,10 +62,9 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
         mAppClient.getConversationManager().setTopConversation(mConversation.getConversationType(), mConversation.getTargetId(), isTop, null);
     }
 
-
     @Override
     public void clearChatMessages() {
-        mAppClient.getConversationManager().clearConversationMessages(mConversation.getConversationType(), mConversation.getTargetId(),null);
+        mAppClient.getConversationManager().clearConversationMessages(mConversation.getConversationType(), mConversation.getTargetId(), null);
     }
 
     private final ContactManager.OnContactChangeListener mOnContactChangeListener = new ContactManager.OnContactChangeListener() {

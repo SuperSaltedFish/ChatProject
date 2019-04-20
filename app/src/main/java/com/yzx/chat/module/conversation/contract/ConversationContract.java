@@ -19,8 +19,6 @@ public class ConversationContract {
     public interface View extends BaseView<Presenter> {
         void showConversationList(List<Conversation> conversationList);
 
-        boolean isForeground();
-
         void setEnableDisconnectionHint(boolean isEnable);
     }
 

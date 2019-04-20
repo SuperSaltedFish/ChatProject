@@ -171,11 +171,6 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
     }
 
     @Override
-    public boolean isForeground() {
-        return false;
-    }
-
-    @Override
     public void setEnableDisconnectionHint(boolean isEnable) {
         if (mAdapter == null) {
             return;

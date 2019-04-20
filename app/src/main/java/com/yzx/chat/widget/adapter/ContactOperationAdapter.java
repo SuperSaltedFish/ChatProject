@@ -12,6 +12,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactOperationEntity;
+import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 
@@ -45,8 +46,10 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
     @Override
     public void bindDataToViewHolder(ContactMessageHolder holder, int position) {
         ContactOperationEntity contactMessage = getItem(position);
+        UserEntity userInfo = contactMessage.getUserInfo();
         holder.setOnContactRequestListener(mOnContactRequestListener);
-        holder.mTvName.setText(contactMessage.getUserInfo().getNickname());
+        holder.mTvName.setText(userInfo.getNickname());
+        holder.mTvAge.setText(userInfo.getAge());
         String reason = contactMessage.getReason();
         if (TextUtils.isEmpty(reason)) {
             holder.mTvReason.setText(R.string.ContactOperationAdapter_RequestReason);
@@ -106,7 +109,7 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
                 holder.itemView.setEnabled(false);
                 break;
         }
-        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, contactMessage.getUserInfo().getAvatar());
+        GlideUtil.loadAvatarFromUrl(mContext, holder.mIvAvatar, userInfo.getAvatar());
 
     }
 
@@ -157,14 +160,16 @@ public class ContactOperationAdapter extends BaseRecyclerViewAdapter<ContactOper
         TextView mTvReason;
         TextView mTvAccept;
         TextView mTvRefused;
+        TextView mTvAge;
 
         ContactMessageHolder(View itemView) {
             super(itemView);
-            mIvAvatar = itemView.findViewById(R.id.ContactMessageAdapter_mIvAvatar);
-            mTvName = itemView.findViewById(R.id.ContactMessageAdapter_mTvName);
-            mTvReason = itemView.findViewById(R.id.ContactMessageAdapter_mTvReason);
-            mTvAccept = itemView.findViewById(R.id.ContactMessageAdapter_mTvAccept);
-            mTvRefused = itemView.findViewById(R.id.ContactMessageAdapter_mTvRefused);
+            mIvAvatar = itemView.findViewById(R.id.mIvAvatar);
+            mTvName = itemView.findViewById(R.id.mTvName);
+            mTvReason = itemView.findViewById(R.id.mTvReason);
+            mTvAccept = itemView.findViewById(R.id.mTvAccept);
+            mTvRefused = itemView.findViewById(R.id.mTvRefused);
+            mTvAge = itemView.findViewById(R.id.mTvAge);
             setup();
         }
 

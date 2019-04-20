@@ -2,7 +2,6 @@ package com.yzx.chat.module.conversation.presenter;
 
 
 import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.ChatManager;
 import com.yzx.chat.core.ConversationManager;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.conversation.contract.ConversationContract;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.imlib.model.Conversation;
-import io.rong.imlib.model.Message;
 
 /**
  * Created by YZX on 2017年11月06日.
@@ -30,14 +28,12 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         mConversationView = view;
         mAppClient = AppClient.getInstance();
         mAppClient.addConnectionListener(mOnConnectionStateChangeListener);
-        mAppClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, null);
         mAppClient.getConversationManager().addConversationStateChangeListener(mOnConversationChangeListener);
     }
 
     @Override
     public void detachView() {
         mAppClient.removeConnectionListener(mOnConnectionStateChangeListener);
-        mAppClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mAppClient.getConversationManager().removeConversationStateChangeListener(mOnConversationChangeListener);
         mConversationView = null;
     }
@@ -65,7 +61,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     public void setConversationTop(Conversation conversation, boolean isTop) {
         mAppClient.getConversationManager().setTopConversation(conversation.getConversationType(), conversation.getTargetId(), isTop, null);
     }
-
 
     @Override
     public void deleteConversation(Conversation conversation) {
@@ -103,40 +98,11 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private final ConversationManager.OnConversationChangeListener mOnConversationChangeListener = new ConversationManager.OnConversationChangeListener() {
         @Override
-        public void onConversationChange(final Conversation conversation, int typeCode) {
-            LogUtil.e("Conversation change,code: " + typeCode);
-            refreshAllConversations();
-        }
-    };
-
-    private final ChatManager.OnMessageSendListener mOnMessageSendListener = new ChatManager.OnMessageSendListener() {
-        @Override
-        public void onAttached(Message message) {
-
-        }
-
-        @Override
-        public void onProgress(Message message, int progress) {
-
-        }
-
-        @Override
-        public void onSuccess(Message message) {
-            if (mConversationView.isForeground()) {
+        public void onConversationChange(Conversation conversation, int typeCode, int remainder) {
+            if(remainder==0){
+                LogUtil.e("Conversation change,code: " + typeCode);
                 refreshAllConversations();
             }
-        }
-
-        @Override
-        public void onError(Message message) {
-            if (mConversationView.isForeground()) {
-                refreshAllConversations();
-            }
-        }
-
-        @Override
-        public void onCanceled(Message message) {
-
         }
     };
 }
