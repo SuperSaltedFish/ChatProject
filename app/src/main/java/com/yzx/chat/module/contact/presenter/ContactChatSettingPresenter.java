@@ -4,6 +4,7 @@ import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.module.contact.contract.ContactChatSettingContract;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import io.rong.imlib.model.Conversation;
 
@@ -42,9 +43,13 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
             mConversation.setTop(false);
             mConversation.setConversationType(Conversation.ConversationType.PRIVATE);
         }
-
         mContactChatSettingView.switchTopState(mConversation.isTop());
-        mContactChatSettingView.switchRemindState(!mAppClient.getConversationManager().isEnableConversationNotification(Conversation.ConversationType.PRIVATE, contactID));
+        mAppClient.getConversationManager().isEnableConversationNotification(Conversation.ConversationType.PRIVATE, contactID, new LifecycleMVPResultCallback<Boolean>(mContactChatSettingView) {
+            @Override
+            protected void onSuccess(Boolean result) {
+                mContactChatSettingView.switchRemindState(!result);
+            }
+        });
     }
 
     @Override
@@ -53,7 +58,7 @@ public class ContactChatSettingPresenter implements ContactChatSettingContract.P
     }
 
     @Override
-    public void enableConversationNotification(boolean isEnable) {
+    public void setEnableConversationNotification(boolean isEnable) {
         mAppClient.getConversationManager().setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable, null);
     }
 

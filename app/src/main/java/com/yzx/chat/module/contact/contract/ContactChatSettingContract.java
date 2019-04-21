@@ -26,7 +26,7 @@ public class ContactChatSettingContract {
 
         ContactEntity getContact();
 
-        void enableConversationNotification(boolean isEnable);
+        void setEnableConversationNotification(boolean isEnable);
 
         void setConversationToTop(boolean isTop);
 

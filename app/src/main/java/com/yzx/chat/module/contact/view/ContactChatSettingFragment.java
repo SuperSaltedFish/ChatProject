@@ -136,7 +136,7 @@ public class ContactChatSettingFragment extends BaseFragment<ContactChatSettingC
     private final CompoundButton.OnCheckedChangeListener mOnRemindSwitchChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            mPresenter.enableConversationNotification(!isChecked);
+            mPresenter.setEnableConversationNotification(!isChecked);
         }
     };
 

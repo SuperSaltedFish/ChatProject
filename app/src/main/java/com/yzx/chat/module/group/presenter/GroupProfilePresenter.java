@@ -42,7 +42,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     public void detachView() {
         mHandler.removeCallbacksAndMessages(null);
         mGroupManager.removeGroupChangeListener(mOnGroupOperationListener);
-        mHandler=null;
+        mHandler = null;
         mGroupProfileView = null;
         mGroupManager = null;
     }
@@ -70,7 +70,12 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
             mConversation.setConversationType(Conversation.ConversationType.GROUP);
         }
         mGroupProfileView.switchTopState(mConversation.isTop());
-        mGroupProfileView.switchRemindState(  mConversationManager.isEnableConversationNotification(Conversation.ConversationType.GROUP, groupID));
+        mConversationManager.isEnableConversationNotification(Conversation.ConversationType.GROUP, groupID, new LifecycleMVPResultCallback<Boolean>(mGroupProfileView) {
+            @Override
+            protected void onSuccess(Boolean result) {
+                mGroupProfileView.switchRemindState(!result);
+            }
+        });
     }
 
     @Override
@@ -92,7 +97,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
+                        onFailure(0, AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
@@ -107,7 +112,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
+                        onFailure(0, AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
@@ -132,7 +137,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        onFailure(0,AndroidHelper.getString(R.string.Error_Server1));
+                        onFailure(0, AndroidHelper.getString(R.string.Error_Server1));
                     }
                 }, 15000);
             }
@@ -146,17 +151,17 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public void enableConversationNotification(boolean isEnable) {
-        mConversationManager.setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable,null);
+        mConversationManager.setEnableConversationNotification(mConversation.getConversationType(), mConversation.getTargetId(), isEnable, null);
     }
 
     @Override
     public void setConversationToTop(boolean isTop) {
-        mConversationManager.setTopConversation(mConversation.getConversationType(), mConversation.getTargetId(), isTop,null);
+        mConversationManager.setTopConversation(mConversation.getConversationType(), mConversation.getTargetId(), isTop, null);
     }
 
     @Override
     public void clearChatMessages() {
-        mConversationManager.clearConversationMessages(mConversation.getConversationType(), mConversation.getTargetId(),null);
+        mConversationManager.clearConversationMessages(mConversation.getConversationType(), mConversation.getTargetId(), null);
     }
 
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {

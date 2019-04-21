@@ -28,7 +28,6 @@ public abstract class OnRecyclerViewItemClickListener implements RecyclerView.On
     public void onItemDecorationClick(float touchX, float touchY) {
     }
 
-
     private static final int MAX_CLICK_INTERVAL = 500;
     private RecyclerView mRecyclerView;
 
@@ -56,15 +55,20 @@ public abstract class OnRecyclerViewItemClickListener implements RecyclerView.On
         @Override
         public boolean onSingleTapUp(MotionEvent event) {
             long nowTime = SystemClock.elapsedRealtime();
-            if (nowTime - lastClickTime >= MAX_CLICK_INTERVAL) {
-                View itemView = mRecyclerView.findChildViewUnder(event.getX(), event.getY());
-                if (itemView != null) {
+            View itemView = mRecyclerView.findChildViewUnder(event.getX(), event.getY());
+            if (itemView != null) {
+                itemView.drawableHotspotChanged(event.getX(), event.getY());
+                itemView.setPressed(true);
+                if (nowTime - lastClickTime >= MAX_CLICK_INTERVAL) {
                     RecyclerView.ViewHolder viewHolder = mRecyclerView.getChildViewHolder(itemView);
                     onItemClick(viewHolder.getAdapterPosition(), viewHolder, event.getX(), event.getY());
-                } else {
-                    onItemDecorationClick(event.getX(), event.getY());
+                    lastClickTime = nowTime;
                 }
-                lastClickTime = nowTime;
+            } else {
+                if (nowTime - lastClickTime >= MAX_CLICK_INTERVAL) {
+                    onItemDecorationClick(event.getX(), event.getY());
+                    lastClickTime = nowTime;
+                }
             }
 
             return true;
@@ -72,9 +76,9 @@ public abstract class OnRecyclerViewItemClickListener implements RecyclerView.On
 
         @Override
         public void onLongPress(MotionEvent event) {
-            View child = mRecyclerView.findChildViewUnder(event.getX(), event.getY());
-            if (child != null) {
-                RecyclerView.ViewHolder viewHolder = mRecyclerView.getChildViewHolder(child);
+            View itemView = mRecyclerView.findChildViewUnder(event.getX(), event.getY());
+            if (itemView != null) {
+                RecyclerView.ViewHolder viewHolder = mRecyclerView.getChildViewHolder(itemView);
                 onItemLongClick(viewHolder.getAdapterPosition(), viewHolder, event.getX(), event.getY());
             }
         }

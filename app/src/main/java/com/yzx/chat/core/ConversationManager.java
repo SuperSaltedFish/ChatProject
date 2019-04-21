@@ -123,7 +123,7 @@ public class ConversationManager {
     }
 
     public void setTopConversation(final Conversation.ConversationType type, final String targetId, boolean isTop, final ResultCallback<Void> callback) {
-        mRongIMClient.setConversationToTop(type, targetId, isTop, new RongIMClient.ResultCallback<Boolean>() {
+        mRongIMClient.setConversationToTop(type, targetId, isTop,true, new RongIMClient.ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
@@ -244,12 +244,19 @@ public class ConversationManager {
         });
     }
 
-    public boolean isEnableConversationNotification(final Conversation.ConversationType type, final String targetId) {
-        Conversation conversation = getConversation(type, targetId);
-        if (conversation != null) {
-            return conversation.getNotificationStatus() == Conversation.ConversationNotificationStatus.NOTIFY;
-        }
-        return false;
+    public void isEnableConversationNotification(final Conversation.ConversationType type, final String targetId,final ResultCallback<Boolean> callback) {
+        mRongIMClient.getConversationNotificationStatus(type, targetId, new RongIMClient.ResultCallback<Conversation.ConversationNotificationStatus>() {
+            @Override
+            public void onSuccess(Conversation.ConversationNotificationStatus status) {
+                CallbackUtil.callResult(status==Conversation.ConversationNotificationStatus.NOTIFY, callback);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
+                LogUtil.e(errorCode.getMessage());
+            }
+        });
     }
 
     public int getConversationUnreadCount() {

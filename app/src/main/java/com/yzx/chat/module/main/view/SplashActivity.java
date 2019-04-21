@@ -21,7 +21,6 @@ import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.module.main.presenter.SplashPresenter;
 import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.util.GlideUtil;
-import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.PageIndicator;
 
 import androidx.annotation.NonNull;
@@ -58,6 +57,7 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
                 return;
             }
         }
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
         Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
             @Override
             public boolean queueIdle() {
@@ -107,8 +107,8 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         mSplashContent = getString(R.string.SplashActivity_Content);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
         setContentView(R.layout.activity_splash);
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_LIGHT_BAR_STATUS);
 
         final TextSwitcher textSwitcher = findViewById(R.id.mTextSwitcher);
         final ViewPager guideViewPager = findViewById(R.id.mGuideViewPager);
@@ -175,9 +175,9 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
         });
 
         View textIndicator = findViewById(R.id.mLlTextIndicator);
-        textIndicator.setOnClickListener(new OnOnlySingleClickListener() {
+        textIndicator.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSingleClick(View v) {
+            public void onClick(View v) {
                 int currentIndex = guideViewPager.getCurrentItem();
                 if (currentIndex < GUIDE_COUNT - 1) {
                     guideViewPager.setCurrentItem(currentIndex + 1);
