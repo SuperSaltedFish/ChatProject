@@ -37,8 +37,14 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
     private SparseArray<String> mIdentitySparseArray;
 
     public ContactAdapter() {
+        this(false);
+    }
+
+    public ContactAdapter(boolean isSearchMode) {
         mIdentitySparseArray = new SparseArray<>(32);
-        registerAdapterDataObserver(mDataObserver);
+        if(!isSearchMode){
+            registerAdapterDataObserver(mDataObserver);
+        }
     }
 
     @Override
@@ -156,7 +162,7 @@ public class ContactAdapter extends BaseRecyclerViewAdapter<ContactAdapter.Conta
 
             }).build());
 
-    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
+    final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount) {

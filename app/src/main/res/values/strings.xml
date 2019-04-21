@@ -228,7 +228,7 @@
     <string name="LocationShareFragment_MarkerLocation">标记位置</string>
     <string name="LocationShareFragment_BeingCalculated">正在计算</string>
     <string name="LocationShareFragment_MyLocation">我当前的位置</string>
-    <string name="LocationSendFragment_SearchNone">没有搜索到任何内容</string>
+    <string name="LocationSendFragment_SearchNone">没有搜索到任何匹配的内容</string>
     <string name="FileSelectorActivity_Title">文件选择</string>
     <string name="FileAndDirectoryAdapter_FileSize">文件大小</string>
     <string name="FileSelectorActivity_Storage">手机存储</string>
@@ -237,4 +237,5 @@
     <string name="FindNewContactActivity_SearchNotExist">该用户不存在</string>
     <string name="AppApplication_LoginExpired">登陆过期，请重新登陆！</string>
     <string name="ContactListFragment_ContactList">好友列表</string>
+    <string name="ContactListFragment_EmptySearch">没有搜索到任何匹配的好友</string>
 </resources>

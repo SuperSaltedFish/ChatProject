@@ -70,7 +70,6 @@ public abstract class OnRecyclerViewItemClickListener implements RecyclerView.On
                     lastClickTime = nowTime;
                 }
             }
-
             return true;
         }
 

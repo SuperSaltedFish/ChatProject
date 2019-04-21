@@ -124,12 +124,8 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     }
 
     public void setHeaderView(View headerView) {
-        if (mHeaderView == null && headerView != null) {
-            notifyItemInserted(0);
-        } else if (mHeaderView != null && headerView == null) {
-            notifyItemRemoved(0);
-        } else if (mHeaderView != null && headerView != null && mHeaderView != headerView) {
-            notifyItemChanged(0);
+        if(mHeaderView!=headerView){
+            notifyDataSetChanged();
         }
         mHeaderView = headerView;
     }
@@ -139,12 +135,8 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     }
 
     public void setFooterView(View footerView) {
-        if (mFooterView == null && footerView != null) {
-            notifyItemInserted(getItemCount());
-        } else if (mFooterView != null && footerView == null) {
-            notifyItemRemoved(getItemCount());
-        } else if (mFooterView != null && footerView != null && mFooterView != footerView) {
-            notifyItemChanged(getItemCount());
+        if(mFooterView!=footerView){
+            notifyDataSetChanged();
         }
         mFooterView = footerView;
     }
