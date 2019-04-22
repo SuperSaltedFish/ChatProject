@@ -83,7 +83,7 @@ public class AppClient {
         mRongIMClient = RongIMClient.getInstance();
         mOnConnectionStateChangeListenerList = Collections.synchronizedList(new LinkedList<OnConnectionStateChangeListener>());
         mAuthApi = ApiHelper.getProxyInstance(AuthApi.class);
-        mLoginExpiredListener = new LoginExpiredListenerwapper(null);
+        mLoginExpiredListener = new LoginExpiredListenerWrapper(null);
         mLoginLock = new Semaphore(1);
         mStorageHelper = new StorageHelper(mAppContext, mAppContext.getPackageName());
         mUserManager = new UserManager(this);
@@ -150,9 +150,7 @@ public class AppClient {
                     case TOKEN_INCORRECT:
                     case SERVER_INVALID:
                     case CONN_USER_BLOCKED:
-                        for (OnConnectionStateChangeListener listener : mOnConnectionStateChangeListenerList) {
-                            listener.onUserInvalid();
-                        }
+                        mLoginExpiredListener.onLoginExpired();
                         break;
                 }
             }
@@ -386,7 +384,7 @@ public class AppClient {
     }
 
     public void setLoginExpiredListener(LoginExpiredListener listener) {
-        mLoginExpiredListener = new LoginExpiredListenerwapper(listener);
+        mLoginExpiredListener = new LoginExpiredListenerWrapper(listener);
     }
 
     public void addConnectionListener(OnConnectionStateChangeListener listener) {
@@ -404,10 +402,10 @@ public class AppClient {
         mOnConnectionStateChangeListenerList.remove(listener);
     }
 
-    private class LoginExpiredListenerwapper implements LoginExpiredListener {
+    private class LoginExpiredListenerWrapper implements LoginExpiredListener {
         private LoginExpiredListener mLoginExpiredListener;
 
-        public LoginExpiredListenerwapper(LoginExpiredListener loginExpiredListener) {
+        LoginExpiredListenerWrapper(LoginExpiredListener loginExpiredListener) {
             mLoginExpiredListener = loginExpiredListener;
         }
 
@@ -429,8 +427,6 @@ public class AppClient {
         void onConnected();
 
         void onDisconnected();
-
-        void onUserInvalid();
     }
 
 }

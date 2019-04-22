@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoration {
 
     private float mTextSize;
+    private float mLineWidth;
     private int mTextColor;
     private int mLineColor;
-    private int mLineWidth;
 
     private float mTextHeight;
     private int mSpace;
@@ -117,11 +117,11 @@ public class LetterSegmentationItemDecoration extends RecyclerView.ItemDecoratio
         mLineColor = lineColor;
     }
 
-    public int getLineWidth() {
+    public float getLineWidth() {
         return mLineWidth;
     }
 
-    public void setLineWidth(int lineWidth) {
+    public void setLineWidth(float lineWidth) {
         mLineWidth = lineWidth;
     }
 

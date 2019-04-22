@@ -88,11 +88,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         public void onDisconnected() {
             mConversationView.setEnableDisconnectionHint(true);
         }
-
-        @Override
-        public void onUserInvalid() {
-
-        }
     };
 
 

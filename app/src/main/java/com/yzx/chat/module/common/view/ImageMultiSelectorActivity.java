@@ -126,9 +126,6 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         mOriginalSwitch.setOnCheckedChangeListener(mOnOriginalSwitchChangeListener);
         mBtnPreview.setOnClickListener(mOnPreviewClickListener);
 
-        setData();
-
-        updateCountText();
     }
 
     @Override
@@ -149,6 +146,7 @@ public class ImageMultiSelectorActivity extends BaseCompatActivity {
         getMenuInflater().inflate(R.menu.menu_image_multi_selector, menu);
         mSendMenu = menu.findItem(R.id.mSendMenu);
         mSendMenu.setEnabled(false);
+        setData();
         return true;
     }
 

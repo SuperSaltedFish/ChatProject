@@ -142,129 +142,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private int mCurrentConversationType;
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        VoicePlayer.getInstance(this).stop();
-        mEtContent.clearFocus();
-        hideSoftKeyboard();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mAlerterIconAnimation.cancel();
-        mMessageList = null;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_chat, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.ChatMenu_Profile) {
-            enterProfile();
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (isShowMoreInput()) {
-            hideMoreInput();
-            return;
-        }
-        String draft = mEtContent.getText().toString();
-        String oldDraft = mPresenter.getMessageDraft();
-        if (!(oldDraft == null && TextUtils.isEmpty(draft)) && !TextUtils.equals(draft, mPresenter.getMessageDraft())) {
-            mPresenter.saveMessageDraft(mEtContent.getText().toString());
-        }
-        finish();
-    }
-
-    @Override
-    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
-        if (isSuccess) {
-            switch (requestCode) {
-                case REQUEST_PERMISSION_VOICE:
-                    if (!isHasVoiceRecorderPermission) {
-                        isHasVoiceRecorderPermission = true;
-                        toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
-                    }
-                    break;
-                case REQUEST_PERMISSION_IMAGE:
-                    startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
-                    break;
-                case REQUEST_PERMISSION_LOCATION:
-                    startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
-                    break;
-                case REQUEST_PERMISSION_CAMERA:
-                    startActivityForResult(new Intent(this, VideoRecorderActivity.class), 0);
-                    break;
-                case REQUEST_PERMISSION_FILE:
-                    startActivityForResult(new Intent(this, FileSelectorActivity.class), 0);
-                    break;
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            return;
-        }
-        if (resultCode == ImageMultiSelectorActivity.RESULT_CODE) {
-            boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
-            ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
-            if (imageList != null && imageList.size() > 0) {
-                for (String path : imageList) {
-                    mPresenter.sendImageMessage(path, isOriginal);
-                }
-            }
-        } else if (resultCode == LocationMapActivity.RESULT_CODE) {
-            PoiItem poi = data.getParcelableExtra(LocationMapActivity.INTENT_EXTRA_POI);
-            if (poi != null) {
-                mPresenter.sendLocationMessage(poi);
-            }
-        } else if (resultCode == VideoRecorderActivity.RESULT_CODE) {
-            String videoPath = data.getStringExtra(VideoRecorderActivity.INTENT_EXTRA_SAVE_PATH);
-            if (!TextUtils.isEmpty(videoPath)) {
-                mPresenter.sendVideoMessage(videoPath);
-            }
-        } else if (resultCode == VideoPlayActivity.RESULT_CODE) {
-            Message message = data.getParcelableExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE);
-            if (message != null) {
-                updateMessage(message);
-            }
-        } else if (resultCode == FileSelectorActivity.RESULT_CODE) {
-            ArrayList<String> filePathList = data.getStringArrayListExtra(FileSelectorActivity.INTENT_EXTRA_SELECTED_FILE_PATH);
-            if (filePathList != null && filePathList.size() > 0) {
-                for (String path : filePathList) {
-                    mPresenter.sendFileMessage(path);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setData(intent);
-    }
-
     @Override
     protected int getLayoutID() {
         return R.layout.activity_chat;
@@ -744,6 +621,122 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        VoicePlayer.getInstance(this).stop();
+        mEtContent.clearFocus();
+        hideSoftKeyboard();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAlerterIconAnimation.cancel();
+        mMessageList = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.ChatMenu_Profile) {
+            enterProfile();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (isShowMoreInput()) {
+            hideMoreInput();
+            return;
+        }
+        String draft = mEtContent.getText().toString();
+        String oldDraft = mPresenter.getMessageDraft();
+        if (!(oldDraft == null && TextUtils.isEmpty(draft)) && !TextUtils.equals(draft, mPresenter.getMessageDraft())) {
+            mPresenter.saveMessageDraft(mEtContent.getText().toString());
+        }
+        finish();
+    }
+
+    @Override
+    protected void onRequestPermissionsResult(int requestCode, boolean isSuccess, String[] deniedPermissions) {
+        if (isSuccess) {
+            switch (requestCode) {
+                case REQUEST_PERMISSION_VOICE:
+                    if (!isHasVoiceRecorderPermission) {
+                        isHasVoiceRecorderPermission = true;
+                        toggleMoreInput(MORE_INPUT_TYPE_MICROPHONE);
+                    }
+                    break;
+                case REQUEST_PERMISSION_IMAGE:
+                    startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
+                    break;
+                case REQUEST_PERMISSION_LOCATION:
+                    startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
+                    break;
+                case REQUEST_PERMISSION_CAMERA:
+                    startActivityForResult(new Intent(this, VideoRecorderActivity.class), 0);
+                    break;
+                case REQUEST_PERMISSION_FILE:
+                    startActivityForResult(new Intent(this, FileSelectorActivity.class), 0);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
+        if (resultCode == ImageMultiSelectorActivity.RESULT_CODE) {
+            boolean isOriginal = data.getBooleanExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IS_ORIGINAL, false);
+            ArrayList<String> imageList = data.getStringArrayListExtra(ImageMultiSelectorActivity.INTENT_EXTRA_IMAGE_PATH_LIST);
+            if (imageList != null && imageList.size() > 0) {
+                for (String path : imageList) {
+                    mPresenter.sendImageMessage(path, isOriginal);
+                }
+            }
+        } else if (resultCode == LocationMapActivity.RESULT_CODE) {
+            PoiItem poi = data.getParcelableExtra(LocationMapActivity.INTENT_EXTRA_POI);
+            if (poi != null) {
+                mPresenter.sendLocationMessage(poi);
+            }
+        } else if (resultCode == VideoRecorderActivity.RESULT_CODE) {
+            String videoPath = data.getStringExtra(VideoRecorderActivity.INTENT_EXTRA_SAVE_PATH);
+            if (!TextUtils.isEmpty(videoPath)) {
+                mPresenter.sendVideoMessage(videoPath);
+            }
+        } else if (resultCode == VideoPlayActivity.RESULT_CODE) {
+            Message message = data.getParcelableExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE);
+            if (message != null) {
+                updateMessage(message);
+            }
+        } else if (resultCode == FileSelectorActivity.RESULT_CODE) {
+            ArrayList<String> filePathList = data.getStringArrayListExtra(FileSelectorActivity.INTENT_EXTRA_SELECTED_FILE_PATH);
+            if (filePathList != null && filePathList.size() > 0) {
+                for (String path : filePathList) {
+                    mPresenter.sendFileMessage(path);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setData(intent);
+    }
 
     @Override
     public ChatContract.Presenter getPresenter() {

@@ -114,8 +114,6 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         mOriginalSwitch.setChecked(isOriginal);
 
         tryShowSelectedView();
-        updateBtnConfirmText();
-
     }
 
     @Override
@@ -147,6 +145,7 @@ public class ImageViewPagerActivity extends BaseCompatActivity {
         getMenuInflater().inflate(R.menu.menu_image_view_pager, menu);
         mSendMenu = menu.findItem(R.id.mSendMenu);
         mSendMenu.setEnabled(false);
+        updateBtnConfirmText();
         return true;
     }
 

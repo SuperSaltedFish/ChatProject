@@ -117,7 +117,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
 
         mLetterSegmentationItemDecoration = new LetterSegmentationItemDecoration();
         mLetterSegmentationItemDecoration.setLineColor(ContextCompat.getColor(mContext, R.color.dividerColor));
-        mLetterSegmentationItemDecoration.setLineWidth(1);
+        mLetterSegmentationItemDecoration.setLineWidth((int) AndroidHelper.dip2px(1));
         mLetterSegmentationItemDecoration.setTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlackLight));
         mLetterSegmentationItemDecoration.setTextSize(AndroidHelper.sp2px(15));
 
