@@ -6,7 +6,7 @@
 
 
     <FrameLayout
-        android:id="@+id/LocationSendFragment_mFlToolbarLayout"
+        android:id="@+id/mFlToolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -24,16 +24,16 @@
     </FrameLayout>
 
     <com.amap.api.maps.MapView
-        android:id="@+id/LocationSendFragment_mMapView"
+        android:id="@+id/mMapView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/LocationSendFragment_mFlToolbarLayout" />
+        app:layout_constraintTop_toBottomOf="@id/mFlToolbarLayout" />
 
     <com.yzx.chat.widget.view.CircleImageView
-        android:id="@+id/LocationSendFragment_mIvMyLocation"
+        android:id="@+id/mIvMyLocation"
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:layout_marginBottom="8dp"
@@ -41,11 +41,11 @@
         android:elevation="3dp"
         android:padding="5dp"
         android:src="@drawable/ic_my_location"
-        app:layout_constraintBottom_toTopOf="@id/LocationSendFragment_mCvMarkerLayout"
-        app:layout_constraintEnd_toEndOf="@id/LocationSendFragment_mCvMarkerLayout" />
+        app:layout_constraintBottom_toTopOf="@id/mCvMarkerLayout"
+        app:layout_constraintEnd_toEndOf="@id/mCvMarkerLayout" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/LocationSendFragment_mCvMarkerLayout"
+        android:id="@+id/mCvMarkerLayout"
         android:layout_width="match_parent"
         android:layout_height="264dp"
         android:layout_marginEnd="12dp"
@@ -56,20 +56,20 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/LocationSendFragment_mRvMarkerLocation"
+            android:id="@+id/mRvMarkerLocation"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <ProgressBar
-            android:id="@+id/LocationSendFragment_mPbMarker"
+            android:id="@+id/mPbMarker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
     </androidx.cardview.widget.CardView>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/LocationSendFragment_mFlSearchLayout"
+    <FrameLayout
+        android:id="@+id/mFlSearchLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -81,11 +81,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/LocationSendFragment_mFlToolbarLayout"
+        app:layout_constraintTop_toBottomOf="@id/mFlToolbarLayout"
         app:layout_constraintVertical_bias="0">
 
         <TextView
-            android:id="@+id/LocationSendFragment_mTvSearchNoneHint"
+            android:id="@+id/mTvSearchNoneHint"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_gravity="center"
@@ -94,7 +94,7 @@
              />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/LocationSendFragment_mRvSearch"
+            android:id="@+id/mRvSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top" />

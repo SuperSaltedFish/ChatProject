@@ -103,15 +103,15 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
 
     @Override
     protected void init(View parentView) {
-        mMapView = parentView.findViewById(R.id.LocationSendFragment_mMapView);
-        mRvMarker = parentView.findViewById(R.id.LocationSendFragment_mRvMarkerLocation);
-        mPbMarker = parentView.findViewById(R.id.LocationSendFragment_mPbMarker);
+        mMapView = parentView.findViewById(R.id.mMapView);
+        mRvMarker = parentView.findViewById(R.id.mRvMarkerLocation);
+        mPbMarker = parentView.findViewById(R.id.mPbMarker);
         mToolbar = parentView.findViewById(R.id.Default_mToolbar);
-        mFlSearchLayout = parentView.findViewById(R.id.LocationSendFragment_mFlSearchLayout);
-        mRvSearch = parentView.findViewById(R.id.LocationSendFragment_mRvSearch);
-        mTvSearchNoneHint = parentView.findViewById(R.id.LocationSendFragment_mTvSearchNoneHint);
-        mCvMarkerLayout = parentView.findViewById(R.id.LocationSendFragment_mCvMarkerLayout);
-        mIvMyLocation = parentView.findViewById(R.id.LocationSendFragment_mIvMyLocation);
+        mFlSearchLayout = parentView.findViewById(R.id.mFlSearchLayout);
+        mRvSearch = parentView.findViewById(R.id.mRvSearch);
+        mTvSearchNoneHint = parentView.findViewById(R.id.mTvSearchNoneHint);
+        mCvMarkerLayout = parentView.findViewById(R.id.mCvMarkerLayout);
+        mIvMyLocation = parentView.findViewById(R.id.mIvMyLocation);
         mSearchLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mMarkerLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mTvSearchLocationLoadMoreHint = mSearchLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);

@@ -1,6 +1,5 @@
 package com.yzx.chat.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -9,7 +8,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
@@ -157,6 +155,21 @@ public class AndroidHelper {
             }
         }
         return true;
+    }
+
+    public static byte[] getRawResData(@RawRes int resID) {
+        try (InputStream inputStream = sAppContext.getResources().openRawResource(resID)) {
+            byte[] data;
+            data = new byte[inputStream.available()];
+            if (data.length == 0) {
+                return data;
+            }
+            inputStream.read(data);
+            return data;
+        } catch (IOException e) {
+            Log.d(TAG, e.toString(), e);
+        }
+        return null;
     }
 
 

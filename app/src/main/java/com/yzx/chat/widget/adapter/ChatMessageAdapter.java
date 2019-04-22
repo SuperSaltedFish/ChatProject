@@ -382,9 +382,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             String poi = locationMessage.getPoi();
             String[] content = poi.split("/");
             PoiItem poiItem = new PoiItem(locationMessage.getExtra(), new LatLonPoint(locationMessage.getLat(), locationMessage.getLng()), content[0], content[1]);
-            Intent intent = new Intent(itemView.getContext(), LocationMapActivity.class);
-            intent.putExtra(LocationMapActivity.INTENT_EXTRA_POI, poiItem);
-            itemView.getContext().startActivity(intent);
+            LocationMapActivity.startOfShareType(itemView.getContext(),poiItem);
         }
 
         void performClickVideoContent() {

@@ -1,6 +1,9 @@
 package com.yzx.chat.module.common.view;
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.amap.api.services.core.PoiItem;
@@ -18,6 +21,19 @@ public class LocationMapActivity extends BaseCompatActivity {
     public static final int RESULT_CODE = LocationMapActivity.class.hashCode();
     public static final String INTENT_EXTRA_POI = "POI";
 
+    public static void startOfShareType(Context context, PoiItem poiItem) {
+        if (poiItem == null) {
+            return;
+        }
+        Intent starter = new Intent(context, LocationMapActivity.class);
+        starter.putExtra(INTENT_EXTRA_POI, poiItem);
+        context.startActivity(starter);
+    }
+
+    public static void startForResultOfSendType(Activity activity, int requestCode) {
+        Intent starter = new Intent(activity, LocationMapActivity.class);
+        activity.startActivityForResult(starter,requestCode);
+    }
 
     @Override
     protected int getLayoutID() {
@@ -32,7 +48,6 @@ public class LocationMapActivity extends BaseCompatActivity {
     @Override
     protected void setup(Bundle savedInstanceState) {
         setDisplayHomeAsUpEnabled(true);
-
 
         PoiItem poiItem = getIntent().getParcelableExtra(INTENT_EXTRA_POI);
         if (poiItem != null) {

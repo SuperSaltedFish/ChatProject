@@ -62,6 +62,7 @@ import com.yzx.chat.widget.view.SpacesItemDecoration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -225,14 +226,14 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void setChatRecyclerViewAndAdapter() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
         mRvChatView.setLayoutManager(layoutManager);
         mRvChatView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(10), SpacesItemDecoration.VERTICAL, false, true));
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
-        ((DefaultItemAnimator) (mRvChatView.getItemAnimator())).setSupportsChangeAnimations(false);
+        ((DefaultItemAnimator) (Objects.requireNonNull(mRvChatView.getItemAnimator()))).setSupportsChangeAnimations(false);
         mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this) {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -364,7 +365,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         emojiRecyclerview.setPadding((int) AndroidHelper.dip2px(8), 0, (int) AndroidHelper.dip2px(8), 0);
         emojiRecyclerview.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder,float touchX, float touchY) {
+            public void onItemClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
                 mEtContent.getText().append(new String(Character.toChars(mEmojis[position])));
             }
         });
@@ -683,7 +684,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     startActivityForResult(new Intent(this, ImageMultiSelectorActivity.class), 0);
                     break;
                 case REQUEST_PERMISSION_LOCATION:
-                    startActivityForResult(new Intent(this, LocationMapActivity.class), 0);
+                    LocationMapActivity.startForResultOfSendType(this, 0);
                     break;
                 case REQUEST_PERMISSION_CAMERA:
                     startActivityForResult(new Intent(this, VideoRecorderActivity.class), 0);

@@ -39,6 +39,7 @@ public class Constants {
     public static final int MAX_VIDEO_RECORDER_DURATION = 10 * 1000 + 300;
 
     public static final String LOCATION_STYLE_FILE_PATH = DirectoryHelper.getPublicTempPath() + "map_style.data";
+
     public static final int LOCATION_DEFAULT_ZOOM = 15;
     public static final int LOCATION_INTERVAL = 2000;
    }
