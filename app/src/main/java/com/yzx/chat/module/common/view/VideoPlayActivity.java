@@ -1,4 +1,4 @@
-package com.yzx.chat.module.conversation.view;
+package com.yzx.chat.module.common.view;
 
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
@@ -15,8 +15,8 @@ import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.module.conversation.contract.VideoPlayContract;
-import com.yzx.chat.module.conversation.presenter.VideoPlayPresenter;
+import com.yzx.chat.module.common.contract.VideoPlayContract;
+import com.yzx.chat.module.common.presenter.VideoPlayPresenter;
 import com.yzx.chat.util.VideoDecoder;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.SimpleTransitionListener;

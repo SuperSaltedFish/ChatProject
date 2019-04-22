@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".module.conversation.view.VideoRecorderActivity">
+    tools:context=".module.common.view.VideoRecorderActivity">
 
     <TextureView
         android:id="@+id/VideoRecorderActivity_mVideoTextureView"

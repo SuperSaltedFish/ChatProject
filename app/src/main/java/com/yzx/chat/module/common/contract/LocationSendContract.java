@@ -1,4 +1,4 @@
-package com.yzx.chat.module.conversation.contract;
+package com.yzx.chat.module.common.contract;
 
 import android.content.Context;
 

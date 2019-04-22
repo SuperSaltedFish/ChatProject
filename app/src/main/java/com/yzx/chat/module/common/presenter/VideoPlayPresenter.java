@@ -1,10 +1,10 @@
-package com.yzx.chat.module.conversation.presenter;
+package com.yzx.chat.module.common.presenter;
 
 import android.net.Uri;
 import android.text.TextUtils;
 
 import com.yzx.chat.R;
-import com.yzx.chat.module.conversation.contract.VideoPlayContract;
+import com.yzx.chat.module.common.contract.VideoPlayContract;
 import com.yzx.chat.core.listener.DownloadCallback;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.util.AndroidHelper;

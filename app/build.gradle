@@ -16,17 +16,39 @@ android {
         }
     }
 
+    signingConfigs {
+        defaultConfig {
+            storeFile file('../keystore.jks')
+            storePassword 'yezhixing123'
+            keyAlias 'yezhixing'
+            keyPassword 'yezhixing123'
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.defaultConfig
+            buildConfigField 'boolean', 'isDebug', 'true'
+
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.defaultConfig
+            buildConfigField 'boolean', 'isDebug', 'false'
+        }
+    }
+
     lintOptions {
         disable 'GoogleAppIndexingWarning'
         checkReleaseBuilds false
 //        abortOnError false
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
 }
 

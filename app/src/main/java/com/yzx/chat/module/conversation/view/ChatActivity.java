@@ -35,6 +35,8 @@ import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.FileSelectorActivity;
 import com.yzx.chat.module.common.view.ImageMultiSelectorActivity;
 import com.yzx.chat.module.common.view.LocationMapActivity;
+import com.yzx.chat.module.common.view.VideoPlayActivity;
+import com.yzx.chat.module.common.view.VideoRecorderActivity;
 import com.yzx.chat.module.contact.view.ContactProfileActivity;
 import com.yzx.chat.module.conversation.contract.ChatContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;

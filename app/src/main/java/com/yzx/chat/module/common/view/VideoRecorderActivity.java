@@ -1,4 +1,4 @@
-package com.yzx.chat.module.conversation.view;
+package com.yzx.chat.module.common.view;
 
 import android.animation.Animator;
 import android.content.Intent;

@@ -101,11 +101,11 @@
         <activity
             android:name=".module.common.view.LocationMapActivity"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".module.conversation.view.VideoRecorderActivity" />
+        <activity android:name=".module.common.view.VideoRecorderActivity" />
         <activity android:name=".module.group.view.GroupListActivity" />
         <activity android:name=".module.me.view.CropImageActivity" />
         <activity android:name=".module.common.view.FileSelectorActivity" />
-        <activity android:name=".module.conversation.view.VideoPlayActivity" />
+        <activity android:name=".module.common.view.VideoPlayActivity" />
         <activity android:name=".module.contact.view.NotificationMessageActivity" />
 
         <activity android:name=".module.me.view.MyTagListActivity" />

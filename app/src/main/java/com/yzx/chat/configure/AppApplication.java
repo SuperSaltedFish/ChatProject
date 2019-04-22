@@ -8,12 +8,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.MessageQueue;
 
-import com.squareup.leakcanary.LeakCanary;
 import com.yzx.chat.R;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.login.view.LoginActivity;
 import com.yzx.chat.tool.ActivityHelper;
-import com.yzx.chat.tool.CrashHandler;
 import com.yzx.chat.util.AndroidHelper;
 
 import java.util.List;
@@ -44,7 +42,7 @@ public class AppApplication extends Application {
         String processAppName = getProcessName(this, android.os.Process.myPid());
         if (processAppName != null && processAppName.equalsIgnoreCase(getPackageName())) {
             AutoSizeConfig.getInstance().setDesignWidthInDp(420).setDesignHeightInDp(853).setExcludeFontScale(true);
-            CrashHandler.attachMainThread();
+//            CrashHandler.attachMainThread();
             AndroidHelper.init(this);
             ActivityHelper.init(this);
             EmojiCompat.init(new BundledEmojiCompatConfig(this));

@@ -26,7 +26,7 @@ import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.ImageOriginalActivity;
 import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.module.conversation.view.VideoPlayActivity;
+import com.yzx.chat.module.common.view.VideoPlayActivity;
 import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidHelper;

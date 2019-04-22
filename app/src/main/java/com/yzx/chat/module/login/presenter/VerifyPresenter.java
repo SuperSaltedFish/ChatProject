@@ -3,6 +3,7 @@ package com.yzx.chat.module.login.presenter;
 
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.module.login.contract.VerifyContract;
+import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 /**
@@ -29,6 +30,7 @@ public class VerifyPresenter implements VerifyContract.Presenter {
         AppClient.getInstance().login(username, password, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView, false) {
             @Override
             protected void onSuccess(Void result) {
+                DirectoryHelper.initUserDirectory(AppClient.getInstance().getUserManager().getUserID());
                 mVerifyView.startHomeActivity();
             }
         });

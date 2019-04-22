@@ -1,4 +1,4 @@
-package com.yzx.chat.module.conversation.view;
+package com.yzx.chat.module.common.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -36,9 +36,8 @@ import com.yzx.chat.base.BaseFragment;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.module.common.view.LocationMapActivity;
-import com.yzx.chat.module.conversation.contract.LocationSendContract;
-import com.yzx.chat.module.conversation.presenter.LocationSendPresenter;
+import com.yzx.chat.module.common.contract.LocationSendContract;
+import com.yzx.chat.module.common.presenter.LocationSendPresenter;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;
@@ -128,7 +127,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
     @Override
     protected void setup(Bundle savedInstanceState) {
         mToolbar.setTitle(R.string.LocationMapActivity_Title);
-        mRvMarker.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        mRvMarker.setLayoutManager(new LinearLayoutManager(mContext));
         mRvMarker.setAdapter(mMarkerLocationAdapter);
         mRvMarker.setHasFixedSize(true);
         mRvMarker.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
@@ -156,7 +155,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
             }
         });
 
-        mRvSearch.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+        mRvSearch.setLayoutManager(new LinearLayoutManager(mContext));
         mRvSearch.setRecycledViewPool(mRvMarker.getRecycledViewPool());
         mRvSearch.setAdapter(mSearchLocationAdapter);
         mRvSearch.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
