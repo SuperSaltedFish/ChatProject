@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipToPadding="false"
-    android:gravity="center_vertical|end"
-    android:paddingEnd="4dp"
-    android:paddingStart="4dp">
+    android:paddingStart="10dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="6dp">
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvTime"

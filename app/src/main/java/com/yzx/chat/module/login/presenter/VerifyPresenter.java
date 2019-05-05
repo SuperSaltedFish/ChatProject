@@ -30,7 +30,6 @@ public class VerifyPresenter implements VerifyContract.Presenter {
         AppClient.getInstance().login(username, password, verifyCode, new LifecycleMVPResultCallback<Void>(mVerifyView, false) {
             @Override
             protected void onSuccess(Void result) {
-                DirectoryHelper.initUserDirectory(AppClient.getInstance().getUserManager().getUserID());
                 mVerifyView.startHomeActivity();
             }
         });

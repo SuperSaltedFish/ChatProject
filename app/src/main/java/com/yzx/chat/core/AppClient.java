@@ -59,6 +59,10 @@ public class AppClient {
         return sAppClient;
     }
 
+    private static final String STORAGE_KEY_TOKEN = "SessionID";
+    private static final String STORAGE_KEY_USER_ID = "UserID";
+    private static final String STORAGE_KEY_DEVICE_ID = "DeviceID";
+
     private Context mAppContext;
     private RongIMClient mRongIMClient;
     private AuthApi mAuthApi;
@@ -73,6 +77,7 @@ public class AppClient {
     private DBHelper mDBHelper;
     private StorageHelper mStorageHelper;
 
+    private String mUserID;
     private String mToken;
     private String mDeviceID;
     private Semaphore mLoginLock;
@@ -251,8 +256,8 @@ public class AppClient {
             mLoginLock.release();
             throw new RuntimeException("The user has already logged in, please do not log in again！");
         }
-        final String token = mStorageHelper.getToken();
-        final String userID = mStorageHelper.getUserID();
+        final String token = mStorageHelper.get(STORAGE_KEY_TOKEN);
+        final String userID = mStorageHelper.get(STORAGE_KEY_USER_ID);
         if (TextUtils.isEmpty(token) || TextUtils.isEmpty(userID)) {
             mLoginLock.release();
             CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
@@ -290,8 +295,9 @@ public class AppClient {
     private void init(String token, UserEntity userInfo) {
         isLogged = true;
         mToken = token;
-        mStorageHelper.saveToken(token);
-        mStorageHelper.saveUserID(userInfo.getUserID());
+        mUserID = userInfo.getUserID();
+        mStorageHelper.put(STORAGE_KEY_TOKEN, token);
+        mStorageHelper.put(STORAGE_KEY_USER_ID, userInfo.getUserID());
         mUserManager.init(mDBHelper.getReadWriteHelper(), userInfo);
         mChatManager.init();
         mConversationManager.init();
@@ -307,10 +313,14 @@ public class AppClient {
         mContactManager.destroy();
         mGroupManager.destroy();
         mUserManager.destroy();
+        mStorageHelper.put(STORAGE_KEY_TOKEN, "");
+        mStorageHelper.put(STORAGE_KEY_USER_ID, "");
         if (mDBHelper != null) {
             mDBHelper.destroy();
             mDBHelper = null;
         }
+        mToken = null;
+        mUserID = null;
         isLogged = false;
     }
 
@@ -333,6 +343,10 @@ public class AppClient {
         return mRongIMClient.getCurrentConnectionStatus() == RongIMClient.ConnectionStatusListener.ConnectionStatus.CONNECTED;
     }
 
+    public String getUserID() {
+        return mUserID;
+    }
+
     public String getToken() {
         return mToken;
     }
@@ -341,12 +355,12 @@ public class AppClient {
         if (TextUtils.isEmpty(mDeviceID)) {
             synchronized (this) {
                 if (TextUtils.isEmpty(mDeviceID)) {
-                    mDeviceID = mStorageHelper.getDeviceID();
+                    mDeviceID = mStorageHelper.get(STORAGE_KEY_DEVICE_ID);
                 }
                 if (TextUtils.isEmpty(mDeviceID)) {
                     mDeviceID = String.format(Locale.getDefault(), "%s(%s).%s", Build.BRAND, Build.MODEL, UUID.randomUUID().toString());
                     mDeviceID = mDeviceID.replaceAll(" ", "_");
-                    if (!mStorageHelper.saveDeviceID(mDeviceID)) {
+                    if (!mStorageHelper.put(STORAGE_KEY_DEVICE_ID, mDeviceID)) {
                         LogUtil.w("saveDeviceIDToLocal fail");
                     }
                 }

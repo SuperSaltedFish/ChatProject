@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.google.android.material.shape.RoundedCornerTreatment;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
 import com.yzx.chat.configure.GlideRequest;
@@ -94,6 +93,7 @@ public class GlideUtil {
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
                 .format(DecodeFormat.PREFER_ARGB_8888)
+                .circleCrop()
                 .transform(HEXAGON_TRANSFORM)
                 .error(R.drawable.ic_avatar_default);
 

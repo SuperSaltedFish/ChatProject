@@ -31,7 +31,7 @@ public class VideoMessageHandler extends MessageHandler<VideoMessage> {
     private static final int THUMB_COMPRESSED_WIDTH_SIZE = 280;
     private static final int THUMB_COMPRESSED_HEIGHT_SIZE = 280;
     private static final int THUMB_COMPRESSED_QUALITY = 50;
-    private static final String VIDEO_THUMBNAIL_PATH = DirectoryHelper.getPrivateThumbnailPath();
+    private static final String VIDEO_THUMBNAIL_PATH = DirectoryHelper.getProtectedThumbnailPath();
 
     public VideoMessageHandler(Context context) {
         super(context);

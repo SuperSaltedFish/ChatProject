@@ -2,65 +2,50 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="10dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_chat_time_round"
-        android:gravity="center"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvNickname"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
+    <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
+        android:layout_marginStart="8dp"
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
-        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar" />
 
     <FrameLayout
         android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="224dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="10dp"
         android:background="@drawable/bg_chat_recv"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvNickname">
+        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvAvatar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="64dp"
-            android:paddingBottom="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="12dp"
             android:paddingEnd="12dp"
-            android:paddingStart="8dp"
-            android:paddingTop="12dp">
+            android:paddingBottom="12dp">
 
             <TextView
                 android:id="@+id/ChatMessageAdapter_mTvFileName"
@@ -70,7 +55,7 @@
                 android:ellipsize="end"
                 android:gravity="start|center_vertical"
                 android:maxLines="2"
-
+                android:textColor="@color/textColorSecondaryBlack"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvFileSize"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -86,9 +71,8 @@
                 android:ellipsize="end"
                 android:gravity="start|center_vertical"
                 android:singleLine="true"
+                android:textColor="@color/textColorSecondaryBlack"
                 android:textSize="13sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mTvFileIcon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvFileName" />
 

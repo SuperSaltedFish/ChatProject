@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.yzx.chat.configure.AppApplication;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.util.MD5Util;
 
 import java.io.File;
@@ -16,7 +17,7 @@ import java.io.File;
 
 public class DirectoryHelper {
 
-    public static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath() + File.separator + "MyChat";
+    public static final String PUBLIC_DATA_BASE_PATH = Environment.getExternalStorageDirectory().getPath() + "/MyChat";
 
     private static final String PRIVATE_DATA_BASE_PATH = AppApplication.getAppContext().getFilesDir().getPath();
 
@@ -32,8 +33,6 @@ public class DirectoryHelper {
 
     private static final String PATH_THUMBNAIL = "/Thumbnail/";
 
-    private static String sUserDirectory;
-
     static {
         File file;
         file = new File(getProtectedTempPath());
@@ -44,54 +43,36 @@ public class DirectoryHelper {
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(getPrivateThumbnailPath());
+        file = new File(getProtectedThumbnailPath());
         if (!file.exists()) {
             file.mkdirs();
         }
     }
 
-    public static void initUserDirectory(String userID) {
-        String md5 = MD5Util.encrypt32(userID);
-        if (TextUtils.isEmpty(md5)) {
-            throw new IllegalArgumentException("userID is null");
-        }
-        sUserDirectory =File.separator + md5;
+    private static String createDirectoryIfNeed(String rootPath, String subPath, String userID) {
         File file;
-        file = new File(getPrivateUserVoiceRecorderPath());
+        if (TextUtils.isEmpty(userID)) {
+            file = new File(rootPath + subPath);
+        } else {
+            userID = MD5Util.encrypt16(userID);
+            file = new File(rootPath + File.separator + userID + subPath);
+        }
         if (!file.exists()) {
             file.mkdirs();
         }
-
-        file = new File(getUserImagePath());
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-
-        file = new File(getUserVideoPath());
-        if (!file.exists()) {
-            file.mkdirs();
-        }
+        return file.getPath();
     }
 
-    public static String getPrivateUserVoiceRecorderPath() {
-        if (sUserDirectory == null) {
-            throw new RuntimeException("UserDirectory is not initialized");
-        }
-        return PRIVATE_DATA_BASE_PATH + sUserDirectory + PATH_VOICE_RECORDER;
+    public static String getVoiceRecorderPath() {
+        return createDirectoryIfNeed(PRIVATE_DATA_BASE_PATH,PATH_VOICE_RECORDER, AppClient.getInstance().getUserID());
     }
 
-    public static String getUserImagePath() {
-        if (sUserDirectory == null) {
-            throw new RuntimeException("UserDirectory is not initialized");
-        }
-        return PUBLIC_DATA_BASE_PATH + sUserDirectory + PATH_IMAGE;
+    public static String getImagePath() {
+        return createDirectoryIfNeed(PROTECTED_DATA_BASE_PATH,PATH_IMAGE, AppClient.getInstance().getUserID());
     }
 
-    public static String getUserVideoPath() {
-        if (sUserDirectory == null) {
-            throw new RuntimeException("UserDirectory is not initialized");
-        }
-        return PUBLIC_DATA_BASE_PATH + sUserDirectory + PATH_VIDEO;
+    public static String getVideoPath() {
+        return createDirectoryIfNeed(PUBLIC_DATA_BASE_PATH,PATH_VIDEO, AppClient.getInstance().getUserID());
     }
 
     public static String getProtectedTempPath() {
@@ -102,7 +83,7 @@ public class DirectoryHelper {
         return PUBLIC_DATA_BASE_PATH + PATH_TEMP;
     }
 
-    public static String getPrivateThumbnailPath() {
+    public static String getProtectedThumbnailPath() {
         return PROTECTED_DATA_BASE_PATH + PATH_THUMBNAIL;
     }
 

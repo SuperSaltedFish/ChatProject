@@ -37,31 +37,7 @@ class StorageHelper {
         mAesIV = new byte[16];
     }
 
-    boolean saveToken(String token) {
-        return putToConfigurationPreferences(STORAGE_KEY_TOKEN, token);
-    }
-
-    String getToken() {
-        return getFromConfigurationPreferences(STORAGE_KEY_TOKEN);
-    }
-
-    boolean saveUserID(String userInfo) {
-        return putToConfigurationPreferences(STORAGE_KEY_USER_ID, userInfo);
-    }
-
-    String getUserID() {
-        return getFromConfigurationPreferences(STORAGE_KEY_USER_ID);
-    }
-
-    boolean saveDeviceID(String deviceID) {
-        return putToConfigurationPreferences(STORAGE_KEY_DEVICE_ID, deviceID);
-    }
-
-    String getDeviceID() {
-        return getFromConfigurationPreferences(STORAGE_KEY_DEVICE_ID);
-    }
-
-    boolean putToConfigurationPreferences(String key, String value) {
+    boolean put(String key, String value) {
         if (!TextUtils.isEmpty(value)) {
             byte[] data = AESUtil.encrypt(value.getBytes(), mAESKey, mAesIV);
             if (data != null && data.length > 0) {
@@ -74,20 +50,14 @@ class StorageHelper {
         return mConfigurationPreferences.edit().putString(key, value).commit();
     }
 
-    String getFromConfigurationPreferences(String key) {
+    String get(String key) {
         String value = mConfigurationPreferences.getString(key, null);
         if (!TextUtils.isEmpty(value)) {
             byte[] data = AESUtil.decrypt(Base64Util.decode(value), mAESKey, mAesIV);
             if (data != null && data.length > 0) {
-              return new String(data);
+                return new String(data);
             }
         }
         return null;
-    }
-
-    void clear() {
-        String deviceID = getDeviceID();
-        mConfigurationPreferences.edit().clear().commit();
-        saveDeviceID(deviceID);
     }
 }

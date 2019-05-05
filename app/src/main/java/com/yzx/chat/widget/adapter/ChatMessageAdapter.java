@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Size;
-import android.util.SparseLongArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +24,8 @@ import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.ImageOriginalActivity;
 import com.yzx.chat.module.common.view.LocationMapActivity;
-import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.module.common.view.VideoPlayActivity;
+import com.yzx.chat.module.conversation.view.ChatActivity;
 import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidHelper;
@@ -49,7 +48,6 @@ import androidx.annotation.ColorInt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import io.rong.imlib.model.Message;
 import io.rong.message.ContactNotificationMessage;
@@ -69,7 +67,6 @@ import io.rong.message.VoiceMessage;
 
 public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.ItemHolder> {
 
-    private static final long TIME_HINT_INTERVAL = 3 * 60 * 1000;
 
     private static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_TEXT = 2;
@@ -87,15 +84,12 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE = 14;
 
     private List<Message> mMessageList;
-    private SparseLongArray mTimeDisplayPositionArray;
     private MessageCallback mMessageCallback;
     private BasicInfoProvider mBasicInfoProvider;
     private boolean isEnableNameDisplay;
 
     public ChatMessageAdapter(List<Message> messageList) {
         mMessageList = messageList;
-        mTimeDisplayPositionArray = new SparseLongArray(64);
-        registerAdapterDataObserver(mDataObserver);
     }
 
     @Override
@@ -135,14 +129,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(ItemHolder holder, int position) {
-        holder.isEnableTimeHint = mTimeDisplayPositionArray.get(mMessageList.get(position).getMessageId(), -1) > 0;
         holder.setMessageCallback(mMessageCallback);
         if (holder instanceof ReceiveItemHolder) {
             ReceiveItemHolder receiveMessageHolder = (ReceiveItemHolder) holder;
             receiveMessageHolder.mBasicInfoProvider = mBasicInfoProvider;
             receiveMessageHolder.isEnableNameDisplay = isEnableNameDisplay;
         }
-        holder.setDate(mMessageList.get(position));
+        holder.setData(mMessageList.get(position));
     }
 
     @Override
@@ -180,50 +173,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         holder.mMessageHolder.onRecycle();
     }
 
-    private final RecyclerView.AdapterDataObserver mDataObserver = new RecyclerView.AdapterDataObserver() {
-        @Override
-        public void onItemRangeInserted(int positionStart, int itemCount) {
-            calculateTimeDisplayPosition(positionStart, itemCount);
-        }
-
-        @Override
-        public void onItemRangeRemoved(int positionStart, int itemCount) {
-            super.onItemRangeRemoved(positionStart, itemCount);
-        }
-
-        @Override
-        public void onChanged() {
-            if (mMessageList == null || mMessageList.size() == 0) {
-                mTimeDisplayPositionArray.clear();
-            }
-        }
-    };
-
-    private void calculateTimeDisplayPosition(int positionStart, int itemCount) {
-        if (mMessageList == null || mMessageList.size() == 0) {
-            mTimeDisplayPositionArray.clear();
-            return;
-        }
-        if (mMessageList.size() <= positionStart) {
-            return;
-        }
-        long latestTime;
-        if (positionStart == 0 && mTimeDisplayPositionArray.size() > 0) {
-            latestTime = mTimeDisplayPositionArray.get(mTimeDisplayPositionArray.keyAt(mTimeDisplayPositionArray.size() - 1), 0);
-        } else {
-            latestTime = 0;
-        }
-        Message message;
-        for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
-            message = mMessageList.get(i);
-            long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
-            if (Math.abs(latestTime - messageTime) >= TIME_HINT_INTERVAL) {
-                mTimeDisplayPositionArray.append(message.getMessageId(), messageTime);
-                latestTime = messageTime;
-            }
-        }
-    }
-
 
     public void setEnableNameDisplay(boolean enableNameDisplay) {
         isEnableNameDisplay = enableNameDisplay;
@@ -242,7 +191,6 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         MessageCallback mMessageCallback;
         MessageHolder mMessageHolder;
         int mHolderType;
-        boolean isEnableTimeHint;
 
         ItemHolder(View itemView, int type) {
             super(itemView);
@@ -290,15 +238,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @CallSuper
-        protected void setDate(Message message) {
+        protected void setData(Message message) {
             mMessage = message;
             mMessageHolder.parseMessageContent(mMessage);
-            if (isEnableTimeHint) {
-                mMessageHolder.mTvTime.setText(IMMessageHelper.messageTimeToString(message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime()));
-                mMessageHolder.mTvTime.setVisibility(View.VISIBLE);
-            } else {
-                mMessageHolder.mTvTime.setVisibility(View.GONE);
-            }
         }
 
         void setMessageCallback(MessageCallback messageCallback) {
@@ -434,8 +376,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        protected void setDate(Message message) {
-            super.setDate(message);
+        protected void setData(Message message) {
+            super.setData(message);
             if (mBasicInfoProvider != null) {
                 GlideUtil.loadAvatarFromUrl(itemView.getContext(), mIvAvatar, mBasicInfoProvider.getAvatar(message.getSenderUserId()));
                 if (isEnableNameDisplay) {
@@ -460,8 +402,8 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         @Override
-        protected void setDate(Message message) {
-            super.setDate(message);
+        protected void setData(Message message) {
+            super.setData(message);
             setMessageState(message.getSentStatus());
         }
 
@@ -512,11 +454,9 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     abstract static class MessageHolder {
         View mContentLayout;
-        TextView mTvTime;
 
         MessageHolder(View itemView) {
             mContentLayout = itemView.findViewById(R.id.ChatMessageAdapter_mContentLayout);
-            mTvTime = itemView.findViewById(R.id.ChatMessageAdapter_mTvTime);
         }
 
         public abstract void parseMessageContent(Message message);
@@ -580,7 +520,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             super(itemView);
             mIvImageContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
             mContentLayout = mIvImageContent;
-            mIvImageContent.setRoundRadius(AndroidHelper.dip2px(3));
+            mIvImageContent.setRoundRadius(AndroidHelper.dip2px(4));
         }
 
         @Override

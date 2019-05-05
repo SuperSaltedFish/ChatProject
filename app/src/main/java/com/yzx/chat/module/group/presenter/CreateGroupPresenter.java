@@ -119,7 +119,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     private final GroupManager.OnGroupOperationListener mOnGroupOperationListener = new GroupManager.OnGroupOperationListener() {
         @Override
         public void onCreatedGroup(GroupEntity group) {
-            if (group.getOwner().equals(AppClient.getInstance().getUserManager().getUserID())) {
+            if (group.getOwner().equals(AppClient.getInstance().getUserID())) {
                 mCreateGroupView.launchChatActivity(group);
                 isCreating = false;
             }

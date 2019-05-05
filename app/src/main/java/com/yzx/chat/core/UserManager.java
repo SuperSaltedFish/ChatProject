@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
-
 
 /**
  * Created by YZX on 2017年10月17日.
@@ -153,11 +151,6 @@ public class UserManager {
                         CallbackUtil.callFailure(code, error, callback);
                     }
                 }), false);
-    }
-
-    @Nullable
-    public String getUserID() {
-        return mCurrentUser.getUserID();
     }
 
     public UserEntity getCurrentUser() {

@@ -50,7 +50,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
     @Override
     public void init(String groupID) {
         GroupEntity group = mGroupManager.getGroup(groupID);
-        String mySelfMemberID = AppClient.getInstance().getUserManager().getUserID();
+        String mySelfMemberID = AppClient.getInstance().getUserID();
         if (group == null || TextUtils.isEmpty(mySelfMemberID)) {
             mGroupProfileView.goBack();
             return;
@@ -85,7 +85,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public String getCurrentUserID() {
-        return AppClient.getInstance().getUserManager().getUserID();
+        return AppClient.getInstance().getUserID();
     }
 
 
@@ -146,7 +146,7 @@ public class GroupProfilePresenter implements GroupProfileContract.Presenter {
 
     @Override
     public boolean isMySelf(String userID) {
-        return userID.equals(AppClient.getInstance().getUserManager().getUserID());
+        return userID.equals(AppClient.getInstance().getUserID());
     }
 
     @Override

@@ -58,7 +58,7 @@ public class CropImagePresenter implements CropImageContract.Presenter {
         @Override
         protected String doInBackground(Bitmap... params) {
             Bitmap bitmap = params[0];
-            String savePath = BitmapUtil.saveBitmapToPNG(bitmap, DirectoryHelper.getUserImagePath(), UUID.randomUUID().toString());
+            String savePath = BitmapUtil.saveBitmapToPNG(bitmap, DirectoryHelper.getImagePath(), UUID.randomUUID().toString());
             bitmap.recycle();
             return savePath;
         }

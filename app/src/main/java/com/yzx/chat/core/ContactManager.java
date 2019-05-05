@@ -323,7 +323,7 @@ public class ContactManager {
     private boolean addContactToDB(final ContactEntity contact) {
         if (mContactDao.insert(contact)) {
             mContactsMap.put(contact.getUserProfile().getUserID(), contact);
-            ContactNotificationMessage ntfMessage = ContactNotificationMessage.obtain(CONTACT_OPERATION_ACCEPT_ACTIVE, mAppClient.getUserManager().getUserID(), contact.getContactID(), "");
+            ContactNotificationMessage ntfMessage = ContactNotificationMessage.obtain(CONTACT_OPERATION_ACCEPT_ACTIVE, mAppClient.getUserID(), contact.getContactID(), "");
             Message hintMessage = Message.obtain(contact.getContactID(), Conversation.ConversationType.PRIVATE, ntfMessage);
             hintMessage.setSentTime(System.currentTimeMillis());
             hintMessage.setReceivedStatus(new Message.ReceivedStatus(1));

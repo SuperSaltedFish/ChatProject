@@ -238,7 +238,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            mCurrentVideoPath = DirectoryHelper.getUserVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
+                            mCurrentVideoPath = DirectoryHelper.getVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
                             if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
                                 showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
                                 resetAndTryPlayRecorderContent();

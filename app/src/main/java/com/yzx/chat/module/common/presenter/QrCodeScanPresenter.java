@@ -175,7 +175,7 @@ public class QrCodeScanPresenter implements QrCodeScanContract.Presenter {
 
         @Override
         public void onMemberJoin(GroupEntity group, String memberID) {
-//            if (memberID.equals(AppClient.getInstance().getUserManager().getUserID()) && isWaitJoiningPush) {
+//            if (memberID.equals(AppClient.getInstance().getUserID()) && isWaitJoiningPush) {
 //                isWaitJoiningPush = false;
 //                mHandler.removeCallbacksAndMessages(null);
 //                mQrCodeView.setEnableProgressDialog(false);

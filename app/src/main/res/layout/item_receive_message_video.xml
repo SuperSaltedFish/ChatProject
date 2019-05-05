@@ -2,33 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingStart="10dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_chat_time_round"
-        android:gravity="center"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvNickname"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
+    <com.yzx.chat.widget.view.HexagonAvatarView
         android:id="@+id/ChatMessageAdapter_mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_marginTop="3dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ChatMessageAdapter_mTvNickname" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ChatMessageAdapter_mTvNickname"
@@ -39,16 +24,17 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/ChatMessageAdapter_mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="10dp"
         android:background="@drawable/bg_chat_recv"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:elevation="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
@@ -61,10 +47,10 @@
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:foreground="@drawable/fg_video_gradual_mask"
-            android:maxHeight="160dp"
             android:maxWidth="160dp"
-            android:minHeight="120dp"
+            android:maxHeight="160dp"
             android:minWidth="120dp"
+            android:minHeight="120dp"
             android:scaleType="centerCrop" />
 
         <ImageView
@@ -78,8 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_marginBottom="4dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
 

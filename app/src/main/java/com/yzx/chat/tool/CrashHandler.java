@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.yzx.chat.BuildConfig;
 import com.yzx.chat.configure.AppApplication;
-import com.yzx.chat.util.FileUtil;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,17 +32,17 @@ public class CrashHandler {
             String error = collectErrorInfoToLocal(e);
             Log.e(TAG, error);
 //            FileUtil.saveStringToFile(error, DirectoryHelper.getPublicLogPath(), DateFormatUtil.millisTo_yyyy_MM_dd_HH_mm_ss(System.currentTimeMillis()) + ".txt");
-//            if (BuildConfig.isDebug) {
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        Looper.prepare();
-//                        Toast.makeText(AppApplication.getAppContext(), "Program exit:" + e.toString(), Toast.LENGTH_LONG).show();
-//                        Looper.loop();
-//                    }
-//                }.start();
-//                SystemClock.sleep(3000);
-//            }
+            if (BuildConfig.isDebug) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        Toast.makeText(AppApplication.getAppContext(), "Program exit:" + e.toString(), Toast.LENGTH_LONG).show();
+                        Looper.loop();
+                    }
+                }.start();
+                SystemClock.sleep(3000);
+            }
             ActivityHelper.finishAllActivities();
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
