@@ -44,7 +44,6 @@
 
     <style name="ButtonStyleNoBackground" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:minHeight">48dp</item>
-        <item name="android:textSize">15sp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/selector_text_color_accent</item>
     </style>
@@ -100,6 +99,8 @@
         <item name="android:windowMinWidthMinor">80%</item>
         <item name="android:windowElevation">16dp</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonStyleNoBackground</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonStyleNoBackground</item>
     </style>
 
     <style name="DialogFragmentStyle" parent="AppTheme">

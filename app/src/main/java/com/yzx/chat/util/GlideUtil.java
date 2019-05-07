@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.yzx.chat.R;
 import com.yzx.chat.configure.GlideApp;
@@ -38,7 +37,6 @@ public class GlideUtil {
         GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
                 .format(DecodeFormat.PREFER_RGB_565)
                 .into(view);
@@ -51,7 +49,6 @@ public class GlideUtil {
         GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .format(DecodeFormat.PREFER_ARGB_8888)
                 .transform(new CircleCrop())
                 .into(view);
@@ -64,7 +61,6 @@ public class GlideUtil {
         GlideApp.with(context).clear(view);
         GlideApp.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .dontAnimate()
                 .transform(new GlideBlurTransform(context, radius))
                 .into(view);
@@ -90,7 +86,6 @@ public class GlideUtil {
 
         GlideRequest<Drawable> glideRequest = GlideApp.with(context)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .dontAnimate()
                 .format(DecodeFormat.PREFER_ARGB_8888)
                 .circleCrop()

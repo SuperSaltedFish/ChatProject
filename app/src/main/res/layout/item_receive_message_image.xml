@@ -10,24 +10,24 @@
     android:paddingBottom="6dp">
 
     <com.yzx.chat.widget.view.HexagonAvatarView
-        android:id="@+id/ChatMessageAdapter_mIvAvatar"
+        android:id="@+id/mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ChatMessageAdapter_mTvNickname"
+        android:id="@+id/mTvNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textSize="12sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvImageContent"
-        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar" />
+        app:layout_constraintBottom_toTopOf="@id/mIvImageContent"
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar" />
 
     <com.yzx.chat.widget.view.RoundImageView
-        android:id="@+id/ChatMessageAdapter_mIvImageContent"
+        android:id="@+id/mIvImageContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -40,8 +40,8 @@
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvAvatar" />
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toTopOf="@id/mIvAvatar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

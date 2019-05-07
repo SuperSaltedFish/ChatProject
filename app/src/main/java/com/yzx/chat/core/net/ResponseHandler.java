@@ -27,6 +27,7 @@ public class ResponseHandler<T> implements Callback<JsonResponse<T>>, ResultCall
 
     public static final int ERROR_CODE_UNKNOWN = -1;
     public static final int ERROR_CODE_NOT_LOGGED_IN = -2;
+    public static final int ERROR_CODE_TOKEN_INCORRECT = -3;
     public static final int ERROR_CODE_NETWORK_UNKNOWN = -200;
     public static final int ERROR_CODE_NETWORK_TIMEOUT = -300;
     public static final int ERROR_CODE_NETWORK_UNAVAILABLE = -400;

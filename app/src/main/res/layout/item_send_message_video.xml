@@ -8,36 +8,30 @@
     android:paddingEnd="10dp"
     android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_chat_time_round"
-        android:gravity="center"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
-        android:id="@+id/ChatMessageAdapter_mIvMessageState"
+        android:id="@+id/mIvFailState"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
         android:padding="2dp"
-        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvVideoThumbnail" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mIvVideoThumbnail"
+        app:layout_constraintEnd_toStartOf="@id/mIvVideoThumbnail"
+        app:layout_constraintTop_toTopOf="@id/mIvVideoThumbnail" />
+
+    <ProgressBar
+        android:id="@+id/mPbSendState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:padding="2dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mIvVideoThumbnail"
+        app:layout_constraintEnd_toStartOf="@id/mIvVideoThumbnail"
+        app:layout_constraintTop_toTopOf="@id/mIvVideoThumbnail" />
 
     <com.yzx.chat.widget.view.RoundImageView
-        android:id="@+id/ChatMessageAdapter_mIvVideoThumbnail"
+        android:id="@+id/mIvVideoThumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -54,20 +48,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:elevation="2dp"
         android:src="@drawable/ic_play"
-        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintStart_toStartOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvVideoThumbnail" />
+        app:layout_constraintBottom_toBottomOf="@id/mIvVideoThumbnail"
+        app:layout_constraintEnd_toEndOf="@id/mIvVideoThumbnail"
+        app:layout_constraintStart_toStartOf="@id/mIvVideoThumbnail"
+        app:layout_constraintTop_toTopOf="@id/mIvVideoThumbnail" />
 
     <TextView
-        android:id="@+id/ChatMessageAdapter_mTvVideoDuration"
+        android:id="@+id/mTvVideoDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -75,8 +69,8 @@
         android:elevation="2dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvVideoThumbnail"
-        app:layout_constraintEnd_toEndOf="@id/ChatMessageAdapter_mIvVideoThumbnail" />
+        app:layout_constraintBottom_toBottomOf="@id/mIvVideoThumbnail"
+        app:layout_constraintEnd_toEndOf="@id/mIvVideoThumbnail" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

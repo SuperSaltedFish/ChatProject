@@ -68,7 +68,7 @@
     <string name="ChatActivity_SlideCancelSend">上滑取消发送</string>
     <string name="ChatActivity_UpCancelSend">松手取消发送</string>
     <string name="ChatActivity_VoiceRecorderHint">按住后说话</string>
-    <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍后再试！</string>
+    <string name="ChatActivity_VoiceRecorderFail">录音失败，请稍候再试！</string>
     <string name="ChatActivity_VoiceRecorderVeryShort">录音时间太短</string>
 
     <string name="ProgressHint_Default">正在处理...</string>
@@ -183,11 +183,11 @@
     <string name="GroupProfileActivity_GroupQRCodeHint">通过扫描二维码可加入该群聊</string>
     <string name="MyQRCodeActivity_QRCodeHint">扫描上面的二维码，添加我好友</string>
     <string name="MyQRCodeActivity_QRCodeHint2">扫描上面的二维码，进入群组</string>
-    <string name="VideoRecorderActivity_RecorderFail">目前相机无法录制视频，请稍后再试</string>
-    <string name="VideoRecorderActivity_PlayVideoError">无法播放录制内容，请稍后再试！</string>
+    <string name="VideoRecorderActivity_RecorderFail">目前相机无法录制视频，请稍候再试</string>
+    <string name="VideoRecorderActivity_PlayVideoError">无法播放录制内容，请稍候再试！</string>
     <string name="shoot">拍摄</string>
-    <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍后再试！</string>
-    <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍后再试！</string>
+    <string name="VideoPlayActivity_DownloadVideoFail">下载视频失败，请稍候再试！</string>
+    <string name="VideoPlayActivity_PlayVideoFail">无法播放视频内容，请稍候再试！</string>
     <string name="Unit_Term">项</string>
     <string name="Unit_Age">岁</string>
     <string name="Unit_Second">秒</string>
@@ -219,11 +219,12 @@
     <string name="Error_Server3">服务器返回的数据错误，请稍候再试！</string>
     <string name="Error_Server4">当前网络不可用，请检查网络状态！</string>
     <string name="Error_Server6">连接超时，请检查当前网络状态是否正常！</string>
-    <string name="Error_Server7">不能连接到服务器，请稍后再试！</string>
+    <string name="Error_Server7">不能连接到服务器，请稍候再试！</string>
+    <string name="Error_Server8">登录过期，请重新登录！</string>
 
     <string name="Error_NetworkUnavailable">当前网络不可用，请检查网络连接</string>
     <string name="DefaultReason">添加理由：无</string>
-    <string name="CropImageActivity_CropFail">当前无法裁剪头像，请稍后再试！</string>
+    <string name="CropImageActivity_CropFail">当前无法裁剪头像，请稍候再试！</string>
     <string name="LocationShareFragment_Navigation">到这里</string>
     <string name="LocationShareFragment_MarkerLocation">标记位置</string>
     <string name="LocationShareFragment_BeingCalculated">正在计算</string>

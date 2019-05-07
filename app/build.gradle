@@ -75,4 +75,6 @@ dependencies {
 
     annotationProcessor config.deps.annotation.glide
     annotationProcessor 'androidx.annotation:annotation:1.0.2'
+
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 }

@@ -8,36 +8,30 @@
     android:paddingEnd="10dp"
     android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_chat_time_round"
-        android:gravity="center"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
-        android:id="@+id/ChatMessageAdapter_mIvMessageState"
+        android:id="@+id/mIvFailState"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
         android:padding="2dp"
-        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mContentLayout"
-        app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mContentLayout"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mContentLayout" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mContentLayout"
+        app:layout_constraintEnd_toStartOf="@id/mContentLayout"
+        app:layout_constraintTop_toTopOf="@id/mContentLayout" />
+
+    <ProgressBar
+        android:id="@+id/mPbSendState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:padding="2dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mContentLayout"
+        app:layout_constraintEnd_toStartOf="@id/mContentLayout"
+        app:layout_constraintTop_toTopOf="@id/mContentLayout" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/ChatMessageAdapter_mContentLayout"
+        android:id="@+id/mContentLayout"
         android:layout_width="224dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="3dp"
@@ -47,19 +41,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="64dp"
-            android:paddingBottom="12dp"
-            android:paddingEnd="8dp"
             android:paddingStart="12dp"
-            android:paddingTop="12dp">
+            android:paddingTop="12dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp">
 
             <TextView
-                android:id="@+id/ChatMessageAdapter_mTvFileName"
+                android:id="@+id/mTvFileName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -68,28 +62,28 @@
                 android:maxLines="2"
 
                 android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvFileSize"
-                app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mTvFileIcon"
+                app:layout_constraintBottom_toTopOf="@id/mTvFileSize"
+                app:layout_constraintEnd_toStartOf="@id/mTvFileIcon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/ChatMessageAdapter_mTvFileSize"
+                android:id="@+id/mTvFileSize"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:gravity="start|center_vertical"
                 android:singleLine="true"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mTvFileIcon"
+                app:layout_constraintEnd_toStartOf="@id/mTvFileIcon"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvFileName" />
+                app:layout_constraintTop_toBottomOf="@id/mTvFileName" />
 
             <ImageView
-                android:id="@+id/ChatMessageAdapter_mTvFileIcon"
+                android:id="@+id/mTvFileIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_file"

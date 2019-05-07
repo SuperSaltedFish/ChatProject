@@ -9,25 +9,25 @@
     android:paddingBottom="6dp">
 
     <com.yzx.chat.widget.view.HexagonAvatarView
-        android:id="@+id/ChatMessageAdapter_mIvAvatar"
+        android:id="@+id/mIvAvatar"
         android:layout_width="44dp"
         android:layout_height="44dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ChatMessageAdapter_mTvNickname"
+        android:id="@+id/mTvNickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="7dp"
         android:textSize="12sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mContentLayout"
-        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
+        app:layout_constraintBottom_toTopOf="@id/mContentLayout"
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/ChatMessageAdapter_mContentLayout"
+        android:id="@+id/mContentLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -37,11 +37,11 @@
         android:elevation="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/ChatMessageAdapter_mIvAvatar"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvNickname">
+        app:layout_constraintStart_toEndOf="@id/mIvAvatar"
+        app:layout_constraintTop_toBottomOf="@id/mTvNickname">
 
         <com.yzx.chat.widget.view.RoundImageView
-            android:id="@+id/ChatMessageAdapter_mIvVideoThumbnail"
+            android:id="@+id/mIvVideoThumbnail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -60,7 +60,7 @@
             android:src="@drawable/ic_play" />
 
         <TextView
-            android:id="@+id/ChatMessageAdapter_mTvVideoDuration"
+            android:id="@+id/mTvVideoDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"

@@ -1,4 +1,4 @@
-package com.yzx.chat.widget.view;
+package com.yzx.chat.Deprecated;
 
 import android.app.Activity;
 import android.content.Context;

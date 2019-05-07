@@ -9,36 +9,30 @@
     android:clipToPadding="false"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_chat_time_round"
-        android:gravity="center"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mIvImageContent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
-        android:id="@+id/ChatMessageAdapter_mIvMessageState"
+        android:id="@+id/mIvFailState"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
         android:padding="2dp"
-        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mIvImageContent"
-        app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mIvImageContent"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mIvImageContent" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mIvImageContent"
+        app:layout_constraintEnd_toStartOf="@id/mIvImageContent"
+        app:layout_constraintTop_toTopOf="@id/mIvImageContent" />
+
+    <ProgressBar
+        android:id="@+id/mPbSendState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:padding="2dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mIvImageContent"
+        app:layout_constraintEnd_toStartOf="@id/mIvImageContent"
+        app:layout_constraintTop_toTopOf="@id/mIvImageContent" />
 
     <com.yzx.chat.widget.view.RoundImageView
-        android:id="@+id/ChatMessageAdapter_mIvImageContent"
+        android:id="@+id/mIvImageContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -52,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

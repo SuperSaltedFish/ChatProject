@@ -6,11 +6,7 @@ package com.yzx.chat.core.entity;
  */
 public interface BasicInfoProvider {
 
-    String getName();
-
     String getName(String userID);
-
-    String getAvatar();
 
     String getAvatar(String userID);
 }

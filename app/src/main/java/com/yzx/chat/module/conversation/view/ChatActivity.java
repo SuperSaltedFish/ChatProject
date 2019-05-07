@@ -15,10 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,7 +48,6 @@ import com.yzx.chat.widget.adapter.ChatMessageAdapter;
 import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
-import com.yzx.chat.widget.view.Alerter;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelLayout;
@@ -130,12 +125,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private ChatMessageAdapter mAdapter;
     private CountDownTimer mVoiceRecorderDownTimer;
 
-    private Alerter mAlerter;
-    private Animation mAlerterIconAnimation;
 
     private List<Message> mMessageList;
-    private Message mNeedResendMessage;
-    private int mNeedResendPosition;
     private int[] mEmojis;
 
     private int mKeyBoardHeight;
@@ -185,8 +176,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         setChatRecyclerViewAndAdapter();
 
         setEditAndSendStateChangeListener();
-
-        setAlerterDialog();
 
         setEmotionPanel();
 
@@ -273,12 +262,10 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 }
             }
         });
-        mAdapter.setMessageCallback(new ChatMessageAdapter.MessageCallback() {
+        mAdapter.setMessageOperationCallback(new ChatMessageAdapter.MessageOperationCallback() {
             @Override
-            public void resendMessage(int position, Message message) {
-                mNeedResendPosition = position;
-                mNeedResendMessage = message;
-                mAlerter.show();
+            public void resendMessage(Message message) {
+                mPresenter.resendMessage(message);
             }
 
             @Override
@@ -319,48 +306,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                     isHasContentInInputBox = false;
                     mIsvSendMessage.setImageResource(R.drawable.ic_more_input);
                 }
-            }
-        });
-    }
-
-    private void setAlerterDialog() {
-        mAlerter = new Alerter(this, R.layout.alert_dialog_chat);
-        final Button btnResend = mAlerter.findViewById(R.id.ChatActivity_mBtnResend);
-        final Button btnCancel = mAlerter.findViewById(R.id.ChatActivity_mBtnCancel);
-        final ImageView ivIcon = mAlerter.findViewById(R.id.ChatActivity_mIvIcon);
-        mAlerterIconAnimation = new ScaleAnimation(1.0f, 0.8f, 1.0f, 0.8f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        mAlerterIconAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
-        mAlerterIconAnimation.setDuration(1000);
-        mAlerterIconAnimation.setRepeatCount(Animation.INFINITE);
-        mAlerterIconAnimation.setRepeatMode(Animation.REVERSE);
-
-        btnResend.setOnClickListener(new OnOnlySingleClickListener() {
-            @Override
-            public void onSingleClick(View v) {
-                mAlerter.hide();
-                mMessageList.remove(mNeedResendMessage);
-                mAdapter.notifyItemRemovedEx(mNeedResendPosition);
-                mPresenter.resendMessage(mNeedResendMessage);
-            }
-        });
-
-        btnCancel.setOnClickListener(new OnOnlySingleClickListener() {
-            @Override
-            public void onSingleClick(View v) {
-                mAlerter.hide();
-            }
-        });
-
-        mAlerter.setCanceledOnTouchOutside(true);
-        mAlerter.setOnShowAndHideListener(new Alerter.OnShowAndHideListener() {
-            @Override
-            public void onShow() {
-                ivIcon.startAnimation(mAlerterIconAnimation);
-            }
-
-            @Override
-            public void onHide() {
-                mAlerterIconAnimation.cancel();
             }
         });
     }
@@ -648,7 +593,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mAlerterIconAnimation.cancel();
         mMessageList = null;
     }
 
@@ -736,7 +680,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         } else if (resultCode == VideoPlayActivity.RESULT_CODE) {
             Message message = data.getParcelableExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE);
             if (message != null) {
-                updateMessage(message);
+                refreshMessage(message);
             }
         } else if (resultCode == FileSelectorActivity.RESULT_CODE) {
             ArrayList<String> filePathList = data.getStringArrayListExtra(FileSelectorActivity.INTENT_EXTRA_SELECTED_FILE_PATH);
@@ -765,21 +709,29 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void addNewMessage(Message message) {
-        mMessageList.add(0, message);
-        mAdapter.notifyItemRangeInsertedEx(0, 1);
+    public void showNewMessage(Message message) {
+        int position = mMessageList.indexOf(message);
+        if (position >= 0) {
+            mMessageList.remove(position);
+            mMessageList.add(0, message);
+            mAdapter.notifyItemMovedEx(position, 0);
+
+        } else {
+            mMessageList.add(0, message);
+            mAdapter.notifyItemRangeInsertedEx(0, 1);
+        }
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
-    public void addNewMessage(List<Message> messageList) {
+    public void showNewMessage(List<Message> messageList) {
         mMessageList.addAll(0, messageList);
         mAdapter.notifyItemRangeInsertedEx(0, messageList.size());
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
-    public void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
+    public void showMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
         if (messageList != null && messageList.size() != 0) {
             int oldSize = mMessageList.size();
             mMessageList.addAll(messageList);
@@ -795,7 +747,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     }
 
     @Override
-    public void updateMessage(Message message) {
+    public void refreshMessage(Message message) {
         int position = mMessageList.indexOf(message);
         if (position >= 0) {
             mMessageList.set(position, message);

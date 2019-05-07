@@ -1,6 +1,5 @@
 package com.yzx.chat.widget.view;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,38 +18,36 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.ImageView;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 
 /**
  * Created by YZX on 2018年08月06日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
-@SuppressLint("AppCompatCustomView")
-public class CropImageView extends ImageView
+public class CropImageView extends AppCompatImageView
         implements View.OnTouchListener,
-        ScaleGestureDetector.OnScaleGestureListener {
+        ScaleGestureDetector.OnScaleGestureListener,
+        View.OnLayoutChangeListener {
 
     private static final int MAX_CROP_SIZE = 200;
-
-    private static final float MAX_SCALE = 4.0f;
-    private static float MIN_SCALE = 1.0f;
 
     private final float[] mMatrixValue = new float[9];
     private ScaleGestureDetector mScaleDetector;
     private Matrix mMatrix = new Matrix();
     private PointF mPrevPointF = new PointF();
+    private RectF mSpaceRectF;
+    private Paint mPaint;
+    private PorterDuffXfermode mXfermode;
+    private float mCropRadius;
+    private float mMinScale;
+    private float mMaxScale;
 
     private int mStrokeColor;
     private float mStrokeWidth;
     private int mMaskColor;
-    private float mCropRadius;
     private float mCropPadding;
-    private Paint mPaint;
-    private PorterDuffXfermode mPorterDuffXfermode;
-
-    private boolean isUninitialized;
-    private boolean isCropping;
     private boolean isPreviewMode;
 
     public CropImageView(Context context) {
@@ -63,123 +60,86 @@ public class CropImageView extends ImageView
 
     public CropImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        super.setScaleType(ScaleType.MATRIX);
+        super.setPadding(0, 0, 0, 0);
+
         setOnTouchListener(this);
-        setPadding(0, 0, 0, 0);
+        addOnLayoutChangeListener(this);
+
         mScaleDetector = new ScaleGestureDetector(context.getApplicationContext(), this);
+        mSpaceRectF = new RectF();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        super.setScaleType(ScaleType.MATRIX);
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        initDefaultMode(context);
-    }
-
-    private void initDefaultMode(Context context) {
+        mXfermode = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
         mStrokeColor = Color.WHITE;
         mMaskColor = Color.argb(96, 0, 0, 0);
         mStrokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, context.getResources().getDisplayMetrics());
         mCropPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, context.getResources().getDisplayMetrics());
-        mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
     }
 
-    private void initPreviewMode() {
-        mStrokeColor = Color.TRANSPARENT;
-        mMaskColor = Color.TRANSPARENT;
-        mStrokeWidth = 0;
-        mCropPadding = 0;
-        mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
-    }
-
-    public void setEnablePreviewMode(boolean isEnable) {
-        if (isPreviewMode == isEnable) {
-            return;
+    private void reset() {
+        mMatrix.reset();
+        Drawable drawable = getDrawable();
+        if (drawable != null) {
+            int width = getWidth();
+            int height = getHeight();
+            int dw = drawable.getIntrinsicWidth();
+            int dh = drawable.getIntrinsicHeight();
+            if (isPreviewMode) {
+                mMinScale = Math.min((float) width / dw, (float) height / dh);
+                mMaxScale = mMinScale > 1 ? Math.min(mMinScale * 4, 4) : 4;
+            } else {
+                mCropRadius = (float) Math.ceil(Math.min(width, height) / 2f - mStrokeWidth - mCropPadding);
+                float size = mCropRadius * 2f;
+                mMinScale = Math.max(size / dw, size / dh);
+                mMaxScale = mMinScale > 1 ? Math.min(mMinScale * 4, 4) : 4;
+            }
+            mMatrix.postTranslate((width - dw) / 2f, (height - dh) / 2f);
+            mMatrix.postScale(mMinScale, mMinScale, width / 2f, height / 2f);
         }
-        isPreviewMode = isEnable;
-        if (isEnable) {
-            initPreviewMode();
-        } else {
-            initDefaultMode(getContext());
-        }
+        setImageMatrix(mMatrix);
     }
 
-    @Override
-    public void setScaleType(ScaleType scaleType) {
-        super.setScaleType(ScaleType.MATRIX);
-    }
 
     @Override
-    public void setPadding(int left, int top, int right, int bottom) {
-        super.setPadding(0, 0, 0, 0);
-    }
-
-    @Override
-    public void setPaddingRelative(int start, int top, int end, int bottom) {
-        super.setPaddingRelative(0, 0, 0, 0);
-    }
-
-    @Override
-    public void setImageDrawable(Drawable drawable) {
-        super.setImageDrawable(drawable);
-        isUninitialized = true;
-
-    }
-
-    @Override
-    public void setImageResource(int resId) {
-        super.setImageResource(resId);
-        isUninitialized = true;
-    }
-
-    @Override
-    public void setImageURI(Uri uri) {
-        super.setImageURI(uri);
-        isUninitialized = true;
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        reset();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        if (isCropping) {
+        if (isPreviewMode) {
             return;
         }
 
         int width = getWidth();
         int height = getHeight();
 
-        int layerId = canvas.saveLayer(0, 0, width, height, null, Canvas.ALL_SAVE_FLAG);
+
+        mSpaceRectF.left = mCropPadding;
+        mSpaceRectF.right = mSpaceRectF.left + mCropRadius * 2;
+        mSpaceRectF.top = height / 2f - mCropRadius;
+        mSpaceRectF.bottom = mSpaceRectF.top + mCropRadius * 2;
+
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(mMaskColor);
-        canvas.drawRect(0, 0, width, height, mPaint);
+        canvas.drawRect(0, 0, width, mSpaceRectF.top, mPaint);
+        canvas.drawRect(0, mSpaceRectF.bottom, width, height, mPaint);
+        canvas.drawRect(0, mSpaceRectF.top, mSpaceRectF.left, mSpaceRectF.bottom, mPaint);
+        canvas.drawRect(mSpaceRectF.right, mSpaceRectF.top, width, mSpaceRectF.bottom, mPaint);
 
-        float cx = width / 2f;
-        float cy = height / 2f;
-        float radius = Math.min(width - mCropPadding * 2, height - mCropPadding * 2) / 2f - mStrokeWidth;
-        mPaint.setColor(Color.WHITE);
-        mPaint.setXfermode(mPorterDuffXfermode);
-        canvas.drawCircle(cx, cy, radius, mPaint);
+        int layerId = canvas.saveLayer(mSpaceRectF, null);
+        canvas.drawColor(mMaskColor);
+        mPaint.setXfermode(mXfermode);
+        canvas.drawCircle(mSpaceRectF.centerX(), mSpaceRectF.centerY(), mCropRadius, mPaint);
         mPaint.setXfermode(null);
         canvas.restoreToCount(layerId);
 
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(mStrokeColor);
         mPaint.setStrokeWidth(mStrokeWidth);
-        canvas.drawCircle(cx, cy, radius, mPaint);
-
-        mCropRadius = radius + mStrokeWidth;
-
-        if (isUninitialized) {
-            isUninitialized = false;
-            Drawable drawable = getDrawable();
-            if (drawable == null) {
-                return;
-            }
-            int dw = drawable.getIntrinsicWidth();
-            int dh = drawable.getIntrinsicHeight();
-            MIN_SCALE = Math.max(mCropRadius * 2f / dw, mCropRadius * 2f / dh);
-            mMatrix.postTranslate((width - dw) / 2, (height - dh) / 2);
-            mMatrix.postScale(MIN_SCALE, MIN_SCALE, getWidth() / 2, getHeight() / 2);
-            setImageMatrix(mMatrix);
-        }
+        canvas.drawCircle(mSpaceRectF.centerX(), mSpaceRectF.centerY(), mCropRadius, mPaint);
     }
 
     @Override
@@ -192,14 +152,15 @@ public class CropImageView extends ImageView
         if (scaleFactor == 1) {
             return false;
         }
-        float scale = getMatrixScale();
-        if ((scaleFactor > 1 && scale >= MAX_SCALE) || (scaleFactor < 1 && scale <= MIN_SCALE)) {
+        mMatrix.getValues(mMatrixValue);
+        float scale = mMatrixValue[Matrix.MSCALE_X];
+        if ((scaleFactor > 1 && scale >= mMaxScale) || (scaleFactor < 1 && scale <= mMinScale)) {
             return true;
         }
-        if (scaleFactor * scale > MAX_SCALE) {
-            scaleFactor = MAX_SCALE / scale;
-        } else if (scaleFactor * scale < MIN_SCALE) {
-            scaleFactor = MIN_SCALE / scale;
+        if (scaleFactor * scale > mMaxScale) {
+            scaleFactor = mMaxScale / scale;
+        } else if (scaleFactor * scale < mMinScale) {
+            scaleFactor = mMinScale / scale;
         }
         mMatrix.postScale(scaleFactor, scaleFactor, detector.getFocusX(), detector.getFocusY());
         checkTrans(drawable, mMatrix, getWidth() / 2f, getHeight() / 2f, mCropRadius);
@@ -267,24 +228,66 @@ public class CropImageView extends ImageView
         matrix.postTranslate(offsetX, offsetY);
     }
 
-    private float getMatrixScale() {
-        return getMatrixValue(Matrix.MSCALE_X);
+    @Override
+    public void setScaleType(ScaleType scaleType) {
+
     }
 
-    private float getMatrixValue(int index) {
-        mMatrix.getValues(mMatrixValue);
-        return mMatrixValue[index];
+    @Override
+    public ScaleType getScaleType() {
+        return ScaleType.CENTER_INSIDE;
+    }
+
+    @Override
+    public void setPadding(int left, int top, int right, int bottom) {
+
+    }
+
+    @Override
+    public void setPaddingRelative(int start, int top, int end, int bottom) {
+
+    }
+
+    @Override
+    public void setImageDrawable(Drawable drawable) {
+        super.setImageDrawable(drawable);
+        reset();
+    }
+
+    @Override
+    public void setImageResource(int resId) {
+        super.setImageResource(resId);
+        reset();
+    }
+
+    @Override
+    public void setImageURI(Uri uri) {
+        super.setImageURI(uri);
+        reset();
+    }
+
+    public void setEnablePreviewMode(boolean isEnable) {
+        if (isPreviewMode == isEnable) {
+            return;
+        }
+        isPreviewMode = isEnable;
+        reset();
+    }
+
+    public void setStrokeWidth(float strokeWidth) {
+        mStrokeWidth = strokeWidth;
+        reset();
+    }
+
+    public void setCropPadding(float cropPadding) {
+        mCropPadding = cropPadding;
+        reset();
     }
 
     public void setStrokeColor(int strokeColor) {
         mStrokeColor = strokeColor;
         invalidate();
-    }
 
-    public void setStrokeWidth(float strokeWidth) {
-        mStrokeWidth = strokeWidth;
-        isUninitialized = true;
-        invalidate();
     }
 
     public void setMaskColor(int maskColor) {
@@ -292,38 +295,24 @@ public class CropImageView extends ImageView
         invalidate();
     }
 
-    public void setCropPadding(float cropPadding) {
-        mCropPadding = cropPadding;
-        isUninitialized = true;
-        invalidate();
-    }
-
     public Bitmap crop() {
-        if (mCropRadius == 0) {
+        if (mCropRadius == 0 || isPreviewMode) {
             return null;
         }
-        int width = getWidth();
-        int height = getHeight();
-        int cx = width / 2;
-        int cy = height / 2;
-        int radius = (int) mCropRadius;
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        isCropping = true;
+        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.RGB_565);
         super.draw(new Canvas(bitmap));
-        isCropping = false;
-        int size = (int) (mCropRadius * 2);
-        if (size > MAX_CROP_SIZE) {
-            size = MAX_CROP_SIZE;
-        }
-        Bitmap crop = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Bitmap crop = Bitmap.createBitmap(MAX_CROP_SIZE, MAX_CROP_SIZE, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(crop);
         Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
-        paint.setColor(Color.RED);
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint);
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(MAX_CROP_SIZE / 2f, MAX_CROP_SIZE / 2f, MAX_CROP_SIZE / 2f, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, new Rect(cx - radius, cy - radius, cx + radius, cy + radius), new Rect(0, 0, size, size), paint);
+
+        Rect src = new Rect((int) mSpaceRectF.left, (int) mSpaceRectF.top, (int) mSpaceRectF.right, (int) mSpaceRectF.bottom);
+        canvas.drawBitmap(bitmap, src, new Rect(0, 0, MAX_CROP_SIZE, MAX_CROP_SIZE), paint);
         bitmap.recycle();
         return crop;
     }

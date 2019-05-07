@@ -8,7 +8,7 @@
     android:paddingStart="16dp">
 
     <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
+        android:id="@+id/mTvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -21,7 +21,7 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/ChatMessageAdapter_mTvNotificationMessage"
+        android:id="@+id/mTvNotificationMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"

@@ -20,13 +20,13 @@ public class ChatContract {
     public interface View extends BaseView<Presenter> {
         void showChatTitle(String title);
 
-        void addNewMessage(Message message);
+        void showNewMessage(Message message);
 
-        void addNewMessage(List<Message> messageList);
+        void showNewMessage(List<Message> messageList);
 
-        void addMoreMessage(List<Message> messageList, boolean isHasMoreMessage);
+        void showMoreMessage(List<Message> messageList, boolean isHasMoreMessage);
 
-        void updateMessage(Message message);
+        void refreshMessage(Message message);
 
         void clearMessage();
 

@@ -115,7 +115,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         List<Message> messageList = mAppClient.getChatManager().getHistoryMessagesBlock(mConversationType, mConversationID, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
         mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
         mChatView.enableLoadMoreHint(mHasMoreMessage);
-        mChatView.addNewMessage(messageList);
+        mChatView.showNewMessage(messageList);
         mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mAppClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
         mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
@@ -246,7 +246,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mChatView.addNewMessage(message);
+                mChatView.showNewMessage(message);
             }
         });
     }
@@ -256,7 +256,7 @@ public class ChatPresenter implements ChatContract.Presenter {
             @Override
             public void run() {
                 mIsLoadingMore = false;
-                mChatView.addMoreMessage(messages, mHasMoreMessage);
+                mChatView.showMoreMessage(messages, mHasMoreMessage);
             }
         });
     }
@@ -274,7 +274,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ChatManager.OnMessageSendListener mOnMessageSendListener = new ChatManager.OnMessageSendListener() {
         @Override
         public void onAttached(Message message) {
-            mChatView.addNewMessage(message);
+            mChatView.showNewMessage(message);
             mIsConversationStateChange = true;
         }
 
@@ -285,17 +285,17 @@ public class ChatPresenter implements ChatContract.Presenter {
 
         @Override
         public void onSuccess(Message message) {
-            mChatView.updateMessage(message);
+            mChatView.refreshMessage(message);
         }
 
         @Override
         public void onError(Message message) {
-            mChatView.updateMessage(message);
+            mChatView.refreshMessage(message);
         }
 
         @Override
         public void onCanceled(Message message) {
-            mChatView.updateMessage(message);
+            mChatView.refreshMessage(message);
         }
     };
 

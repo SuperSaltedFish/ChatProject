@@ -1,6 +1,7 @@
 package com.yzx.chat.widget.adapter;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.amap.api.services.core.LatLonPoint;
@@ -24,9 +26,6 @@ import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.ImageOriginalActivity;
 import com.yzx.chat.module.common.view.LocationMapActivity;
-import com.yzx.chat.module.common.view.VideoPlayActivity;
-import com.yzx.chat.module.conversation.view.ChatActivity;
-import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
@@ -34,6 +33,7 @@ import com.yzx.chat.util.DateUtil;
 import com.yzx.chat.util.FileUtil;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.util.VoicePlayer;
+import com.yzx.chat.widget.dialog.AlertDialog;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.view.RoundImageView;
 import com.yzx.chat.widget.view.VisualizerView;
@@ -48,8 +48,8 @@ import androidx.annotation.ColorInt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.ViewCompat;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import io.rong.imlib.model.Message;
+import io.rong.imlib.model.MessageContent;
 import io.rong.message.ContactNotificationMessage;
 import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
@@ -65,7 +65,7 @@ import io.rong.message.VoiceMessage;
  */
 
 
-public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.ItemHolder> {
+public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapter.MessageHolder> {
 
 
     private static final int HOLDER_TYPE_SEND_MESSAGE_TEXT = 1;
@@ -80,11 +80,10 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO = 10;
     private static final int HOLDER_TYPE_SEND_MESSAGE_FILE = 11;
     private static final int HOLDER_TYPE_RECEIVE_MESSAGE_FILE = 12;
-    private static final int HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE = 13;
-    private static final int HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE = 14;
+    private static final int HOLDER_TYPE_NOTIFICATION_MESSAGE = 13;
 
     private List<Message> mMessageList;
-    private MessageCallback mMessageCallback;
+    private MessageOperationCallback mMessageOperationCallback;
     private BasicInfoProvider mBasicInfoProvider;
     private boolean isEnableNameDisplay;
 
@@ -93,45 +92,44 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     @Override
-    public ItemHolder getViewHolder(ViewGroup parent, int viewType) {
+    public MessageHolder getViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case HOLDER_TYPE_SEND_MESSAGE_TEXT:
-                return new SendItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false), viewType);
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_text, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
-                return new ReceiveItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false), viewType);
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_text, parent, false), viewType);
             case HOLDER_TYPE_SEND_MESSAGE_VOICE:
-                return new SendItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false), viewType);
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_voice, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                return new ReceiveItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false), viewType);
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_voice, parent, false), viewType);
             case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
-                return new SendItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_image, parent, false), viewType);
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_image, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                return new ReceiveItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_image, parent, false), viewType);
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_image, parent, false), viewType);
             case HOLDER_TYPE_SEND_MESSAGE_LOCATION:
-                return new SendItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_location, parent, false), viewType);
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_location, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION:
-                return new ReceiveItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_location, parent, false), viewType);
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_location, parent, false), viewType);
             case HOLDER_TYPE_SEND_MESSAGE_VIDEO:
-                return new SendItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_video, parent, false), viewType);
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_video, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
-                return new ReceiveItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_video, parent, false), viewType);
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_video, parent, false), viewType);
             case HOLDER_TYPE_SEND_MESSAGE_FILE:
-                return new SendItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_file, parent, false), viewType);
+                return new SendMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_send_message_file, parent, false), viewType);
             case HOLDER_TYPE_RECEIVE_MESSAGE_FILE:
-                return new ReceiveItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_file, parent, false), viewType);
-            case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
-            case HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE:
-                return new NotificationItemHolder(LayoutInflater.from(mContext).inflate(R.layout.item_notification_message, parent, false), viewType);
+                return new ReceiveMessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_receive_message_file, parent, false), viewType);
+            case HOLDER_TYPE_NOTIFICATION_MESSAGE:
+                return new MessageHolder(LayoutInflater.from(mContext).inflate(R.layout.item_notification_message, parent, false), viewType);
             default:
                 throw new NoSuchElementException("unknown type code:" + viewType);
         }
     }
 
     @Override
-    public void bindDataToViewHolder(ItemHolder holder, int position) {
-        holder.setMessageCallback(mMessageCallback);
-        if (holder instanceof ReceiveItemHolder) {
-            ReceiveItemHolder receiveMessageHolder = (ReceiveItemHolder) holder;
+    public void bindDataToViewHolder(MessageHolder holder, int position) {
+        holder.setMessageOperationCallback(mMessageOperationCallback);
+        if (holder instanceof ReceiveMessageHolder) {
+            ReceiveMessageHolder receiveMessageHolder = (ReceiveMessageHolder) holder;
             receiveMessageHolder.mBasicInfoProvider = mBasicInfoProvider;
             receiveMessageHolder.isEnableNameDisplay = isEnableNameDisplay;
         }
@@ -160,17 +158,17 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             case "Custom:VideoMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
             case "RC:GrpNtf":
-                return HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE;
+                return HOLDER_TYPE_NOTIFICATION_MESSAGE;
             case "RC:ContactNtf":
-                return HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE;
+                return HOLDER_TYPE_NOTIFICATION_MESSAGE;
             default:
                 throw new NoSuchElementException("unknown type:" + message.getObjectName());
         }
     }
 
     @Override
-    public void onViewHolderRecycled(ItemHolder holder) {
-        holder.mMessageHolder.onRecycle();
+    public void onViewHolderRecycled(MessageHolder holder) {
+        holder.mHolder.onRecycle();
     }
 
 
@@ -182,197 +180,77 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         mBasicInfoProvider = basicInfoProvider;
     }
 
-    public void setMessageCallback(MessageCallback messageCallback) {
-        mMessageCallback = messageCallback;
+    public void setMessageOperationCallback(MessageOperationCallback messageOperationCallback) {
+        mMessageOperationCallback = messageOperationCallback;
     }
 
-     static abstract class ItemHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
+    static class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         Message mMessage;
-        MessageCallback mMessageCallback;
-        MessageHolder mMessageHolder;
-        int mHolderType;
+        MessageOperationCallback mMessageOperationCallback;
+        Holder mHolder;
 
-        ItemHolder(View itemView, int type) {
+        MessageHolder(View itemView, int type) {
             super(itemView);
-            mHolderType = type;
-            switch (mHolderType) {
+            switch (type) {
                 case HOLDER_TYPE_SEND_MESSAGE_TEXT:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
-                    mMessageHolder = new TextViewHolder(itemView);
+                    mHolder = new TextViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_VOICE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                    mMessageHolder = new VoiceViewHolder(itemView);
+                    mHolder = new VoiceViewHolder(itemView);
                     if (type == HOLDER_TYPE_RECEIVE_MESSAGE_VOICE) {
-                        ((VoiceViewHolder) mMessageHolder).setVisualizerColor(AndroidHelper.getColor(R.color.colorAccentLight));
+                        ((VoiceViewHolder) mHolder).setVisualizerColor(AndroidHelper.getColor(R.color.colorAccentLight));
                     }
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                    mMessageHolder = new ImageViewHolder(itemView);
+                    mHolder = new ImageViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_LOCATION:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION:
-                    mMessageHolder = new LocationViewHolder(itemView);
+                    mHolder = new LocationViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_VIDEO:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
-                    mMessageHolder = new VideoViewHolder(itemView);
+                    mHolder = new VideoViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_FILE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_FILE:
-                    mMessageHolder = new FileViewHolder(itemView);
+                    mHolder = new FileViewHolder(itemView);
                     break;
-                case HOLDER_TYPE_GROUP_NOTIFICATION_MESSAGE:
-                    mMessageHolder = new GroupNotificationViewHolder(itemView);
-                    break;
-                case HOLDER_TYPE_CONTACT_NOTIFICATION_MESSAGE:
-                    mMessageHolder = new ContactNotificationViewHolder(itemView);
+                case HOLDER_TYPE_NOTIFICATION_MESSAGE:
+                    mHolder = new NotificationViewHolder(itemView);
                     break;
             }
-            mMessageHolder.mContentLayout.setOnClickListener(mOnContentClickListener);
         }
 
         void onRecycle() {
-            mMessageHolder.onRecycle();
+            mHolder.onRecycle();
         }
 
         @CallSuper
         protected void setData(Message message) {
             mMessage = message;
-            mMessageHolder.parseMessageContent(mMessage);
+            mHolder.parseMessageContent(mMessage);
         }
 
-        void setMessageCallback(MessageCallback messageCallback) {
-            mMessageCallback = messageCallback;
-        }
-
-        private final View.OnClickListener mOnContentClickListener = new OnOnlySingleClickListener() {
-            @Override
-            public void onSingleClick(View v) {
-                switch (mHolderType) {
-                    case HOLDER_TYPE_SEND_MESSAGE_TEXT:
-                    case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
-                        performClickTextContent();
-                        break;
-                    case HOLDER_TYPE_SEND_MESSAGE_VOICE:
-                    case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                        performClickVoiceContent();
-                        break;
-                    case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
-                    case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                        performClickImageContent();
-                        break;
-                    case HOLDER_TYPE_SEND_MESSAGE_LOCATION:
-                    case HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION:
-                        performClickLocationContent();
-                        break;
-                    case HOLDER_TYPE_SEND_MESSAGE_VIDEO:
-                    case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
-                        performClickVideoContent();
-                        break;
-                }
-            }
-        };
-
-        void performClickTextContent() {
-
-        }
-
-        void performClickImageContent() {
-            ImageMessage imageMessage = (ImageMessage) mMessage.getContent();
-            Uri imageUri = imageMessage.getLocalUri();
-            if (imageUri == null || TextUtils.isEmpty(imageUri.getPath()) || !new File(imageUri.getPath()).exists()) {
-                imageUri = imageMessage.getMediaUrl();
-                if (imageUri == null || TextUtils.isEmpty(imageUri.getPath())) {
-                    AndroidHelper.showToast(AndroidHelper.getString(R.string.ChatActivity_ImageAlreadyOverdue));
-                    return;
-                }
-            }
-            Activity stackTopActivity = ActivityHelper.getStackTopActivityInstance();
-            if (stackTopActivity instanceof ChatActivity) {
-                Intent intent = new Intent(stackTopActivity, ImageOriginalActivity.class);
-                intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_URI, imageUri);
-                intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_THUMBNAIL_URI, imageMessage.getThumUri());
-                View transition = ((ImageViewHolder) mMessageHolder).mIvImageContent;
-                ViewCompat.setTransitionName(transition, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, transition, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
-                ActivityCompat.startActivity(stackTopActivity, intent, options.toBundle());
-            }
-        }
-
-
-        void performClickVoiceContent() {
-            VoiceMessage voiceMessage = (VoiceMessage) mMessage.getContent();
-            Uri uri = voiceMessage.getUri();
-            final VoiceViewHolder voiceViewHolder = (VoiceViewHolder) mMessageHolder;
-            if (uri != null) {
-                String path = uri.getPath();
-                if (TextUtils.isEmpty(path)) {
-                    return;
-                }
-                voiceViewHolder.playVoice(path);
-            }
-            if (mMessage.getMessageDirection() == Message.MessageDirection.RECEIVE && !mMessage.getReceivedStatus().isListened()) {
-                mMessageCallback.setVoiceMessageAsListened(mMessage);
-                voiceViewHolder.setVoiceListened();
-            }
-        }
-
-        void performClickLocationContent() {
-            LocationMessage locationMessage = (LocationMessage) mMessage.getContent();
-            String poi = locationMessage.getPoi();
-            String[] content = poi.split("/");
-            PoiItem poiItem = new PoiItem(locationMessage.getExtra(), new LatLonPoint(locationMessage.getLat(), locationMessage.getLng()), content[0], content[1]);
-            LocationMapActivity.startOfShareType(itemView.getContext(),poiItem);
-        }
-
-        void performClickVideoContent() {
-            VideoMessage videoMessage = (VideoMessage) mMessage.getContent();
-            Uri videoUri = videoMessage.getLocalPath();
-            String localPath = videoUri != null ? videoUri.getPath() : null;
-            if (TextUtils.isEmpty(localPath) || !new File(localPath).exists()) {
-                localPath = null;
-                videoUri = videoMessage.getMediaUrl();
-                if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
-                    AndroidHelper.showToast(AndroidHelper.getString(R.string.ChatActivity_VideoAlreadyOverdue));
-                    return;
-                }
-            }
-            Uri thumbUri = videoMessage.getThumbUri();
-            Activity stackTopActivity = ActivityHelper.getStackTopActivityInstance();
-            if (stackTopActivity instanceof ChatActivity) {
-                Intent intent = new Intent(stackTopActivity, VideoPlayActivity.class);
-                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_VIDEO_PATH, localPath);
-                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_THUMBNAIL_URI, thumbUri);
-                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE, mMessage);
-                View transition = ((VideoViewHolder) mMessageHolder).mIvVideoThumbnail;
-                ViewCompat.setTransitionName(transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
-                ActivityCompat.startActivityForResult(stackTopActivity, intent, 0, options.toBundle());
-            }
+        void setMessageOperationCallback(MessageOperationCallback messageOperationCallback) {
+            mMessageOperationCallback = messageOperationCallback;
         }
 
     }
 
-    static final class NotificationItemHolder extends ItemHolder {
-
-        NotificationItemHolder(View itemView, int type) {
-            super(itemView, type);
-        }
-
-    }
-
-    static final class ReceiveItemHolder extends ItemHolder {
+    static final class ReceiveMessageHolder extends MessageHolder {
         ImageView mIvAvatar;
         TextView mTvNickname;
         BasicInfoProvider mBasicInfoProvider;
         boolean isEnableNameDisplay;
 
-        ReceiveItemHolder(View itemView, int type) {
+        ReceiveMessageHolder(View itemView, int type) {
             super(itemView, type);
-            mIvAvatar = itemView.findViewById(R.id.ChatMessageAdapter_mIvAvatar);
-            mTvNickname = itemView.findViewById(R.id.ChatMessageAdapter_mTvNickname);
+            mIvAvatar = itemView.findViewById(R.id.mIvAvatar);
+            mTvNickname = itemView.findViewById(R.id.mTvNickname);
         }
 
         @Override
@@ -390,141 +268,114 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    static final class SendItemHolder extends ItemHolder {
+    static final class SendMessageHolder extends MessageHolder {
 
-        private ImageView mIvMessageState;
-        private CircularProgressDrawable mProgressDrawable;
+        private ImageView mIvFailState;
+        private ProgressBar mPbSendState;
 
-
-        SendItemHolder(View itemView, int type) {
+        SendMessageHolder(View itemView, int type) {
             super(itemView, type);
-            mIvMessageState = itemView.findViewById(R.id.ChatMessageAdapter_mIvMessageState);
+            mIvFailState = itemView.findViewById(R.id.mIvFailState);
+            mPbSendState = itemView.findViewById(R.id.mPbSendState);
+
+            mIvFailState.setOnClickListener(new OnOnlySingleClickListener() {
+                @Override
+                public void onSingleClick(View v) {
+                    new AlertDialog(v.getContext())
+                            .setMessage(R.string.AlertDialogChat_Content)
+                            .setTitle(R.string.AlertDialogChat_Title)
+                            .setNegativeButton(R.string.AlertDialogChat_Cancel, null)
+                            .setPositiveButton(R.string.AlertDialogChat_Resend, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mMessageOperationCallback.resendMessage(mMessage);
+                                }
+                            })
+                            .show();
+                }
+            });
         }
 
         @Override
         protected void setData(Message message) {
             super.setData(message);
-            setMessageState(message.getSentStatus());
-        }
-
-        private void setMessageState(Message.SentStatus state) {
-            mIvMessageState.setOnClickListener(null);
-            if (state == Message.SentStatus.SENDING) {
-                if (mProgressDrawable == null) {
-                    mProgressDrawable = new CircularProgressDrawable(itemView.getContext());
-                    mProgressDrawable.setStyle(CircularProgressDrawable.DEFAULT);
-                    mProgressDrawable.setArrowEnabled(false);
-                    mProgressDrawable.setStrokeWidth(AndroidHelper.dip2px(1));
-                    mProgressDrawable.setColorSchemeColors(AndroidHelper.getColor(R.color.colorAccent));
-                    mIvMessageState.setImageDrawable(mProgressDrawable);
-                }
-                mProgressDrawable.start();
+            Message.SentStatus status = message.getSentStatus();
+            if (status == Message.SentStatus.SENDING) {
+                mPbSendState.setVisibility(View.VISIBLE);
+                mIvFailState.setVisibility(View.GONE);
             } else {
-                if (mProgressDrawable != null) {
-                    mProgressDrawable.stop();
-                    mProgressDrawable = null;
-                }
-                switch (state) {
+                mPbSendState.setVisibility(View.GONE);
+                switch (status) {
                     case FAILED:
                     case CANCELED:
-                        mIvMessageState.setImageResource(R.drawable.ic_send_fail);
-                        mIvMessageState.setOnClickListener(new OnOnlySingleClickListener() {
-                            @Override
-                            public void onSingleClick(View v) {
-                                if (mMessageCallback != null) {
-                                    mMessageCallback.resendMessage(getAdapterPosition(), mMessage);
-                                }
-                            }
-                        });
+                        mIvFailState.setVisibility(View.VISIBLE);
                         break;
                     default:
-                        mIvMessageState.setImageDrawable(null);
+                        mIvFailState.setVisibility(View.GONE);
                 }
             }
         }
 
-        @Override
+    }
+
+    abstract static class Holder {
+        Message mMessage;
+
+        @CallSuper
+        public void parseMessageContent(Message message) {
+            mMessage = message;
+        }
+
         void onRecycle() {
-            super.onRecycle();
-            if (mProgressDrawable != null) {
-                mProgressDrawable.stop();
+        }
+    }
+
+    static final class NotificationViewHolder extends Holder {
+        TextView mTvNotificationMessage;
+
+        NotificationViewHolder(View itemView) {
+            mTvNotificationMessage = itemView.findViewById(R.id.mTvNotificationMessage);
+        }
+
+        @Override
+        public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
+            MessageContent content = message.getContent();
+            if (content instanceof ContactNotificationMessage) {
+                mTvNotificationMessage.setText(IMMessageHelper.contactNotificationMessageToString((ContactNotificationMessage) content));
+            } else if (content instanceof GroupNotificationMessage) {
+                mTvNotificationMessage.setText(IMMessageHelper.groupNotificationMessageToString((GroupNotificationMessage) content));
             }
         }
     }
 
-    abstract static class MessageHolder {
-        View mContentLayout;
-
-        MessageHolder(View itemView) {
-            mContentLayout = itemView.findViewById(R.id.ChatMessageAdapter_mContentLayout);
-        }
-
-        public abstract void parseMessageContent(Message message);
-
-        void onRecycle() {
-        }
-    }
-
-    static final class ContactNotificationViewHolder extends MessageHolder {
-        TextView mTvNotificationMessage;
-
-        ContactNotificationViewHolder(View itemView) {
-            super(itemView);
-            mTvNotificationMessage = itemView.findViewById(R.id.ChatMessageAdapter_mTvNotificationMessage);
-            mContentLayout = mTvNotificationMessage;
-        }
-
-        @Override
-        public void parseMessageContent(Message message) {
-            ContactNotificationMessage contactNotification = (ContactNotificationMessage) message.getContent();
-            mTvNotificationMessage.setText(IMMessageHelper.contactNotificationMessageToString(contactNotification));
-        }
-    }
-
-    static final class GroupNotificationViewHolder extends MessageHolder {
-        TextView mTvNotificationMessage;
-
-        GroupNotificationViewHolder(View itemView) {
-            super(itemView);
-            mTvNotificationMessage = itemView.findViewById(R.id.ChatMessageAdapter_mTvNotificationMessage);
-            mContentLayout = mTvNotificationMessage;
-        }
-
-        @Override
-        public void parseMessageContent(Message message) {
-            GroupNotificationMessage groupNotification = (GroupNotificationMessage) message.getContent();
-            mTvNotificationMessage.setText(IMMessageHelper.groupNotificationMessageToString(groupNotification));
-        }
-    }
-
-    static final class TextViewHolder extends MessageHolder {
+    static final class TextViewHolder extends Holder {
         TextView mTvTextContent;
 
         TextViewHolder(View itemView) {
-            super(itemView);
-            mTvTextContent = itemView.findViewById(R.id.ChatMessageAdapter_mTvTextContent);
-            mContentLayout = mTvTextContent;
+            mTvTextContent = itemView.findViewById(R.id.mTvTextContent);
         }
 
         @Override
         public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
             TextMessage textMessage = (TextMessage) message.getContent();
             mTvTextContent.setText(textMessage.getContent());
         }
     }
 
-    static final class ImageViewHolder extends MessageHolder {
+    static final class ImageViewHolder extends Holder {
         RoundImageView mIvImageContent;
 
         ImageViewHolder(View itemView) {
-            super(itemView);
-            mIvImageContent = itemView.findViewById(R.id.ChatMessageAdapter_mIvImageContent);
-            mContentLayout = mIvImageContent;
+            mIvImageContent = itemView.findViewById(R.id.mIvImageContent);
             mIvImageContent.setRoundRadius(AndroidHelper.dip2px(4));
+            setupClickListener();
         }
 
         @Override
         public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
             ImageMessage imageMessage = (ImageMessage) message.getContent();
             Size size = BitmapUtil.getBitmapBoundsSize(imageMessage.getThumUri().getPath());
             int imageWidth = size.getWidth();
@@ -546,6 +397,30 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             GlideUtil.loadFromUrl(mIvImageContent.getContext(), mIvImageContent, imageMessage.getThumUri());
         }
 
+        void setupClickListener() {
+            mIvImageContent.setOnClickListener(new OnOnlySingleClickListener() {
+                @Override
+                public void onSingleClick(View v) {
+                    ImageMessage imageMessage = (ImageMessage) mMessage.getContent();
+                    Uri imageUri = imageMessage.getLocalUri();
+                    if (imageUri == null || TextUtils.isEmpty(imageUri.getPath()) || !new File(imageUri.getPath()).exists()) {
+                        imageUri = imageMessage.getMediaUrl();
+                        if (imageUri == null || TextUtils.isEmpty(imageUri.getPath())) {
+                            AndroidHelper.showToast(AndroidHelper.getString(R.string.ChatActivity_ImageAlreadyOverdue));
+                            return;
+                        }
+                    }
+                    Activity activity = (Activity) v.getContext();
+                    Intent intent = new Intent(activity, ImageOriginalActivity.class);
+                    intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_IMAGE_URI, imageUri);
+                    intent.putExtra(ImageOriginalActivity.INTENT_EXTRA_THUMBNAIL_URI, imageMessage.getThumUri());
+                    ViewCompat.setTransitionName(mIvImageContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, mIvImageContent, ImageOriginalActivity.TRANSITION_NAME_IMAGE);
+                    ActivityCompat.startActivity(activity, intent, options.toBundle());
+                }
+            });
+        }
+
         @Override
         void onRecycle() {
             super.onRecycle();
@@ -554,20 +429,21 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    static final class LocationViewHolder extends MessageHolder {
+    static final class LocationViewHolder extends Holder {
         ImageView mIvMapImage;
         TextView mTvTitle;
         TextView mTvAddress;
 
         LocationViewHolder(View itemView) {
-            super(itemView);
-            mIvMapImage = itemView.findViewById(R.id.ChatMessageAdapter_mIvMapImage);
-            mTvTitle = itemView.findViewById(R.id.ChatMessageAdapter_mTvTitle);
-            mTvAddress = itemView.findViewById(R.id.ChatMessageAdapter_mTvAddress);
+            mIvMapImage = itemView.findViewById(R.id.mIvMapImage);
+            mTvTitle = itemView.findViewById(R.id.mTvTitle);
+            mTvAddress = itemView.findViewById(R.id.mTvAddress);
+            setupClickListener();
         }
 
         @Override
         public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
             LocationMessage locationMessage = (LocationMessage) message.getContent();
             String poi = locationMessage.getPoi();
             String[] content = poi.split("/");
@@ -580,6 +456,13 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             GlideUtil.loadFromUrl(mIvMapImage.getContext(), mIvMapImage, locationMessage.getImgUri());
         }
 
+        void setupClickListener() {
+            LocationMessage locationMessage = (LocationMessage) mMessage.getContent();
+            String poi = locationMessage.getPoi();
+            String[] content = poi.split("/");
+            PoiItem poiItem = new PoiItem(locationMessage.getExtra(), new LatLonPoint(locationMessage.getLat(), locationMessage.getLng()), content[0], content[1]);
+            LocationMapActivity.startOfShareType(mIvMapImage.getContext(), poiItem);
+        }
 
         @Override
         void onRecycle() {
@@ -589,7 +472,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    static final class VoiceViewHolder extends MessageHolder {
+    static final class VoiceViewHolder extends Holder {
         TextView mTvVoiceDuration;
         VisualizerView mVisualizerView;
         ImageView mIvListenedState;
@@ -600,12 +483,12 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         private CountDownTimer mCountDownTimer;
 
         VoiceViewHolder(View itemView) {
-            super(itemView);
             mTvVoiceDuration = itemView.findViewById(R.id.ChatAdapter_mTvVoiceDuration);
-            mVisualizerView = itemView.findViewById(R.id.ChatMessageAdapter_mVisualizerView);
+            mVisualizerView = itemView.findViewById(R.id.mVisualizerView);
             mIvListenedState = itemView.findViewById(R.id.ChatAdapter_mIvListenedState);
-            mIvPlayIcon = itemView.findViewById(R.id.ChatMessageAdapter_mIvPlayIcon);
+            mIvPlayIcon = itemView.findViewById(R.id.mIvPlayIcon);
             mVoicePlayer = VoicePlayer.getInstance(itemView.getContext());
+            setupClickListener();
         }
 
         @Override
@@ -618,6 +501,23 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 mCountDownTimer.cancel();
                 mCountDownTimer = null;
             }
+        }
+
+        void setupClickListener() {
+//            VoiceMessage voiceMessage = (VoiceMessage) mMessage.getContent();
+//            Uri uri = voiceMessage.getUri();
+//            final VoiceViewHolder voiceViewHolder = (VoiceViewHolder) mMessageHolder;
+//            if (uri != null) {
+//                String path = uri.getPath();
+//                if (TextUtils.isEmpty(path)) {
+//                    return;
+//                }
+//                voiceViewHolder.playVoice(path);
+//            }
+//            if (mMessage.getMessageDirection() == Message.MessageDirection.RECEIVE && !mMessage.getReceivedStatus().isListened()) {
+//                mMessageOperationCallback.setVoiceMessageAsListened(mMessage);
+//                voiceViewHolder.setVoiceListened();
+//            }
         }
 
         void setVisualizerColor(@ColorInt int color) {
@@ -650,6 +550,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
         @Override
         public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
             VoiceMessage voiceMessage = (VoiceMessage) message.getContent();
             mDurationMs = voiceMessage.getDuration();
             setCurrentDuration(mDurationMs);
@@ -731,20 +632,20 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         };
     }
 
-    static final class VideoViewHolder extends MessageHolder {
+    static final class VideoViewHolder extends Holder {
         RoundImageView mIvVideoThumbnail;
         TextView mTvVideoDuration;
 
         VideoViewHolder(View itemView) {
-            super(itemView);
-            mIvVideoThumbnail = itemView.findViewById(R.id.ChatMessageAdapter_mIvVideoThumbnail);
-            mTvVideoDuration = itemView.findViewById(R.id.ChatMessageAdapter_mTvVideoDuration);
-            mIvVideoThumbnail.setRoundRadius(AndroidHelper.dip2px(3));
-            mContentLayout = mIvVideoThumbnail;
+            mIvVideoThumbnail = itemView.findViewById(R.id.mIvVideoThumbnail);
+            mTvVideoDuration = itemView.findViewById(R.id.mTvVideoDuration);
+            mIvVideoThumbnail.setRoundRadius(AndroidHelper.dip2px(4));
+            setupClickListener();
         }
 
         @Override
         public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
             VideoMessage videoMessage = (VideoMessage) message.getContent();
             Uri thumbnailUri = videoMessage.getThumbUri();
             if (thumbnailUri == null || TextUtils.isEmpty(thumbnailUri.getPath())) {
@@ -771,6 +672,32 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
             GlideUtil.loadFromUrl(mIvVideoThumbnail.getContext(), mIvVideoThumbnail, thumbnailUri);
         }
 
+        void setupClickListener() {
+//            VideoMessage videoMessage = (VideoMessage) mMessage.getContent();
+//            Uri videoUri = videoMessage.getLocalPath();
+//            String localPath = videoUri != null ? videoUri.getPath() : null;
+//            if (TextUtils.isEmpty(localPath) || !new File(localPath).exists()) {
+//                localPath = null;
+//                videoUri = videoMessage.getMediaUrl();
+//                if (videoUri == null || TextUtils.isEmpty(videoUri.getPath())) {
+//                    AndroidHelper.showToast(AndroidHelper.getString(R.string.ChatActivity_VideoAlreadyOverdue));
+//                    return;
+//                }
+//            }
+//            Uri thumbUri = videoMessage.getThumbUri();
+//            Activity stackTopActivity = ActivityHelper.getStackTopActivityInstance();
+//            if (stackTopActivity instanceof ChatActivity) {
+//                Intent intent = new Intent(stackTopActivity, VideoPlayActivity.class);
+//                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_VIDEO_PATH, localPath);
+//                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_THUMBNAIL_URI, thumbUri);
+//                intent.putExtra(VideoPlayActivity.INTENT_EXTRA_MESSAGE, mMessage);
+//                View transition = ((VideoViewHolder) mMessageHolder).mIvVideoThumbnail;
+//                ViewCompat.setTransitionName(transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
+//                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(stackTopActivity, transition, VideoPlayActivity.TRANSITION_NAME_IMAGE);
+//                ActivityCompat.startActivityForResult(stackTopActivity, intent, 0, options.toBundle());
+//            }
+        }
+
         @Override
         void onRecycle() {
             super.onRecycle();
@@ -784,29 +711,28 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
     }
 
-    static final class FileViewHolder extends MessageHolder {
+    static final class FileViewHolder extends Holder {
         TextView mTvFileName;
         TextView mTvFileSize;
 
         FileViewHolder(View itemView) {
-            super(itemView);
-            mTvFileName = itemView.findViewById(R.id.ChatMessageAdapter_mTvFileName);
-            mTvFileSize = itemView.findViewById(R.id.ChatMessageAdapter_mTvFileSize);
+            mTvFileName = itemView.findViewById(R.id.mTvFileName);
+            mTvFileSize = itemView.findViewById(R.id.mTvFileSize);
         }
 
         @Override
         public void parseMessageContent(Message message) {
+            super.parseMessageContent(message);
             FileMessage fileMessage = (FileMessage) message.getContent();
             LogUtil.e(fileMessage.toString());
             mTvFileName.setText(fileMessage.getName());
             mTvFileSize.setText(FileUtil.fileSizeFormat(fileMessage.getSize()));
         }
-
     }
 
 
-    public interface MessageCallback {
-        void resendMessage(int position, Message message);
+    public interface MessageOperationCallback {
+        void resendMessage(Message message);
 
         void setVoiceMessageAsListened(Message message);
     }

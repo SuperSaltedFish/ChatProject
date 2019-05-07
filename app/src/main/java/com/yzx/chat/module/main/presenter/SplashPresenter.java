@@ -1,6 +1,7 @@
 package com.yzx.chat.module.main.presenter;
 
 import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.module.main.contract.SplashContract;
 import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
@@ -44,7 +45,11 @@ public class SplashPresenter implements SplashContract.Presenter {
                     if (SharePreferenceHelper.getConfigurePreferences().isFirstGuide()) {
                         mSplashView.startGuide();
                     } else {
-                        mSplashView.startLoginActivity();
+                        if(code!= ResponseHandler.ERROR_CODE_NOT_LOGGED_IN){
+                            mSplashView.showLoginError(error);
+                        }else {
+                            mSplashView.startLoginActivity();
+                        }
                     }
                     return true;
                 }

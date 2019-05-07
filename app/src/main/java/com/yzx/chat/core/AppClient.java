@@ -272,7 +272,7 @@ public class AppClient {
             public void onTokenIncorrect() {
                 destroy();
                 mLoginLock.release();
-                CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
+                CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_TOKEN_INCORRECT, ResourcesHelper.getString(R.string.Error_Server8), callback);
             }
 
             @Override

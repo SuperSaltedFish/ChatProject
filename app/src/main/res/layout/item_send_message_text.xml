@@ -8,36 +8,31 @@
     android:paddingEnd="10dp"
     android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/ChatMessageAdapter_mTvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_chat_time_round"
-        android:gravity="center"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ChatMessageAdapter_mTvTextContent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
-        android:id="@+id/ChatMessageAdapter_mIvMessageState"
+        android:id="@+id/mIvFailState"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
         android:padding="2dp"
-        app:layout_constraintBottom_toBottomOf="@id/ChatMessageAdapter_mTvTextContent"
-        app:layout_constraintEnd_toStartOf="@id/ChatMessageAdapter_mTvTextContent"
-        app:layout_constraintTop_toTopOf="@id/ChatMessageAdapter_mTvTextContent" />
+        android:src="@drawable/ic_send_fail"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mTvTextContent"
+        app:layout_constraintEnd_toStartOf="@id/mTvTextContent"
+        app:layout_constraintTop_toTopOf="@id/mTvTextContent" />
+
+    <ProgressBar
+        android:id="@+id/mPbSendState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:padding="2dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/mTvTextContent"
+        app:layout_constraintEnd_toStartOf="@id/mTvTextContent"
+        app:layout_constraintTop_toTopOf="@id/mTvTextContent" />
 
     <androidx.emoji.widget.EmojiTextView
-        android:id="@+id/ChatMessageAdapter_mTvTextContent"
+        android:id="@+id/mTvTextContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -55,7 +50,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ChatMessageAdapter_mTvTime" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

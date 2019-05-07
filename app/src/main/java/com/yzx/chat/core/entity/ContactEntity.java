@@ -46,18 +46,13 @@ public class ContactEntity implements BasicInfoProvider, Parcelable {
     }
 
     @Override
-    public String getAvatar() {
-        return userProfile == null ? null : userProfile.getAvatar();
-    }
-
-    @Override
     public String getAvatar(String userID) {
-        return getAvatar();
+        return userProfile == null ? null : userProfile.getAvatar();
     }
 
     public String getAbbreviation() {
         if (TextUtils.isEmpty(abbreviation)) {
-            abbreviation = PinYinUtil.getPinYinAbbreviation(getName(), false);
+            abbreviation = PinYinUtil.getPinYinAbbreviation(getName(contactID), false);
         }
         return abbreviation;
     }

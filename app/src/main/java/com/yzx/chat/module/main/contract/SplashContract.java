@@ -17,6 +17,8 @@ public class SplashContract {
         void startHomeActivity();
 
         void startGuide();
+
+        void showLoginError(String error);
     }
 
 

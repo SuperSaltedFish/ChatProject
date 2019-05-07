@@ -1,6 +1,7 @@
 package com.yzx.chat.module.main.view;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -184,6 +185,16 @@ public class SplashActivity extends BaseCompatActivity<SplashContract.Presenter>
                 } else {
                     startLoginActivity();
                 }
+            }
+        });
+    }
+
+    @Override
+    public void showLoginError(String error) {
+        showErrorDialog(error, new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                startLoginActivity();
             }
         });
     }
