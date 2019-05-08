@@ -6,6 +6,8 @@ import android.text.TextUtils;
 
 import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.listener.DownloadCallback;
+import com.yzx.chat.core.listener.ResultCallback;
+import com.yzx.chat.core.util.CallbackUtil;
 import com.yzx.chat.core.util.LogUtil;
 
 import java.util.HashMap;
@@ -65,8 +67,18 @@ public class ChatManager {
         return mRongIMClient.getHistoryMessages(type, targetId, oldestMessageId, count);
     }
 
-    public void getHistoryMessages(final Conversation.ConversationType type, final String targetId, int oldestMessageId, int count, RongIMClient.ResultCallback<List<Message>> callback) {
-        mRongIMClient.getHistoryMessages(type, targetId, oldestMessageId, count, callback);
+    public void getHistoryMessages(final Conversation.ConversationType type, final String targetId, int oldestMessageId, int count, final ResultCallback<List<Message>> callback) {
+        mRongIMClient.getHistoryMessages(type, targetId, oldestMessageId, count, new RongIMClient.ResultCallback<List<Message>>() {
+            @Override
+            public void onSuccess(List<Message> messages) {
+                CallbackUtil.callResult(messages, callback);
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                CallbackUtil.callFailure(errorCode.getValue(), errorCode.getMessage(), callback);
+            }
+        });
     }
 
     public void sendMessage(Message message) {
@@ -214,7 +226,7 @@ public class ChatManager {
                 }
             });
         }
-        mAppClient.getConversationManager().onConversationChange(message.getConversationType(),message.getTargetId(),remainder);
+        mAppClient.getConversationManager().onConversationChange(message.getConversationType(), message.getTargetId(), remainder);
     }
 
     private class SendMessageCallbackWrapper extends RongIMClient.SendImageMessageCallback implements IRongCallback.ISendMediaMessageCallback {
@@ -247,7 +259,7 @@ public class ChatManager {
                     entry.getKey().onSuccess(message);
                 }
             }
-            mAppClient.getConversationManager().onConversationChange(message.getConversationType(),message.getTargetId(),0);
+            mAppClient.getConversationManager().onConversationChange(message.getConversationType(), message.getTargetId(), 0);
         }
 
         @Override
@@ -259,7 +271,7 @@ public class ChatManager {
                     entry.getKey().onError(message);
                 }
             }
-            mAppClient.getConversationManager().onConversationChange(message.getConversationType(),message.getTargetId(),0);
+            mAppClient.getConversationManager().onConversationChange(message.getConversationType(), message.getTargetId(), 0);
         }
 
         @Override

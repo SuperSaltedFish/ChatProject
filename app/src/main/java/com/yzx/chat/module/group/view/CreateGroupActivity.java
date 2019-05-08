@@ -23,7 +23,7 @@ import com.yzx.chat.tool.ActivityHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.GlideUtil;
 import com.yzx.chat.widget.adapter.CreateGroupAdapter;
-import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardItemTouchListener;
 import com.yzx.chat.widget.view.FlowLayout;
 import com.yzx.chat.widget.view.IndexBarView;
 import com.yzx.chat.widget.view.LetterSegmentationItemDecoration;
@@ -35,6 +35,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2018年02月22日.
@@ -110,7 +111,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
         mRecyclerView.setHasFixedSize(true);
 
         mRecyclerView.addItemDecoration(mLetterSegmentationItemDecoration);
-        mRecyclerView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this));
+        mRecyclerView.addOnItemTouchListener(new AutoCloseKeyboardItemTouchListener());
 
         mIndexBarView.setSelectedTextColor(ContextCompat.getColor(this, R.color.textColorSecondaryBlack));
         mIndexBarView.setOnTouchSelectedListener(mIndexBarSelectedListener);
@@ -266,7 +267,7 @@ public class CreateGroupActivity extends BaseCompatActivity<CreateGroupContract.
     public void launchChatActivity(GroupEntity group) {
         ActivityHelper.finishActivitiesInStackAbove(HomeActivity.class);
         mProgressDialog.dismiss();
-        ChatActivity.startActivity(this, group.getGroupID(), ChatActivity.CONVERSATION_TYPE_GROUP);
+        ChatActivity.startActivity(this, group.getGroupID(), Conversation.ConversationType.GROUP);
     }
 
 

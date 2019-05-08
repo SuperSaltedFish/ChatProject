@@ -46,6 +46,7 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 import androidx.annotation.NonNull;
+import io.rong.imlib.model.Conversation;
 
 
 public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Presenter> implements QrCodeScanContract.View {
@@ -274,7 +275,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     public void startGroupChatActivity(String groupID) {
-        ChatActivity.startActivity(this, groupID, ChatActivity.CONVERSATION_TYPE_GROUP);
+        ChatActivity.startActivity(this, groupID, Conversation.ConversationType.GROUP);
         finish();
     }
 

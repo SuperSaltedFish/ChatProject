@@ -190,7 +190,7 @@ public class AppClient {
         mAuthApi.login(account, Sha256Util.sha256WithSalt(password, account), verifyCode)
                 .enqueue(new ResponseHandler<>(new ResultCallback<LoginResponseEntity>() {
                     @Override
-                    public void onResult(final LoginResponseEntity result) {
+                    public void onResult(LoginResponseEntity result) {
                         String token = result.getToken();
                         UserEntity userInfo = result.getUserProfile();
                         ArrayList<ContactEntity> contacts = result.getContacts();
@@ -215,6 +215,7 @@ public class AppClient {
                             onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, ResourcesHelper.getString(R.string.Error_Client));
                             return;
                         }
+                        init(result.getToken(), result.getUserProfile());
                         RongIMClient.connect(result.getToken(), new RongIMClient.ConnectCallback() {
                             @Override
                             public void onTokenIncorrect() {
@@ -223,7 +224,6 @@ public class AppClient {
 
                             @Override
                             public void onSuccess(String s) {
-                                init(result.getToken(), result.getUserProfile());
                                 mLoginLock.release();
                                 CallbackUtil.callResult(null, callback);
                             }

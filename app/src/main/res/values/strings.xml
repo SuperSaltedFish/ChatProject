@@ -240,4 +240,5 @@
     <string name="ContactListFragment_ContactList">好友列表</string>
     <string name="ContactListFragment_EmptySearch">没有搜索到任何匹配的好友</string>
     <string name="ChatActivity_PleaseInput">请输入...</string>
+    <string name="File">文件</string>
 </resources>

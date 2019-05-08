@@ -46,8 +46,6 @@ public class DBHelper {
     }
 
     private final AbstractDao.ReadWriteHelper mReadWriteHelper = new AbstractDao.ReadWriteHelper() {
-
-
         @Override
         public SQLiteDatabase openReadableDatabase() {
             if (mReadWriteDatabase == null) {

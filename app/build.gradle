@@ -76,5 +76,5 @@ dependencies {
     annotationProcessor config.deps.annotation.glide
     annotationProcessor 'androidx.annotation:annotation:1.0.2'
 
-    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-andx-7'
 }

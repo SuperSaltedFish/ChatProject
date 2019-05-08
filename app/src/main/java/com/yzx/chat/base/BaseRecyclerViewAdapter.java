@@ -23,8 +23,6 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     protected Context mContext;
     private View mHeaderView;
     private View mFooterView;
-    private OnScrollToBottomListener mScrollToBottomListener;
-    private int mLastBindPosition;
 
     public abstract VH getViewHolder(ViewGroup parent, int viewType);
 
@@ -75,16 +73,6 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         } else {
             bindDataToViewHolder((VH) holder, position);
         }
-
-        if (mScrollToBottomListener != null && position == getItemCount() - 1 && position != mLastBindPosition) {
-            holder.itemView.post(new Runnable() {
-                @Override
-                public void run() {
-                    mScrollToBottomListener.OnScrollToBottom();
-                }
-            });
-        }
-        mLastBindPosition = position;
     }
 
     @Override
@@ -143,10 +131,6 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
     public boolean isHasFooterView() {
         return mFooterView != null;
-    }
-
-    public void setScrollToBottomListener(OnScrollToBottomListener listener) {
-        mScrollToBottomListener = listener;
     }
 
     public final void notifyItemRangeInsertedEx(int positionStart, int itemCount) {
@@ -261,9 +245,5 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         public void onChanged(int position, int count, Object payload) {
             mAdapter.notifyItemRangeChangedEx(position, count, payload);
         }
-    }
-
-    public interface OnScrollToBottomListener {
-        void OnScrollToBottom();
     }
 }

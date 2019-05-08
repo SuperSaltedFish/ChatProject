@@ -133,10 +133,10 @@ public class ConversationFragment extends BaseFragment<ConversationContract.Pres
             } else return;
             switch (conversation.getConversationType()) {
                 case PRIVATE:
-                    ChatActivity.startActivity(mContext, conversation.getTargetId(), ChatActivity.CONVERSATION_TYPE_PRIVATE);
+                    ChatActivity.startActivity(mContext, conversation.getTargetId(), Conversation.ConversationType.PRIVATE);
                     break;
                 case GROUP:
-                    ChatActivity.startActivity(mContext, conversation.getTargetId(), ChatActivity.CONVERSATION_TYPE_GROUP);
+                    ChatActivity.startActivity(mContext, conversation.getTargetId(), Conversation.ConversationType.GROUP);
                     break;
             }
         }

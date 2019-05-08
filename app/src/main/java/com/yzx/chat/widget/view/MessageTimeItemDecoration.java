@@ -37,18 +37,9 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         setTextSize(mTextPaint.getTextSize());
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                calculateTimeDisplayPosition(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-            }
-        });
+        registerAdapterDataObserver(adapter);
     }
+
 
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -57,6 +48,9 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
             return;
         }
         int position = manager.getPosition(view);
+        if (position >= mMessageList.size()) {//有footer的时候
+            return;
+        }
         Message message = mMessageList.get(position);
         if (mTimeDisplayStateArray.get(message.getMessageId(), -1) != -1) {
             outRect.top = mDecorationHeight;
@@ -74,6 +68,9 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
         for (int index = 0, childCount = parent.getChildCount(); index < childCount; index++) {
             View v = parent.getChildAt(index);
             int position = manager.getPosition(v);
+            if (position >= mMessageList.size()) {//有footer的时候
+                return;
+            }
             Message message = mMessageList.get(position);
             long time = mTimeDisplayStateArray.get(message.getMessageId(), -1);
             if (time != -1) {
@@ -85,31 +82,77 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-
-    private void calculateTimeDisplayPosition(int positionStart, int itemCount) {
-        if (mMessageList == null || mMessageList.size() == 0) {
-            mTimeDisplayStateArray.clear();
-            return;
-        }
-        if (mMessageList.size() <= positionStart) {
-            return;
-        }
-        long latestTime;
-        if (positionStart == 0 && mTimeDisplayStateArray.size() > 0) {
-            latestTime = mTimeDisplayStateArray.get(mTimeDisplayStateArray.keyAt(mTimeDisplayStateArray.size() - 1), 0);
-        } else {
-            latestTime = 0;
-        }
-        Message message;
-        for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
-            message = mMessageList.get(i);
-            long messageTime = message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
-            if (Math.abs(latestTime - messageTime) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
-                mTimeDisplayStateArray.append(message.getMessageId(), messageTime);
-                latestTime = messageTime;
+    private void registerAdapterDataObserver(RecyclerView.Adapter adapter) {
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                if (mMessageList == null || mMessageList.size() <= positionStart) {
+                    return;
+                }
+                int listSize = mMessageList.size();
+                if (itemCount == 1) {
+                    Message message = mMessageList.get(positionStart);
+                    if (positionStart == listSize - 1) {
+                        mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                    } else {
+                        Message nextItem = mMessageList.get(positionStart + 1);
+                        if (Math.abs(getMessageTime(message) - getMessageTime(nextItem)) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                            mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                        }
+                    }
+                } else {
+                    if (positionStart != 0) {
+                        positionStart--;
+                    }
+                    long latestTime;
+                    if (positionStart + itemCount == listSize) {//从最末尾插入
+                        latestTime = 0;
+                    } else { //从中间插入
+                        latestTime = getMessageTime(mMessageList.get(positionStart + itemCount));
+                    }
+                    for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
+                        Message message = mMessageList.get(i);
+                        long messageTime = getMessageTime(message);
+                        if (Math.abs(latestTime - messageTime) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                            mTimeDisplayStateArray.append(message.getMessageId(), messageTime);
+                            latestTime = messageTime;
+                        }
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                for (int i = toPosition, count = toPosition + itemCount; i < count; i++) {
+                    mTimeDisplayStateArray.delete(mMessageList.get(i).getMessageId());
+                }
+                onItemRangeRemoved(fromPosition, itemCount);
+                onItemRangeInserted(toPosition, itemCount);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                if (mMessageList == null || mMessageList.size() == 0) {
+                    mTimeDisplayStateArray.clear();
+                    return;
+                }
+                if (mMessageList.size() < positionStart || positionStart == 0) {
+                    return;
+                }
+                int start = positionStart - 1;
+                Message message = mMessageList.get(start);
+                if (positionStart == mMessageList.size()) {
+                    mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                } else {
+                    Message nextItem = mMessageList.get(start + 1);
+                    if (Math.abs(getMessageTime(message) - getMessageTime(nextItem)) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                        mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                    }
+                }
+            }
+        });
     }
+
 
     public void setTextSize(float textSize) {
         mTextPaint.setTextSize(textSize);
@@ -131,5 +174,9 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
 
     public interface FormatAdapter {
         String formatTimeToString(long milliseconds);
+    }
+
+    public static long getMessageTime(Message message) {
+        return message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
     }
 }

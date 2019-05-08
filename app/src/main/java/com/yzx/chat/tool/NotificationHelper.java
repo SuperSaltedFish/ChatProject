@@ -130,10 +130,10 @@ public class NotificationHelper {
                         }
                         switch (type) {
                             case PRIVATE:
-                                ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_PRIVATE);
+                                ChatActivity.startActivity(homeActivity, conversationID, Conversation.ConversationType.PRIVATE);
                                 break;
                             case GROUP:
-                                ChatActivity.startActivity(homeActivity, conversationID, ChatActivity.CONVERSATION_TYPE_GROUP);
+                                ChatActivity.startActivity(homeActivity, conversationID, Conversation.ConversationType.GROUP);
                                 break;
                         }
                     }

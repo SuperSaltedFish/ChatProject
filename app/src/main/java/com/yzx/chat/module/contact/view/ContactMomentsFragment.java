@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
@@ -42,7 +41,6 @@ public class ContactMomentsFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
     private PrivateMomentsAdapter mAdapter;
     private View mFooterView;
-    private TextView mTvLoadMoreHint;
 
     @Override
     protected int getLayoutID() {
@@ -54,21 +52,17 @@ public class ContactMomentsFragment extends BaseFragment {
         mRecyclerView = parentView.findViewById(R.id.ContactMomentsFragment_mRecyclerView);
         mSwipeRefreshLayout = parentView.findViewById(R.id.ContactMomentsFragment_mSwipeRefreshLayout);
         mFooterView = LayoutInflater.from(mContext).inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
-        mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mAdapter = new PrivateMomentsAdapter();
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
 
-        mTvLoadMoreHint.setTextColor(ContextCompat.getColor(mContext, R.color.textColorSecondaryBlackLight));
-
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         //  mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration((int) AndroidHelper.dip2px(12)));

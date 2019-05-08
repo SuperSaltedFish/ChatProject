@@ -33,7 +33,6 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseFragment;
-import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.broadcast.BackPressedReceive;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.module.common.contract.LocationSendContract;
@@ -41,9 +40,10 @@ import com.yzx.chat.module.common.presenter.LocationSendPresenter;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
 import com.yzx.chat.widget.adapter.LocationAdapter;
-import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardItemTouchListener;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
+import com.yzx.chat.widget.listener.OnScrollToBottomListener;
 import com.yzx.chat.widget.view.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -77,8 +77,6 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
     private CardView mCvMarkerLayout;
     private View mSearchLocationFooterView;
     private View mMarkerLocationFooterView;
-    private TextView mTvSearchLocationLoadMoreHint;
-    private TextView mTvMarkerLocationLoadMoreHint;
     private TextView mTvSearchNoneHint;
     private ImageView mIvMyLocation;
     private LocationAdapter mSearchLocationAdapter;
@@ -114,8 +112,6 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         mIvMyLocation = parentView.findViewById(R.id.mIvMyLocation);
         mSearchLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
         mMarkerLocationFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) parentView, false);
-        mTvSearchLocationLoadMoreHint = mSearchLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
-        mTvMarkerLocationLoadMoreHint = mMarkerLocationFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMarkerHandler = new Handler();
         mSearchHandler = new Handler();
         mSearchLocationList = new ArrayList<>(32);
@@ -141,25 +137,12 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
                 mAMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLatitude(), point.getLongitude()), mAMap.getCameraPosition().zoom), null);
             }
         });
-        mMarkerLocationAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
-            @Override
-            public void OnScrollToBottom() {
-                if (mMarkerLocationPageNumber != -1) {
-                    mMarkerHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mPresenter.searchMarkerLocation(mMarkerLocationLatLng.latitude, mMarkerLocationLatLng.longitude, ++mMarkerLocationPageNumber);
-                        }
-                    });
-                }
-            }
-        });
 
         mRvSearch.setLayoutManager(new LinearLayoutManager(mContext));
         mRvSearch.setRecycledViewPool(mRvMarker.getRecycledViewPool());
         mRvSearch.setAdapter(mSearchLocationAdapter);
         mRvSearch.addItemDecoration(new DividerItemDecoration(1, ContextCompat.getColor(mContext, R.color.dividerColor), DividerItemDecoration.HORIZONTAL));
-        mRvSearch.addOnScrollListener(new AutoCloseKeyboardScrollListener((Activity) mContext));
+        mRvSearch.addOnItemTouchListener(new AutoCloseKeyboardItemTouchListener());
         mRvSearch.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(final int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {
@@ -170,19 +153,7 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
             }
         });
         mSearchLocationAdapter.setSelectedPosition(-1);
-        mSearchLocationAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
-            @Override
-            public void OnScrollToBottom() {
-                if (mSearchLocationPageNumber != -1) {
-                    mSearchHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mPresenter.searchPOIByKeyword(mSearchView.getQuery().toString(), ++mSearchLocationPageNumber);
-                        }
-                    });
-                }
-            }
-        });
+
         mIvMyLocation.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
             public void onSingleClick(View v) {
@@ -331,6 +302,53 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         });
     }
 
+    private void setEnableAutoLoadMoreMarkerLocation(boolean isEnable){
+        mRvMarker.removeOnScrollListener(mOnMarkerScrollToBottomListener);
+        if(isEnable){
+            mRvMarker.addOnScrollListener(mOnMarkerScrollToBottomListener);
+        }else {
+            mMarkerLocationPageNumber = -1;
+        }
+    }
+
+    private void setEnableAutoLoadMoreSearchLocation(boolean isEnable){
+        mRvSearch.removeOnScrollListener(mOnSearchScrollToBottomListener);
+        if(isEnable){
+            mRvSearch.addOnScrollListener(mOnSearchScrollToBottomListener);
+        }else {
+            mSearchLocationPageNumber = -1;
+        }
+    }
+
+    private final OnScrollToBottomListener mOnMarkerScrollToBottomListener = new OnScrollToBottomListener() {
+        @Override
+        public void onScrollToBottom() {
+            if (mMarkerLocationPageNumber != -1&&!mMarkerLocationAdapter.isHasFooterView()) {
+                mMarkerHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPresenter.searchMarkerLocation(mMarkerLocationLatLng.latitude, mMarkerLocationLatLng.longitude, ++mMarkerLocationPageNumber);
+                    }
+                });
+            }
+        }
+    };
+
+    private final OnScrollToBottomListener mOnSearchScrollToBottomListener = new OnScrollToBottomListener() {
+        @Override
+        public void onScrollToBottom() {
+            if (mSearchLocationPageNumber != -1&&!mSearchLocationAdapter.isHasFooterView()) {
+                mSearchHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPresenter.searchPOIByKeyword(mSearchView.getQuery().toString(), ++mSearchLocationPageNumber);
+                    }
+                });
+            }
+        }
+    };
+
+
     private void showSearchContent() {
         mFlSearchLayout.setVisibility(View.VISIBLE);
         mCvMarkerLayout.setVisibility(View.GONE);
@@ -410,19 +428,6 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
     @Override
     public void showNewMarkerLocation(List<PoiItem> poiItemList, boolean hasMore) {
         mPbMarker.setVisibility(View.INVISIBLE);
-        mMarkerLocationAdapter.setFooterView(null);
-        if (poiItemList != null) {
-            if (poiItemList.size() == 0) {
-                mMarkerLocationPageNumber = -1;
-                mTvMarkerLocationLoadMoreHint.setText(R.string.LoadMoreHint_None);
-            } else if (hasMore) {
-                mTvMarkerLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
-            } else {
-                mMarkerLocationPageNumber = -1;
-                mTvMarkerLocationLoadMoreHint.setText(R.string.LoadMoreHint_Default);
-            }
-            mMarkerLocationAdapter.setFooterView(mMarkerLocationFooterView);
-        }
         mMarkerLocationAdapter.notifyDataSetChanged();
         mMarkerLocationAdapter.setSelectedPosition(0);
         mMarkerLocationList.clear();
@@ -432,17 +437,12 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
         } else {
             mSendMenuItem.setEnabled(false);
         }
+        setEnableAutoLoadMoreMarkerLocation(hasMore);
     }
 
     @Override
     public void showMoreMarkerLocation(List<PoiItem> poiItemList, boolean hasMore) {
-        if (hasMore) {
-            mTvMarkerLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
-        } else {
-            mTvMarkerLocationLoadMoreHint.setText(R.string.LoadMoreHint_NoMore);
-            mMarkerLocationPageNumber = -1;
-        }
-
+        setEnableAutoLoadMoreMarkerLocation(hasMore);
         if (poiItemList.size() > 0) {
             mMarkerLocationAdapter.notifyItemRangeInsertedEx(mMarkerLocationList.size(), poiItemList.size());
             mMarkerLocationList.addAll(poiItemList);
@@ -451,39 +451,22 @@ public class LocationSendFragment extends BaseFragment<LocationSendContract.Pres
 
     @Override
     public void showNewSearchLocation(List<PoiItem> poiItemList, boolean hasMore) {
-        mSearchLocationAdapter.setFooterView(null);
         mSearchLocationAdapter.notifyDataSetChanged();
         mSearchLocationList.clear();
-        if (poiItemList != null) {
-            if (poiItemList.size() == 0) {
-                mSearchLocationPageNumber = -1;
-                mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_None);
-            } else if (hasMore) {
-                mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
-            } else {
-                mSearchLocationPageNumber = -1;
-                mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_Default);
-            }
-            mSearchLocationAdapter.setFooterView(mSearchLocationFooterView);
-        }
         if (poiItemList != null && poiItemList.size() > 0) {
             mSearchLocationList.addAll(poiItemList);
             mTvSearchNoneHint.setVisibility(View.INVISIBLE);
         } else {
             mTvSearchNoneHint.setVisibility(View.VISIBLE);
         }
+        setEnableAutoLoadMoreSearchLocation(hasMore);
         showSearchContent();
+
     }
 
     @Override
     public void showMoreSearchLocation(List<PoiItem> poiItemList, boolean hasMore) {
-        if (hasMore) {
-            mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_LoadingMore);
-        } else {
-            mTvSearchLocationLoadMoreHint.setText(R.string.LoadMoreHint_NoMore);
-            mSearchLocationPageNumber = -1;
-        }
-
+        setEnableAutoLoadMoreSearchLocation(hasMore);
         if (poiItemList.size() > 0) {
             mSearchLocationAdapter.notifyItemRangeInsertedEx(mSearchLocationList.size(), poiItemList.size());
             mSearchLocationList.addAll(poiItemList);

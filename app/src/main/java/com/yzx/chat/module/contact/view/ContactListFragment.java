@@ -1,6 +1,5 @@
 package com.yzx.chat.module.contact.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -31,7 +30,7 @@ import com.yzx.chat.module.me.view.MyTagListActivity;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.AnimationUtil;
 import com.yzx.chat.widget.adapter.ContactAdapter;
-import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardItemTouchListener;
 import com.yzx.chat.widget.listener.ImageAutoLoadScrollListener;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
@@ -152,7 +151,7 @@ public class ContactListFragment extends BaseFragment<ContactListContract.Presen
         mRvSearchContact.setRecycledViewPool(mRvContact.getRecycledViewPool());
         mRvSearchContact.setAdapter(mSearchAdapter);
         mRvSearchContact.setLayoutTransition(null);
-        mRvSearchContact.addOnScrollListener(new AutoCloseKeyboardScrollListener((Activity) mContext));
+        mRvSearchContact.addOnItemTouchListener(new AutoCloseKeyboardItemTouchListener());
         mRvSearchContact.addOnItemTouchListener(new OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(int position, RecyclerView.ViewHolder viewHolder, float touchX, float touchY) {

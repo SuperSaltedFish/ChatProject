@@ -1,28 +1,28 @@
 package com.yzx.chat.module.conversation.presenter;
 
 import android.net.Uri;
-import android.os.Handler;
 import android.text.TextUtils;
 
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
-import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.module.conversation.contract.ChatContract;
+import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.ChatManager;
 import com.yzx.chat.core.ContactManager;
 import com.yzx.chat.core.ConversationManager;
-import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.entity.BasicInfoProvider;
+import com.yzx.chat.core.entity.ContactEntity;
+import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.extra.VideoMessage;
-import com.yzx.chat.tool.NotificationHelper;
 import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.module.conversation.contract.ChatContract;
+import com.yzx.chat.tool.NotificationHelper;
+import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
-import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
@@ -43,20 +43,15 @@ public class ChatPresenter implements ChatContract.Presenter {
     public static volatile String sConversationID;
 
     private ChatContract.View mChatView;
-    private Handler mHandler;
     private AppClient mAppClient;
 
     private String mConversationID;
     private Conversation.ConversationType mConversationType;
     private String mMessageDraft;
-    private boolean mHasMoreMessage;
-    private boolean mIsLoadingMore;
-    private boolean mIsConversationStateChange;
 
     @Override
     public void attachView(ChatContract.View view) {
         mChatView = view;
-        mHandler = new Handler();
         mAppClient = AppClient.getInstance();
     }
 
@@ -64,38 +59,27 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void detachView() {
         reset();
         mChatView = null;
-        mHandler = null;
     }
 
     @Override
-    public ContactEntity initPrivateChat(String conversationID) {
-        ContactEntity contact = mAppClient.getContactManager().getContact(conversationID);
-        if (contact != null) {
-            mConversationID = conversationID;
-            mConversationType = Conversation.ConversationType.PRIVATE;
-            mChatView.showChatTitle(contact.getName());
-            init();
-            return contact;
+    public BasicInfoProvider init(String conversationID, Conversation.ConversationType type) {
+        mConversationID = conversationID;
+        mConversationType = Conversation.ConversationType.PRIVATE;
+        BasicInfoProvider infoProvider=null;
+        switch (type) {
+            case PRIVATE:
+                ContactEntity contact = mAppClient.getContactManager().getContact(conversationID);
+                mChatView.showChatTitle(contact.getName());
+                infoProvider = contact;
+                break;
+            case GROUP:
+                GroupEntity group = mAppClient.getGroupManager().getGroup(conversationID);
+                mChatView.showChatTitle(group.getName());
+                infoProvider =group;
+                break;
         }
-        return null;
-    }
-
-    @Override
-    public GroupEntity initGroupChat(String conversationID) {
-        GroupEntity group = mAppClient.getGroupManager().getGroup(conversationID);
-        if (group != null) {
-            mConversationID = conversationID;
-            mConversationType = Conversation.ConversationType.GROUP;
-            mChatView.showChatTitle(group.getName());
-            init();
-            return group;
-        }
-        return null;
-    }
-
-    @Override
-    public String getConversationID() {
-        return mConversationID;
+        init();
+        return infoProvider;
     }
 
     private void init() {
@@ -110,12 +94,10 @@ public class ChatPresenter implements ChatContract.Presenter {
         sConversationID = mConversationID;
         mChatView.clearMessage();
         if (conversation.getUnreadMessageCount() != 0) {
-            mAppClient.getConversationManager().clearConversationUnreadStatus(mConversationType, mConversationID,null);
+            mAppClient.getConversationManager().clearConversationUnreadStatus(mConversationType, mConversationID, null);
         }
         List<Message> messageList = mAppClient.getChatManager().getHistoryMessagesBlock(mConversationType, mConversationID, -1, Constants.CHAT_MESSAGE_PAGE_SIZE);
-        mHasMoreMessage = messageList != null && messageList.size() >= Constants.CHAT_MESSAGE_PAGE_SIZE;
-        mChatView.enableLoadMoreHint(mHasMoreMessage);
-        mChatView.showNewMessage(messageList);
+        mChatView.showNewMessage(messageList, messageList != null && messageList.size() == Constants.CHAT_MESSAGE_PAGE_SIZE);
         mAppClient.getChatManager().addOnMessageReceiveListener(mOnChatMessageReceiveListener, sConversationID);
         mAppClient.getChatManager().addOnMessageSendStateChangeListener(mOnMessageSendListener, sConversationID);
         mAppClient.getContactManager().addContactChangeListener(mOnContactChangeListener);
@@ -128,18 +110,8 @@ public class ChatPresenter implements ChatContract.Presenter {
         mAppClient.getChatManager().removeOnMessageSendStateChangeListener(mOnMessageSendListener);
         mAppClient.getContactManager().removeContactChangeListener(mOnContactChangeListener);
         mAppClient.getConversationManager().removeConversationStateChangeListener(mOnConversationChangeListener);
-        mHandler.removeCallbacksAndMessages(null);
         sConversationID = null;
-        mHasMoreMessage = true;
-        mIsConversationStateChange = false;
-        mIsLoadingMore = false;
     }
-
-    @Override
-    public void resendMessage(Message message) {
-        sendMessage(message);
-    }
-
 
     @Override
     public void sendTextMessage(String content) {
@@ -183,37 +155,32 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     @Override
+    public void resendMessage(Message message) {
+        sendMessage(message);
+    }
+
+    @Override
     public void loadMoreMessage(int lastMessageID) {
-        mIsLoadingMore = true;
+        mChatView.enableLoadMoreHint(true);
         mAppClient.getChatManager().getHistoryMessages(
-                mConversationType, mConversationID,
+                mConversationType,
+                mConversationID,
                 lastMessageID,
                 Constants.CHAT_MESSAGE_PAGE_SIZE,
-                new RongIMClient.ResultCallback<List<Message>>() {
+                new LifecycleMVPResultCallback<List<Message>>(mChatView, false) {
                     @Override
                     public void onSuccess(final List<Message> messages) {
-                        if (messages == null || messages.size() < Constants.CHAT_MESSAGE_PAGE_SIZE) {
-                            mHasMoreMessage = false;
-                        }
-                        loadMoreComplete(messages);
+                        mChatView.showMoreMessage(messages, messages != null && messages.size() == Constants.CHAT_MESSAGE_PAGE_SIZE);
+                        mChatView.enableLoadMoreHint(false);
                     }
 
                     @Override
-                    public void onError(RongIMClient.ErrorCode errorCode) {
-                        LogUtil.e(errorCode.getMessage());
-                        loadMoreComplete(null);
+                    protected boolean onError(int code, String error) {
+                        mChatView.enableLoadMoreHint(false);
+                        LogUtil.e(error);
+                        return true;
                     }
                 });
-    }
-
-    @Override
-    public boolean isLoadingMore() {
-        return mIsLoadingMore;
-    }
-
-    @Override
-    public boolean hasMoreMessage() {
-        return mHasMoreMessage;
     }
 
     @Override
@@ -223,10 +190,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void saveMessageDraft(String draft) {
-        if (TextUtils.equals(mMessageDraft, draft) && !mIsConversationStateChange) {
-            return;
-        }
-        mAppClient.getConversationManager().saveConversationDraft(mConversationType, mConversationID, draft,null);
+        mAppClient.getConversationManager().saveConversationDraft(mConversationType, mConversationID, draft, null);
     }
 
     @Override
@@ -242,32 +206,11 @@ public class ChatPresenter implements ChatContract.Presenter {
         mAppClient.getChatManager().sendMessage(message);
     }
 
-    private void loadNewComplete(final Message message) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mChatView.showNewMessage(message);
-            }
-        });
-    }
-
-    private void loadMoreComplete(final List<Message> messages) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mIsLoadingMore = false;
-                mChatView.showMoreMessage(messages, mHasMoreMessage);
-            }
-        });
-    }
-
-
     private final ChatManager.OnChatMessageReceiveListener mOnChatMessageReceiveListener = new ChatManager.OnChatMessageReceiveListener() {
 
         @Override
         public void onChatMessageReceived(Message message, int untreatedCount) {
-            loadNewComplete(message);
-            mIsConversationStateChange = true;
+            mChatView.showNewMessage(message);
         }
     };
 
@@ -275,7 +218,6 @@ public class ChatPresenter implements ChatContract.Presenter {
         @Override
         public void onAttached(Message message) {
             mChatView.showNewMessage(message);
-            mIsConversationStateChange = true;
         }
 
         @Override
@@ -302,25 +244,13 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ConversationManager.OnConversationChangeListener mOnConversationChangeListener = new ConversationManager.OnConversationChangeListener() {
         @Override
         public void onConversationChange(Conversation conversation, int typeCode, int remainder) {
-            if (conversation.getTargetId().equals(sConversationID)) {
+            if (TextUtils.equals(mConversationID,conversation.getTargetId())) {
                 switch (typeCode) {
                     case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mChatView.clearMessage();
-                                mChatView.enableLoadMoreHint(false);
-                                mHasMoreMessage = false;
-                            }
-                        });
+                        mChatView.clearMessage();
                         break;
                     case ConversationManager.UPDATE_TYPE_REMOVE:
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mChatView.goBack();
-                            }
-                        });
+                        mChatView.goBack();
                         break;
                 }
             }

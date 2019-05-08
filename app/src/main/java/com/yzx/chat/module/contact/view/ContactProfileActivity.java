@@ -37,6 +37,7 @@ import java.util.List;
 
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
+import io.rong.imlib.model.Conversation;
 
 
 public class ContactProfileActivity extends BaseCompatActivity<ContactProfileContract.Presenter> implements ContactProfileContract.View {
@@ -190,7 +191,7 @@ public class ContactProfileActivity extends BaseCompatActivity<ContactProfileCon
     }
 
     private void startChatActivity() {
-        ChatActivity.startActivity(this, mContactID, ChatActivity.CONVERSATION_TYPE_PRIVATE);
+        ChatActivity.startActivity(this, mContactID, Conversation.ConversationType.PRIVATE);
         finish();
     }
 

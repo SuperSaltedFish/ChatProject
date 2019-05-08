@@ -43,6 +43,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.rong.imlib.model.Conversation;
 
 /**
  * Created by YZX on 2018年02月18日.
@@ -164,7 +165,7 @@ public class GroupProfileActivity extends BaseCompatActivity<GroupProfileContrac
         @Override
         public void onSingleClick(View v) {
             GroupEntity group = mPresenter.getGroup();
-            ChatActivity.startActivity(GroupProfileActivity.this, group.getGroupID(), ChatActivity.CONVERSATION_TYPE_GROUP);
+            ChatActivity.startActivity(GroupProfileActivity.this, group.getGroupID(), Conversation.ConversationType.GROUP);
             finish();
         }
     };

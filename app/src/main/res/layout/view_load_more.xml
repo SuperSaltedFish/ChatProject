@@ -9,17 +9,20 @@
         android:layout_width="0dp"
         android:layout_height="1px"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:background="@color/dividerColor" />
 
+    <ProgressBar
+        android:layout_width="16dp"
+        android:layout_height="16dp" />
+
     <TextView
-        android:id="@+id/LoadMoreView_mTvLoadMoreHint"
         android:layout_width="wrap_content"
-        android:minWidth="0dp"
         android:layout_height="match_parent"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="center"
+        android:minWidth="0dp"
         android:text="@string/LoadMoreHint_LoadingMore"
         android:textColor="@color/dividerColor"
         android:textSize="12sp" />
@@ -27,6 +30,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="1px"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:background="@color/dividerColor" />

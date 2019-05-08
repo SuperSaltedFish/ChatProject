@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
@@ -24,7 +25,6 @@ import android.widget.ViewSwitcher;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.core.util.LogUtil;
@@ -45,9 +45,10 @@ import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.util.VoicePlayer;
 import com.yzx.chat.util.VoiceRecorder;
 import com.yzx.chat.widget.adapter.ChatMessageAdapter;
-import com.yzx.chat.widget.listener.AutoCloseKeyboardScrollListener;
+import com.yzx.chat.widget.listener.AutoCloseKeyboardItemTouchListener;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
 import com.yzx.chat.widget.listener.OnRecyclerViewItemClickListener;
+import com.yzx.chat.widget.listener.OnScrollToBottomListener;
 import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelLayout;
@@ -60,12 +61,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.emoji.widget.EmojiEditText;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
 /**
@@ -90,15 +93,13 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private static final int REQUEST_PERMISSION_FILE = 5;
 
     private static final String INTENT_EXTRA_CONVERSATION_ID = "ConversationID";
-    private static final String INTENT_EXTRA_CONVERSATION_TYPE_CODE = "ConversationTypeCode";
+    private static final String INTENT_EXTRA_CONVERSATION_TYPE = "ConversationType";
 
-    public static final int CONVERSATION_TYPE_PRIVATE = 1;
-    public static final int CONVERSATION_TYPE_GROUP = 2;
 
-    public static void startActivity(Context context, String conversationID, int conversationType) {
+    public static void startActivity(Context context, String conversationID, Conversation.ConversationType type) {
         Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_ID, conversationID);
-        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE_CODE, conversationType);
+        intent.putExtra(ChatActivity.INTENT_EXTRA_CONVERSATION_TYPE, type);
         context.startActivity(intent);
     }
 
@@ -114,7 +115,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private AmplitudeView mAmplitudeView;
     private ConstraintLayout mClOtherPanelLayout;
     private View mFooterView;
-    private TextView mTvLoadMoreHint;
     private RecorderButton mBtnRecorder;
     private TextView mTvRecorderHint;
     private ImageView mIvSendImage;
@@ -135,7 +135,8 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
     private int isShowMoreTypeAfterCloseKeyBoard;
     private boolean isHasVoiceRecorderPermission;
 
-    private int mCurrentConversationType;
+    private String mCurrentConversationID;
+    private Conversation.ConversationType mCurrentConversationType;
 
     @Override
     protected int getLayoutID() {
@@ -160,7 +161,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mIvSendVideo = findViewById(R.id.ChatActivity_mIvSendVideo);
         mIvSendFile = findViewById(R.id.ChatActivity_mIvSendFile);
         mFooterView = getLayoutInflater().inflate(R.layout.view_load_more, (ViewGroup) getWindow().getDecorView(), false);
-        mTvLoadMoreHint = mFooterView.findViewById(R.id.LoadMoreView_mTvLoadMoreHint);
         mMessageList = new ArrayList<>(128);
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
@@ -179,7 +179,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
         setEmotionPanel();
 
-        setOtherPanel();
+        setOtherPanelClickListener();
 
         setKeyBoardSwitcherListener();
 
@@ -190,27 +190,22 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void setData(Intent intent) {
         String conversationID = intent.getStringExtra(INTENT_EXTRA_CONVERSATION_ID);
-        int conversationTypeCode = intent.getIntExtra(INTENT_EXTRA_CONVERSATION_TYPE_CODE, -1);
-        if (TextUtils.isEmpty(conversationID) || (conversationTypeCode != CONVERSATION_TYPE_PRIVATE && conversationTypeCode != CONVERSATION_TYPE_GROUP)) {
+        mCurrentConversationType = (Conversation.ConversationType) intent.getSerializableExtra(INTENT_EXTRA_CONVERSATION_TYPE);
+        if (TextUtils.isEmpty(conversationID) || mCurrentConversationType == null) {
             finish();
             return;
         }
-        if (TextUtils.equals(conversationID, mPresenter.getConversationID())) {
+        if (TextUtils.equals(conversationID, mCurrentConversationID)) {
             return;
         }
-        mCurrentConversationType = conversationTypeCode;
-        BasicInfoProvider basicInfoProvider;
-        if (mCurrentConversationType == CONVERSATION_TYPE_PRIVATE) {
-            basicInfoProvider = mPresenter.initPrivateChat(conversationID);
-        } else {
-            basicInfoProvider = mPresenter.initGroupChat(conversationID);
-        }
+        mCurrentConversationID = conversationID;
+        BasicInfoProvider basicInfoProvider = mPresenter.init(mCurrentConversationID, mCurrentConversationType);
         if (basicInfoProvider == null) {
             finish();
             return;
         }
         mAdapter.setBasicInfoProvider(basicInfoProvider);
-        mAdapter.setEnableNameDisplay(mCurrentConversationType == CONVERSATION_TYPE_GROUP);
+        mAdapter.setEnableNameDisplay(mCurrentConversationType == Conversation.ConversationType.GROUP);
 
         mEtContent.setText(mPresenter.getMessageDraft());
     }
@@ -236,32 +231,17 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         ((DefaultItemAnimator) (Objects.requireNonNull(mRvChatView.getItemAnimator()))).setSupportsChangeAnimations(false);
-        mRvChatView.addOnScrollListener(new AutoCloseKeyboardScrollListener(this) {
+        mRvChatView.addOnItemTouchListener(new AutoCloseKeyboardItemTouchListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
-                    if (isShowMoreInput()) {
-                        hideMoreInput();
-                    }
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                super.onInterceptTouchEvent(rv, e);
+                if (isShowMoreInput()) {
+                    hideMoreInput();
                 }
+                return false;
             }
         });
 
-        mAdapter.setScrollToBottomListener(new BaseRecyclerViewAdapter.OnScrollToBottomListener() {
-            @Override
-            public void OnScrollToBottom() {
-                if (mPresenter.isLoadingMore()) {
-                    return;
-                }
-                if (mPresenter.hasMoreMessage()) {
-                    mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_LoadingMore));
-                    mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
-                } else {
-                    mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
-                }
-            }
-        });
         mAdapter.setMessageOperationCallback(new ChatMessageAdapter.MessageOperationCallback() {
             @Override
             public void resendMessage(Message message) {
@@ -274,6 +254,23 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
         });
     }
+
+    private void setEnableAutoLoadMore(boolean isEnable) {
+        mRvChatView.removeOnScrollListener(mOnScrollToBottomListener);
+        if (isEnable) {
+            mRvChatView.addOnScrollListener(mOnScrollToBottomListener);
+        }
+    }
+
+    private final OnScrollToBottomListener mOnScrollToBottomListener = new OnScrollToBottomListener() {
+        @Override
+        public void onScrollToBottom() {
+            if (mAdapter.isHasFooterView()) {
+                return;
+            }
+            mPresenter.loadMoreMessage(mMessageList.get(mMessageList.size() - 1).getMessageId());
+        }
+    };
 
     private void setEditAndSendStateChangeListener() {
         mIsvSendMessage.setFactory(new ViewSwitcher.ViewFactory() {
@@ -332,7 +329,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mEmotionPanelLayout.setRightMenu(getDrawable(R.drawable.ic_setting), null);
     }
 
-    private void setOtherPanel() {
+    private void setOtherPanelClickListener() {
         mIvSendImage.setOnClickListener(new OnOnlySingleClickListener() {
             @Override
             public void onSingleClick(View v) {
@@ -572,12 +569,12 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
 
     private void enterProfile() {
         switch (mCurrentConversationType) {
-            case CONVERSATION_TYPE_PRIVATE:
-                ContactProfileActivity.startActivity(ChatActivity.this, mPresenter.getConversationID());
+            case PRIVATE:
+                ContactProfileActivity.startActivity(ChatActivity.this, mCurrentConversationID);
                 break;
-            case CONVERSATION_TYPE_GROUP:
+            case GROUP:
                 Intent intent = new Intent(ChatActivity.this, GroupProfileActivity.class);
-                intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mPresenter.getConversationID());
+                intent.putExtra(GroupProfileActivity.INTENT_EXTRA_GROUP_ID, mCurrentConversationID);
                 startActivity(intent);
         }
     }
@@ -720,15 +717,18 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mMessageList.add(0, message);
             mAdapter.notifyItemRangeInsertedEx(0, 1);
         }
+        mRvChatView.invalidateItemDecorations();
         mRvChatView.scrollToPosition(0);
     }
 
     @Override
-    public void showNewMessage(List<Message> messageList) {
+    public void showNewMessage(List<Message> messageList, boolean isHasMoreMessage) {
         mMessageList.addAll(0, messageList);
         mAdapter.notifyItemRangeInsertedEx(0, messageList.size());
         mRvChatView.scrollToPosition(0);
+        setEnableAutoLoadMore(isHasMoreMessage);
     }
+
 
     @Override
     public void showMoreMessage(List<Message> messageList, boolean isHasMoreMessage) {
@@ -739,11 +739,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mRvChatView.scrollToPosition(oldSize - 1);
             mAdapter.notifyItemChangedEx(mMessageList.size());
         }
-        if (!isHasMoreMessage) {
-            mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_NoMore));
-        } else if (messageList == null) {
-            mTvLoadMoreHint.setText(getString(R.string.LoadMoreHint_LoadFail));
-        }
+        setEnableAutoLoadMore(isHasMoreMessage);
     }
 
     @Override

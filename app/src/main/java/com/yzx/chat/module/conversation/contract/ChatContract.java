@@ -3,11 +3,11 @@ package com.yzx.chat.module.conversation.contract;
 import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.base.BasePresenter;
 import com.yzx.chat.base.BaseView;
-import com.yzx.chat.core.entity.ContactEntity;
-import com.yzx.chat.core.entity.GroupEntity;
+import com.yzx.chat.core.entity.BasicInfoProvider;
 
 import java.util.List;
 
+import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
 
 /**
@@ -22,7 +22,7 @@ public class ChatContract {
 
         void showNewMessage(Message message);
 
-        void showNewMessage(List<Message> messageList);
+        void showNewMessage(List<Message> messageList, boolean isHasMoreMessage);
 
         void showMoreMessage(List<Message> messageList, boolean isHasMoreMessage);
 
@@ -38,13 +38,7 @@ public class ChatContract {
 
     public interface Presenter extends BasePresenter<View> {
 
-        ContactEntity initPrivateChat(String conversationID);
-
-        GroupEntity initGroupChat(String conversationID);
-
-        String getConversationID();
-
-        void resendMessage(Message message);
+        BasicInfoProvider init(String conversationID, Conversation.ConversationType type);
 
         void sendTextMessage(String message);
 
@@ -58,11 +52,9 @@ public class ChatContract {
 
         void sendFileMessage(String filePath);
 
+        void resendMessage(Message message);
+
         void loadMoreMessage(int lastMessageID);
-
-        boolean isLoadingMore();
-
-        boolean hasMoreMessage();
 
         void setVoiceMessageAsListened(Message message);
 
