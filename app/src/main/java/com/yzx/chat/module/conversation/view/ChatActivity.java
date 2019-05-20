@@ -717,7 +717,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             mMessageList.add(0, message);
             mAdapter.notifyItemRangeInsertedEx(0, 1);
         }
-        mRvChatView.invalidateItemDecorations();
         mRvChatView.scrollToPosition(0);
     }
 

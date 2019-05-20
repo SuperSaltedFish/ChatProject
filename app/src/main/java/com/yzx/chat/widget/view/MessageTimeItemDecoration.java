@@ -8,6 +8,7 @@ import android.util.SparseLongArray;
 import android.view.View;
 
 import com.yzx.chat.configure.Constants;
+import com.yzx.chat.core.util.LogUtil;
 
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
             return;
         }
         int position = manager.getPosition(view);
+        LogUtil.e(position+"  "+view);
         if (position >= mMessageList.size()) {//有footer的时候
             return;
         }
@@ -95,8 +97,8 @@ public class MessageTimeItemDecoration extends RecyclerView.ItemDecoration {
                     if (positionStart == listSize - 1) {
                         mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
                     } else {
-                        Message nextItem = mMessageList.get(positionStart + 1);
-                        if (Math.abs(getMessageTime(message) - getMessageTime(nextItem)) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                        long latestTime = mTimeDisplayStateArray.get(mTimeDisplayStateArray.keyAt(mTimeDisplayStateArray.size() - 1), 0);
+                        if (Math.abs(getMessageTime(message) - latestTime) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
                             mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
                         }
                     }

@@ -37,14 +37,6 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return super.getItemViewType(position);
     }
 
-    public int getHeaderViewHolderType() {
-        return HOLDER_TYPE_HEADER;
-    }
-
-    public int getFooterViewHolderType() {
-        return HOLDER_TYPE_FOOTER;
-    }
-
     @NonNull
     @Override
     public final BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -19,8 +19,15 @@ public abstract class OnScrollToBottomListener extends RecyclerView.OnScrollList
             LinearLayoutManager linearManager = (LinearLayoutManager) manager;
             int totalCount = linearManager.getItemCount();
             if (linearManager.findLastVisibleItemPosition() == totalCount - 1) {
-                onScrollToBottom();
+                recyclerView.post(mCallRunnable);
             }
         }
     }
+
+    private final Runnable mCallRunnable = new Runnable() {
+        @Override
+        public void run() {
+            onScrollToBottom();
+        }
+    };
 }
