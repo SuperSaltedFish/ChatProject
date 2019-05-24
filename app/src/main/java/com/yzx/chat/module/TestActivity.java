@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+
 import java.util.Locale;
 
 

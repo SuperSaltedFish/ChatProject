@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Size;
+import android.util.SparseLongArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.core.PoiItem;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
@@ -25,7 +24,6 @@ import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.ImageOriginalActivity;
-import com.yzx.chat.module.common.view.LocationMapActivity;
 import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.BitmapUtil;
@@ -48,6 +46,7 @@ import androidx.annotation.ColorInt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import io.rong.imlib.model.Message;
 import io.rong.imlib.model.MessageContent;
 import io.rong.message.ContactNotificationMessage;
@@ -83,12 +82,15 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     private static final int HOLDER_TYPE_NOTIFICATION_MESSAGE = 13;
 
     private List<Message> mMessageList;
+    private SparseLongArray mTimeDisplayStateArray;
     private MessageOperationCallback mMessageOperationCallback;
     private BasicInfoProvider mBasicInfoProvider;
     private boolean isEnableNameDisplay;
 
     public ChatMessageAdapter(List<Message> messageList) {
         mMessageList = messageList;
+        mTimeDisplayStateArray = new SparseLongArray(48);
+        registerAdapterDataObserver();
     }
 
     @Override
@@ -127,13 +129,15 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void bindDataToViewHolder(MessageHolder holder, int position) {
+        Message message = mMessageList.get(position);
         holder.setMessageOperationCallback(mMessageOperationCallback);
+        holder.mViewHolder.setEnableTimeHint(mTimeDisplayStateArray.get(message.getMessageId(), -1) != -1);
         if (holder instanceof ReceiveMessageHolder) {
             ReceiveMessageHolder receiveMessageHolder = (ReceiveMessageHolder) holder;
             receiveMessageHolder.mBasicInfoProvider = mBasicInfoProvider;
             receiveMessageHolder.isEnableNameDisplay = isEnableNameDisplay;
         }
-        holder.setData(mMessageList.get(position));
+        holder.setData(message);
     }
 
     @Override
@@ -168,7 +172,79 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
 
     @Override
     public void onViewHolderRecycled(MessageHolder holder) {
-        holder.mHolder.onRecycle();
+        holder.onRecycle();
+    }
+
+    private void registerAdapterDataObserver() {
+        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                if (mMessageList == null || mMessageList.size() <= positionStart) {
+                    return;
+                }
+                int listSize = mMessageList.size();
+                if (itemCount == 1) {
+                    Message message = mMessageList.get(positionStart);
+                    if (positionStart == listSize - 1) {
+                        mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                    } else {
+                        long latestTime = mTimeDisplayStateArray.get(mTimeDisplayStateArray.keyAt(mTimeDisplayStateArray.size() - 1), 0);
+                        if (Math.abs(getMessageTime(message) - latestTime) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                            mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                        }
+                    }
+                } else {
+                    long latestTime;
+                    if (positionStart + itemCount == listSize) {//从最末尾插入
+                        latestTime = 0;
+                    } else { //从中间插入
+                        latestTime = getMessageTime(mMessageList.get(positionStart + itemCount));
+                    }
+                    for (int i = positionStart + itemCount - 1; i >= positionStart; i--) {
+                        Message message = mMessageList.get(i);
+                        long messageTime = getMessageTime(message);
+                        if (Math.abs(latestTime - messageTime) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                            mTimeDisplayStateArray.append(message.getMessageId(), messageTime);
+                            latestTime = messageTime;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                for (int i = toPosition, count = toPosition + itemCount; i < count; i++) {
+                    mTimeDisplayStateArray.delete(mMessageList.get(i).getMessageId());
+                }
+                onItemRangeRemoved(fromPosition, itemCount);
+                onItemRangeInserted(toPosition, itemCount);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                if (mMessageList == null || mMessageList.size() == 0) {
+                    mTimeDisplayStateArray.clear();
+                    return;
+                }
+                if (mMessageList.size() < positionStart || positionStart == 0) {
+                    return;
+                }
+                int start = positionStart - 1;
+                Message message = mMessageList.get(start);
+                if (positionStart == mMessageList.size()) {
+                    mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                } else {
+                    Message nextItem = mMessageList.get(start + 1);
+                    if (Math.abs(getMessageTime(message) - getMessageTime(nextItem)) >= Constants.CHAT_MESSAGE_TIME_DISPLAY_INTERVAL) {
+                        mTimeDisplayStateArray.put(message.getMessageId(), getMessageTime(message));
+                    }
+                }
+            }
+        });
+    }
+
+    private static long getMessageTime(Message message) {
+        return message.getMessageDirection() == Message.MessageDirection.SEND ? message.getSentTime() : message.getReceivedTime();
     }
 
 
@@ -184,55 +260,56 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         mMessageOperationCallback = messageOperationCallback;
     }
 
+
     static class MessageHolder extends BaseRecyclerViewAdapter.BaseViewHolder {
         Message mMessage;
         MessageOperationCallback mMessageOperationCallback;
-        Holder mHolder;
+        Holder mViewHolder;
 
         MessageHolder(View itemView, int type) {
             super(itemView);
             switch (type) {
                 case HOLDER_TYPE_SEND_MESSAGE_TEXT:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_TEXT:
-                    mHolder = new TextViewHolder(itemView);
+                    mViewHolder = new TextViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_VOICE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VOICE:
-                    mHolder = new VoiceViewHolder(itemView);
+                    mViewHolder = new VoiceViewHolder(itemView);
                     if (type == HOLDER_TYPE_RECEIVE_MESSAGE_VOICE) {
-                        ((VoiceViewHolder) mHolder).setVisualizerColor(AndroidHelper.getColor(R.color.colorAccentLight));
+                        ((VoiceViewHolder) mViewHolder).setVisualizerColor(AndroidHelper.getColor(R.color.colorAccentLight));
                     }
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_IMAGE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_IMAGE:
-                    mHolder = new ImageViewHolder(itemView);
+                    mViewHolder = new ImageViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_LOCATION:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION:
-                    mHolder = new LocationViewHolder(itemView);
+                    mViewHolder = new LocationViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_VIDEO:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO:
-                    mHolder = new VideoViewHolder(itemView);
+                    mViewHolder = new VideoViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_SEND_MESSAGE_FILE:
                 case HOLDER_TYPE_RECEIVE_MESSAGE_FILE:
-                    mHolder = new FileViewHolder(itemView);
+                    mViewHolder = new FileViewHolder(itemView);
                     break;
                 case HOLDER_TYPE_NOTIFICATION_MESSAGE:
-                    mHolder = new NotificationViewHolder(itemView);
+                    mViewHolder = new NotificationViewHolder(itemView);
                     break;
             }
         }
 
         void onRecycle() {
-            mHolder.onRecycle();
+            mViewHolder.onRecycle();
         }
 
         @CallSuper
         protected void setData(Message message) {
             mMessage = message;
-            mHolder.parseMessageContent(mMessage);
+            mViewHolder.parseMessageContent(mMessage);
         }
 
         void setMessageOperationCallback(MessageOperationCallback messageOperationCallback) {
@@ -319,11 +396,23 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
     }
 
     abstract static class Holder {
+        TextView mTvTime;
         Message mMessage;
+
+        Holder(View itemView) {
+            mTvTime = itemView.findViewById(R.id.mTvTime);
+        }
+
+        private void setEnableTimeHint(boolean isEnable) {
+            mTvTime.setVisibility(isEnable ? View.VISIBLE : View.GONE);
+        }
 
         @CallSuper
         public void parseMessageContent(Message message) {
             mMessage = message;
+            if (mTvTime.getVisibility() == View.VISIBLE) {
+                mTvTime.setText(IMMessageHelper.messageTimeToString(getMessageTime(mMessage)));
+            }
         }
 
         void onRecycle() {
@@ -334,6 +423,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         TextView mTvNotificationMessage;
 
         NotificationViewHolder(View itemView) {
+            super(itemView);
             mTvNotificationMessage = itemView.findViewById(R.id.mTvNotificationMessage);
         }
 
@@ -353,6 +443,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         TextView mTvTextContent;
 
         TextViewHolder(View itemView) {
+            super(itemView);
             mTvTextContent = itemView.findViewById(R.id.mTvTextContent);
         }
 
@@ -368,6 +459,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         RoundImageView mIvImageContent;
 
         ImageViewHolder(View itemView) {
+            super(itemView);
             mIvImageContent = itemView.findViewById(R.id.mIvImageContent);
             mIvImageContent.setRoundRadius(AndroidHelper.dip2px(4));
             setupClickListener();
@@ -435,6 +527,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         TextView mTvAddress;
 
         LocationViewHolder(View itemView) {
+            super(itemView);
             mIvMapImage = itemView.findViewById(R.id.mIvMapImage);
             mTvTitle = itemView.findViewById(R.id.mTvTitle);
             mTvAddress = itemView.findViewById(R.id.mTvAddress);
@@ -457,11 +550,11 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         }
 
         void setupClickListener() {
-            LocationMessage locationMessage = (LocationMessage) mMessage.getContent();
-            String poi = locationMessage.getPoi();
-            String[] content = poi.split("/");
-            PoiItem poiItem = new PoiItem(locationMessage.getExtra(), new LatLonPoint(locationMessage.getLat(), locationMessage.getLng()), content[0], content[1]);
-            LocationMapActivity.startOfShareType(mIvMapImage.getContext(), poiItem);
+//            LocationMessage locationMessage = (LocationMessage) mMessage.getContent();
+//            String poi = locationMessage.getPoi();
+//            String[] content = poi.split("/");
+//            PoiItem poiItem = new PoiItem(locationMessage.getExtra(), new LatLonPoint(locationMessage.getLat(), locationMessage.getLng()), content[0], content[1]);
+//            LocationMapActivity.startOfShareType(mIvMapImage.getContext(), poiItem);
         }
 
         @Override
@@ -483,6 +576,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         private CountDownTimer mCountDownTimer;
 
         VoiceViewHolder(View itemView) {
+            super(itemView);
             mTvVoiceDuration = itemView.findViewById(R.id.ChatAdapter_mTvVoiceDuration);
             mVisualizerView = itemView.findViewById(R.id.mVisualizerView);
             mIvListenedState = itemView.findViewById(R.id.ChatAdapter_mIvListenedState);
@@ -637,6 +731,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         TextView mTvVideoDuration;
 
         VideoViewHolder(View itemView) {
+            super(itemView);
             mIvVideoThumbnail = itemView.findViewById(R.id.mIvVideoThumbnail);
             mTvVideoDuration = itemView.findViewById(R.id.mTvVideoDuration);
             mIvVideoThumbnail.setRoundRadius(AndroidHelper.dip2px(4));
@@ -716,6 +811,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         TextView mTvFileSize;
 
         FileViewHolder(View itemView) {
+            super(itemView);
             mTvFileName = itemView.findViewById(R.id.mTvFileName);
             mTvFileSize = itemView.findViewById(R.id.mTvFileSize);
         }

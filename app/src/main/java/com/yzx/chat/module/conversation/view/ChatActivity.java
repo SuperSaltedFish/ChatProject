@@ -38,7 +38,6 @@ import com.yzx.chat.module.conversation.contract.ChatContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.group.view.GroupProfileActivity;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.tool.IMMessageHelper;
 import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.EmojiUtil;
@@ -53,7 +52,6 @@ import com.yzx.chat.widget.view.AmplitudeView;
 import com.yzx.chat.widget.view.EmojiRecyclerview;
 import com.yzx.chat.widget.view.EmotionPanelLayout;
 import com.yzx.chat.widget.view.KeyboardPanelSwitcher;
-import com.yzx.chat.widget.view.MessageTimeItemDecoration;
 import com.yzx.chat.widget.view.RecorderButton;
 
 import java.io.File;
@@ -217,17 +215,6 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         layoutManager.setReverseLayout(true);
         mRvChatView.setLayoutManager(layoutManager);
 
-        MessageTimeItemDecoration decoration = new MessageTimeItemDecoration(mAdapter, mMessageList);
-        decoration.setTextSize(AndroidHelper.sp2px(13));
-        decoration.setTextColor(AndroidHelper.getColor(R.color.textColorSecondaryBlackLight));
-        decoration.setDecorationHeight((int) AndroidHelper.dip2px(40));
-        decoration.setFormatAdapter(new MessageTimeItemDecoration.FormatAdapter() {
-            @Override
-            public String formatTimeToString(long milliseconds) {
-                return IMMessageHelper.messageTimeToString(milliseconds);
-            }
-        });
-        mRvChatView.addItemDecoration(decoration);
         mRvChatView.setAdapter(mAdapter);
         mRvChatView.setHasFixedSize(true);
         ((DefaultItemAnimator) (Objects.requireNonNull(mRvChatView.getItemAnimator()))).setSupportsChangeAnimations(false);
