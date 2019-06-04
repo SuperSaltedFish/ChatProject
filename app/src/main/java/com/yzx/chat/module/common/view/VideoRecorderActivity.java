@@ -1,27 +1,18 @@
 package com.yzx.chat.module.common.view;
 
-import android.animation.Animator;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
-import android.view.Surface;
-import android.view.TextureView;
-import android.view.View;
+import android.os.HandlerThread;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.Constants;
-import com.yzx.chat.core.util.MD5Util;
-import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.util.VideoDecoder;
-import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
-import com.yzx.chat.widget.view.Camera2RecodeView;
-import com.yzx.chat.widget.view.RecorderButton;
+import com.yzx.chat.util.VideoEncoder;
+import com.yzx.chat.widget.view.CameraView;
+import com.yzx.chat.widget.view.RecodeView;
 
 
 /**
@@ -30,6 +21,7 @@ import com.yzx.chat.widget.view.RecorderButton;
  */
 public class VideoRecorderActivity extends BaseCompatActivity {
 
+    private static final String TAG = VideoRecorderActivity.class.getName();
     public static final String INTENT_EXTRA_SAVE_PATH = "SavePath";
     public static final int RESULT_CODE = VideoRecorderActivity.class.hashCode();
 
@@ -40,18 +32,11 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     private static final int MAX_RECORDER_DURATION = Constants.MAX_VIDEO_RECORDER_DURATION;
     private static final int MIN_TRIGGER_RECORDER_TIME = 300;
 
-    private ImageView mIvClose;
-    private ImageView mIvFlash;
-    private ImageView mIvSwitchCamera;
-    private ImageView mIvRestart;
-    private ImageView mIvConfirm;
-    private Camera2RecodeView mCamera2RecodeView;
-    private TextureView mVideoTextureView;
-    private RecorderButton mRecorderButton;
-    private Handler mHandler;
-    private VideoDecoder mVideoDecoder;
 
-    private String mCurrentVideoPath;
+    private RecodeView mRecodeView;
+    private Handler mWorkHandle;
+    private VideoEncoder mVideoEncoder;
+
 
     @Override
     protected int getLayoutID() {
@@ -60,15 +45,11 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mIvClose = findViewById(R.id.VideoRecorderActivity_mIvClose);
-        mIvFlash = findViewById(R.id.VideoRecorderActivity_mIvFlash);
-        mIvSwitchCamera = findViewById(R.id.VideoRecorderActivity_mIvSwitchCamera);
-        mIvRestart = findViewById(R.id.VideoRecorderActivity_mIvRestart);
-        mIvConfirm = findViewById(R.id.VideoRecorderActivity_mIvConfirm);
-        mCamera2RecodeView = findViewById(R.id.VideoRecorderActivity_mCamera2RecodeView);
-        mRecorderButton = findViewById(R.id.VideoRecorderActivity_mRecorderButton);
-        mVideoTextureView = findViewById(R.id.VideoRecorderActivity_mVideoTextureView);
-        mHandler = new Handler();
+        mRecodeView = findViewById(R.id.mRecodeView);
+
+        HandlerThread handlerThread = new HandlerThread(TAG);
+        handlerThread.start();
+        mWorkHandle = new Handler(handlerThread.getLooper());
     }
 
     @Override
@@ -77,208 +58,33 @@ public class VideoRecorderActivity extends BaseCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setSystemUiMode(SYSTEM_UI_MODE_FULLSCREEN);
         setBrightness(0.9f);
-        mIvFlash.setOnClickListener(mOnViewClick);
-        mIvClose.setOnClickListener(mOnViewClick);
-        mIvConfirm.setOnClickListener(mOnViewClick);
-        mIvRestart.setOnClickListener(mOnViewClick);
-        mIvSwitchCamera.setOnClickListener(mOnViewClick);
-        mRecorderButton.setOnRecorderTouchListener(mOnRecorderTouchListener);
+
+//        mRecodeView.setCaptureCallback(mCaptureCallback,mWorkHandle);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mCamera2RecodeView.onResume();
-        if (mVideoDecoder != null && !mVideoDecoder.isPlaying()) {
-            mVideoDecoder.start();
-        }
+        mRecodeView.startPreview();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mCamera2RecodeView.onPause();
-        if (mVideoDecoder != null && mVideoDecoder.isPlaying()) {
-            mVideoDecoder.pause();
-        } else {
-            resetAndTryPlayRecorderContent();
-        }
+        mRecodeView.stopPreview();
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        mHandler.removeCallbacksAndMessages(null);
-        mCamera2RecodeView.closeCamera();
-        if (mVideoDecoder != null) {
-            mVideoDecoder.release();
-        }
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        super.onDestroy();
     }
 
-    private void resetAndTryPlayRecorderContent() {
-        mHandler.removeCallbacksAndMessages(null);
-        mRecorderButton.reset();
-        mRecorderButton.animate().scaleX(1f).scaleY(1f).setListener(null).start();
-        if (mCamera2RecodeView.isRecording()) {
-            mCamera2RecodeView.stopRecorder();
-            if (mVideoDecoder != null) {
-                mVideoDecoder.release();
-            }
-            mVideoDecoder = VideoDecoder.createEncoder(mCurrentVideoPath, new Surface(mVideoTextureView.getSurfaceTexture()));
-            if (mVideoDecoder != null) {
-                mVideoDecoder.start();
-                setCurrentState(CURRENT_STATE_PLAY);
-            } else {
-                showLongToast(getString(R.string.VideoRecorderActivity_PlayVideoError));
-                restartPreview();
-            }
-        } else {
-            setCurrentState(CURRENT_STATE_PREVIEW);
-        }
-    }
-
-    private void setCurrentState(int state) {
-        switch (state) {
-            case CURRENT_STATE_PREVIEW:
-                mIvClose.setVisibility(View.VISIBLE);
-                mIvFlash.setVisibility(View.VISIBLE);
-                mIvConfirm.setVisibility(View.INVISIBLE);
-                mIvRestart.setVisibility(View.INVISIBLE);
-                mVideoTextureView.setVisibility(View.INVISIBLE);
-                mIvSwitchCamera.setVisibility(View.VISIBLE);
-                mRecorderButton.setVisibility(View.VISIBLE);
-                mCamera2RecodeView.setVisibility(View.VISIBLE);
-                break;
-            case CURRENT_STATE_RECORDER:
-                mIvClose.setVisibility(View.INVISIBLE);
-                mIvFlash.setVisibility(View.VISIBLE);
-                mIvConfirm.setVisibility(View.INVISIBLE);
-                mIvRestart.setVisibility(View.INVISIBLE);
-                mVideoTextureView.setVisibility(View.INVISIBLE);
-                mIvSwitchCamera.setVisibility(View.INVISIBLE);
-                mRecorderButton.setVisibility(View.VISIBLE);
-                mCamera2RecodeView.setVisibility(View.VISIBLE);
-                break;
-            case CURRENT_STATE_PLAY:
-                mIvClose.setVisibility(View.VISIBLE);
-                mIvFlash.setVisibility(View.INVISIBLE);
-                mIvConfirm.setVisibility(View.VISIBLE);
-                mIvRestart.setVisibility(View.VISIBLE);
-                mVideoTextureView.setVisibility(View.VISIBLE);
-                mIvSwitchCamera.setVisibility(View.INVISIBLE);
-                mRecorderButton.setVisibility(View.INVISIBLE);
-                mCamera2RecodeView.setVisibility(View.INVISIBLE);
-                break;
-        }
-    }
-
-
-    private void restartPreview() {
-        mCamera2RecodeView.restartPreview();
-        setCurrentState(CURRENT_STATE_PREVIEW);
-        mCurrentVideoPath = null;
-    }
-
-    private void confirmVideo() {
-        if (!TextUtils.isEmpty(mCurrentVideoPath)) {
-            Intent intent = new Intent();
-            intent.putExtra(INTENT_EXTRA_SAVE_PATH, mCurrentVideoPath);
-            setResult(RESULT_CODE, intent);
-        }
-        finish();
-    }
-
-    private final View.OnClickListener mOnViewClick = new OnOnlySingleClickListener() {
+    private CameraView.CaptureCallback mCaptureCallback = new CameraView.CaptureCallback() {
         @Override
-        public void onSingleClick(View v) {
-            switch (v.getId()) {
-                case R.id.VideoRecorderActivity_mIvClose:
-                    finish();
-                    break;
-                case R.id.VideoRecorderActivity_mIvFlash:
-                    mIvFlash.setSelected(!mIvFlash.isSelected());
-                    mCamera2RecodeView.setEnableFlash(mIvFlash.isSelected());
-                    break;
-                case R.id.VideoRecorderActivity_mIvSwitchCamera:
-                    mIvSwitchCamera.setSelected(!mIvSwitchCamera.isSelected());
-                    if (mIvSwitchCamera.isSelected()) {
-                        mCamera2RecodeView.switchCamera(Camera2RecodeView.CAMERA_TYPE_FRONT);
-                    } else {
-                        mCamera2RecodeView.switchCamera(Camera2RecodeView.CAMERA_TYPE_BACK);
-                    }
-                    break;
-                case R.id.VideoRecorderActivity_mIvRestart:
-                    if (mVideoDecoder != null) {
-                        mVideoDecoder.release();
-                    }
-                    restartPreview();
-                    break;
-                case R.id.VideoRecorderActivity_mIvConfirm:
-                    confirmVideo();
-                    break;
-            }
+        public void onCapture(byte[] yuv, int width, int height, int orientation) {
+
         }
     };
 
-
-    private final RecorderButton.OnRecorderTouchListener mOnRecorderTouchListener = new RecorderButton.OnRecorderTouchListener() {
-        @Override
-        public void onDown() {
-            mRecorderButton
-                    .animate()
-                    .scaleX(1.3f)
-                    .scaleY(1.3f)
-                    .setDuration(MIN_TRIGGER_RECORDER_TIME)
-                    .setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            mCurrentVideoPath = DirectoryHelper.getVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
-                            if (!mCamera2RecodeView.startRecorder(mCurrentVideoPath)) {
-                                showToast(getString(R.string.VideoRecorderActivity_RecorderFail));
-                                resetAndTryPlayRecorderContent();
-                            } else {
-                                mRecorderButton.startRecorderAnimation(MAX_RECORDER_DURATION, null);
-                                setCurrentState(CURRENT_STATE_RECORDER);
-                                mHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        resetAndTryPlayRecorderContent();
-                                    }
-                                }, MAX_RECORDER_DURATION);
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            resetAndTryPlayRecorderContent();
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    }).start();
-        }
-
-        @Override
-        public void onUp() {
-            resetAndTryPlayRecorderContent();
-        }
-
-        @Override
-        public void onOutOfBoundsChange(boolean isOutOfBounds) {
-
-        }
-
-        @Override
-        public void onCancel() {
-            resetAndTryPlayRecorderContent();
-        }
-    };
 }

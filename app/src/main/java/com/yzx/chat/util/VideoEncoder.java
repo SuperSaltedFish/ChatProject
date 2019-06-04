@@ -2,6 +2,7 @@ package com.yzx.chat.util;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
@@ -13,6 +14,7 @@ import android.view.Surface;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import androidx.annotation.NonNull;
@@ -25,53 +27,24 @@ public class VideoEncoder {
 
     private static final String TAG = VideoEncoder.class.getSimpleName();
 
+    private static final String MIME_TYPE_VIDEO = MediaFormat.MIMETYPE_VIDEO_AVC;
+    private static final String MIME_TYPE_AUDIO = MediaFormat.MIMETYPE_AUDIO_AAC;
+
     private static final int AUDIO_SAMPLE_RATE = 44100;
     private static final int AUDIO_BIT_RATE = 64000;
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BIT_PER_SAMPLE = 16;
+    private static final int AUDIO_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
+    private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
     private static final int VIDEO_FRAME_RATE = 30;
 
-    public static VideoEncoder createVideoEncoder(final int videoWidth, final int videoHeight, final int videoRotation) {
-        try {
-            return new VideoEncoder(videoWidth, videoHeight, videoRotation);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static MediaFormat createVideoEncoderMediaFormat(int videoWidth, int videoHeight) {
-        MediaFormat format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, videoWidth, videoHeight);
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, videoWidth * videoHeight * 2);
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
-        format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000 / VIDEO_FRAME_RATE);
-        format.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileHigh);
-        format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
-
-        return format;
-    }
-
-    private static MediaFormat createAudioEncoderMediaFormat() {
-        MediaFormat format = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_COUNT);
-        format.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        format.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_MONO);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
-        return format;
-    }
-
-    private int mVideoWidth;
-    private int mVideoHeight;
-    private int mVideoRotation;
 
     private MediaCodec mVideoCodec;
     private MediaCodec mAudioCodec;
     private Handler mEncodeHandler;
     private AudioRecord mAudioRecord;
     private MediaMuxer mMediaMuxer;
-    private Surface mInputSurface;
 
 
     private byte[] mAudioBuffer;
@@ -81,79 +54,151 @@ public class VideoEncoder {
     private boolean isStartingMuxer;
     private boolean isStartingEncoded;
 
-    private VideoEncoder(int videoWidth, int videoHeight, int videoRotation) throws IOException {
-        mVideoWidth = videoWidth;
-        mVideoHeight = videoHeight;
-        mVideoRotation = videoRotation;
-        HandlerThread codecThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-        codecThread.start();
-        mEncodeHandler = new Handler(codecThread.getLooper());
-        final CountDownLatch latch = new CountDownLatch(1);
-        mEncodeHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                do {
-                    try {
-                        mVideoCodec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC);
-                    } catch (IOException | IllegalArgumentException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                    try {
-                        mAudioCodec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_AUDIO_AAC);
-                    } catch (IOException | IllegalArgumentException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                    try {
-                        int buffSize = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-                        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, AUDIO_SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buffSize);
-                        mAudioBuffer = new byte[buffSize];
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                    configureCodec();
-                } while (false);
-                latch.countDown();
+    public VideoEncoder() throws IOException, IllegalArgumentException {
+        try {
+            mVideoCodec = MediaCodec.createEncoderByType(MIME_TYPE_VIDEO);
+            mAudioCodec = MediaCodec.createEncoderByType(MIME_TYPE_AUDIO);
+            int buffSize = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_CONFIG, AUDIO_FORMAT);
+            mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_CONFIG, AUDIO_FORMAT, buffSize);
+            mAudioBuffer = new byte[buffSize];
+        } catch (IOException | IllegalArgumentException e) {
+            release();
+            throw e;
+        }
+        createDefaultAudioMediaFormat();
+    }
+
+    public MediaFormat createDefaultVideoMediaFormat(int videoWidth, int videoHeight, boolean isSurfaceInput) {
+        MediaCodecInfo.CodecCapabilities capabilities = getVideoMediaCodecInfo().getCapabilitiesForType(MIME_TYPE_VIDEO);
+        MediaCodecInfo.VideoCapabilities videoCapabilities = capabilities.getVideoCapabilities();
+        MediaFormat format = capabilities.getDefaultFormat();
+        if (!videoCapabilities.isSizeSupported(videoWidth, videoHeight)) {
+            return null;
+        } else {
+            format.setInteger(MediaFormat.KEY_WIDTH, videoWidth);
+            format.setInteger(MediaFormat.KEY_HEIGHT, videoHeight);
+        }
+        if (videoCapabilities.getSupportedFrameRatesFor(videoWidth, videoHeight).contains((double) VIDEO_FRAME_RATE)) {
+            format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
+        }
+        if (isSurfaceInput) {
+            if (Arrays.binarySearch(capabilities.colorFormats, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface) >= 0) {
+                format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+                format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, (int) Math.ceil(1000000f / VIDEO_FRAME_RATE));
+            } else {
+                return null;
             }
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } else {
+            if (Arrays.binarySearch(capabilities.colorFormats, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible) >= 0) {
+                format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
+            } else {
+                return null;
+            }
         }
-        if (mVideoCodec == null || mAudioCodec == null || mAudioRecord == null) {
-            release();
-            throw new IOException("init VoiceEncoder fail");
+        if (capabilities.getEncoderCapabilities().isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)) {
+            format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
         }
+        for (MediaCodecInfo.CodecProfileLevel profileLevel : capabilities.profileLevels) {
+            switch (profileLevel.profile) {
+                case MediaCodecInfo.CodecProfileLevel.AVCProfileHigh:
+                case MediaCodecInfo.CodecProfileLevel.AVCProfileHigh10:
+                case MediaCodecInfo.CodecProfileLevel.AVCProfileHigh422:
+                case MediaCodecInfo.CodecProfileLevel.AVCProfileHigh444:
+                    format.setInteger(MediaFormat.KEY_PROFILE, profileLevel.profile);
+                    format.setInteger(MediaFormat.KEY_LEVEL, profileLevel.level);
+                    break;
+            }
+        }
+        format.setInteger(MediaFormat.KEY_BIT_RATE, videoWidth * videoHeight * 3);
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
+        return format;
     }
 
-    private void configureCodec() {
-        mVideoCodec.reset();
-        mAudioCodec.reset();
-        try {
-            mVideoCodec.configure(createVideoEncoderMediaFormat(mVideoWidth, mVideoHeight), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-            mAudioCodec.configure(createAudioEncoderMediaFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-            mVideoCodec.setCallback(new VideoEncodeCallback());
-            mAudioCodec.setCallback(new AudioEncodeCallback());
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            release();
+    public MediaFormat createDefaultAudioMediaFormat() {
+        MediaCodecInfo.CodecCapabilities capabilities = getAudioMediaCodecInfo().getCapabilitiesForType(MIME_TYPE_AUDIO);
+        MediaCodecInfo.AudioCapabilities audioCapabilities = capabilities.getAudioCapabilities();
+        MediaFormat format = capabilities.getDefaultFormat();
+        for (MediaCodecInfo.CodecProfileLevel profileLevel : capabilities.profileLevels) {
+            if (profileLevel.profile == MediaCodecInfo.CodecProfileLevel.AACObjectLC) {
+                format.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+                break;
+            }
         }
+        int[] supportedSampleRates = audioCapabilities.getSupportedSampleRates();
+        if (supportedSampleRates == null || supportedSampleRates.length == 0) {
+            return null;
+        }
+        if (Arrays.binarySearch(supportedSampleRates, AUDIO_SAMPLE_RATE) >= 0) {
+            format.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
+        } else {
+            format.setInteger(MediaFormat.KEY_SAMPLE_RATE, supportedSampleRates[0]);
+        }
+        if (audioCapabilities.getBitrateRange().contains(AUDIO_BIT_RATE)) {
+            format.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
+        } else {
+            format.setInteger(MediaFormat.KEY_BIT_RATE, audioCapabilities.getBitrateRange().getLower());
+        }
+        format.setString(MediaFormat.KEY_MIME, MIME_TYPE_AUDIO);
+        format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, Math.min(AUDIO_CHANNEL_COUNT, audioCapabilities.getMaxInputChannelCount()));
+        format.setInteger(MediaFormat.KEY_CHANNEL_MASK, AUDIO_CHANNEL_CONFIG);
+        return format;
     }
 
-    public boolean start(String filePath) {
+
+    public Surface configureCodec(MediaFormat videoFormat, MediaFormat audioFormat, boolean isSurfaceInput) {
         synchronized (this) {
-            if (isStartingEncoded) {
-                throw new RuntimeException("The VoiceCodec is already Starting");
+            checkIsRelease();
+            reset();
+            try {
+                HandlerThread codecThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+                codecThread.start();
+                mEncodeHandler = new Handler(codecThread.getLooper());
+                mAudioCodec.setCallback(new AudioEncodeCallback(), mEncodeHandler);
+                if (isSurfaceInput) {
+                    mVideoCodec.setCallback(new VideoSurfaceInputEncodeCallback(), mEncodeHandler);
+                }
+                mVideoCodec.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+                mAudioCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+                return mVideoCodec.createInputSurface();
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                reset();
+                return null;
             }
-            if (mVideoCodec == null || mAudioCodec == null) {
-                throw new RuntimeException("The VoiceCodec is already release");
+        }
+    }
+
+    public Surface createInputSurface() {
+        synchronized (this) {
+            return mVideoCodec.createInputSurface();
+        }
+    }
+
+
+    public void reset() {
+        synchronized (this) {
+            checkIsRelease();
+            mVideoCodec.reset();
+            mAudioCodec.reset();
+            mVideoCodec.setCallback(null);
+            mAudioCodec.setCallback(null);
+            if (mEncodeHandler != null) {
+                mEncodeHandler.removeCallbacksAndMessages(null);
+                mEncodeHandler.getLooper().quit();
+                mEncodeHandler = null;
+            }
+        }
+    }
+
+    public boolean start(String filePath, int videoRotationDegrees) {
+        synchronized (this) {
+            checkIsRelease();
+            if (isStartingEncoded) {
+                throw new RuntimeException("The VideoEncoder is already Starting");
             }
             try {
                 mMediaMuxer = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-                mMediaMuxer.setOrientationHint(mVideoRotation);
+                mMediaMuxer.setOrientationHint(videoRotationDegrees);
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -171,6 +216,7 @@ public class VideoEncoder {
 
     public void stop() {
         synchronized (this) {
+            checkIsRelease();
             try {
                 if (!isStartingEncoded) {
                     return;
@@ -188,10 +234,8 @@ public class VideoEncoder {
                         if (isStartingMuxer) {
                             mMediaMuxer.stop();
                         }
-                        configureCodec();
                         mMediaMuxer.release();
                         mMediaMuxer = null;
-                        mInputSurface = null;
                         isStartingEncoded = false;
                         latch.countDown();
                     }
@@ -204,8 +248,15 @@ public class VideoEncoder {
 
     }
 
+    public boolean isRunning() {
+        synchronized (this) {
+            return isStartingEncoded;
+        }
+    }
+
     public void release() {
         synchronized (this) {
+            reset();
             if (mVideoCodec != null) {
                 mVideoCodec.release();
                 mVideoCodec = null;
@@ -214,10 +265,6 @@ public class VideoEncoder {
                 mAudioCodec.release();
                 mAudioCodec = null;
             }
-            if (mEncodeHandler != null) {
-                mEncodeHandler.getLooper().quitSafely();
-                mEncodeHandler = null;
-            }
             if (mAudioRecord != null) {
                 mAudioRecord.release();
             }
@@ -225,23 +272,33 @@ public class VideoEncoder {
 
     }
 
-    public boolean isRunning() {
-        synchronized (this) {
-            return isStartingEncoded;
+    public MediaCodecInfo getVideoMediaCodecInfo() {
+        checkIsRelease();
+        return mVideoCodec.getCodecInfo();
+    }
+
+    public MediaCodecInfo getAudioMediaCodecInfo() {
+        checkIsRelease();
+        return mAudioCodec.getCodecInfo();
+    }
+
+    private void checkIsRelease() {
+        if (mVideoCodec == null || mAudioCodec == null) {
+            throw new RuntimeException("The VideoEncoder is already release");
         }
     }
 
-
-    public Surface getInputSurface() {
-        synchronized (this) {
-            if (mInputSurface == null && !isStartingEncoded) {
-                mInputSurface = mVideoCodec.createInputSurface();
-            }
+    public void addVideoData(byte[] data, long presentationTimeUs) {
+        checkIsRelease();
+        if(!isRunning()){
+            throw new RuntimeException("The VideoEncoder not in the Executing state.");
         }
-        return mInputSurface;
+        int index = mVideoCodec.dequeueInputBuffer(-1);
+      Image image =  mVideoCodec.getInputImage(index);
+
     }
 
-    private class VideoEncodeCallback extends MediaCodec.Callback {
+    private class VideoSurfaceInputEncodeCallback extends MediaCodec.Callback {
         private long mStartPresentationTime;
 
         @Override
@@ -290,10 +347,7 @@ public class VideoEncoder {
         @Override
         public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
             int readLength = 0;
-            int i = 0;
             while (readLength == 0) {
-                i++;
-                long s = System.currentTimeMillis();
                 readLength = mAudioRecord.read(mAudioBuffer, 0, mSingleDataSize);
                 if (readLength > 0) {
                     ByteBuffer inputBuffer = mAudioCodec.getInputBuffer(index);

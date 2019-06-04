@@ -4,7 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -14,14 +17,10 @@ import androidx.annotation.Nullable;
 
 public class MaskView extends View {
 
-    private Rect mSpaceRect;
-    private Rect mTopMaskRect;
-    private Rect mBottomMaskRect;
-    private Rect mLeftMaskRect;
-    private Rect mRightMaskRect;
-
-    private Paint mMaskPaint;
-    private boolean isChange;
+    private RectF mSpaceRect;
+    private PorterDuffXfermode mXfermode;
+    private Paint mPaint;
+    private float mRoundRadius;
     private int mMaskColor;
 
     public MaskView(Context context) {
@@ -34,61 +33,41 @@ public class MaskView extends View {
 
     public MaskView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mMaskPaint = new Paint();
-        mMaskPaint.setStyle(Paint.Style.FILL);
-        mLeftMaskRect = new Rect();
-        mTopMaskRect = new Rect();
-        mRightMaskRect = new Rect();
-        mBottomMaskRect = new Rect();
+        mPaint = new Paint();
+        mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaint.setColor(Color.WHITE);
+        mXfermode = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
         setMaskColor(Color.TRANSPARENT);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        initSpaceRect();
-    }
-
-    private void initSpaceRect() {
-        int width = getWidth();
-        int height = getHeight();
-        if (mSpaceRect == null) {
-            mLeftMaskRect.set(0, 0, width, height);
-            mTopMaskRect.set(0, 0, 0, 0);
-            mRightMaskRect.set(0, 0, 0, 0);
-            mBottomMaskRect.set(0, 0, 0, 0);
-        } else {
-            int spaceL = mSpaceRect.left;
-            int spaceT = mSpaceRect.top;
-            int spaceR = mSpaceRect.right;
-            int spaceB = mSpaceRect.bottom;
-            mLeftMaskRect.set(0, spaceT, spaceL, spaceB);
-            mTopMaskRect.set(0, 0, width, spaceT);
-            mRightMaskRect.set(spaceR, spaceT, width, spaceB);
-            mBottomMaskRect.set(0, spaceB, width, height);
-        }
-        isChange = false;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if(isChange){
-            initSpaceRect();
+
+
+        if (mSpaceRect != null) {
+            int width = getWidth();
+            int height = getHeight();
+            canvas.drawRect(0, 0, width, mSpaceRect.top, mPaint);
+            canvas.drawRect(0, mSpaceRect.bottom, width, height, mPaint);
+            canvas.drawRect(0, mSpaceRect.top, mSpaceRect.left, mSpaceRect.bottom, mPaint);
+            canvas.drawRect(mSpaceRect.right, mSpaceRect.top, width, mSpaceRect.bottom, mPaint);
+
+            int count = canvas.saveLayer(mSpaceRect, null);
+            canvas.drawColor(mMaskColor);
+            mPaint.setXfermode(mXfermode);
+            canvas.drawRoundRect(mSpaceRect.left, mSpaceRect.top, mSpaceRect.right, mSpaceRect.bottom, mRoundRadius, mRoundRadius, mPaint);
+            mPaint.setXfermode(null);
+            canvas.restoreToCount(count);
         }
-        canvas.drawRect(mLeftMaskRect, mMaskPaint);
-        canvas.drawRect(mTopMaskRect, mMaskPaint);
-        canvas.drawRect(mRightMaskRect, mMaskPaint);
-        canvas.drawRect(mBottomMaskRect, mMaskPaint);
     }
 
-    public void setSpaceRect(int left, int top, int right, int bottom) {
+    public void setSpaceRect(float left, float top, float right, float bottom) {
         if (mSpaceRect == null) {
-            mSpaceRect = new Rect(left, top, right, bottom);
+            mSpaceRect = new RectF(left, top, right, bottom);
         } else {
             mSpaceRect.set(left, top, right, bottom);
         }
-        isChange = true;
         invalidate();
     }
 
@@ -96,7 +75,7 @@ public class MaskView extends View {
         setSpaceRect(rect.left, rect.top, rect.right, rect.bottom);
     }
 
-    public Rect getSpaceRect() {
+    public RectF getSpaceRect() {
         return mSpaceRect;
     }
 
@@ -106,7 +85,12 @@ public class MaskView extends View {
 
     public void setMaskColor(@ColorInt int maskColor) {
         mMaskColor = maskColor;
-        mMaskPaint.setColor(mMaskColor);
+        mPaint.setColor(mMaskColor);
+        invalidate();
+    }
+
+    public void setRoundRadius(float roundRadius) {
+        mRoundRadius = roundRadius;
         invalidate();
     }
 }

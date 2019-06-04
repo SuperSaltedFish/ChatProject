@@ -1,7 +1,9 @@
 package com.yzx.chat.util;
 
+import android.graphics.Outline;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
 
 import java.util.WeakHashMap;
@@ -59,6 +61,16 @@ public class ViewUtil {
         if (listener != null) {
             scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
         }
+    }
+
+    public static void setRoundClipToOutline(View v, final float radius) {
+        v.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+                view.setClipToOutline(true);
+            }
+        });
     }
 
 }

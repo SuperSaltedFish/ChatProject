@@ -1,11 +1,16 @@
 package com.yzx.chat.module.common.view;
 
+import android.animation.ValueAnimator;
 import android.app.Service;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
+import android.graphics.RectF;
+import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Vibrator;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -13,23 +18,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
-import com.google.zxing.FormatException;
+import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.core.entity.UserEntity;
@@ -38,28 +41,39 @@ import com.yzx.chat.module.common.presenter.QrCodeScanPresenter;
 import com.yzx.chat.module.contact.view.ContactProfileActivity;
 import com.yzx.chat.module.contact.view.StrangerProfileActivity;
 import com.yzx.chat.module.conversation.view.ChatActivity;
+import com.yzx.chat.util.AndroidHelper;
+import com.yzx.chat.util.ViewUtil;
+import com.yzx.chat.util.YUVUtil;
 import com.yzx.chat.widget.listener.OnOnlySingleClickListener;
-import com.yzx.chat.widget.view.Camera2CaptureView;
+import com.yzx.chat.widget.view.CameraView;
 import com.yzx.chat.widget.view.MaskView;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Hashtable;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import io.rong.imlib.model.Conversation;
 
 
 public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Presenter> implements QrCodeScanContract.View {
 
-    private Camera2CaptureView mCamera2CaptureView;
-    private View mScanAnimationView;
-    private MaskView mMaskView;
-    private FrameLayout mScanLayout;
-    private ImageView mIvToggleFlash;
-    private ScaleAnimation mScaleAnimation;
-    private Vibrator mVibrator;
+    private static final String TAG = QrCodeScanActivity.class.getName();
 
-    private Rect mClipRect;
+    private CameraView mCameraView;
+    private MaskView mMaskView;
+    private ImageView mIvToggleFlash;
+    private Toolbar mDefaultToolbar;
+    private TextView mTvScanHint;
+    private View mScan;
+    private View mScanGradientDown;
+    private View mScanGradientUp;
+    private View mScanFrame;
+    private FrameLayout mFlAnimationLayout;
+    private Vibrator mVibrator;
+    private Handler mDecodeHandler;
+    private ValueAnimator mScanAnimator;
+
+    private volatile boolean isStopCapture;
 
     @Override
     protected int getLayoutID() {
@@ -68,13 +82,21 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        mCamera2CaptureView = findViewById(R.id.QrCodeScanActivity_mCamera2CaptureView);
-        mScanAnimationView = findViewById(R.id.QrCodeScanActivity_mScanAnimationView);
-        mMaskView = findViewById(R.id.QrCodeScanActivity_mMaskView);
-        mScanLayout = findViewById(R.id.QrCodeScanActivity_mScanLayout);
-        mIvToggleFlash = findViewById(R.id.QrCodeScanActivity_mIvToggleFlash);
-        mScaleAnimation = new ScaleAnimation(1f, 1f, 0.0f, 1.0f);
+        mCameraView = findViewById(R.id.mCameraView);
+        mMaskView = findViewById(R.id.mMaskView);
+        mDefaultToolbar = findViewById(R.id.Default_mToolbar);
+        mScan = findViewById(R.id.mScan);
+        mScanGradientDown = findViewById(R.id.mScanGradientDown);
+        mScanGradientUp = findViewById(R.id.mScanGradientUp);
+        mScanFrame = findViewById(R.id.mScanFrame);
+        mIvToggleFlash = findViewById(R.id.mIvToggleFlash);
+        mTvScanHint = findViewById(R.id.mTvScanHint);
+        mFlAnimationLayout = findViewById(R.id.mFlAnimationLayout);
         mVibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+
+        HandlerThread handlerThread = new HandlerThread(TAG);
+        handlerThread.start();
+        mDecodeHandler = new Handler(handlerThread.getLooper());
     }
 
     @Override
@@ -84,31 +106,47 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setDisplayHomeAsUpEnabled(true);
 
-        mCamera2CaptureView.setCaptureCallback(mCaptureCallback);
+        mDefaultToolbar.setBackground(null);
 
-        mMaskView.setMaskColor(Color.argb(64, 0, 0, 0));
+        mCameraView.setCaptureCallback(mCaptureCallback, mDecodeHandler);
+        mCameraView.setErrorCallback(mErrorCallback);
+
+        mMaskView.setMaskColor(Color.argb(168, 0, 0, 0));
+        mMaskView.setRoundRadius(AndroidHelper.dip2px(8));
 
         mIvToggleFlash.setOnClickListener(mOnToggleFlashClickListener);
 
-        mScaleAnimation.setDuration(2000);
-        mScaleAnimation.setRepeatCount(Animation.INFINITE);
-        mScaleAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
-        mScaleAnimation.setAnimationListener(mAnimationListener);
+        ViewUtil.setRoundClipToOutline(mFlAnimationLayout, AndroidHelper.dip2px(8));
+        ViewUtil.setRoundClipToOutline(mTvScanHint, AndroidHelper.dip2px(8));
+
+        mScan.post(new Runnable() {
+            @Override
+            public void run() {
+                mMaskView.setSpaceRect(mScan.getLeft(), mScan.getTop(), mScan.getRight(), mScan.getBottom());
+            }
+        });
+
+        initScanAnimation();
     }
 
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mScanAnimationView.startAnimation(mScaleAnimation);
-        mCamera2CaptureView.onResume();
+    protected void onStart() {
+        super.onStart();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mCameraView.startPreview();
+        if (!mScanAnimator.isStarted()) {
+            mScanAnimator.start();
+        }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        mScanAnimationView.clearAnimation();
-        mCamera2CaptureView.onPause();
+    protected void onStop() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mCameraView.stopPreview();
+        mScanAnimator.end();
+        mScanAnimator.cancel();
+        super.onStop();
     }
 
     @Override
@@ -126,8 +164,7 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.QCodeeScanMenu_albums:
-                mCamera2CaptureView.stopCapture();
+            case R.id.Albums:
                 startActivityForResult(new Intent(this, ImageSingleSelectorActivity.class), 1);
                 break;
             default:
@@ -147,114 +184,215 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
         }
     }
 
-    private final Camera2CaptureView.CaptureCallback mCaptureCallback = new Camera2CaptureView.CaptureCallback() {
-        private QRCodeReader mQRCodeReader;
-        private Hashtable<DecodeHintType, Object> mHints;
-        private byte[] mDataBuff;
-        private Rect mRect = new Rect();
-        private int mCurrentOrientation;
+    private void initScanAnimation() {
+        RotateDrawable drawable = new RotateDrawable();
+        drawable.setDrawable(mScanGradientUp.getBackground());
+        drawable.setToDegrees(180);
+        drawable.setLevel(10000);
+        mScanGradientUp.setBackground(drawable);
 
-        @Override
-        public boolean captureSuccess(@NonNull Image image, final int width, final int height, int imageOrientation) {
-            int previewWidth = mCamera2CaptureView.getHeight();
-            int previewHeight = mCamera2CaptureView.getWidth();
-            if (previewWidth == 0 || previewHeight == 0 || mClipRect == null) {
-                return false;
-            }
-            if (mCurrentOrientation != imageOrientation) {
-                float scaleX = (float) width / previewWidth;
-                float scaleY = (float) height / previewHeight;
-                switch (imageOrientation) {
-                    case 90:
-                        mRect.left = mClipRect.top;
-                        mRect.top = previewHeight - mClipRect.right;
-                        mRect.right = mRect.left + mClipRect.height();
-                        mRect.bottom = mRect.top + mClipRect.width();
-                        break;
-                    case 180:
-                        mRect.left = previewWidth - mRect.right;
-                        mRect.top = previewHeight - mRect.bottom;
-                        mRect.right = mRect.left + mClipRect.height();
-                        mRect.bottom = mRect.top + mClipRect.width();
-                        break;
-                    case 270:
-                        mRect.left = previewWidth - mClipRect.bottom;
-                        mRect.top = mClipRect.left;
-                        mRect.right = mRect.left + mClipRect.height();
-                        mRect.bottom = mRect.top + mClipRect.width();
-                        break;
+        //扫码动画，分为3部分，往下扫的动画，往上扫动画，还有四边框的呼吸效果，这里用一个ValueAnimator同时实现了3个童话
+        //之前考虑分别用3个ObjectAnimator去实现的，但是这有问题，3个动画的时候要用AnimatorSet去做，但是AnimatorSet不支持
+        //动画的重复，他只能start一次而且不能设置动画为重复模式
+        final int openDuration = 900;
+        final int closeDuration = 250;
+        final int interval = 300;
+        final int totalDuration = (openDuration + closeDuration + interval) * 2;
+
+        mScanAnimator = ValueAnimator.ofInt(0, totalDuration);
+        mScanAnimator.setDuration(totalDuration);
+        mScanAnimator.setInterpolator(new LinearInterpolator());
+        mScanAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        mScanAnimator.setRepeatMode(ValueAnimator.RESTART);
+        mScanAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            private AccelerateInterpolator mAccelerateInterpolator = new AccelerateInterpolator();
+            private DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
+            private AccelerateDecelerateInterpolator mAccelerateDecelerateInterpolator = new AccelerateDecelerateInterpolator();
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int animatedValue = (int) animation.getAnimatedValue();
+                float value;
+                if (animatedValue <= openDuration) {//下扫缩放动画(Open)
+                    value = animatedValue / (float) openDuration;
+                    value = mAccelerateInterpolator.getInterpolation(value);
+                    mScanGradientDown.setPivotY(0);
+                    mScanGradientDown.setScaleY(value);
+                } else if (animatedValue <= openDuration + closeDuration) {//下扫缩放动画(Close)
+                    value = (animatedValue - openDuration) / (float) closeDuration;
+                    value = mAccelerateDecelerateInterpolator.getInterpolation(value);
+                    mScanGradientDown.setPivotY(mScanGradientDown.getHeight());
+                    mScanGradientDown.setScaleY(1f - value);
+                } else if (animatedValue <= openDuration + closeDuration + interval) {
+                    //上扫动画和下扫动画的间隔，300左右
+                    mScanGradientDown.setScaleY(0f);
+                } else if (animatedValue <= openDuration + closeDuration + interval + openDuration) {//上扫缩放动画(Open)
+                    value = (animatedValue - openDuration - closeDuration - interval) / (float) openDuration;
+                    value = mAccelerateInterpolator.getInterpolation(value);
+                    mScanGradientUp.setPivotY(mScanGradientDown.getHeight());
+                    mScanGradientUp.setScaleY(value);
+                } else if (animatedValue <= openDuration + closeDuration + interval + openDuration + closeDuration) {//上扫缩放动画(Close)
+                    value = (animatedValue - openDuration - closeDuration - interval - openDuration) / (float) closeDuration;
+                    value = mAccelerateDecelerateInterpolator.getInterpolation(value);
+                    mScanGradientUp.setPivotY(0);
+                    mScanGradientUp.setScaleY(1f - value);
+                } else {
+                    mScanGradientUp.setScaleY(0f);
                 }
-                mRect.left *= scaleX;
-                mRect.right *= scaleX;
-                mRect.top *= scaleY;
-                mRect.bottom *= scaleY;
-                mCurrentOrientation = imageOrientation;
-            }
 
-            if (mQRCodeReader == null) {
-                mQRCodeReader = new QRCodeReader();
-                mHints = new Hashtable<>();
-                mHints.put(DecodeHintType.CHARACTER_SET, "utf-8");
-                mHints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
-            }
-            Image.Plane[] planes = image.getPlanes();
-            ByteBuffer byteBuffer = planes[0].getBuffer();
-            if (mDataBuff == null || mDataBuff.length < byteBuffer.remaining()) {
-                mDataBuff = new byte[byteBuffer.remaining()];
-            }
-            byteBuffer.get(mDataBuff);
-            PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(mDataBuff, width, height, mRect.left, mRect.top, mRect.width(), mRect.height(), false);
-            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-            try {
-                Result result = mQRCodeReader.decode(bitmap, mHints);
-                final String content = result.getText();
-                if (!TextUtils.isEmpty(content)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mVibrator.vibrate(50);
-                            mPresenter.decodeQRCodeContent(content, false);
-                        }
-                    });
-                    return true;
+                float scale;
+                if (animatedValue <= totalDuration / 2) {//呼吸效果的动画,前一半时间放大，后一半时间缩小
+                    value = animatedValue / (totalDuration / 2f);
+                    value = mDecelerateInterpolator.getInterpolation(value);
+                    scale = 1 + value * 0.03f;
+                    mScanFrame.setScaleX(scale);
+                    mScanFrame.setScaleY(scale);
+                } else {
+                    value = (animatedValue - totalDuration / 2f) / (totalDuration / 2f);
+                    value = mDecelerateInterpolator.getInterpolation(value);
+                    scale = 1 + (1 - value) * 0.03f;
                 }
-            } catch (NotFoundException | ChecksumException | FormatException ignored) {
+                mScanFrame.setScaleX(scale);
+                mScanFrame.setScaleY(scale);
             }
-            return false;
-        }
-    };
+        });
+    }
 
+    private void requestCapture() {
+        isStopCapture = false;
+    }
+
+    private void stopCapture() {
+        isStopCapture = true;
+    }
 
     private final View.OnClickListener mOnToggleFlashClickListener = new OnOnlySingleClickListener() {
         @Override
         public void onSingleClick(View v) {
             mIvToggleFlash.setSelected(!mIvToggleFlash.isSelected());
-            mCamera2CaptureView.setEnableFlash(mIvToggleFlash.isSelected());
+            mCameraView.setEnableFlash(mIvToggleFlash.isSelected());
         }
     };
 
-    private final Animation.AnimationListener mAnimationListener = new Animation.AnimationListener() {
+    private final CameraView.ErrorCallback mErrorCallback = new CameraView.ErrorCallback() {
         @Override
-        public void onAnimationStart(Animation animation) {
-            mMaskView.setSpaceRect(mScanLayout.getLeft(), mScanLayout.getTop(), mScanLayout.getRight(), mScanLayout.getBottom());
-            if (mClipRect == null) {
-                mClipRect = new Rect();
-                mClipRect.left = mScanLayout.getLeft();
-                mClipRect.top = mScanLayout.getTop() - mCamera2CaptureView.getTop();
-                mClipRect.right = mClipRect.left + mScanLayout.getWidth();
-                mClipRect.bottom = mClipRect.top + mScanLayout.getHeight();
+        public void onCameraError() {
+            showErrorDialog(getString(R.string.Error_Client), new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    finish();
+                }
+            });
+        }
+    };
+
+    private final CameraView.CaptureCallback mCaptureCallback = new CameraView.CaptureCallback() {
+        private MultiFormatReader mMultiFormatReader;
+        private Hashtable<DecodeHintType, Object> mHints;
+        private Rect mClipRect;
+        private byte[] mRotateDataBuffer;
+
+        @Override
+        public void onCapture(byte[] yuv, int width, int height, int orientation) {
+            RectF displayRectF = mCameraView.getActualPreviewRectF();
+            if (isStopCapture || mDecodeHandler == null || displayRectF == null) {
+                return;
             }
-            mScaleAnimation.setAnimationListener(null);
-        }
+            if (orientation == 90) {//旋转90后扫码性能会提高很多
+                if (mRotateDataBuffer == null || mRotateDataBuffer.length < yuv.length) {
+                    mRotateDataBuffer = new byte[yuv.length];
+                }
+                YUVUtil.rotateYUVDegree90(yuv, mRotateDataBuffer, width, height);
+                yuv = mRotateDataBuffer;
+                orientation = 0;
+                int temp = width;
+                width = height;
+                height = temp;
 
-        @Override
-        public void onAnimationEnd(Animation animation) {
-        }
+            }
+            if (mClipRect == null) {
+                Rect clipLayoutRect = new Rect();
+                clipLayoutRect.left = mScan.getLeft() - mCameraView.getLeft();
+                clipLayoutRect.top = mScan.getTop() - mCameraView.getTop();
+                clipLayoutRect.right = clipLayoutRect.left + mScan.getWidth();
+                clipLayoutRect.bottom = clipLayoutRect.top + mScan.getHeight();
+                clipLayoutRect.offset(-(int) displayRectF.left, -(int) displayRectF.top);
 
-        @Override
-        public void onAnimationRepeat(Animation animation) {
+                mClipRect = new Rect();
+                float scaleX;
+                float scaleY;
+                switch (orientation) {
+                    case 0:
+                        mClipRect.set(clipLayoutRect);
+                        scaleX = (float) width / displayRectF.width();
+                        scaleY = (float) height / displayRectF.height();
+                        break;
+                    case 90:
+                        mClipRect.left = clipLayoutRect.top;
+                        mClipRect.top = clipLayoutRect.left;
+                        mClipRect.right = mClipRect.left + clipLayoutRect.height();
+                        mClipRect.bottom = mClipRect.top + clipLayoutRect.width();
+                        scaleX = (float) width / displayRectF.height();
+                        scaleY = (float) height / displayRectF.width();
+                        break;
+                    case 180:
+                        mClipRect.left = clipLayoutRect.left;
+                        mClipRect.top = (int) (displayRectF.height() - clipLayoutRect.bottom);
+                        mClipRect.right = mClipRect.left + clipLayoutRect.height();
+                        mClipRect.bottom = mClipRect.top + clipLayoutRect.width();
+                        scaleX = (float) width / displayRectF.width();
+                        scaleY = (float) height / displayRectF.height();
+                        break;
+                    case 270:
+                        mClipRect.left = (int) (displayRectF.height() - clipLayoutRect.bottom);
+                        mClipRect.top = clipLayoutRect.left;
+                        mClipRect.right = mClipRect.left + clipLayoutRect.height();
+                        mClipRect.bottom = mClipRect.top + clipLayoutRect.width();
+                        scaleX = (float) width / displayRectF.height();
+                        scaleY = (float) height / displayRectF.width();
+                        break;
+                    default:
+                        return;
+                }
+                mClipRect.left *= scaleX;
+                mClipRect.right *= scaleX;
+                mClipRect.top *= scaleY;
+                mClipRect.bottom *= scaleY;
+            }
+
+            if (mMultiFormatReader == null) {
+                mMultiFormatReader = new MultiFormatReader();
+                mHints = new Hashtable<>();
+                mHints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
+                mHints.put(DecodeHintType.POSSIBLE_FORMATS, Arrays.asList(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128));
+                mMultiFormatReader.setHints(mHints);
+            }
+
+            PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(yuv, width, height, mClipRect.left, mClipRect.top, mClipRect.width(), mClipRect.height(), false);
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+            try {
+                Result result = mMultiFormatReader.decodeWithState(bitmap);
+                final String content = result.getText();
+                if (!TextUtils.isEmpty(content)) {
+                    stopCapture();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mDecodeHandler == null) {
+                                return;
+                            }
+                            mVibrator.vibrate(50);
+                            mPresenter.decodeQRCodeContent(content, false);
+                        }
+                    });
+                }
+            } catch (NotFoundException ignored) {
+            } finally {
+                mMultiFormatReader.reset();
+            }
         }
     };
+
 
     @Override
     public QrCodeScanContract.Presenter getPresenter() {
@@ -263,13 +401,13 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     public void startStrangerProfileActivity(UserEntity user) {
-        StrangerProfileActivity.startActivity(this,user);
+        StrangerProfileActivity.startActivity(this, user);
         finish();
     }
 
     @Override
     public void startContactProfileActivity(String contactID) {
-        ContactProfileActivity.startActivity(this,contactID);
+        ContactProfileActivity.startActivity(this, contactID);
         finish();
     }
 
@@ -281,16 +419,12 @@ public class QrCodeScanActivity extends BaseCompatActivity<QrCodeScanContract.Pr
 
     @Override
     public void showErrorDialog(String error) {
-        new MaterialDialog.Builder(this)
-                .content(error)
-                .inputRange(0, 16)
-                .positiveText(R.string.Confirm)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mCamera2CaptureView.startCapture();
-                    }
-                })
-                .show();
+        stopCapture();
+        super.showErrorDialog(error, new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                requestCapture();
+            }
+        });
     }
 }

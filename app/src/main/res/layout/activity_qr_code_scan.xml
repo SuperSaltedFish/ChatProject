@@ -1,69 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".module.common.view.QrCodeScanActivity">
 
-    <com.yzx.chat.widget.view.Camera2CaptureView
-        android:id="@+id/QrCodeScanActivity_mCamera2CaptureView"
+    <com.yzx.chat.widget.view.CameraView
+        android:id="@+id/mCameraView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
-
+        android:layout_height="match_parent" />
 
     <com.yzx.chat.widget.view.MaskView
-        android:id="@+id/QrCodeScanActivity_mMaskView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/mMaskView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <include layout="@layout/include_toolbar"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-    <ImageView
-        android:id="@+id/QrCodeScanActivity_mIvToggleFlash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|top"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/selector_src_camera_flash"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
-
-    <FrameLayout
-        android:id="@+id/QrCodeScanActivity_mScanLayout"
-        android:layout_width="256dp"
-        android:layout_height="256dp"
-        android:background="@drawable/frame_capture"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/Default_mToolbar">
 
         <View
-            android:id="@+id/QrCodeScanActivity_mScanAnimationView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_scan" />
+            android:id="@+id/mScan"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/mScanFrame"
+            app:layout_constraintEnd_toEndOf="@id/mScanFrame"
+            app:layout_constraintStart_toStartOf="@id/mScanFrame"
+            app:layout_constraintTop_toTopOf="@id/mScanFrame" />
 
-    </FrameLayout>
+        <View
+            android:id="@+id/mScanFrame"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/src_scanframe"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="W,1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4"
+            app:layout_constraintWidth_percent=".71" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="请将二维码对准框内，耐心等待"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@id/QrCodeScanActivity_mScanLayout"
-        app:layout_constraintStart_toStartOf="@id/QrCodeScanActivity_mScanLayout"
-        app:layout_constraintTop_toBottomOf="@id/QrCodeScanActivity_mScanLayout" />
+        <FrameLayout
+            android:id="@+id/mFlAnimationLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/mScan"
+            app:layout_constraintEnd_toEndOf="@id/mScan"
+            app:layout_constraintStart_toStartOf="@id/mScan"
+            app:layout_constraintTop_toTopOf="@id/mScan">
+
+            <View
+                android:id="@+id/mScanGradientDown"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/src_scangradient"
+                android:scaleY="0" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <View
+                android:id="@+id/mScanGradientUp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/src_scangradient"
+                android:scaleY="0" />
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/mTvScanHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:background="#33FFFFFF"
+            android:gravity="center"
+            android:minWidth="256dp"
+            android:paddingStart="16dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="6dp"
+            android:text="请将二维码对准扫描框"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@id/mScan"
+            app:layout_constraintStart_toStartOf="@id/mScan"
+            app:layout_constraintTop_toBottomOf="@id/mScan" />
+
+        <include layout="@layout/include_toolbar" />
+
+        <ImageView
+            android:id="@+id/mIvToggleFlash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/selector_src_camera_flash"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Default_mToolbar" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</merge>

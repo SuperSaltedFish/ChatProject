@@ -1,20 +1,16 @@
 package com.yzx.chat.module;
 
-import android.Manifest;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
-
-import java.util.Locale;
+import com.yzx.chat.widget.view.RecodeView;
 
 
 public class TestActivity extends BaseCompatActivity {
 
+    RecodeView mCameraView;
 
     @Override
     protected int getLayoutID() {
@@ -23,38 +19,48 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-
+        mCameraView = findViewById(R.id.mCameraView);
     }
 
     @Override
     protected void setup(Bundle savedInstanceState) {
 
-        Resources resources = getResources();
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        Configuration config = resources.getConfiguration();
-        config.locale = Locale.ENGLISH; //设置语言
-        resources.updateConfiguration(config, dm);
-
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    protected void onStart() {
+        super.onStart();
+        mCameraView.onResume();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
+//        mCameraView.onPause();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        mCameraView.onDestroy();
     }
 
     public void onClick1(View v) {
-        requestPermissionsInCompatMode(new String[]{Manifest.permission.CAMERA}, 100);
+//        switch (mCameraView.getCameraFacingType()) {
+//            case BasicCamera.CAMERA_FACING_FRONT:
+//                mCameraView.switchCamera(BasicCamera.CAMERA_FACING_BACK);
+//                break;
+//            case BasicCamera.CAMERA_FACING_BACK:
+//                mCameraView.switchCamera(BasicCamera.CAMERA_FACING_FRONT);
+//                break;
+//        }
 
     }
 
 
+
 }
+
+
 
 

@@ -34,6 +34,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- 使用OpenGL -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
     <application
         android:name=".configure.AppApplication"
         android:allowBackup="false"
@@ -64,13 +67,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".module.main.view.SplashActivity"
+        <activity
+            android:name=".module.main.view.SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".module.login.view.LoginActivity"
@@ -111,11 +115,11 @@
         <activity android:name=".module.me.view.MyTagListActivity" />
 
         <activity android:name=".module.TestActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
