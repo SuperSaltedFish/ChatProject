@@ -53,7 +53,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     public RecodeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setEGLContextClientVersion(2);
+        setEGLContextClientVersion(3);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 //        setPreserveEGLContextOnPause(true);
