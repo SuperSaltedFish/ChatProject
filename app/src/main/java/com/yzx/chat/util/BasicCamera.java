@@ -372,7 +372,12 @@ public abstract class BasicCamera {
 
         @Override
         public boolean isOpen() {
-            return mCamera != null;
+            try {
+                mCameraOpenCloseLock.acquireUninterruptibly();
+                return mCamera != null;
+            }finally {
+                mCameraOpenCloseLock.release();
+            }
         }
 
         @Override

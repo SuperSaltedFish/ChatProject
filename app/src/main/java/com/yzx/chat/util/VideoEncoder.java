@@ -2,7 +2,6 @@ package com.yzx.chat.util;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
@@ -10,11 +9,12 @@ import android.media.MediaMuxer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 import android.view.Surface;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import androidx.annotation.NonNull;
@@ -37,15 +37,12 @@ public class VideoEncoder {
     private static final int AUDIO_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
-    private static final int VIDEO_FRAME_RATE = 30;
-
 
     private MediaCodec mVideoCodec;
     private MediaCodec mAudioCodec;
     private Handler mEncodeHandler;
     private AudioRecord mAudioRecord;
     private MediaMuxer mMediaMuxer;
-
 
     private byte[] mAudioBuffer;
 
@@ -65,10 +62,9 @@ public class VideoEncoder {
             release();
             throw e;
         }
-        createDefaultAudioMediaFormat();
     }
 
-    public MediaFormat createDefaultVideoMediaFormat(int videoWidth, int videoHeight, boolean isSurfaceInput) {
+    public MediaFormat createDefaultVideoMediaFormat(int videoWidth, int videoHeight, int frameRate) {
         MediaCodecInfo.CodecCapabilities capabilities = getVideoMediaCodecInfo().getCapabilitiesForType(MIME_TYPE_VIDEO);
         MediaCodecInfo.VideoCapabilities videoCapabilities = capabilities.getVideoCapabilities();
         MediaFormat format = capabilities.getDefaultFormat();
@@ -78,23 +74,10 @@ public class VideoEncoder {
             format.setInteger(MediaFormat.KEY_WIDTH, videoWidth);
             format.setInteger(MediaFormat.KEY_HEIGHT, videoHeight);
         }
-        if (videoCapabilities.getSupportedFrameRatesFor(videoWidth, videoHeight).contains((double) VIDEO_FRAME_RATE)) {
-            format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
+        if (videoCapabilities.getSupportedFrameRatesFor(videoWidth, videoHeight).contains((double) frameRate)) {
+            format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
         }
-        if (isSurfaceInput) {
-            if (Arrays.binarySearch(capabilities.colorFormats, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface) >= 0) {
-                format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-                format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, (int) Math.ceil(1000000f / VIDEO_FRAME_RATE));
-            } else {
-                return null;
-            }
-        } else {
-            if (Arrays.binarySearch(capabilities.colorFormats, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible) >= 0) {
-                format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
-            } else {
-                return null;
-            }
-        }
+
         if (capabilities.getEncoderCapabilities().isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)) {
             format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
         }
@@ -109,8 +92,10 @@ public class VideoEncoder {
                     break;
             }
         }
-        format.setInteger(MediaFormat.KEY_BIT_RATE, videoWidth * videoHeight * 3);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, videoWidth * videoHeight * 5);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
+        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+        format.setInteger(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, (int) Math.ceil(1000000f / frameRate));
         return format;
     }
 
@@ -128,10 +113,11 @@ public class VideoEncoder {
         if (supportedSampleRates == null || supportedSampleRates.length == 0) {
             return null;
         }
-        if (Arrays.binarySearch(supportedSampleRates, AUDIO_SAMPLE_RATE) >= 0) {
-            format.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
-        } else {
-            format.setInteger(MediaFormat.KEY_SAMPLE_RATE, supportedSampleRates[0]);
+        format.setInteger(MediaFormat.KEY_SAMPLE_RATE, supportedSampleRates[0]);
+        for (int rate : supportedSampleRates) {
+            if (rate == AUDIO_SAMPLE_RATE) {
+                format.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
+            }
         }
         if (audioCapabilities.getBitrateRange().contains(AUDIO_BIT_RATE)) {
             format.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
@@ -145,7 +131,7 @@ public class VideoEncoder {
     }
 
 
-    public Surface configureCodec(MediaFormat videoFormat, MediaFormat audioFormat, boolean isSurfaceInput) {
+    public Surface configureCodec(MediaFormat videoFormat, MediaFormat audioFormat) throws RuntimeException {
         synchronized (this) {
             checkIsRelease();
             reset();
@@ -154,23 +140,14 @@ public class VideoEncoder {
                 codecThread.start();
                 mEncodeHandler = new Handler(codecThread.getLooper());
                 mAudioCodec.setCallback(new AudioEncodeCallback(), mEncodeHandler);
-                if (isSurfaceInput) {
-                    mVideoCodec.setCallback(new VideoSurfaceInputEncodeCallback(), mEncodeHandler);
-                }
+                mVideoCodec.setCallback(new VideoSurfaceInputEncodeCallback(), mEncodeHandler);
                 mVideoCodec.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                 mAudioCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                 return mVideoCodec.createInputSurface();
             } catch (RuntimeException e) {
-                e.printStackTrace();
                 reset();
-                return null;
+                throw e;
             }
-        }
-    }
-
-    public Surface createInputSurface() {
-        synchronized (this) {
-            return mVideoCodec.createInputSurface();
         }
     }
 
@@ -196,7 +173,12 @@ public class VideoEncoder {
             if (isStartingEncoded) {
                 throw new RuntimeException("The VideoEncoder is already Starting");
             }
+            File file = new File(filePath);
             try {
+                if (!file.exists() && !file.createNewFile()) {
+                    Log.e(TAG, "Create file fail: " + filePath);
+                    return false;
+                }
                 mMediaMuxer = new MediaMuxer(filePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
                 mMediaMuxer.setOrientationHint(videoRotationDegrees);
             } catch (IOException e) {
@@ -288,15 +270,6 @@ public class VideoEncoder {
         }
     }
 
-    public void addVideoData(byte[] data, long presentationTimeUs) {
-        checkIsRelease();
-        if(!isRunning()){
-            throw new RuntimeException("The VideoEncoder not in the Executing state.");
-        }
-        int index = mVideoCodec.dequeueInputBuffer(-1);
-      Image image =  mVideoCodec.getInputImage(index);
-
-    }
 
     private class VideoSurfaceInputEncodeCallback extends MediaCodec.Callback {
         private long mStartPresentationTime;

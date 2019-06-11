@@ -4,27 +4,40 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.SurfaceTexture;
+import android.media.MediaFormat;
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
+import android.opengl.EGLDisplay;
+import android.opengl.EGLSurface;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BasicCamera;
+import com.yzx.chat.util.VideoEncoder;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by YZX on 2019年05月29日.
@@ -37,15 +50,19 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     private final float[] mPreviewTextureMatrix = new float[16];
 
     private SurfaceTexture mPreviewSurfaceTexture;
-    private Texture2dProgram mTexture2dProgram;
-    private int mOESTextureID;
-    private int mSurfaceWidth;
-    private int mSurfaceHeight;
+    private Texture2dProgram mPreviewTexture2dProgram;
+    private int mOESTextureID = -1;
 
     private CameraHelper mCameraHelper;
     private Size mAspectRatioSize = DEFAULT_ASPECT_RATIO;
     private int mCameraFacing;
     private boolean isRequestPreview;
+
+    private EGLVideoEncoder mRecodeEGL;
+    private Texture2dProgram mRecodeTexture2dProgram;
+    private VideoEncoder mVideoEncoder;
+    private Surface mVideoSurface;
+    private volatile boolean isStartRecording;
 
     public RecodeView(Context context) {
         this(context, null);
@@ -56,9 +73,106 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         setEGLContextClientVersion(3);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-//        setPreserveEGLContextOnPause(true);
         mCameraHelper = new CameraHelper();
         mCameraFacing = BasicCamera.CAMERA_FACING_BACK;
+        mRecodeEGL = new EGLVideoEncoder();
+        initVideoEncoder();
+    }
+
+    private void initVideoEncoder() {
+        try {
+            mVideoEncoder = new VideoEncoder();
+            MediaFormat videoFormat = mVideoEncoder.createDefaultVideoMediaFormat(960 * 1440 / 2560, 960, 15);
+            MediaFormat audioFormat = mVideoEncoder.createDefaultAudioMediaFormat();
+            mVideoSurface = mVideoEncoder.configureCodec(videoFormat, audioFormat);
+        } catch (IOException | RuntimeException e) {
+            if (mVideoEncoder != null) {
+                mVideoEncoder.release();
+                mVideoEncoder = null;
+            }
+            e.printStackTrace();
+            LogUtil.e("initVideoEncoder error");
+        }
+    }
+
+    private void releaseVideoEncoder() {
+        if (mVideoSurface != null) {
+            mVideoSurface.release();
+            mVideoSurface = null;
+        }
+        if (mVideoEncoder != null) {
+            mVideoEncoder.release();
+            mVideoEncoder = null;
+        }
+    }
+
+    private void initPreviewGL() {
+        mPreviewTexture2dProgram = new Texture2dProgram();
+        if (!mPreviewTexture2dProgram.tryInit()) {
+            releasePreviewGL();
+            return;
+        }
+        //根据外部纹理ID创建SurfaceTexture
+        mOESTextureID = Texture2dProgram.createOESTextureObject();
+        mPreviewSurfaceTexture = new SurfaceTexture(mOESTextureID);
+        mPreviewSurfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+            @Override
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                //每获取到一帧数据时请求OpenGL ES进行渲染
+                requestRender();
+            }
+        });
+        openCamera();
+    }
+
+    private void releasePreviewGL() {
+        if (mCameraHelper != null) {
+            mCameraHelper.closeCamera();
+        }
+        if (mPreviewTexture2dProgram != null) {
+            mPreviewTexture2dProgram.release();
+            mPreviewTexture2dProgram = null;
+        }
+        if (mPreviewSurfaceTexture != null) {
+            mPreviewSurfaceTexture.setOnFrameAvailableListener(null);
+            mPreviewSurfaceTexture.release();
+            mPreviewSurfaceTexture = null;
+        }
+        mOESTextureID = -1;
+    }
+
+    private void initRecodeGL() {
+        if (mVideoEncoder == null) {
+            return;
+        }
+        if (mRecodeEGL.initEGL(EGL14.eglGetCurrentContext(), mVideoSurface)) {
+            mRecodeEGL.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    Texture2dProgram program = new Texture2dProgram();
+                    if (program.tryInit()) {
+                        mRecodeTexture2dProgram = program;
+                    } else {
+                        mRecodeEGL.releaseEGL();
+                    }
+                }
+            });
+        }
+    }
+
+    private void releaseRecodeGL() {
+        if (mRecodeEGL.isInitialized()) {
+            mRecodeEGL.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    if (mRecodeTexture2dProgram != null) {
+                        mRecodeTexture2dProgram.release();
+                        mRecodeTexture2dProgram = null;
+                    }
+                    mRecodeEGL.releaseEGL();
+                }
+            });
+        }
     }
 
     @Override
@@ -85,103 +199,105 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        startPreview();
+    }
+
+    @Override
+    public void onPause() {
+        stopPreview();
+        stopRecode();
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                releaseRecodeGL();
+                releasePreviewGL();
+            }
+        });
+        super.onPause();
+    }
+
+    @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        reset();
-        mTexture2dProgram = new Texture2dProgram();
-        if (!mTexture2dProgram.tryInit()) {
-            mTexture2dProgram = null;
-            return;
-        }
-        initPreviewSurfaceTexture();
+        initPreviewGL();
+        initRecodeGL();
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        if (mTexture2dProgram == null) {
-            return;
-        }
-        mSurfaceWidth = width;
-        mSurfaceHeight = height;
         GLES20.glViewport(0, 0, width, height);
-        openCameraIfClose();
+        setCameraPreviewSize(width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        LogUtil.e("onDrawFrame");
-        if (mTexture2dProgram == null || !mCameraHelper.isOpen()) {
+        if (mPreviewTexture2dProgram == null || !mCameraHelper.isOpen()) {
             return;
         }
         mPreviewSurfaceTexture.updateTexImage();
         //获取外部纹理的矩阵，用来确定纹理的采样位置，没有此矩阵可能导致图像翻转等问题
         mPreviewSurfaceTexture.getTransformMatrix(mPreviewTextureMatrix);
-        mTexture2dProgram.draw(mOESTextureID, mPreviewTextureMatrix);
-    }
-
-    public void initPreviewSurfaceTexture() {
-        mOESTextureID = Texture2dProgram.createOESTextureObject();
-        //根据外部纹理ID创建SurfaceTexture
-        mPreviewSurfaceTexture = new SurfaceTexture(mOESTextureID);
-        mPreviewSurfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
-            @Override
-            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-                //每获取到一帧数据时请求OpenGL ES进行渲染
-                requestRender();
-            }
-        });
-    }
-
-    private void openCameraIfClose() {
-        if (mTexture2dProgram == null || mCameraHelper.isOpen()) {
-            return;
+        mPreviewTexture2dProgram.draw(mOESTextureID, mPreviewTextureMatrix);
+        if (isStartRecording && mRecodeEGL.isInitialized()) {
+            mRecodeEGL.queueEvent(mDrawVideoDataRunnable);
         }
+    }
+
+    private final Runnable mDrawVideoDataRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mRecodeTexture2dProgram.draw(mOESTextureID, mPreviewTextureMatrix);
+            mRecodeEGL.swapBuffers();
+        }
+    };
+
+    @Override
+    public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
+        super.setPreserveEGLContextOnPause(false);
+    }
+
+    private void openCamera() {
         mCameraHelper.post(new Runnable() {
             @Override
             public void run() {
+                if (mCameraHelper.isOpen()) {
+                    mCameraHelper.closeCamera();
+                }
                 mCameraHelper.openCamera(getContext(), mCameraFacing, new BasicCamera.StateCallback() {
                     @Override
                     public void onCameraOpen() {
                         mCameraHelper.setPreviewSurfaceTexture(mPreviewSurfaceTexture);
-                        mCameraHelper.autoSetOptimalPreviewSize(mSurfaceWidth, mSurfaceHeight, getDisplayRotation(), mAspectRatioSize, true);
-                        if (isRequestPreview) {
+                        if (isRequestPreview && mCameraHelper.getPreviewSize() != null) {
                             startPreview();
                         }
                     }
 
                     @Override
                     public void onCameraClose() {
-
+                        LogUtil.e("onCameraClose");
                     }
 
                     @Override
                     public void onCameraError(int error) {
-
+                        LogUtil.e("onCameraError");
                     }
                 });
             }
         });
     }
 
-    private void reset() {
-        if (mCameraHelper != null) {
-            mCameraHelper.closeCamera();
-        }
-        if (mTexture2dProgram != null) {
-            final Texture2dProgram program = mTexture2dProgram;
-            queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    program.release();
+    private void setCameraPreviewSize(final int width, final int height) {
+        mCameraHelper.post(new Runnable() {
+            @Override
+            public void run() {
+                mCameraHelper.autoChooseOptimalPreviewSize(width, height, getDisplayRotation(), mAspectRatioSize, true);
+                if (isRequestPreview) {
+                    startPreview();
                 }
-            });
-            mTexture2dProgram = null;
-        }
-        if (mPreviewSurfaceTexture != null) {
-            mPreviewSurfaceTexture.release();
-            mPreviewSurfaceTexture = null;
-        }
+            }
+        });
     }
-
 
     public void startPreview() {
         isRequestPreview = true;
@@ -197,23 +313,20 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        startPreview();
+    public void startRecode(String saveFile) {
+        isStartRecording = true;
+        if (mVideoEncoder != null && !mVideoEncoder.isRunning()) {
+            mVideoEncoder.start(saveFile, 0);
+        }
     }
 
-    @Override
-    public void onPause() {
-        stopPreview();
-        super.onPause();
+    public void stopRecode() {
+        isStartRecording = false;
+        if (mVideoEncoder != null && mVideoEncoder.isRunning()) {
+            mVideoEncoder.stop();
+        }
     }
 
-    public void onDestroy() {
-        setPreserveEGLContextOnPause(false);
-        super.onPause();
-        reset();
-    }
 
     protected int getDisplayRotation() {
         Context context = getContext();
@@ -224,10 +337,18 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
     }
 
-    protected static class CameraHelper {
+    protected static class CameraHelper extends Handler {
 
         private static final int MAX_PREVIEW_WIDTH = 1920;
         private static final int MAX_PREVIEW_HEIGHT = 1080;
+
+        public static final int MSG_OPEN_CAMERA = 1;
+        public static final int MSG_CLOSE_CAMERA = 2;
+        public static final int MSG_SET_PREVIEW_SIZE = 3;
+        public static final int MSG_START_PREVIEW = 4;
+        public static final int MSG_STOP_PREVIEW = 5;
+        public static final int MSG_OPEN_FLASH = 6;
+        public static final int MSG_CLOSE_FLASH = 7;
 
         private Handler mUIHandler;
         private BasicCamera mCamera;
@@ -236,8 +357,37 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         private int mMinZoom;
         private int mCurrentZoom;
 
+        private int mDesiredWidth;
+        private int mDesiredHeight;
+        private int mDisplayRotation;
+        private Size mAspectRatioSize;
+        private boolean isVideoMode;
+        private boolean hasDesiredData;
+
         public CameraHelper() {
+            super(Looper.getMainLooper());
             mUIHandler = new Handler(Looper.getMainLooper());
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_OPEN_CAMERA:
+                    openCamera(msg.obj,msg.arg1);
+                    break;
+                case MSG_CLOSE_CAMERA:
+                    break;
+                case MSG_SET_PREVIEW_SIZE:
+                    break;
+                case MSG_START_PREVIEW:
+                    break;
+                case MSG_STOP_PREVIEW:
+                    break;
+                case MSG_OPEN_FLASH:
+                    break;
+                case MSG_CLOSE_FLASH:
+                    break;
+            }
         }
 
         public void openCamera(Context context, @BasicCamera.FacingType int cameraFacing, final BasicCamera.StateCallback callback) {
@@ -252,7 +402,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         mMaxZoom = mCamera.getMaxZoomValue();
                         mMinZoom = mCamera.getMinZoomValue();
                         mCurrentZoom = mMinZoom;
-//                        mCamera.setPreviewFormat(ImageFormat.YUV_420_888);
+                        if (hasDesiredData) {
+                            autoChooseOptimalPreviewSize(mDesiredWidth, mDesiredHeight, mDisplayRotation, mAspectRatioSize, isVideoMode);
+                        }
 
                         if (callback != null) {
                             callback.onCameraOpen();
@@ -284,15 +436,25 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 if (mCamera != null) {
                     mCamera.closeCamera();
                     mCamera = null;
+                    mPreviewSize = null;
+                    mMaxZoom = 0;
+                    mCurrentZoom = 0;
+                    hasDesiredData = false;
+                    mUIHandler.removeCallbacksAndMessages(null);
                 }
-                mPreviewSize = null;
-                mMaxZoom = 0;
-                mCurrentZoom = 0;
-                mUIHandler.removeCallbacksAndMessages(null);
             }
         }
 
-        public Size autoSetOptimalPreviewSize(int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize, boolean isVideoMode) {
+        public void autoChooseOptimalPreviewSize(int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize, boolean isVideoMode) {
+            mDesiredWidth = desiredWidth;
+            mDesiredHeight = desiredHeight;
+            mDisplayRotation = displayRotation;
+            mAspectRatioSize = aspectRatioSize;
+            this.isVideoMode = isVideoMode;
+            hasDesiredData = true;
+            if (mCamera == null) {
+                return;
+            }
             int cameraOrientation = mCamera.getSensorOrientation();
             boolean swappedDimensions = false;
             switch (displayRotation) {
@@ -315,18 +477,21 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, desiredWidth, desiredHeight, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, aspectRatioSize, isVideoMode);
             }
             if (mPreviewSize == null) {
-                return null;
+                return;
             }
             if (mCamera instanceof BasicCamera.CameraImpl) {
                 BasicCamera.CameraImpl camera = (BasicCamera.CameraImpl) mCamera;
                 camera.setRecordingHint(true);
             }
             mCamera.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+        }
+
+        public Size getPreviewSize() {
             return mPreviewSize;
         }
 
-        private boolean setPreviewSurfaceTexture(@NonNull SurfaceTexture surfaceTexture) {
-            return mCamera.setPreviewDisplay(surfaceTexture);
+        public void setPreviewSurfaceTexture(@NonNull SurfaceTexture surfaceTexture) {
+            mCamera.setPreviewDisplay(surfaceTexture);
         }
 
         public void startPreview() {
@@ -360,6 +525,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 mCamera.setEnableFlash(isEnable);
             }
         }
+
 
         public void post(Runnable runnable) {
             mUIHandler.post(runnable);
@@ -455,24 +621,44 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 maTextureCoordLoc = GLES20.glGetAttribLocation(mProgramHandle, "aTextureCoord");
                 muMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uMVPMatrix");
                 muTexMatrixLoc = GLES20.glGetUniformLocation(mProgramHandle, "uTexMatrix");
+                // Select the program.
+                GLES20.glUseProgram(mProgramHandle);
+                checkGlError("glUseProgram");
+
+                // Enable the "aPosition" vertex attribute.
+                GLES20.glEnableVertexAttribArray(maPositionLoc);
+                checkGlError("glEnableVertexAttribArray");
+
+                // Enable the "aTextureCoord" vertex attribute.
+                GLES20.glEnableVertexAttribArray(maTextureCoordLoc);
+                checkGlError("glEnableVertexAttribArray");
+
+                // Connect vertexBuffer to "aPosition".
+                GLES20.glVertexAttribPointer(maPositionLoc, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, FULL_RECTANGLE_BUF);
+                checkGlError("glVertexAttribPointer");
+
+                // Connect texBuffer to "aTextureCoord".
+                GLES20.glVertexAttribPointer(maTextureCoordLoc, 2, GLES20.GL_FLOAT, false, TEX_COORD_STRIDE, FULL_RECTANGLE_TEX_BUF);
+                checkGlError("glVertexAttribPointer");
             }
 
             return mProgramHandle != 0;
         }
 
         public void release() {
+            // Done -- disable vertex array, texture, and program.
+            GLES20.glDisableVertexAttribArray(maPositionLoc);
+            GLES20.glDisableVertexAttribArray(maTextureCoordLoc);
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+            GLES20.glUseProgram(0);
             GLES20.glDeleteProgram(mProgramHandle);
             mProgramHandle = -1;
         }
 
-        public void draw(int textureId, float[] texMatrix) {
-            // Select the program.
-            GLES20.glUseProgram(mProgramHandle);
-            checkGlError("glUseProgram")
-            ;
-            // Set the texture.
+        public void draw(int textureID, float[] texMatrix) {
+            // Set the texture unit.
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureID);
 
             // Copy the model / view / projection matrix over.
             GLES20.glUniformMatrix4fv(muMVPMatrixLoc, 1, false, IDENTITY_MATRIX, 0);
@@ -482,31 +668,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             GLES20.glUniformMatrix4fv(muTexMatrixLoc, 1, false, texMatrix, 0);
             checkGlError("glUniformMatrix4fv");
 
-            // Enable the "aPosition" vertex attribute.
-            GLES20.glEnableVertexAttribArray(maPositionLoc);
-            checkGlError("glEnableVertexAttribArray");
-
-            // Connect vertexBuffer to "aPosition".
-            GLES20.glVertexAttribPointer(maPositionLoc, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, FULL_RECTANGLE_BUF);
-            checkGlError("glVertexAttribPointer");
-
-            // Enable the "aTextureCoord" vertex attribute.
-            GLES20.glEnableVertexAttribArray(maTextureCoordLoc);
-            checkGlError("glEnableVertexAttribArray");
-
-            // Connect texBuffer to "aTextureCoord".
-            GLES20.glVertexAttribPointer(maTextureCoordLoc, 2, GLES20.GL_FLOAT, false, TEX_COORD_STRIDE, FULL_RECTANGLE_TEX_BUF);
-            checkGlError("glVertexAttribPointer");
-
             // Draw the rect.
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTEX_COUNT);
             checkGlError("glDrawArrays");
-
-            // Done -- disable vertex array, texture, and program.
-            GLES20.glDisableVertexAttribArray(maPositionLoc);
-            GLES20.glDisableVertexAttribArray(maTextureCoordLoc);
-            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-            GLES20.glUseProgram(0);
         }
 
         public static int createOESTextureObject() {
@@ -522,6 +686,11 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
             return tex[0];
+        }
+
+        public static void deleteOESTextureObject(int textureID) {
+            //删除纹理
+            GLES20.glDeleteTextures(1, new int[]{textureID}, 0);
         }
 
         private static int loadShader(int shaderType, String source) {
@@ -557,6 +726,222 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 LogUtil.e(msg);
                 throw new RuntimeException(msg);
             }
+        }
+    }
+
+    private static class EGLVideoEncoder {//负责创建EGL环境，把GL内容写入Surface
+
+        private static final String TAG = EGLVideoEncoder.class.getName();
+        // Android-specific extension.
+        private static final int EGL_RECORDABLE_ANDROID = 0x3142;
+
+        private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
+        private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
+        private EGLSurface mEGLSurface = EGL14.EGL_NO_SURFACE;
+        private android.opengl.EGLConfig mEGLConfig = null;
+
+        private Handler mGLHandler;
+
+        private Semaphore mInitializeLock = new Semaphore(1);
+
+        private boolean initEGL(@Nullable EGLContext sharedContext, Object surface) {
+            try {
+                mInitializeLock.acquireUninterruptibly();
+                if (mEGLDisplay != EGL14.EGL_NO_DISPLAY || mEGLContext != EGL14.EGL_NO_CONTEXT) {
+                    throw new RuntimeException("The TextureEncoder already initialization");
+                }
+                if (!(surface instanceof Surface) && !(surface instanceof SurfaceTexture)) {
+                    throw new RuntimeException("invalid surface: " + surface);
+                }
+                final boolean[] isSuccessful = new boolean[1];
+                isSuccessful[0] = initEGLDisplay() && initEGLConfig() && initEGLContent(sharedContext) && initEGLContent(surface);
+                if (isSuccessful[0]) {
+                    HandlerThread handlerThread = new HandlerThread(TAG);
+                    handlerThread.start();
+                    mGLHandler = new Handler(handlerThread.getLooper());
+                    final CountDownLatch latch = new CountDownLatch(1);
+                    mGLHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            isSuccessful[0] = makeCurrent();
+                            latch.countDown();
+                        }
+                    });
+                    try {
+                        latch.await();
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+                if (!isSuccessful[0]) {
+                    internalReleaseEGL();
+                }
+                return isSuccessful[0];
+            } finally {
+                mInitializeLock.release();
+            }
+        }
+
+        private boolean initEGLDisplay() {
+            mEGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
+            if (mEGLDisplay == EGL14.EGL_NO_DISPLAY) {
+                Log.e(TAG, "unable to get EGL14 display");
+                return false;
+            }
+            int[] version = new int[2];
+            if (!EGL14.eglInitialize(mEGLDisplay, version, 0, version, 1)) {
+                mEGLDisplay = null;
+                Log.e(TAG, "unable to initialize EGL14");
+                return false;
+            }
+            return true;
+        }
+
+        private boolean initEGLConfig() {
+            // The actual surface is generally RGBA or RGBX, so situationally omitting alpha
+            // doesn't really help.  It can also lead to a huge performance hit on glReadPixels()
+            // when reading into a GL_RGBA buffer.
+            int[] attributesList = {
+                    EGL14.EGL_RED_SIZE, 8,
+                    EGL14.EGL_GREEN_SIZE, 8,
+                    EGL14.EGL_BLUE_SIZE, 8,
+                    EGL14.EGL_ALPHA_SIZE, 8,
+                    EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+                    EGL_RECORDABLE_ANDROID, 1,      // placeholder for recordable [@-3]
+                    EGL14.EGL_NONE
+            };
+            android.opengl.EGLConfig[] configs = new android.opengl.EGLConfig[1];
+            int[] numConfigs = new int[1];
+            if (!EGL14.eglChooseConfig(mEGLDisplay, attributesList, 0, configs, 0, configs.length, numConfigs, 0)) {
+                Log.e(TAG, "Unable to find a suitable EGLConfig");
+                return false;
+            }
+            mEGLConfig = configs[0];
+            return true;
+        }
+
+        private boolean initEGLContent(EGLContext sharedContext) {
+            int[] attributesList = {
+                    EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+                    EGL14.EGL_NONE
+            };
+            mEGLContext = EGL14.eglCreateContext(mEGLDisplay, mEGLConfig, sharedContext, attributesList, 0);
+            return !hasEglError("eglCreateContext");
+        }
+
+
+        private boolean initEGLContent(Object surface) {
+            // Create a window surface, and attach it to the Surface we received.
+            int[] surfaceAttributes = {
+                    EGL14.EGL_NONE
+            };
+            mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, surface,
+                    surfaceAttributes, 0);
+            return !hasEglError("eglCreateWindowSurface") && mEGLSurface != null;
+        }
+
+        private boolean makeCurrent() {
+            return EGL14.eglMakeCurrent(mEGLDisplay, mEGLSurface, mEGLSurface, mEGLContext);
+        }
+
+        public void releaseEGL() {
+            try {
+                mInitializeLock.acquireUninterruptibly();
+                if (mGLHandler != null) {
+                    if (mGLHandler.getLooper() == Looper.myLooper()) {
+                        internalReleaseEGL();
+                    } else {
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        mGLHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                internalReleaseEGL();
+                                latch.countDown();
+                            }
+                        });
+                        try {
+                            latch.await();
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                }
+            } finally {
+                mInitializeLock.release();
+            }
+        }
+
+        private void internalReleaseEGL() {
+            if (mGLHandler != null) {
+                mGLHandler.removeCallbacksAndMessages(null);
+                mGLHandler.getLooper().quit();
+                mGLHandler = null;
+            }
+            if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
+                // Android is unusual in that it uses a reference-counted EGLDisplay.  So for
+                // every eglInitialize() we need an eglTerminate().
+                EGL14.eglMakeCurrent(mEGLDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
+                EGL14.eglDestroyContext(mEGLDisplay, mEGLContext);
+                if (mEGLSurface != null) {
+                    EGL14.eglDestroySurface(mEGLDisplay, mEGLSurface);
+                }
+                EGL14.eglReleaseThread();
+                EGL14.eglTerminate(mEGLDisplay);
+            }
+
+            mEGLDisplay = EGL14.EGL_NO_DISPLAY;
+            mEGLContext = EGL14.EGL_NO_CONTEXT;
+            mEGLSurface = EGL14.EGL_NO_SURFACE;
+            mEGLConfig = null;
+        }
+
+        public boolean isInitialized() {
+            try {
+                mInitializeLock.acquireUninterruptibly();
+                return mEGLDisplay != EGL14.EGL_NO_DISPLAY;
+            } finally {
+                mInitializeLock.release();
+            }
+        }
+
+        public boolean swapBuffers() {
+            if (isInitialized()) {
+                return EGL14.eglSwapBuffers(mEGLDisplay, mEGLSurface);
+            }
+            return false;
+        }
+
+        public void queueEvent(Runnable r) {
+            try {
+                mInitializeLock.acquireUninterruptibly();
+                if (mGLHandler != null) {
+                    mGLHandler.post(r);
+                }
+            } finally {
+                mInitializeLock.release();
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            try {
+                if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
+                    // We're limited here -- finalizers don't run on the thread that holds
+                    // the EGL state, so if a surface or context is still current on another
+                    // thread we can't fully release it here.  Exceptions thrown from here
+                    // are quietly discarded.  Complain in the log file.
+                    releaseEGL();
+                }
+            } finally {
+                super.finalize();
+            }
+        }
+
+        private static boolean hasEglError(String msg) {
+            int error;
+            if ((error = EGL14.eglGetError()) != EGL14.EGL_SUCCESS) {
+                Log.e(TAG, msg + ": EGL error: 0x" + Integer.toHexString(error));
+                return true;
+            }
+            return false;
         }
     }
 
