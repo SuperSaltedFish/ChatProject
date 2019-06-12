@@ -229,6 +229,7 @@ public abstract class BasicCamera {
         private Camera.CameraInfo mCameraInfo;
         private Camera.Parameters mParameters;
         private Camera.Size mPreviewSize;
+        private SurfaceTexture mPreviewSurfaceTexture;
         private boolean isPreviewing;
         private byte[] mCaptureBuffer;
 
@@ -255,6 +256,7 @@ public abstract class BasicCamera {
                 mWorkHandler.removeCallbacksAndMessages(null);
                 mWorkHandler.getLooper().quit();
             }
+            mPreviewSurfaceTexture = null;
             mParameters = null;
             mPreviewSize = null;
             isPreviewing = false;
@@ -375,7 +377,7 @@ public abstract class BasicCamera {
             try {
                 mCameraOpenCloseLock.acquireUninterruptibly();
                 return mCamera != null;
-            }finally {
+            } finally {
                 mCameraOpenCloseLock.release();
             }
         }
@@ -387,7 +389,7 @@ public abstract class BasicCamera {
                 mWorkHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (!isPreviewing) {
+                        if (mPreviewSurfaceTexture != null && !isPreviewing) {
                             try {
                                 mCamera.startPreview();
                                 mCamera.cancelAutoFocus();
@@ -444,6 +446,7 @@ public abstract class BasicCamera {
                 try {
                     stopPreviewNow();
                     mCamera.setPreviewTexture(texture);
+                    mPreviewSurfaceTexture = texture;
                     return true;
                 } catch (Exception e) {
                     LogUtil.d(e.toString(), e);

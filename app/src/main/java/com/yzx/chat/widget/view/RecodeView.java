@@ -27,16 +27,14 @@ import com.yzx.chat.util.BasicCamera;
 import com.yzx.chat.util.VideoEncoder;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -51,17 +49,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     private SurfaceTexture mPreviewSurfaceTexture;
     private Texture2dProgram mPreviewTexture2dProgram;
-    private int mOESTextureID = -1;
+    private int mOESTextureID;
 
     private CameraHelper mCameraHelper;
-    private Size mAspectRatioSize = DEFAULT_ASPECT_RATIO;
+    private Size mAspectRatioSize;
     private int mCameraFacing;
-    private boolean isRequestPreview;
 
-    private EGLVideoEncoder mRecodeEGL;
-    private Texture2dProgram mRecodeTexture2dProgram;
-    private VideoEncoder mVideoEncoder;
-    private Surface mVideoSurface;
+    private EGLVideoEncoder mEGLVideoEncoder;
     private volatile boolean isStartRecording;
 
     public RecodeView(Context context) {
@@ -73,106 +67,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         setEGLContextClientVersion(3);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        mCameraHelper = new CameraHelper();
-        mCameraFacing = BasicCamera.CAMERA_FACING_BACK;
-        mRecodeEGL = new EGLVideoEncoder();
-        initVideoEncoder();
-    }
 
-    private void initVideoEncoder() {
-        try {
-            mVideoEncoder = new VideoEncoder();
-            MediaFormat videoFormat = mVideoEncoder.createDefaultVideoMediaFormat(960 * 1440 / 2560, 960, 15);
-            MediaFormat audioFormat = mVideoEncoder.createDefaultAudioMediaFormat();
-            mVideoSurface = mVideoEncoder.configureCodec(videoFormat, audioFormat);
-        } catch (IOException | RuntimeException e) {
-            if (mVideoEncoder != null) {
-                mVideoEncoder.release();
-                mVideoEncoder = null;
-            }
-            e.printStackTrace();
-            LogUtil.e("initVideoEncoder error");
-        }
-    }
-
-    private void releaseVideoEncoder() {
-        if (mVideoSurface != null) {
-            mVideoSurface.release();
-            mVideoSurface = null;
-        }
-        if (mVideoEncoder != null) {
-            mVideoEncoder.release();
-            mVideoEncoder = null;
-        }
-    }
-
-    private void initPreviewGL() {
-        mPreviewTexture2dProgram = new Texture2dProgram();
-        if (!mPreviewTexture2dProgram.tryInit()) {
-            releasePreviewGL();
-            return;
-        }
-        //根据外部纹理ID创建SurfaceTexture
-        mOESTextureID = Texture2dProgram.createOESTextureObject();
-        mPreviewSurfaceTexture = new SurfaceTexture(mOESTextureID);
-        mPreviewSurfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
-            @Override
-            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-                //每获取到一帧数据时请求OpenGL ES进行渲染
-                requestRender();
-            }
-        });
-        openCamera();
-    }
-
-    private void releasePreviewGL() {
-        if (mCameraHelper != null) {
-            mCameraHelper.closeCamera();
-        }
-        if (mPreviewTexture2dProgram != null) {
-            mPreviewTexture2dProgram.release();
-            mPreviewTexture2dProgram = null;
-        }
-        if (mPreviewSurfaceTexture != null) {
-            mPreviewSurfaceTexture.setOnFrameAvailableListener(null);
-            mPreviewSurfaceTexture.release();
-            mPreviewSurfaceTexture = null;
-        }
         mOESTextureID = -1;
-    }
+        mCameraHelper = new CameraHelper();
+        mAspectRatioSize = DEFAULT_ASPECT_RATIO;
+        mEGLVideoEncoder = new EGLVideoEncoder(1280, 720, 30);
 
-    private void initRecodeGL() {
-        if (mVideoEncoder == null) {
-            return;
-        }
-        if (mRecodeEGL.initEGL(EGL14.eglGetCurrentContext(), mVideoSurface)) {
-            mRecodeEGL.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    Texture2dProgram program = new Texture2dProgram();
-                    if (program.tryInit()) {
-                        mRecodeTexture2dProgram = program;
-                    } else {
-                        mRecodeEGL.releaseEGL();
-                    }
-                }
-            });
-        }
-    }
-
-    private void releaseRecodeGL() {
-        if (mRecodeEGL.isInitialized()) {
-            mRecodeEGL.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    if (mRecodeTexture2dProgram != null) {
-                        mRecodeTexture2dProgram.release();
-                        mRecodeTexture2dProgram = null;
-                    }
-                    mRecodeEGL.releaseEGL();
-                }
-            });
-        }
+        switchCamera(BasicCamera.CAMERA_FACING_BACK);
     }
 
     @Override
@@ -199,132 +100,130 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     }
 
     @Override
+    public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
+        super.setPreserveEGLContextOnPause(false);
+    }
+
+    @Override
     public void onResume() {
+        LogUtil.e("onResume");
         super.onResume();
         startPreview();
     }
 
     @Override
     public void onPause() {
+        LogUtil.e("onPause");
         stopPreview();
         stopRecode();
+        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE_EGL);
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                releaseRecodeGL();
                 releasePreviewGL();
             }
         });
         super.onPause();
     }
 
+    public void onDestroy() {
+        onPause();
+        mCameraHelper.sendEvent(CameraHelper.MSG_CLOSE_CAMERA);
+        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE);
+        mCameraHelper = null;
+        mEGLVideoEncoder = null;
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        initPreviewGL();
-        initRecodeGL();
+        if (initPreviewGL()) {
+            mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_INIT_EGL,EGL14.eglGetCurrentContext());
+            mCameraHelper.sendEvent(CameraHelper.MSG_SET_PREVIEW_SURFACE, mPreviewSurfaceTexture);
+        }
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        LogUtil.e("onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
-        setCameraPreviewSize(width, height);
+        mCameraHelper.setDesiredPreviewSize(width, height, getDisplayRotation(), mAspectRatioSize);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        if (mPreviewTexture2dProgram == null || !mCameraHelper.isOpen()) {
+        if (mPreviewTexture2dProgram == null) {
             return;
         }
         mPreviewSurfaceTexture.updateTexImage();
         //获取外部纹理的矩阵，用来确定纹理的采样位置，没有此矩阵可能导致图像翻转等问题
         mPreviewSurfaceTexture.getTransformMatrix(mPreviewTextureMatrix);
         mPreviewTexture2dProgram.draw(mOESTextureID, mPreviewTextureMatrix);
-        if (isStartRecording && mRecodeEGL.isInitialized()) {
-            mRecodeEGL.queueEvent(mDrawVideoDataRunnable);
+        if (isStartRecording) {
+            mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_DRAW, mOESTextureID, mPreviewTextureMatrix);
         }
     }
 
-    private final Runnable mDrawVideoDataRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mRecodeTexture2dProgram.draw(mOESTextureID, mPreviewTextureMatrix);
-            mRecodeEGL.swapBuffers();
+    private boolean initPreviewGL() {
+        mPreviewTexture2dProgram = new Texture2dProgram();
+        if (!mPreviewTexture2dProgram.tryInit()) {
+            releasePreviewGL();
+            return false;
         }
-    };
-
-    @Override
-    public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
-        super.setPreserveEGLContextOnPause(false);
-    }
-
-    private void openCamera() {
-        mCameraHelper.post(new Runnable() {
+        //根据外部纹理ID创建SurfaceTexture
+        mOESTextureID = Texture2dProgram.createOESTextureObject();
+        mPreviewSurfaceTexture = new SurfaceTexture(mOESTextureID);
+        mPreviewSurfaceTexture.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
             @Override
-            public void run() {
-                if (mCameraHelper.isOpen()) {
-                    mCameraHelper.closeCamera();
-                }
-                mCameraHelper.openCamera(getContext(), mCameraFacing, new BasicCamera.StateCallback() {
-                    @Override
-                    public void onCameraOpen() {
-                        mCameraHelper.setPreviewSurfaceTexture(mPreviewSurfaceTexture);
-                        if (isRequestPreview && mCameraHelper.getPreviewSize() != null) {
-                            startPreview();
-                        }
-                    }
-
-                    @Override
-                    public void onCameraClose() {
-                        LogUtil.e("onCameraClose");
-                    }
-
-                    @Override
-                    public void onCameraError(int error) {
-                        LogUtil.e("onCameraError");
-                    }
-                });
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                //每获取到一帧数据时请求OpenGL ES进行渲染
+                requestRender();
             }
         });
+        return true;
     }
 
-    private void setCameraPreviewSize(final int width, final int height) {
-        mCameraHelper.post(new Runnable() {
-            @Override
-            public void run() {
-                mCameraHelper.autoChooseOptimalPreviewSize(width, height, getDisplayRotation(), mAspectRatioSize, true);
-                if (isRequestPreview) {
-                    startPreview();
-                }
-            }
-        });
+    private void releasePreviewGL() {
+        if (mPreviewTexture2dProgram != null) {
+            mPreviewTexture2dProgram.release();
+            mPreviewTexture2dProgram = null;
+        }
+        if (mPreviewSurfaceTexture != null) {
+            mPreviewSurfaceTexture.setOnFrameAvailableListener(null);
+            mPreviewSurfaceTexture.release();
+            mPreviewSurfaceTexture = null;
+            mCameraHelper.sendEvent(CameraHelper.MSG_REMOVE_PREVIEW_SURFACE);
+        }
+        if (mOESTextureID > -1) {
+            Texture2dProgram.deleteOESTextureObject(mOESTextureID);
+        }
+        mOESTextureID = -1;
+    }
+
+    public void switchCamera(@BasicCamera.FacingType int cameraFacingType) {
+        if (mCameraFacing == cameraFacingType) {
+            return;
+        }
+        mCameraFacing = cameraFacingType;
+        mCameraHelper.sendEvent(CameraHelper.MSG_CLOSE_CAMERA);
+        mCameraHelper.sendEvent(CameraHelper.MSG_OPEN_CAMERA, getContext(), mCameraFacing);
     }
 
     public void startPreview() {
-        isRequestPreview = true;
-        if (mCameraHelper.isOpen() && !mCameraHelper.isPreviewing()) {
-            mCameraHelper.startPreview();
-        }
+        mCameraHelper.sendEvent(CameraHelper.MSG_ENABLE_AUTO_START_PREVIEW);
     }
 
     public void stopPreview() {
-        isRequestPreview = false;
-        if (mCameraHelper.isPreviewing()) {
-            mCameraHelper.startPreview();
-        }
+        mCameraHelper.sendEvent(CameraHelper.MSG_STOP_PREVIEW);
     }
 
     public void startRecode(String saveFile) {
+        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_START_RECODE, saveFile, 90);
         isStartRecording = true;
-        if (mVideoEncoder != null && !mVideoEncoder.isRunning()) {
-            mVideoEncoder.start(saveFile, 0);
-        }
     }
 
     public void stopRecode() {
         isStartRecording = false;
-        if (mVideoEncoder != null && mVideoEncoder.isRunning()) {
-            mVideoEncoder.stop();
-        }
+        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_STOP_RECODE);
     }
 
 
@@ -337,127 +236,97 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
     }
 
-    protected static class CameraHelper extends Handler {
+    protected static class CameraHelper {
 
         private static final int MAX_PREVIEW_WIDTH = 1920;
         private static final int MAX_PREVIEW_HEIGHT = 1080;
+        private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
         public static final int MSG_OPEN_CAMERA = 1;
         public static final int MSG_CLOSE_CAMERA = 2;
-        public static final int MSG_SET_PREVIEW_SIZE = 3;
-        public static final int MSG_START_PREVIEW = 4;
-        public static final int MSG_STOP_PREVIEW = 5;
-        public static final int MSG_OPEN_FLASH = 6;
-        public static final int MSG_CLOSE_FLASH = 7;
+        public static final int MSG_ENABLE_AUTO_START_PREVIEW = 3;
+        public static final int MSG_STOP_PREVIEW = 4;
+        public static final int MSG_OPEN_FLASH = 5;
+        public static final int MSG_CLOSE_FLASH = 6;
+        public static final int MSG_SET_PREVIEW_SURFACE = 7;
+        public static final int MSG_REMOVE_PREVIEW_SURFACE = 8;
+        private static final int MSG_SET_PREVIEW_SIZE = 9;
 
-        private Handler mUIHandler;
+        private CameraHandler mCameraHandler;
+
         private BasicCamera mCamera;
+        private SurfaceTexture mPreviewSurfaceTexture;
         private Size mPreviewSize;
         private int mMaxZoom;
         private int mMinZoom;
         private int mCurrentZoom;
+        private boolean isEnableAutoStartPreview;
 
-        private int mDesiredWidth;
-        private int mDesiredHeight;
         private int mDisplayRotation;
-        private Size mAspectRatioSize;
-        private boolean isVideoMode;
-        private boolean hasDesiredData;
+        private int mDesiredWidth = MAX_PREVIEW_WIDTH;
+        private int mDesiredHeight = MAX_PREVIEW_HEIGHT;
+        private Size mAspectRatioSize = DEFAULT_ASPECT_RATIO;
 
         public CameraHelper() {
-            super(Looper.getMainLooper());
-            mUIHandler = new Handler(Looper.getMainLooper());
+            mCameraHandler = new CameraHandler(this);
         }
 
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_OPEN_CAMERA:
-                    openCamera(msg.obj,msg.arg1);
-                    break;
-                case MSG_CLOSE_CAMERA:
-                    break;
-                case MSG_SET_PREVIEW_SIZE:
-                    break;
-                case MSG_START_PREVIEW:
-                    break;
-                case MSG_STOP_PREVIEW:
-                    break;
-                case MSG_OPEN_FLASH:
-                    break;
-                case MSG_CLOSE_FLASH:
-                    break;
-            }
-        }
-
-        public void openCamera(Context context, @BasicCamera.FacingType int cameraFacing, final BasicCamera.StateCallback callback) {
+        private void openCamera(Context context, @BasicCamera.FacingType int cameraFacing) {
+            LogUtil.e("openCamera");
             final BasicCamera camera = BasicCamera.createCameraCompat(context, cameraFacing);
             if (camera != null) {
                 camera.openCamera(new BasicCamera.StateCallback() {
                     @Override
                     public void onCameraOpen() {
+                        LogUtil.e("onCameraOpen");
                         mCamera = camera;
                         mCamera.setDisplayOrientationIfSupport(90);//下面的代码在横屏的时候无效，不知道为什么(无论前置还是后置)
 //                    mCamera.setDisplayOrientationIfSupport(calculateCameraRotationAngle(getDisplayRotation(), mCamera.getSensorOrientation(), mCameraFacingType));
                         mMaxZoom = mCamera.getMaxZoomValue();
                         mMinZoom = mCamera.getMinZoomValue();
                         mCurrentZoom = mMinZoom;
-                        if (hasDesiredData) {
-                            autoChooseOptimalPreviewSize(mDesiredWidth, mDesiredHeight, mDisplayRotation, mAspectRatioSize, isVideoMode);
-                        }
-
-                        if (callback != null) {
-                            callback.onCameraOpen();
+                        updatePreviewSize();
+                        if (mPreviewSurfaceTexture != null) {
+                            setPreviewSurfaceTexture(mPreviewSurfaceTexture);
                         }
                     }
 
                     @Override
                     public void onCameraClose() {
                         closeCamera();
-                        if (callback != null) {
-                            callback.onCameraClose();
-                        }
                     }
 
                     @Override
                     public void onCameraError(int error) {
                         closeCamera();
-                        if (callback != null) {
-                            callback.onCameraError(error);
-                        }
                     }
                 });
             }
         }
 
 
-        public void closeCamera() {
-            synchronized (this) {
-                if (mCamera != null) {
-                    mCamera.closeCamera();
-                    mCamera = null;
-                    mPreviewSize = null;
-                    mMaxZoom = 0;
-                    mCurrentZoom = 0;
-                    hasDesiredData = false;
-                    mUIHandler.removeCallbacksAndMessages(null);
-                }
+        private void closeCamera() {
+            LogUtil.e("closeCamera");
+            if (mCamera != null) {
+                mCamera.closeCamera();
+                mCamera = null;
+                mMaxZoom = 0;
+                mCurrentZoom = 0;
+                mPreviewSurfaceTexture = null;
+                mPreviewSize = null;
+                mCameraHandler.removeCallbacksAndMessages(null);
             }
         }
 
-        public void autoChooseOptimalPreviewSize(int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize, boolean isVideoMode) {
-            mDesiredWidth = desiredWidth;
-            mDesiredHeight = desiredHeight;
-            mDisplayRotation = displayRotation;
-            mAspectRatioSize = aspectRatioSize;
-            this.isVideoMode = isVideoMode;
-            hasDesiredData = true;
+        private void updatePreviewSize() {
+            LogUtil.e("updatePreviewSize1");
             if (mCamera == null) {
                 return;
             }
+            LogUtil.e("updatePreviewSize2");
             int cameraOrientation = mCamera.getSensorOrientation();
             boolean swappedDimensions = false;
-            switch (displayRotation) {
+            switch (mDisplayRotation) {
                 case Surface.ROTATION_0:
                 case Surface.ROTATION_180:
                     if (cameraOrientation == 90 || cameraOrientation == 270) {
@@ -472,9 +341,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                     break;
             }
             if (swappedDimensions) {
-                mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, desiredHeight, desiredWidth, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, aspectRatioSize, isVideoMode);
+                mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, mDesiredHeight, mDesiredWidth, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, true);
             } else {
-                mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, desiredWidth, desiredHeight, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, aspectRatioSize, isVideoMode);
+                mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, mDesiredWidth, mDesiredHeight, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, true);
             }
             if (mPreviewSize == null) {
                 return;
@@ -484,54 +353,401 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 camera.setRecordingHint(true);
             }
             mCamera.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+            startPreviewIfNeed();
         }
 
-        public Size getPreviewSize() {
-            return mPreviewSize;
+        private void setPreviewSurfaceTexture(SurfaceTexture surfaceTexture) {
+            LogUtil.e("setPreviewSurfaceTexture1");
+            mPreviewSurfaceTexture = surfaceTexture;
+            if (mCamera != null) {
+                LogUtil.e("setPreviewSurfaceTexture2");
+                mCamera.setPreviewDisplay(surfaceTexture);
+                startPreviewIfNeed();
+            }
         }
 
-        public void setPreviewSurfaceTexture(@NonNull SurfaceTexture surfaceTexture) {
-            mCamera.setPreviewDisplay(surfaceTexture);
+        public void setDesiredPreviewSize(int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize) {
+            LogUtil.e("setDesiredPreviewSize");
+            mDesiredWidth = desiredWidth;
+            mDesiredHeight = desiredHeight;
+            mDisplayRotation = displayRotation;
+            mAspectRatioSize = aspectRatioSize;
+            sendEvent(MSG_SET_PREVIEW_SIZE);
         }
 
-        public void startPreview() {
-            if (mCamera.isOpen()) {
+
+        private void enableAutoStartPreview() {
+            isEnableAutoStartPreview = true;
+            startPreviewIfNeed();
+        }
+
+        private void startPreviewIfNeed() {
+            if (mCamera != null && mCamera.isOpen() && isEnableAutoStartPreview && mPreviewSurfaceTexture != null && mPreviewSize != null) {
                 mCamera.starPreview();
             }
         }
 
-        public void stopPreview() {
+        private void stopPreview() {
+            isEnableAutoStartPreview = false;
             if (mCamera != null && mCamera.isPreviewing()) {
                 mCamera.stopPreview();
             }
         }
 
-        public boolean isOpen() {
-            if (mCamera != null) {
-                return mCamera.isOpen();
-            }
-            return false;
-        }
-
-        public boolean isPreviewing() {
-            if (mCamera != null) {
-                return mCamera.isPreviewing();
-            }
-            return false;
-        }
-
-        public void setEnableFlash(boolean isEnable) {
+        private void setEnableFlash(boolean isEnable) {
             if (mCamera != null && mCamera.isOpen()) {
                 mCamera.setEnableFlash(isEnable);
             }
         }
 
 
-        public void post(Runnable runnable) {
-            mUIHandler.post(runnable);
+        public void sendEvent(int msgType, Object... params) {
+            mCameraHandler.removeMessages(msgType);
+            mCameraHandler.sendMessage(msgType, params);
         }
+
+        private static class CameraHandler extends Handler {
+            private WeakReference<CameraHelper> mCameraWeakReference;
+
+            private CameraHandler(CameraHelper cameraHelper) {
+                super(Looper.getMainLooper());
+                mCameraWeakReference = new WeakReference<>(cameraHelper);
+            }
+
+            @Override
+            public void handleMessage(Message msg) {
+                CameraHelper helper = mCameraWeakReference.get();
+                if (helper == null) {
+                    return;
+                }
+                switch (msg.what) {
+                    case MSG_OPEN_CAMERA:
+                        helper.openCamera((Context) msg.obj, msg.arg1);
+                        break;
+                    case MSG_CLOSE_CAMERA:
+                        helper.closeCamera();
+                        break;
+                    case MSG_SET_PREVIEW_SURFACE:
+                        helper.setPreviewSurfaceTexture((SurfaceTexture) msg.obj);
+                        break;
+                    case MSG_REMOVE_PREVIEW_SURFACE:
+                        helper.setPreviewSurfaceTexture(null);
+                        break;
+                    case MSG_SET_PREVIEW_SIZE:
+                        helper.updatePreviewSize();
+                        break;
+                    case MSG_ENABLE_AUTO_START_PREVIEW:
+                        helper.enableAutoStartPreview();
+                        break;
+                    case MSG_STOP_PREVIEW:
+                        helper.stopPreview();
+                        break;
+                    case MSG_OPEN_FLASH:
+                        helper.setEnableFlash(true);
+                        break;
+                    case MSG_CLOSE_FLASH:
+                        helper.setEnableFlash(false);
+                        break;
+                }
+            }
+
+            private void sendMessage(int msgType, Object... params) {
+                Message message = obtainMessage(msgType);
+                switch (msgType) {
+                    case MSG_OPEN_CAMERA:
+                        message.obj = params[0];
+                        message.arg1 = (int) params[1];
+                        break;
+                    case MSG_SET_PREVIEW_SURFACE:
+                        message.obj = params[0];
+                        break;
+                }
+                sendMessage(message);
+            }
+        }
+
     }
 
+
+    private static class EGLVideoEncoder {//负责创建EGL环境，把GL内容写入Surface
+
+        private static final String TAG = EGLVideoEncoder.class.getName();
+        // Android-specific extension.
+        private static final int EGL_RECORDABLE_ANDROID = 0x3142;
+
+        private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
+        private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
+        private EGLSurface mEGLSurface = EGL14.EGL_NO_SURFACE;
+        private android.opengl.EGLConfig mEGLConfig = null;
+
+        private EGLVideoHandler mEGLVideoHandler;
+        private Texture2dProgram mRecodeTexture2dProgram;
+        private VideoEncoder mVideoEncoder;
+        private Surface mEncoderSurface;
+
+        public static final int MSG_INIT_EGL = 1;
+        public static final int MSG_RELEASE_EGL = 2;
+        public static final int MSG_DRAW = 3;
+        public static final int MSG_START_RECODE = 4;
+        public static final int MSG_STOP_RECODE = 5;
+        public static final int MSG_RELEASE = 6;
+
+        private EGLVideoEncoder(int videoWidth, int videoHeight, int frameRate) {
+            initVideoEncoder(videoWidth, videoHeight, frameRate);
+            HandlerThread handlerThread = new HandlerThread(TAG);
+            handlerThread.start();
+            mEGLVideoHandler = new EGLVideoHandler(this, handlerThread.getLooper());
+        }
+
+        private void initVideoEncoder(int videoWidth, int videoHeight, int frameRate) {
+            try {
+                mVideoEncoder = new VideoEncoder();
+                MediaFormat videoFormat = mVideoEncoder.createDefaultVideoMediaFormat(videoWidth, videoHeight, frameRate);
+                MediaFormat audioFormat = mVideoEncoder.createDefaultAudioMediaFormat();
+                mEncoderSurface = mVideoEncoder.configureCodec(videoFormat, audioFormat);
+            } catch (IOException | RuntimeException e) {
+                releaseVideoEncoder();
+                e.printStackTrace();
+            }
+        }
+
+        private void startRecode(String savePath, int videoRotationDegrees) {
+            if (mVideoEncoder != null) {
+                mVideoEncoder.start(savePath, videoRotationDegrees);
+            }
+        }
+
+        private void stopRecode() {
+            if (mVideoEncoder != null && mVideoEncoder.isRunning()) {
+                mVideoEncoder.stop();
+            }
+        }
+
+        private void releaseVideoEncoder() {
+            if (mEncoderSurface != null) {
+                mEncoderSurface.release();
+                mEncoderSurface = null;
+            }
+            if (mVideoEncoder != null) {
+                mVideoEncoder.stop();
+                mVideoEncoder.release();
+                mVideoEncoder = null;
+            }
+        }
+
+        private void initEGL(@Nullable EGLContext sharedContext) {
+            if (mEGLDisplay != EGL14.EGL_NO_DISPLAY || mEGLContext != EGL14.EGL_NO_CONTEXT) {
+                throw new RuntimeException("The TextureEncoder already initialization");
+            }
+            if (mVideoEncoder == null || mEncoderSurface == null) {
+                return;
+            }
+            boolean isSuccessful =
+                    initEGLDisplay()
+                            && initEGLConfig()
+                            && initEGLContent(sharedContext)
+                            && initEGLSurface()
+                            && makeCurrent()
+                            && initRecordTexture2dProgram();
+
+            if (!isSuccessful) {
+                releaseEGL();
+            }
+        }
+
+        private boolean initEGLDisplay() {
+            mEGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
+            if (mEGLDisplay == EGL14.EGL_NO_DISPLAY) {
+                Log.e(TAG, "unable to get EGL14 display");
+                return false;
+            }
+            int[] version = new int[2];
+            if (!EGL14.eglInitialize(mEGLDisplay, version, 0, version, 1)) {
+                mEGLDisplay = null;
+                Log.e(TAG, "unable to initialize EGL14");
+                return false;
+            }
+            return true;
+        }
+
+        private boolean initEGLConfig() {
+            // The actual surface is generally RGBA or RGBX, so situationally omitting alpha
+            // doesn't really help.  It can also lead to a huge performance hit on glReadPixels()
+            // when reading into a GL_RGBA buffer.
+            int[] attributesList = {
+                    EGL14.EGL_RED_SIZE, 8,
+                    EGL14.EGL_GREEN_SIZE, 8,
+                    EGL14.EGL_BLUE_SIZE, 8,
+                    EGL14.EGL_ALPHA_SIZE, 8,
+                    EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+                    EGL_RECORDABLE_ANDROID, 1,      // placeholder for recordable [@-3]
+                    EGL14.EGL_NONE
+            };
+            android.opengl.EGLConfig[] configs = new android.opengl.EGLConfig[1];
+            int[] numConfigs = new int[1];
+            if (!EGL14.eglChooseConfig(mEGLDisplay, attributesList, 0, configs, 0, configs.length, numConfigs, 0)) {
+                Log.e(TAG, "Unable to find a suitable EGLConfig");
+                return false;
+            }
+            mEGLConfig = configs[0];
+            return true;
+        }
+
+        private boolean initEGLContent(EGLContext sharedContext) {
+            int[] attributesList = {
+                    EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+                    EGL14.EGL_NONE
+            };
+            mEGLContext = EGL14.eglCreateContext(mEGLDisplay, mEGLConfig, sharedContext, attributesList, 0);
+            return !hasEglError("eglCreateContext");
+        }
+
+
+        private boolean initEGLSurface() {
+            // Create a window surface, and attach it to the Surface we received.
+            int[] surfaceAttributes = {
+                    EGL14.EGL_NONE
+            };
+            mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, mEncoderSurface,
+                    surfaceAttributes, 0);
+            return !hasEglError("eglCreateWindowSurface") && mEGLSurface != null;
+        }
+
+        private boolean initRecordTexture2dProgram() {
+            mRecodeTexture2dProgram = new Texture2dProgram();
+            return mRecodeTexture2dProgram.tryInit();
+        }
+
+        private boolean makeCurrent() {
+            return EGL14.eglMakeCurrent(mEGLDisplay, mEGLSurface, mEGLSurface, mEGLContext);
+        }
+
+
+        private void draw(int textureID, float[] texMatrix) {
+            if (mRecodeTexture2dProgram != null) {
+                mRecodeTexture2dProgram.draw(textureID, texMatrix);
+                EGL14.eglSwapBuffers(mEGLDisplay, mEGLSurface);
+            }
+        }
+
+        private void releaseEGL() {
+            if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
+                // Android is unusual in that it uses a reference-counted EGLDisplay.  So for
+                // every eglInitialize() we need an eglTerminate().
+                mRecodeTexture2dProgram.release();
+                EGL14.eglMakeCurrent(mEGLDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
+                EGL14.eglDestroyContext(mEGLDisplay, mEGLContext);
+                if (mEGLSurface != null) {
+                    EGL14.eglDestroySurface(mEGLDisplay, mEGLSurface);
+                }
+                EGL14.eglReleaseThread();
+                EGL14.eglTerminate(mEGLDisplay);
+            }
+
+            mEGLDisplay = EGL14.EGL_NO_DISPLAY;
+            mEGLContext = EGL14.EGL_NO_CONTEXT;
+            mEGLSurface = EGL14.EGL_NO_SURFACE;
+            mEGLConfig = null;
+            mRecodeTexture2dProgram = null;
+        }
+
+        private void release() {
+            synchronized (this) {
+                releaseEGL();
+                releaseVideoEncoder();
+                if (mEGLVideoHandler != null) {
+                    mEGLVideoHandler.removeCallbacksAndMessages(null);
+                    mEGLVideoHandler.getLooper().quit();
+                    mEGLVideoHandler = null;
+                }
+            }
+        }
+
+        public void sendEvent(int msgType, Object... params) {
+            synchronized (this) {
+                if (mEGLVideoHandler != null) {
+                    mEGLVideoHandler.removeMessages(msgType);
+                    mEGLVideoHandler.sendMessage(msgType, params);
+                }
+            }
+        }
+
+
+        @Override
+        protected void finalize() throws Throwable {
+            try {
+                if (mEGLVideoHandler != null) {
+                    mEGLVideoHandler.sendMessage(MSG_RELEASE);
+                }
+            } finally {
+                super.finalize();
+            }
+        }
+
+        private static boolean hasEglError(String msg) {
+            int error;
+            if ((error = EGL14.eglGetError()) != EGL14.EGL_SUCCESS) {
+                Log.e(TAG, msg + ": EGL error: 0x" + Integer.toHexString(error));
+                return true;
+            }
+            return false;
+        }
+
+        private static class EGLVideoHandler extends Handler {
+            private WeakReference<EGLVideoEncoder> mEGLVideoEncoder;
+
+            private EGLVideoHandler(EGLVideoEncoder encoder, Looper looper) {
+                super(looper);
+                mEGLVideoEncoder = new WeakReference<>(encoder);
+            }
+
+            private void sendMessage(int msgType, Object... params) {
+                Message message = obtainMessage(msgType);
+                switch (msgType) {
+                    case MSG_INIT_EGL:
+                        message.obj = params[0];
+                        break;
+                    case MSG_DRAW:
+                        message.arg1 = (int) params[0];
+                        message.obj = params[1];
+                        break;
+                    case MSG_START_RECODE:
+                        message.obj = params[0];
+                        message.arg1 = (int) params[1];
+                        break;
+                }
+                sendMessage(message);
+            }
+
+            @Override
+            public void handleMessage(Message msg) {
+                EGLVideoEncoder encoder = mEGLVideoEncoder.get();
+                if (encoder == null) {
+                    return;
+                }
+                switch (msg.what) {
+                    case MSG_INIT_EGL:
+                        encoder.initEGL((EGLContext) msg.obj);
+                        break;
+                    case MSG_RELEASE_EGL:
+                        encoder.releaseEGL();
+                        break;
+                    case MSG_DRAW:
+                        encoder.draw(msg.arg1, (float[]) msg.obj);
+                        break;
+                    case MSG_START_RECODE:
+                        encoder.startRecode((String) msg.obj, msg.arg1);
+                        break;
+                    case MSG_STOP_RECODE:
+                        encoder.stopRecode();
+                        break;
+                    case MSG_RELEASE:
+                        encoder.release();
+                        break;
+                }
+            }
+        }
+    }
 
     private static class Texture2dProgram {
 
@@ -555,13 +771,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
                         "}\n";
 
-        private static final float FULL_RECTANGLE_COORDS[] = {
+        private static final float[] FULL_RECTANGLE_COORDS = {
                 -1.0f, -1.0f,   // 0 bottom left
                 1.0f, -1.0f,   // 1 bottom right
                 -1.0f, 1.0f,   // 2 top left
                 1.0f, 1.0f,   // 3 top right
         };
-        private static final float FULL_RECTANGLE_TEX_COORDS[] = {
+        private static final float[] FULL_RECTANGLE_TEX_COORDS = {
                 0.0f, 0.0f,     // 0 bottom left
                 1.0f, 0.0f,     // 1 bottom right
                 0.0f, 1.0f,     // 2 top left
@@ -726,222 +942,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 LogUtil.e(msg);
                 throw new RuntimeException(msg);
             }
-        }
-    }
-
-    private static class EGLVideoEncoder {//负责创建EGL环境，把GL内容写入Surface
-
-        private static final String TAG = EGLVideoEncoder.class.getName();
-        // Android-specific extension.
-        private static final int EGL_RECORDABLE_ANDROID = 0x3142;
-
-        private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
-        private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
-        private EGLSurface mEGLSurface = EGL14.EGL_NO_SURFACE;
-        private android.opengl.EGLConfig mEGLConfig = null;
-
-        private Handler mGLHandler;
-
-        private Semaphore mInitializeLock = new Semaphore(1);
-
-        private boolean initEGL(@Nullable EGLContext sharedContext, Object surface) {
-            try {
-                mInitializeLock.acquireUninterruptibly();
-                if (mEGLDisplay != EGL14.EGL_NO_DISPLAY || mEGLContext != EGL14.EGL_NO_CONTEXT) {
-                    throw new RuntimeException("The TextureEncoder already initialization");
-                }
-                if (!(surface instanceof Surface) && !(surface instanceof SurfaceTexture)) {
-                    throw new RuntimeException("invalid surface: " + surface);
-                }
-                final boolean[] isSuccessful = new boolean[1];
-                isSuccessful[0] = initEGLDisplay() && initEGLConfig() && initEGLContent(sharedContext) && initEGLContent(surface);
-                if (isSuccessful[0]) {
-                    HandlerThread handlerThread = new HandlerThread(TAG);
-                    handlerThread.start();
-                    mGLHandler = new Handler(handlerThread.getLooper());
-                    final CountDownLatch latch = new CountDownLatch(1);
-                    mGLHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            isSuccessful[0] = makeCurrent();
-                            latch.countDown();
-                        }
-                    });
-                    try {
-                        latch.await();
-                    } catch (InterruptedException ignored) {
-                    }
-                }
-                if (!isSuccessful[0]) {
-                    internalReleaseEGL();
-                }
-                return isSuccessful[0];
-            } finally {
-                mInitializeLock.release();
-            }
-        }
-
-        private boolean initEGLDisplay() {
-            mEGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
-            if (mEGLDisplay == EGL14.EGL_NO_DISPLAY) {
-                Log.e(TAG, "unable to get EGL14 display");
-                return false;
-            }
-            int[] version = new int[2];
-            if (!EGL14.eglInitialize(mEGLDisplay, version, 0, version, 1)) {
-                mEGLDisplay = null;
-                Log.e(TAG, "unable to initialize EGL14");
-                return false;
-            }
-            return true;
-        }
-
-        private boolean initEGLConfig() {
-            // The actual surface is generally RGBA or RGBX, so situationally omitting alpha
-            // doesn't really help.  It can also lead to a huge performance hit on glReadPixels()
-            // when reading into a GL_RGBA buffer.
-            int[] attributesList = {
-                    EGL14.EGL_RED_SIZE, 8,
-                    EGL14.EGL_GREEN_SIZE, 8,
-                    EGL14.EGL_BLUE_SIZE, 8,
-                    EGL14.EGL_ALPHA_SIZE, 8,
-                    EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-                    EGL_RECORDABLE_ANDROID, 1,      // placeholder for recordable [@-3]
-                    EGL14.EGL_NONE
-            };
-            android.opengl.EGLConfig[] configs = new android.opengl.EGLConfig[1];
-            int[] numConfigs = new int[1];
-            if (!EGL14.eglChooseConfig(mEGLDisplay, attributesList, 0, configs, 0, configs.length, numConfigs, 0)) {
-                Log.e(TAG, "Unable to find a suitable EGLConfig");
-                return false;
-            }
-            mEGLConfig = configs[0];
-            return true;
-        }
-
-        private boolean initEGLContent(EGLContext sharedContext) {
-            int[] attributesList = {
-                    EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
-                    EGL14.EGL_NONE
-            };
-            mEGLContext = EGL14.eglCreateContext(mEGLDisplay, mEGLConfig, sharedContext, attributesList, 0);
-            return !hasEglError("eglCreateContext");
-        }
-
-
-        private boolean initEGLContent(Object surface) {
-            // Create a window surface, and attach it to the Surface we received.
-            int[] surfaceAttributes = {
-                    EGL14.EGL_NONE
-            };
-            mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, surface,
-                    surfaceAttributes, 0);
-            return !hasEglError("eglCreateWindowSurface") && mEGLSurface != null;
-        }
-
-        private boolean makeCurrent() {
-            return EGL14.eglMakeCurrent(mEGLDisplay, mEGLSurface, mEGLSurface, mEGLContext);
-        }
-
-        public void releaseEGL() {
-            try {
-                mInitializeLock.acquireUninterruptibly();
-                if (mGLHandler != null) {
-                    if (mGLHandler.getLooper() == Looper.myLooper()) {
-                        internalReleaseEGL();
-                    } else {
-                        final CountDownLatch latch = new CountDownLatch(1);
-                        mGLHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                internalReleaseEGL();
-                                latch.countDown();
-                            }
-                        });
-                        try {
-                            latch.await();
-                        } catch (InterruptedException ignored) {
-                        }
-                    }
-                }
-            } finally {
-                mInitializeLock.release();
-            }
-        }
-
-        private void internalReleaseEGL() {
-            if (mGLHandler != null) {
-                mGLHandler.removeCallbacksAndMessages(null);
-                mGLHandler.getLooper().quit();
-                mGLHandler = null;
-            }
-            if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
-                // Android is unusual in that it uses a reference-counted EGLDisplay.  So for
-                // every eglInitialize() we need an eglTerminate().
-                EGL14.eglMakeCurrent(mEGLDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
-                EGL14.eglDestroyContext(mEGLDisplay, mEGLContext);
-                if (mEGLSurface != null) {
-                    EGL14.eglDestroySurface(mEGLDisplay, mEGLSurface);
-                }
-                EGL14.eglReleaseThread();
-                EGL14.eglTerminate(mEGLDisplay);
-            }
-
-            mEGLDisplay = EGL14.EGL_NO_DISPLAY;
-            mEGLContext = EGL14.EGL_NO_CONTEXT;
-            mEGLSurface = EGL14.EGL_NO_SURFACE;
-            mEGLConfig = null;
-        }
-
-        public boolean isInitialized() {
-            try {
-                mInitializeLock.acquireUninterruptibly();
-                return mEGLDisplay != EGL14.EGL_NO_DISPLAY;
-            } finally {
-                mInitializeLock.release();
-            }
-        }
-
-        public boolean swapBuffers() {
-            if (isInitialized()) {
-                return EGL14.eglSwapBuffers(mEGLDisplay, mEGLSurface);
-            }
-            return false;
-        }
-
-        public void queueEvent(Runnable r) {
-            try {
-                mInitializeLock.acquireUninterruptibly();
-                if (mGLHandler != null) {
-                    mGLHandler.post(r);
-                }
-            } finally {
-                mInitializeLock.release();
-            }
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            try {
-                if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
-                    // We're limited here -- finalizers don't run on the thread that holds
-                    // the EGL state, so if a surface or context is still current on another
-                    // thread we can't fully release it here.  Exceptions thrown from here
-                    // are quietly discarded.  Complain in the log file.
-                    releaseEGL();
-                }
-            } finally {
-                super.finalize();
-            }
-        }
-
-        private static boolean hasEglError(String msg) {
-            int error;
-            if ((error = EGL14.eglGetError()) != EGL14.EGL_SUCCESS) {
-                Log.e(TAG, msg + ": EGL error: 0x" + Integer.toHexString(error));
-                return true;
-            }
-            return false;
         }
     }
 
