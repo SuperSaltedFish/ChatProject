@@ -20,6 +20,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Size;
+import android.view.Display;
 import android.view.Surface;
 
 import com.yzx.chat.core.util.LogUtil;
@@ -55,14 +56,16 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     private SurfaceTexture mPreviewSurfaceTexture;
     private Texture2dProgram mPreviewTexture2dProgram;
     private int mOESTextureID;
+
     private int mSurfaceWidth;
     private int mSurfaceHeight;
+    private int mDisplayRotation;
+    private boolean isCamera2Mode;
+    private Display mScreenDisplay;
 
     private CameraHelper mCameraHelper;
     private Size mAspectRatioSize;
     private int mCameraFacing;
-    private int mCameraOrientation;
-    private boolean isCamera2Mode;
 
     private EGLVideoEncoder mEGLVideoEncoder;
     private volatile boolean isStartRecording;
@@ -87,7 +90,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
         mPreviewTexture2dProgram = new Texture2dProgram();
 
-        switchCamera(BasicCamera.CAMERA_FACING_BACK);
+        mScreenDisplay = ((Activity) context).getWindowManager().getDefaultDisplay();
+
+        switchCamera(BasicCamera.CAMERA_FACING_FRONT);
     }
 
     @Override
@@ -173,13 +178,11 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         if (mPreviewSurfaceTexture == null) {
             return;
         }
-        mSurfaceWidth = width;
-        mSurfaceHeight = height;
         GLES20.glViewport(0, 0, width, height);
-        int displayRotation = getDisplayRotation();
-        configureTransform(width, height, displayRotation, isCamera2Mode);
 
+        int displayRotation = mScreenDisplay.getRotation();
         mCameraHelper.setDesiredPreviewSize(width, height, displayRotation, mAspectRatioSize);
+        configureTransformIfNeed(width, height, mScreenDisplay.getRotation(), mCameraHelper.isCamera2Mode());
 
         mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE_EGL);
         if (displayRotation == Surface.ROTATION_0 || displayRotation == Surface.ROTATION_180) {
@@ -205,6 +208,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         if (mPreviewSurfaceTexture == null) {
             return;
         }
+        configureTransformIfNeed(mSurfaceWidth, mSurfaceHeight, mScreenDisplay.getRotation(), mCameraHelper.isCamera2Mode());
         mPreviewSurfaceTexture.updateTexImage();
         //获取外部纹理的矩阵，用来确定纹理的采样位置，没有此矩阵可能导致图像翻转等问题
         mPreviewSurfaceTexture.getTransformMatrix(mTextureMatrix);//这个代码不需要了，变化在ProjectionMatrix做了
@@ -234,31 +238,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
         mCameraFacing = cameraFacingType;
         mCameraHelper.sendEvent(CameraHelper.MSG_CLOSE_CAMERA);
-        mCameraHelper.sendEvent(CameraHelper.MSG_OPEN_CAMERA, getContext(), new BasicCamera.StateCallback() {
-            @Override
-            public void onCameraOpen(final BasicCamera camera) {
-                mCameraOrientation = camera.getSensorOrientation();
-                isCamera2Mode = camera instanceof BasicCamera.Camera2Impl;
-                if (mPreviewSurfaceTexture != null) {
-                    queueEvent(new Runnable() {
-                        @Override
-                        public void run() {
-                            configureTransform(mSurfaceWidth, mSurfaceHeight, getDisplayRotation(), isCamera2Mode);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCameraClose() {
-
-            }
-
-            @Override
-            public void onCameraError(int error) {
-
-            }
-        }, mCameraFacing);
+        mCameraHelper.sendEvent(CameraHelper.MSG_OPEN_CAMERA, getContext(), mCameraFacing);
     }
 
     public void startRecode(String saveFile) {
@@ -271,17 +251,15 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_STOP_RECODE);
     }
 
-
-    protected int getDisplayRotation() {
-        Context context = getContext();
-        if (context instanceof Activity) {
-            return ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();
-        } else {
-            return 0;
+    private void configureTransformIfNeed(int width, int height, int displayRotation, boolean isCamera2) {
+        if (width == mSurfaceWidth && height == mSurfaceHeight && displayRotation == mDisplayRotation && isCamera2Mode == isCamera2) {
+            return;
         }
-    }
+        mSurfaceWidth = width;
+        mSurfaceHeight = height;
+        mDisplayRotation = displayRotation;
+        isCamera2Mode = isCamera2;
 
-    private void configureTransform(int viewWidth, int viewHeight, int displayRotation, boolean isCamera2) {
         float[] projectionMatrix = new float[16];
         Matrix.setIdentityM(projectionMatrix, 0);
         Matrix.orthoM(projectionMatrix, 0, -1, 1, -1, 1, -1, 1);
@@ -291,14 +269,14 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
         float previewAspectRatio = (float) mAspectRatioSize.getWidth() / mAspectRatioSize.getHeight();
         if (Surface.ROTATION_0 == displayRotation || Surface.ROTATION_180 == displayRotation) {
-            float viewAspectRatio = (float) viewHeight / viewWidth;
+            float viewAspectRatio = (float) mSurfaceHeight / mSurfaceWidth;
             if (viewAspectRatio >= previewAspectRatio) {
                 Matrix.scaleM(transformMatrix, 0, viewAspectRatio / previewAspectRatio, 1, 1f);
             } else {
                 Matrix.scaleM(transformMatrix, 0, 1, previewAspectRatio / viewAspectRatio, 1f);
             }
         } else {
-            float viewAspectRatio = (float) viewWidth / viewHeight;
+            float viewAspectRatio = (float) mSurfaceWidth / mSurfaceHeight;
             if (viewAspectRatio >= previewAspectRatio) {
                 Matrix.scaleM(transformMatrix, 0, 1, viewAspectRatio / previewAspectRatio, 1f);
             } else {
@@ -356,7 +334,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             mCameraHandler = new CameraHandler(this);
         }
 
-        private void openCamera(Context context, final BasicCamera.StateCallback callback, @BasicCamera.FacingType final int cameraFacing) {
+        private void openCamera(Context context, @BasicCamera.FacingType final int cameraFacing) {
             LogUtil.e("openCamera");
             final BasicCamera camera = BasicCamera.createCameraCompat(context, cameraFacing);
             if (camera != null) {
@@ -373,25 +351,16 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         if (mPreviewSurfaceTexture != null) {
                             setPreviewSurfaceTexture(mPreviewSurfaceTexture);
                         }
-                        if (callback != null) {
-                            callback.onCameraOpen(mCamera);
-                        }
                     }
 
                     @Override
                     public void onCameraClose() {
                         closeCamera();
-                        if (callback != null) {
-                            callback.onCameraClose();
-                        }
                     }
 
                     @Override
                     public void onCameraError(int error) {
                         closeCamera();
-                        if (callback != null) {
-                            callback.onCameraError(error);
-                        }
                     }
                 });
             }
@@ -500,6 +469,10 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             }
         }
 
+        public boolean isCamera2Mode() {
+            return mCamera instanceof BasicCamera.Camera2Impl;
+        }
+
         public void sendEvent(int msgType, Object... params) {
             mCameraHandler.removeMessages(msgType);
             mCameraHandler.sendMessage(msgType, params);
@@ -549,8 +522,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 }
                 switch (msg.what) {
                     case MSG_OPEN_CAMERA:
-                        Object[] pamams = (Object[]) msg.obj;
-                        helper.openCamera((Context) pamams[0], (BasicCamera.StateCallback) pamams[1], msg.arg1);
+                        helper.openCamera((Context) msg.obj, msg.arg1);
                         break;
                     case MSG_CLOSE_CAMERA:
                         helper.closeCamera();
@@ -583,8 +555,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 Message message = obtainMessage(msgType);
                 switch (msgType) {
                     case MSG_OPEN_CAMERA:
-                        message.obj = new Object[]{params[0], params[1]};
-                        message.arg1 = (int) params[2];
+                        message.obj = params[0];
+                        message.arg1 = (int) params[1];
                         break;
                     case MSG_SET_PREVIEW_SURFACE:
                         message.obj = params[0];
