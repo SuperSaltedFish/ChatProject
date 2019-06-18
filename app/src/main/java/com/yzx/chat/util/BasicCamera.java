@@ -67,9 +67,9 @@ public abstract class BasicCamera {
             return null;
         }
         BasicCamera camera = null;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            camera = createCamera2(context, cameraFacing);
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            camera = createCamera2(context, cameraFacing);
+        }
         if (camera == null) {
             camera = createCamera(cameraFacing);
         }
@@ -126,10 +126,10 @@ public abstract class BasicCamera {
     }
 
     public static Camera2Impl createCamera2(@NonNull Context context, @FacingType int lensFacingType) {
-        CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-        if (manager == null) {
+        if (!isSupportedCamera2(context, lensFacingType)) {
             return null;
         }
+        CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
         int facing;
         switch (lensFacingType) {
             case CAMERA_FACING_FRONT:
@@ -145,19 +145,8 @@ public abstract class BasicCamera {
             CameraCharacteristics cameraCharacteristics;
             for (String cameraId : manager.getCameraIdList()) {
                 cameraCharacteristics = manager.getCameraCharacteristics(cameraId);
-                Integer lensFacing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
-                Integer level = cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
-                if (lensFacing != null && lensFacing == facing && level != null) {
-                    switch (level) {
-                        case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_3:
-                        case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
-                            return new Camera2Impl(cameraId, manager, cameraCharacteristics, CAMERA_LOCK);
-                        case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                return new Camera2Impl(cameraId, manager, cameraCharacteristics, CAMERA_LOCK);
-                            }
-                            break;
-                    }
+                if (((Integer) facing).equals(cameraCharacteristics.get(CameraCharacteristics.LENS_FACING))) {
+                    return new Camera2Impl(cameraId, manager, cameraCharacteristics, CAMERA_LOCK);
                 }
             }
         } catch (Exception e) {
@@ -165,6 +154,47 @@ public abstract class BasicCamera {
             return null;
         }
         return null;
+    }
+
+    public static boolean isSupportedCamera2(@NonNull Context context, @FacingType int lensFacingType) {
+        CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+        int facing;
+        switch (lensFacingType) {
+            case CAMERA_FACING_FRONT:
+                facing = CameraCharacteristics.LENS_FACING_FRONT;
+                break;
+            case CAMERA_FACING_BACK:
+                facing = CameraCharacteristics.LENS_FACING_BACK;
+                break;
+            default:
+                return false;
+        }
+        try {
+            CameraCharacteristics cameraCharacteristics;
+            for (String cameraId : manager.getCameraIdList()) {
+                cameraCharacteristics = manager.getCameraCharacteristics(cameraId);
+                Integer lensFacing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
+                Integer level = cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+                if (lensFacing != null && lensFacing == facing && level != null) {
+                    switch (level) {
+                        case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_3:
+                        case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
+                            return true;
+                        case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                return true;
+                            }
+                            break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 
     public abstract void openCamera(StateCallback callback);
@@ -179,21 +209,21 @@ public abstract class BasicCamera {
 
     public abstract boolean isPreviewing();
 
-    public abstract boolean setPreviewDisplay(SurfaceTexture texture);
+    public abstract void setPreviewDisplay(SurfaceTexture texture);
 
-    public abstract boolean setPreviewSize(int width, int height);
+    public abstract void setPreviewSize(int width, int height);
 
-    public abstract boolean setPreviewFormat(int format);
+    public abstract void setPreviewFormat(int format);
 
-    public abstract boolean setDisplayOrientationIfSupport(int displayOrientation);
+    public abstract void setDisplayOrientationIfSupport(int displayOrientation);
 
     public abstract int getSensorOrientation();
 
-    public abstract boolean setEnableFlash(boolean isEnable);
+    public abstract void setEnableFlash(boolean isEnable);
 
-    public abstract boolean setFocusPoint(int x, int y, int previewWidth, int previewHeight);
+    public abstract void setFocusPoint(int x, int y, int previewWidth, int previewHeight);
 
-    public abstract boolean setZoom(int zoom);
+    public abstract void setZoom(int zoom);
 
     public abstract int getMinZoomValue();
 
@@ -206,7 +236,7 @@ public abstract class BasicCamera {
 
 
     public interface StateCallback {
-        void onCameraOpen();
+        void onCameraOpen(BasicCamera camera);
 
         void onCameraClose();
 
@@ -233,7 +263,7 @@ public abstract class BasicCamera {
         private boolean isPreviewing;
         private byte[] mCaptureBuffer;
 
-        private Handler mWorkHandler;
+        private Handler mCameraHandler;
         private Handler mUIHandler;
         private Semaphore mCameraOpenCloseLock;
 
@@ -252,9 +282,9 @@ public abstract class BasicCamera {
                 mCamera.release();
                 mCamera = null;
             }
-            if (mWorkHandler != null) {
-                mWorkHandler.removeCallbacksAndMessages(null);
-                mWorkHandler.getLooper().quit();
+            if (mCameraHandler != null) {
+                mCameraHandler.removeCallbacksAndMessages(null);
+                mCameraHandler.getLooper().quit();
             }
             mPreviewSurfaceTexture = null;
             mParameters = null;
@@ -278,8 +308,8 @@ public abstract class BasicCamera {
             mStateCallback = callback;
             HandlerThread handlerThread = new HandlerThread(TAG);
             handlerThread.start();
-            mWorkHandler = new Handler(handlerThread.getLooper());
-            mWorkHandler.post(new Runnable() {
+            mCameraHandler = new Handler(handlerThread.getLooper());
+            mCameraHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -322,7 +352,7 @@ public abstract class BasicCamera {
                             public void run() {
                                 synchronized (CameraImpl.this) {
                                     mCameraOpenCloseLock.release();
-                                    callback.onCameraOpen();
+                                    callback.onCameraOpen(CameraImpl.this);
                                 }
                             }
                         });
@@ -348,7 +378,7 @@ public abstract class BasicCamera {
             if (mCamera != null) {
                 mCameraOpenCloseLock.acquireUninterruptibly();
                 if (mCamera != null) {
-                    mWorkHandler.post(new Runnable() {
+                    mCameraHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             synchronized (CameraImpl.this) {
@@ -386,7 +416,7 @@ public abstract class BasicCamera {
         public void starPreview() {
             synchronized (this) {
                 checkCameraOpen();
-                mWorkHandler.post(new Runnable() {
+                mCameraHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (mPreviewSurfaceTexture != null && !isPreviewing) {
@@ -413,7 +443,7 @@ public abstract class BasicCamera {
         public void stopPreview() {
             synchronized (this) {
                 checkCameraOpen();
-                mWorkHandler.post(new Runnable() {
+                mCameraHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (isPreviewing) {
@@ -440,82 +470,92 @@ public abstract class BasicCamera {
         }
 
         @Override
-        public boolean setPreviewDisplay(SurfaceTexture texture) {
+        public void setPreviewDisplay(final SurfaceTexture texture) {
             synchronized (this) {
                 checkCameraOpen();
-                try {
-                    stopPreviewNow();
-                    mCamera.setPreviewTexture(texture);
-                    mPreviewSurfaceTexture = texture;
-                    return true;
-                } catch (Exception e) {
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                }
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            stopPreviewNow();
+                            mCamera.setPreviewTexture(texture);
+                            mPreviewSurfaceTexture = texture;
+                        } catch (Exception e) {
+                            LogUtil.d(e.toString(), e);
+                        }
+                    }
+                });
             }
         }
 
         @Override
-        public boolean setPreviewSize(int width, int height) {
+        public void setPreviewSize(final int width, final int height) {
             synchronized (this) {
                 checkCameraOpen();
-                Camera.Size oldSize = mParameters.getPreviewSize();
-                if (oldSize.width == width && oldSize.height == height) {
-                    return true;
-                }
-                try {
-                    stopPreviewNow();
-                    mParameters.setPreviewSize(width, height);
-                    mCamera.setParameters(mParameters);
-                    mCaptureBuffer = null;
-                    return true;
-                } catch (RuntimeException e) {
-                    mParameters.setPreviewSize(oldSize.width, oldSize.height);
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                } finally {
-                    mPreviewSize = mParameters.getPreviewSize();
-                }
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Camera.Size oldSize = mParameters.getPreviewSize();
+                        if (oldSize.width == width && oldSize.height == height) {
+                            return;
+                        }
+                        try {
+                            stopPreviewNow();
+                            mParameters.setPreviewSize(width, height);
+                            mCamera.setParameters(mParameters);
+                            mCaptureBuffer = null;
+                        } catch (RuntimeException e) {
+                            mParameters.setPreviewSize(oldSize.width, oldSize.height);
+                            LogUtil.d(e.toString(), e);
+                        } finally {
+                            mPreviewSize = mParameters.getPreviewSize();
+                        }
+                    }
+                });
             }
         }
 
         @Override
-        public boolean setPreviewFormat(int format) {
-            if (format == ImageFormat.YUV_420_888) {
-                format = ImageFormat.NV21;
-            }
+        public void setPreviewFormat(int format) {
+            final int newFormat = format == ImageFormat.YUV_420_888 ? ImageFormat.NV21 : format;
             synchronized (this) {
                 checkCameraOpen();
-                int oldFormat = mParameters.getPreviewFormat();
-                if (oldFormat == format) {
-                    return true;
-                }
-                try {
-                    stopPreviewNow();
-                    mParameters.setPreviewFormat(format);
-                    mCamera.setParameters(mParameters);
-                    mCaptureBuffer = null;
-                    return true;
-                } catch (RuntimeException e) {
-                    mParameters.setPreviewFormat(oldFormat);
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                }
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int oldFormat = mParameters.getPreviewFormat();
+                        if (oldFormat == newFormat) {
+                            return;
+                        }
+                        try {
+                            stopPreviewNow();
+                            mParameters.setPreviewFormat(newFormat);
+                            mCamera.setParameters(mParameters);
+                            mCaptureBuffer = null;
+                        } catch (RuntimeException e) {
+                            mParameters.setPreviewFormat(oldFormat);
+                            LogUtil.d(e.toString(), e);
+                        }
+                    }
+                });
             }
         }
 
         @Override
-        public boolean setDisplayOrientationIfSupport(int displayOrientation) {
+        public void setDisplayOrientationIfSupport(final int displayOrientation) {
             synchronized (this) {
                 checkCameraOpen();
-                try {
-                    stopPreviewNow();
-                    mCamera.setDisplayOrientation(displayOrientation);
-                    return true;
-                } catch (Exception e) {
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                }
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            stopPreviewNow();
+                            mCamera.setDisplayOrientation(displayOrientation);
+                        } catch (Exception e) {
+                            LogUtil.d(e.toString(), e);
+                        }
+                    }
+                });
             }
         }
 
@@ -525,128 +565,138 @@ public abstract class BasicCamera {
         }
 
         @Override
-        public boolean setEnableFlash(boolean isEnable) {
+        public void setEnableFlash(final boolean isEnable) {
             synchronized (this) {
                 checkCameraOpen();
-                String oldMode = mParameters.getFlashMode();
-                try {
-                    if (isEnable) {
-                        if (!Camera.Parameters.FLASH_MODE_TORCH.equals(oldMode)) {
-                            mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                            mCamera.setParameters(mParameters);
-                        }
-                    } else {
-                        if (!Camera.Parameters.FLASH_MODE_OFF.equals(oldMode)) {
-                            mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                            mCamera.setParameters(mParameters);
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String oldMode = mParameters.getFlashMode();
+                        try {
+                            if (isEnable) {
+                                if (!Camera.Parameters.FLASH_MODE_TORCH.equals(oldMode)) {
+                                    mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                                    mCamera.setParameters(mParameters);
+                                }
+                            } else {
+                                if (!Camera.Parameters.FLASH_MODE_OFF.equals(oldMode)) {
+                                    mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                                    mCamera.setParameters(mParameters);
+                                }
+                            }
+                        } catch (RuntimeException e) {
+                            mParameters.setFlashMode(oldMode);
+                            LogUtil.d(e.toString(), e);
                         }
                     }
-                    return true;
-                } catch (RuntimeException e) {
-                    mParameters.setFlashMode(oldMode);
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                }
+                });
             }
         }
 
-        public boolean setFocusMode(String focusMode) {
+        public void setFocusMode(final String focusMode) {
             synchronized (this) {
                 checkCameraOpen();
-                if (mParameters.getSupportedFocusModes().contains(focusMode)) {
-                    stopPreviewNow();
-                    String oldMode = mParameters.getFocusMode();
-                    mParameters.setFocusMode(focusMode);
-                    try {
-                        mCamera.setParameters(mParameters);
-                        return true;
-                    } catch (RuntimeException e) {
-                        mParameters.setFocusMode(oldMode);
-                        LogUtil.d(e.toString(), e);
-                        return false;
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mParameters.getSupportedFocusModes().contains(focusMode)) {
+                            stopPreviewNow();
+                            String oldMode = mParameters.getFocusMode();
+                            mParameters.setFocusMode(focusMode);
+                            try {
+                                mCamera.setParameters(mParameters);
+                            } catch (RuntimeException e) {
+                                mParameters.setFocusMode(oldMode);
+                                LogUtil.d(e.toString(), e);
+                            }
+                        }
                     }
-                }
-                return false;
+                });
             }
         }
 
         @Override
-        public boolean setFocusPoint(int x, int y, int previewWidth, int previewHeight) {
+        public void setFocusPoint(final int x, final int y, final int previewWidth, final int previewHeight) {
             synchronized (this) {
                 checkCameraOpen();
-                boolean isSupportFocus = mParameters.getMaxNumFocusAreas() > 0;
-                boolean isSupportMetering = mParameters.getMaxNumMeteringAreas() > 0;
-                if (!isSupportFocus || !isSupportMetering) {
-                    return false;
-                }
-                x = x * 2000 / previewWidth - 1000;
-                y = y * 2000 / previewHeight - 1000;
-                Rect rect = new Rect();
-                rect.left = x - 100;
-                rect.right = x + 100;
-                rect.top = y - 100;
-                rect.bottom = y + 100;
-                if (rect.left < -1000) {
-                    rect.left = -1000;
-                }
-                if (rect.right > 1000) {
-                    rect.right = 1000;
-                }
-                if (rect.top < -1000) {
-                    rect.top = -1000;
-                }
-                if (rect.bottom < -1000) {
-                    rect.bottom = -1000;
-                }
-                Camera.Area area = new Camera.Area(rect, 1000);
-                List<Camera.Area> areaList = Collections.singletonList(area);
-                List<Camera.Area> oldMeteringAreas = mParameters.getMeteringAreas();
-                List<Camera.Area> oldFocusAreas = mParameters.getFocusAreas();
-                String oldFocusMode = mParameters.getFocusMode();
-                mParameters.setMeteringAreas(areaList);
-                mParameters.setFocusAreas(areaList);
-                mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                try {
-                    mCamera.setParameters(mParameters);
-                    if (isPreviewing()) {
-                        mCamera.cancelAutoFocus();
-                        mCamera.autoFocus(null);
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean isSupportFocus = mParameters.getMaxNumFocusAreas() > 0;
+                        boolean isSupportMetering = mParameters.getMaxNumMeteringAreas() > 0;
+                        if (!isSupportFocus || !isSupportMetering) {
+                            return;
+                        }
+                        int pointX = x * 2000 / previewWidth - 1000;
+                        int pointY = y * 2000 / previewHeight - 1000;
+                        Rect rect = new Rect();
+                        rect.left = pointX - 100;
+                        rect.right = pointX + 100;
+                        rect.top = pointY - 100;
+                        rect.bottom = pointY + 100;
+                        if (rect.left < -1000) {
+                            rect.left = -1000;
+                        }
+                        if (rect.right > 1000) {
+                            rect.right = 1000;
+                        }
+                        if (rect.top < -1000) {
+                            rect.top = -1000;
+                        }
+                        if (rect.bottom < -1000) {
+                            rect.bottom = -1000;
+                        }
+                        Camera.Area area = new Camera.Area(rect, 1000);
+                        List<Camera.Area> areaList = Collections.singletonList(area);
+                        List<Camera.Area> oldMeteringAreas = mParameters.getMeteringAreas();
+                        List<Camera.Area> oldFocusAreas = mParameters.getFocusAreas();
+                        String oldFocusMode = mParameters.getFocusMode();
+                        mParameters.setMeteringAreas(areaList);
+                        mParameters.setFocusAreas(areaList);
+                        mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                        try {
+                            mCamera.setParameters(mParameters);
+                            if (isPreviewing()) {
+                                mCamera.cancelAutoFocus();
+                                mCamera.autoFocus(null);
+                            }
+                        } catch (RuntimeException e) {
+                            mParameters.setMeteringAreas(oldMeteringAreas);
+                            mParameters.setFocusAreas(oldFocusAreas);
+                            mParameters.setFocusMode(oldFocusMode);
+                            LogUtil.d(e.toString(), e);
+                        }
                     }
-                    return true;
-                } catch (RuntimeException e) {
-                    mParameters.setMeteringAreas(oldMeteringAreas);
-                    mParameters.setFocusAreas(oldFocusAreas);
-                    mParameters.setFocusMode(oldFocusMode);
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                }
+                });
             }
         }
 
 
         @Override
-        public boolean setZoom(int zoom) {
+        public void setZoom(int zoom) {
             zoom = Math.min(zoom, getMaxZoomValue());
             zoom = Math.max(zoom, getMinZoomValue());
+            final int newZoom = zoom;
             synchronized (this) {
                 checkCameraOpen();
-                int oldZoom = mParameters.getZoom();
-                if (zoom == oldZoom) {
-                    return true;
-                }
-                try {
-                    if (mParameters.isZoomSupported()) {
-                        mParameters.setZoom(zoom);
-                        mCamera.setParameters(mParameters);
-                        return true;
-                    } else {
-                        return false;
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int oldZoom = mParameters.getZoom();
+                        if (newZoom == oldZoom) {
+                            return;
+                        }
+                        try {
+                            if (mParameters.isZoomSupported()) {
+                                mParameters.setZoom(newZoom);
+                                mCamera.setParameters(mParameters);
+                            }
+                        } catch (RuntimeException e) {
+                            mParameters.setZoom(oldZoom);
+                            LogUtil.d(e.toString(), e);
+                        }
                     }
-                } catch (RuntimeException e) {
-                    mParameters.setZoom(oldZoom);
-                    LogUtil.d(e.toString(), e);
-                    return false;
-                }
+                });
             }
         }
 
@@ -663,10 +713,15 @@ public abstract class BasicCamera {
             }
         }
 
-        public void setRecordingHint(boolean hint) {
+        public void setRecordingHint(final boolean hint) {
             synchronized (this) {
                 checkCameraOpen();
-                mParameters.setRecordingHint(hint);
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mParameters.setRecordingHint(hint);
+                    }
+                });
             }
         }
 
@@ -677,7 +732,12 @@ public abstract class BasicCamera {
             }
             synchronized (this) {
                 checkCameraOpen();
-                mCaptureCallback = callback;
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCaptureCallback = callback;
+                    }
+                });
             }
         }
 
@@ -792,7 +852,7 @@ public abstract class BasicCamera {
         private ImageReader mCaptureImageReader;
 
         private Semaphore mCameraOpenCloseLock;
-        private Handler mWorkHandler;
+        private Handler mCameraHandler;
         private Handler mUIHandler;
 
         private CaptureCallback mCaptureCallback;
@@ -810,10 +870,10 @@ public abstract class BasicCamera {
 
         private void reset() {
             synchronized (this) {
-                if (mWorkHandler != null) {
-                    mWorkHandler.removeCallbacksAndMessages(null);
-                    mWorkHandler.getLooper().quit();
-                    mWorkHandler = null;
+                if (mCameraHandler != null) {
+                    mCameraHandler.removeCallbacksAndMessages(null);
+                    mCameraHandler.getLooper().quit();
+                    mCameraHandler = null;
                 }
                 if (mCaptureImageReader != null) {
                     mCaptureImageReader.close();
@@ -844,8 +904,8 @@ public abstract class BasicCamera {
             }
             HandlerThread handlerThread = new HandlerThread(TAG);
             handlerThread.start();
-            mWorkHandler = new Handler(handlerThread.getLooper());
-            mWorkHandler.post(new Runnable() {
+            mCameraHandler = new Handler(handlerThread.getLooper());
+            mCameraHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -868,7 +928,7 @@ public abstract class BasicCamera {
                                     @Override
                                     public void run() {
                                         synchronized (Camera2Impl.this) {
-                                            callback.onCameraOpen();
+                                            callback.onCameraOpen(Camera2Impl.this);
                                         }
                                     }
                                 });
@@ -911,7 +971,7 @@ public abstract class BasicCamera {
                                 mErrorCode = error;
                                 camera.close();
                             }
-                        }, mWorkHandler);
+                        }, mCameraHandler);
                     } catch (Exception e) {
                         reset();
                         mCameraOpenCloseLock.release();
@@ -933,7 +993,7 @@ public abstract class BasicCamera {
         public void closeCamera() {
             mCameraOpenCloseLock.acquireUninterruptibly();
             if (mCameraDevice != null) {
-                mWorkHandler.post(new Runnable() {
+                mCameraHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         synchronized (Camera2Impl.this) {
@@ -961,13 +1021,13 @@ public abstract class BasicCamera {
         public void starPreview() {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         if (mCameraSession == null) {
                             if (mCaptureImageReader == null) {
                                 mCaptureImageReader = ImageReader.newInstance(mCaptureSize.getWidth(), mCaptureSize.getHeight(), mCaptureFormat, 1);
-                                mCaptureImageReader.setOnImageAvailableListener(Camera2Impl.this, mWorkHandler);
+                                mCaptureImageReader.setOnImageAvailableListener(Camera2Impl.this, mCameraHandler);
                             }
                             List<Surface> surfaces = new ArrayList<>(mOutputSurfaces.size() + 2);
                             if (mPreviewSurface != null) {
@@ -1004,7 +1064,7 @@ public abstract class BasicCamera {
             }
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         if (mCameraSession != session) {
@@ -1021,7 +1081,7 @@ public abstract class BasicCamera {
         public void stopPreview() {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         stopPreviewNow(false);
@@ -1055,34 +1115,37 @@ public abstract class BasicCamera {
         }
 
         @Override
-        public boolean setPreviewDisplay(final SurfaceTexture texture) {
-            if (texture == null) {
-                throw new RuntimeException("PreviewDisplay is null");
-            }
+        public void setPreviewDisplay(final SurfaceTexture texture) {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         stopPreviewNow(true);
-                        mPreviewSurface = new Surface(texture);
-                        mCaptureRequestBuilder.addTarget(mPreviewSurface);
+                        if (texture == null) {
+                            if (mPreviewSurface != null) {
+                                mCaptureRequestBuilder.removeTarget(mPreviewSurface);
+                                mPreviewSurface = null;
+                            }
+                        } else {
+                            mPreviewSurface = new Surface(texture);
+                            mCaptureRequestBuilder.addTarget(mPreviewSurface);
+                        }
                     }
                 });
             }
-            return true;
         }
 
         @Override
-        public boolean setPreviewSize(final int width, final int height) {
-            if (mCaptureSize.getWidth() == width && mCaptureSize.getHeight() == height) {
-                return true;
-            }
+        public void setPreviewSize(final int width, final int height) {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
+                        if (mCaptureSize.getWidth() == width && mCaptureSize.getHeight() == height) {
+                            return;
+                        }
                         stopPreviewNow(true);
                         mCaptureSize = new Size(width, height);
                         if (mCaptureImageReader != null) {
@@ -1093,19 +1156,18 @@ public abstract class BasicCamera {
                     }
                 });
             }
-            return true;
         }
 
         @Override
-        public boolean setPreviewFormat(final int format) {
-            if (mCaptureFormat == format) {
-                return true;
-            }
+        public void setPreviewFormat(final int format) {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
+                        if (mCaptureFormat == format) {
+                            return;
+                        }
                         stopPreviewNow(true);
                         mCaptureFormat = format;
                         if (mCaptureImageReader != null) {
@@ -1116,12 +1178,10 @@ public abstract class BasicCamera {
                     }
                 });
             }
-            return true;
         }
 
         @Override
-        public boolean setDisplayOrientationIfSupport(int displayOrientation) {
-            return false;
+        public void setDisplayOrientationIfSupport(int displayOrientation) {
         }
 
         @Override
@@ -1131,10 +1191,10 @@ public abstract class BasicCamera {
         }
 
         @Override
-        public boolean setEnableFlash(final boolean isEnable) {
+        public void setEnableFlash(final boolean isEnable) {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         if (!isPreviewing) {
@@ -1150,20 +1210,19 @@ public abstract class BasicCamera {
                     }
                 });
             }
-            return true;
         }
 
         @Override
-        public boolean setFocusPoint(final int x, final int y, final int previewWidth, final int previewHeight) {
+        public void setFocusPoint(final int x, final int y, final int previewWidth, final int previewHeight) {
             synchronized (this) {
                 checkCameraIsClosed();
                 Integer supportedCount = mCameraCharacteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF);
                 if (supportedCount == null || supportedCount == 0) {
-                    return false;
+                    return;
                 }
                 int[] supportedArray = mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
                 if (supportedArray == null || supportedArray.length <= 0) {
-                    return false;
+                    return;
                 }
 
                 //预览坐标转crop坐标
@@ -1171,11 +1230,11 @@ public abstract class BasicCamera {
                 if (rect == null) {
                     rect = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
                     if (rect == null) {
-                        return false;
+                        return;
                     }
                 }
                 final Rect cropRegion = rect;
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         if (!isPreviewing) {
@@ -1246,11 +1305,10 @@ public abstract class BasicCamera {
                 });
 
             }
-            return true;
         }
 
         @Override
-        public boolean setZoom(int zoom) {
+        public void setZoom(int zoom) {
             synchronized (this) {
                 checkCameraIsClosed();
                 zoom = Math.min(zoom, getMaxZoomValue());
@@ -1258,10 +1316,10 @@ public abstract class BasicCamera {
                 //预览坐标转crop坐标
                 final Rect cameraActiveRegion = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
                 if (cameraActiveRegion == null) {
-                    return false;
+                    return;
                 }
                 final float zoomLevel = zoom / 10f;
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         if (!isPreviewing) {
@@ -1281,7 +1339,6 @@ public abstract class BasicCamera {
                     }
                 });
             }
-            return true;
         }
 
         @Override
@@ -1302,7 +1359,12 @@ public abstract class BasicCamera {
             }
             synchronized (this) {
                 checkCameraIsClosed();
-                mCaptureCallback = callback;
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCaptureCallback = callback;
+                    }
+                });
             }
         }
 
@@ -1320,7 +1382,7 @@ public abstract class BasicCamera {
         public void createCaptureSession(final List<Surface> outSurfaces, final CreateCaptureSessionCallback callback) {
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         try {
@@ -1345,7 +1407,7 @@ public abstract class BasicCamera {
                                         callback.onCreatedFailure();
                                     }
                                 }
-                            }, mWorkHandler);
+                            }, mCameraHandler);
                         } catch (Exception e) {
                             LogUtil.e(TAG, e);
                             stopPreviewNow(true);
@@ -1363,7 +1425,7 @@ public abstract class BasicCamera {
                     return;
                 }
                 try {
-                    mCameraSession.capture(captureRequest, callback, mWorkHandler);
+                    mCameraSession.capture(captureRequest, callback, mCameraHandler);
                     isPreviewing = true;
                 } catch (Exception e) {
                     LogUtil.e(TAG, e);
@@ -1377,12 +1439,12 @@ public abstract class BasicCamera {
         private void updateRepeatingRequest(final CaptureRequest captureRequest, final CameraCaptureSession.CaptureCallback callback) {
             synchronized (this) {
                 checkCameraIsClosed();
-                if (mCameraSession == null) {
+                if (mCameraSession == null || mCameraSession.isReprocessable()) {
                     return;
                 }
                 try {
-                    mCameraSession.stopRepeating();
-                    mCameraSession.setRepeatingRequest(captureRequest, callback, mWorkHandler);
+                    mCameraSession.stopRepeating();//这里有时候会报错
+                    mCameraSession.setRepeatingRequest(captureRequest, callback, mCameraHandler);
                     isPreviewing = true;
                 } catch (Exception e) {
                     LogUtil.e(TAG, e);
@@ -1399,7 +1461,7 @@ public abstract class BasicCamera {
             }
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         mCaptureRequestBuilder.addTarget(surface);
@@ -1414,7 +1476,7 @@ public abstract class BasicCamera {
             }
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         mCaptureRequestBuilder.removeTarget(surface);
@@ -1429,7 +1491,7 @@ public abstract class BasicCamera {
             }
             synchronized (this) {
                 checkCameraIsClosed();
-                mWorkHandler.post(new WorkRunnable() {
+                mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
                         for (Pair<CaptureRequest.Key, Object> pair : pairs) {

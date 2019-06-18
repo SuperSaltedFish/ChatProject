@@ -3,7 +3,6 @@ package com.yzx.chat.base;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -81,7 +80,6 @@ public abstract class BaseCompatActivity<P extends BasePresenter> extends AppCom
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         int layoutID = getLayoutID();
         if (layoutID != 0) {
             setContentView(layoutID);

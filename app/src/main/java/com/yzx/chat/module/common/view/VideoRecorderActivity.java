@@ -65,13 +65,13 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mRecodeView.startPreview();
+//        mRecodeView.startPreview();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mRecodeView.stopPreview();
+//        mRecodeView.stopPreview();
     }
 
     @Override

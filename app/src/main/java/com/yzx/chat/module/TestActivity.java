@@ -2,6 +2,7 @@ package com.yzx.chat.module;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
@@ -25,17 +26,19 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-
+        setSystemUiMode(SYSTEM_UI_MODE_TRANSPARENT_BAR_STATUS);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mCameraView.onResume();
     }
 
     @Override
     protected void onStop() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onStop();
         mCameraView.onPause();
     }

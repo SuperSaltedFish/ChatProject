@@ -112,7 +112,8 @@ public class CameraView extends TextureView
                         touchY = y;
                         break;
                 }
-                return mCamera.setFocusPoint(touchX, touchY, totalWidth, totalHeight);
+                mCamera.setFocusPoint(touchX, touchY, totalWidth, totalHeight);
+                return true;
             }
 
         });
@@ -297,7 +298,7 @@ public class CameraView extends TextureView
                 private int mFacingType = mCameraFacingType;
 
                 @Override
-                public void onCameraOpen() {
+                public void onCameraOpen(BasicCamera camera) {
                     if (mFacingType != mCameraFacingType) {
                         camera.closeCamera();
                         return;
@@ -330,16 +331,15 @@ public class CameraView extends TextureView
                         } else {
                             mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, getWidth(), getHeight(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize,false);
                         }
-
-                        if (mPreviewSize != null
-                                && mCamera.setPreviewDisplay(mSurfaceTexture)
-                                && mCamera.setPreviewFormat(ImageFormat.YUV_420_888)
-                                && mCamera.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight())) {
+                        if(mPreviewSize!=null){
+                            mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                            mCamera.setPreviewDisplay(mSurfaceTexture);
+                            mCamera.setPreviewFormat(ImageFormat.YUV_420_888);
+                            mCamera.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                             mCamera.setCaptureCallback(CameraView.this);
                             configureTransform(getWidth(), getHeight());
-                            mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                             startPreview();
-                        } else {
+                        }else {
                             closeCamera();
                         }
                     }
@@ -474,18 +474,18 @@ public class CameraView extends TextureView
             }
         }
 
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            RectF rotate90RectF = new RectF(0, 0, mActualPreviewRectF.height(), mActualPreviewRectF.width());
-            rotate90RectF.offset(centerX - rotate90RectF.centerX(), centerY - rotate90RectF.centerY());
-            matrix.setRectToRect(viewRect, rotate90RectF, Matrix.ScaleToFit.FILL);
-            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
-        } else {
-            mActualPreviewRectF.offset(centerX - mActualPreviewRectF.centerX(), centerY - mActualPreviewRectF.centerY());
-            matrix.setRectToRect(viewRect, mActualPreviewRectF, Matrix.ScaleToFit.FILL);
-            if (Surface.ROTATION_180 == rotation) {
-                matrix.postRotate(180, centerX, centerY);
-            }
-        }
+//        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+//            RectF rotate90RectF = new RectF(0, 0, mActualPreviewRectF.height(), mActualPreviewRectF.width());
+//            rotate90RectF.offset(centerX - rotate90RectF.centerX(), centerY - rotate90RectF.centerY());
+//            matrix.setRectToRect(viewRect, rotate90RectF, Matrix.ScaleToFit.FILL);
+//            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+//        } else {
+//            mActualPreviewRectF.offset(centerX - mActualPreviewRectF.centerX(), centerY - mActualPreviewRectF.centerY());
+//            matrix.setRectToRect(viewRect, mActualPreviewRectF, Matrix.ScaleToFit.FILL);
+//            if (Surface.ROTATION_180 == rotation) {
+//                matrix.postRotate(180, centerX, centerY);
+//            }
+//        }
 
         setTransform(matrix);
     }

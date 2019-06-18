@@ -68,6 +68,8 @@ public class VideoEncoder {
         MediaCodecInfo.CodecCapabilities capabilities = getVideoMediaCodecInfo().getCapabilitiesForType(MIME_TYPE_VIDEO);
         MediaCodecInfo.VideoCapabilities videoCapabilities = capabilities.getVideoCapabilities();
         MediaFormat format = capabilities.getDefaultFormat();
+        videoWidth -= videoWidth % videoCapabilities.getWidthAlignment();
+        videoHeight -= videoHeight % videoCapabilities.getHeightAlignment();
         if (!videoCapabilities.isSizeSupported(videoWidth, videoHeight)) {
             return null;
         } else {
