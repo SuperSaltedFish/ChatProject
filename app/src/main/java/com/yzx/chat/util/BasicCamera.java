@@ -211,6 +211,8 @@ public abstract class BasicCamera {
 
     public abstract boolean isPreviewing();
 
+    public abstract void setPreviewDisplay(SurfaceHolder holder);
+
     public abstract void setPreviewDisplay(SurfaceTexture texture);
 
     public abstract void setPreviewSize(int width, int height);
@@ -264,6 +266,7 @@ public abstract class BasicCamera {
         private Camera.Parameters mParameters;
         private Camera.Size mPreviewSize;
         private SurfaceTexture mPreviewSurfaceTexture;
+        private SurfaceHolder mPreviewSurfaceHolder;
         private boolean isPreviewing;
         private byte[] mCaptureBuffer;
 
@@ -291,6 +294,7 @@ public abstract class BasicCamera {
                 mCameraHandler.getLooper().quit();
             }
             mPreviewSurfaceTexture = null;
+            mPreviewSurfaceHolder = null;
             mParameters = null;
             mPreviewSize = null;
             isPreviewing = false;
@@ -423,7 +427,7 @@ public abstract class BasicCamera {
                 mCameraHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (mPreviewSurfaceTexture != null && !isPreviewing) {
+                        if ((mPreviewSurfaceTexture != null || mPreviewSurfaceHolder != null) && !isPreviewing) {
                             try {
                                 mCamera.startPreview();
                                 mCamera.cancelAutoFocus();
@@ -474,6 +478,26 @@ public abstract class BasicCamera {
         }
 
         @Override
+        public void setPreviewDisplay(final SurfaceHolder holder) {
+            synchronized (this) {
+                checkCameraOpen();
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            stopPreviewNow();
+                            mCamera.setPreviewDisplay(holder);
+                            mPreviewSurfaceHolder = holder;
+                            mPreviewSurfaceTexture = null;
+                        } catch (Exception e) {
+                            LogUtil.d(e.toString(), e);
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
         public void setPreviewDisplay(final SurfaceTexture texture) {
             synchronized (this) {
                 checkCameraOpen();
@@ -484,6 +508,7 @@ public abstract class BasicCamera {
                             stopPreviewNow();
                             mCamera.setPreviewTexture(texture);
                             mPreviewSurfaceTexture = texture;
+                            mPreviewSurfaceHolder = null;
                         } catch (Exception e) {
                             LogUtil.d(e.toString(), e);
                         }
@@ -1091,6 +1116,28 @@ public abstract class BasicCamera {
         @Override
         public boolean isPreviewing() {
             return isPreviewing;
+        }
+
+        @Override
+        public void setPreviewDisplay(final SurfaceHolder holder) {
+            synchronized (this) {
+                checkCameraIsClosed();
+                mCameraHandler.post(new WorkRunnable() {
+                    @Override
+                    public void onRun() {
+                        stopPreviewNow(true);
+                        if (holder == null) {
+                            if (mPreviewSurface != null) {
+                                mCaptureRequestBuilder.removeTarget(mPreviewSurface);
+                                mPreviewSurface = null;
+                            }
+                        } else {
+                            mPreviewSurface = holder.getSurface();
+                            mCaptureRequestBuilder.addTarget(mPreviewSurface);
+                        }
+                    }
+                });
+            }
         }
 
         @Override

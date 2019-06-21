@@ -3,8 +3,10 @@ package com.yzx.chat.widget.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
-import android.media.MediaFormat;
+import android.media.Image;
+import android.media.ImageReader;
 import android.opengl.EGL14;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
@@ -22,12 +24,11 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Display;
 import android.view.Surface;
+import android.view.View;
 
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BasicCamera;
-import com.yzx.chat.util.VideoEncoder;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -37,11 +38,12 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Created by YZX on 2019年05月29日.
+ * Created by YZX on 2019年06月20日.
  * 每一个不曾起舞的日子 都是对生命的辜负
  */
-public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer {
-
+public class GLCameraView
+        extends GLSurfaceView
+        implements GLSurfaceView.Renderer {
     private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
     private final float[] mTextureMatrix = new float[16];
@@ -67,17 +69,15 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     private Size mAspectRatioSize;
     private int mCameraFacing;
 
-    private EGLVideoEncoder mEGLVideoEncoder;
-    private volatile boolean isStartRecording;
-    private int mMaxVideoWidth = 960;
-    private int mMaxVideoHeight = 960;
-    private int mMaxFrameRate = 30;
+    private EGLImageReader mEGLImageReader;
+    private int mMaxVideoWidth = 1440;
+    private int mMaxVideoHeight = 1440;
 
-    public RecodeView(Context context) {
+    public GLCameraView(Context context) {
         this(context, null);
     }
 
-    public RecodeView(Context context, AttributeSet attrs) {
+    public GLCameraView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setEGLContextClientVersion(2);
         setRenderer(this);
@@ -86,7 +86,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         mOESTextureID = -1;
         mCameraHelper = new CameraHelper();
         mAspectRatioSize = DEFAULT_ASPECT_RATIO;
-        mEGLVideoEncoder = new EGLVideoEncoder();
+        mEGLImageReader = new EGLImageReader();
 
         mPreviewTexture2dProgram = new Texture2dProgram();
 
@@ -97,10 +97,10 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
+        final int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        final int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
+        int width = View.MeasureSpec.getSize(widthMeasureSpec);
+        int height = View.MeasureSpec.getSize(heightMeasureSpec);
         int ratioW;
         int ratioH;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -110,9 +110,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             ratioW = mAspectRatioSize.getHeight();
             ratioH = mAspectRatioSize.getWidth();
         }
-        if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
+        if (widthMode == View.MeasureSpec.EXACTLY && heightMode != View.MeasureSpec.EXACTLY) {
             height = width * ratioH / ratioW;
-        } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
+        } else if (widthMode != View.MeasureSpec.EXACTLY && heightMode == View.MeasureSpec.EXACTLY) {
             width = height * ratioW / ratioH;
         }
         setMeasuredDimension(width, height);
@@ -134,8 +134,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     public void onPause() {
         LogUtil.e("onPause");
         mCameraHelper.sendEvent(CameraHelper.MSG_STOP_PREVIEW);
-        stopRecode();
-        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE_EGL);
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_RELEASE_EGL);
         queueEvent(new Runnable() {
             @Override
             public void run() {
@@ -148,9 +147,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     public void onDestroy() {
         onPause();
         mCameraHelper.sendEvent(CameraHelper.MSG_CLOSE_CAMERA);
-        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE);
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_RELEASE);
         mCameraHelper = null;
-        mEGLVideoEncoder = null;
+        mEGLImageReader = null;
     }
 
     @Override
@@ -169,7 +168,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 requestRender();
             }
         });
-    }
+}
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
@@ -190,23 +189,14 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
         configureTransformIfNeed(width, height, mScreenDisplay.getRotation(), mCameraHelper.isCamera2Mode());
 
-        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE_EGL);
-        if (displayRotation == Surface.ROTATION_0 || displayRotation == Surface.ROTATION_180) {
-            float scaleW = (float) mMaxVideoWidth / height;
-            float scaleH = (float) mMaxVideoHeight / width;
-            float scale = Math.min(scaleW, scaleH);
-            int videoWidth = Math.round(scale * width);
-            int videoHeight = Math.round(scale * height);
-            mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_SET_VIDEO_SIZE, new Size(videoWidth, videoHeight), mMaxFrameRate);
-        } else {
-            float scaleW = (float) mMaxVideoWidth / width;
-            float scaleH = (float) mMaxVideoHeight / height;
-            float scale = Math.min(scaleW, scaleH);
-            int videoWidth = Math.round(scale * width);
-            int videoHeight = Math.round(scale * height);
-            mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_SET_VIDEO_SIZE, new Size(videoWidth, videoHeight), mMaxFrameRate);
-        }
-        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_INIT_EGL, EGL14.eglGetCurrentContext());
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_RELEASE_EGL);
+        float scaleW = (float) mMaxVideoWidth / width;
+        float scaleH = (float) mMaxVideoHeight / height;
+        float scale = Math.min(scaleW, scaleH);
+        int imageWidth = Math.round(scale * width);
+        int imageHeight = Math.round(scale * height);
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_SET_IMAGE_SIZE, imageWidth, imageHeight);
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_INIT_EGL, EGL14.eglGetCurrentContext());
     }
 
     @Override
@@ -219,9 +209,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         //获取外部纹理的矩阵，用来确定纹理的采样位置，没有此矩阵可能导致图像翻转等问题
         mPreviewSurfaceTexture.getTransformMatrix(mTextureMatrix);//这个代码不需要了，变化在ProjectionMatrix做了
         mPreviewTexture2dProgram.draw(mOESTextureID, mTextureMatrix, mProjectionMatrix);
-        if (isStartRecording) {
-            mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_DRAW, mOESTextureID, mTextureMatrix, mProjectionMatrix);
-        }
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_DRAW, mOESTextureID, mTextureMatrix, mProjectionMatrix);
     }
 
     private void releasePreviewGL() {
@@ -245,16 +233,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         mCameraFacing = cameraFacingType;
         mCameraHelper.sendEvent(CameraHelper.MSG_CLOSE_CAMERA);
         mCameraHelper.sendEvent(CameraHelper.MSG_OPEN_CAMERA, getContext(), mCameraFacing);
-    }
-
-    public void startRecode(String saveFile) {
-        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_START_RECODE, saveFile);
-        isStartRecording = true;
-    }
-
-    public void stopRecode() {
-        isStartRecording = false;
-        mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_STOP_RECODE);
     }
 
     private void configureTransformIfNeed(int width, int height, int displayRotation, boolean isCamera2) {
@@ -303,6 +281,15 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
         Matrix.multiplyMM(mProjectionMatrix, 0, projectionMatrix, 0, transformMatrix, 0);
     }
+
+    public void setCaptureCallback(CaptureCallback callback) {
+        mEGLImageReader.sendEvent(EGLImageReader.MSG_SET_CALLBACK, callback);
+    }
+
+    public interface CaptureCallback {
+        void onCaptureComplete(byte[] rgba, int width, int height);
+    }
+
 
     protected static class CameraHelper {
 
@@ -563,86 +550,81 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     }
 
 
-    private static class EGLVideoEncoder {//负责创建EGL环境，把GL内容写入Surface
+    private static class EGLImageReader {//负责创建EGL环境，把GL内容写入Surface
 
-        private static final String TAG = EGLVideoEncoder.class.getName();
-        // Android-specific extension.
-        private static final int EGL_RECORDABLE_ANDROID = 0x3142;
+        private static final String TAG = EGLImageReader.class.getName();
+
+        public static final int MSG_SET_IMAGE_SIZE = 1;
+        public static final int MSG_INIT_EGL = 2;
+        public static final int MSG_RELEASE_EGL = 3;
+        public static final int MSG_DRAW = 4;
+        public static final int MSG_SET_CALLBACK = 5;
+        public static final int MSG_RELEASE = 6;
 
         private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
         private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
         private EGLSurface mEGLSurface = EGL14.EGL_NO_SURFACE;
         private android.opengl.EGLConfig mEGLConfig = null;
 
-        private EGLVideoHandler mEGLVideoHandler;
-        private Texture2dProgram mRecodeTexture2dProgram;
-        private VideoEncoder mVideoEncoder;
-        private Surface mEncoderSurface;
+        private EGLImageReaderHandler mEGLImageReaderHandler;
+        private Texture2dProgram mTexture2dProgram;
 
-        private Size mVideoSize;
-        private int mFrameRate;
+        private ImageReader mImageReader;
+        private Surface mImageSurface;
 
-        public static final int MSG_SET_VIDEO_SIZE = 1;
-        public static final int MSG_INIT_EGL = 2;
-        public static final int MSG_RELEASE_EGL = 3;
-        public static final int MSG_DRAW = 4;
-        public static final int MSG_START_RECODE = 5;
-        public static final int MSG_STOP_RECODE = 6;
-        public static final int MSG_RELEASE = 7;
+        private CaptureCallback mCaptureCallback;
 
-        private EGLVideoEncoder() {
-            try {
-                mVideoEncoder = new VideoEncoder();
-                HandlerThread handlerThread = new HandlerThread(TAG);
-                handlerThread.start();
-                mEGLVideoHandler = new EGLVideoHandler(this, handlerThread.getLooper());
-                mRecodeTexture2dProgram = new Texture2dProgram();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        private EGLImageReader() {
+            HandlerThread handlerThread = new HandlerThread(TAG);
+            handlerThread.start();
+            mEGLImageReaderHandler = new EGLImageReaderHandler(this, handlerThread.getLooper());
+            mTexture2dProgram = new Texture2dProgram();
         }
 
-        private void setVideoSize(Size videoSize, int frameRate) {
-            if (mVideoSize != null && mVideoSize.equals(videoSize) && frameRate == mFrameRate) {
+        private void setImageSize(final int width, final int height) {
+            if (mImageReader != null && mImageReader.getWidth() == width && mImageReader.getHeight() == height) {
                 return;
             }
-            mVideoEncoder.reset();
+            if (mImageReader != null) {
+                mImageReader.close();
+                mImageSurface = null;
+            }
             try {
-                MediaFormat videoFormat;
-                videoFormat = mVideoEncoder.createDefaultVideoMediaFormat(videoSize.getWidth(), videoSize.getHeight(), frameRate);
-                MediaFormat audioFormat = mVideoEncoder.createDefaultAudioMediaFormat();
-                if (videoFormat != null && audioFormat != null) {
-                    mEncoderSurface = mVideoEncoder.configureCodec(videoFormat, audioFormat);
-                }
-                mVideoSize = videoSize;
-                mFrameRate = frameRate;
-            } catch (RuntimeException e) {
-                mVideoEncoder.reset();
+                mImageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 1);
+                mImageSurface = mImageReader.getSurface();
+                mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+                    private byte[] mDataBuff ;
+
+                    @Override
+                    public void onImageAvailable(ImageReader reader) {
+                        Image image = reader.acquireNextImage();
+                        if (image != null) {
+                            if (mCaptureCallback != null) {
+                                Image.Plane[] planes = image.getPlanes();
+                                ByteBuffer buffer = planes[0].getBuffer();
+                                if(mDataBuff==null){
+                                    mDataBuff = new byte[buffer.capacity()];
+                                }
+                                buffer.get(mDataBuff,0,buffer.limit());
+                                mCaptureCallback.onCaptureComplete(mDataBuff, image.getWidth(), image.getHeight());
+                            }
+                            image.close();
+                        }
+                    }
+                }, mEGLImageReaderHandler);
+            } catch (Exception e) {
                 e.printStackTrace();
-            }
-        }
-
-        private void startRecode(String savePath) {
-            if (mVideoEncoder != null && mEncoderSurface != null) {
-                mVideoEncoder.start(savePath, 0);
-            }
-        }
-
-        private void stopRecode() {
-            if (mVideoEncoder != null && mVideoEncoder.isRunning() && mEncoderSurface != null) {
-                mVideoEncoder.stop();
             }
         }
 
         private void releaseVideoEncoder() {
-            if (mEncoderSurface != null) {
-                mEncoderSurface.release();
-                mEncoderSurface = null;
+            if (mImageSurface != null) {
+                mImageSurface.release();
+                mImageSurface = null;
             }
-            if (mVideoEncoder != null) {
-                mVideoEncoder.stop();
-                mVideoEncoder.release();
-                mVideoEncoder = null;
+            if (mImageReader != null) {
+                mImageReader.close();
+                mImageReader = null;
             }
         }
 
@@ -653,7 +635,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             if (sharedContext == null) {
                 throw new RuntimeException("The sharedContext cannot be null");
             }
-            if (mVideoEncoder == null || mEncoderSurface == null) {
+            if (mImageReader == null) {
                 return;
             }
             boolean isSuccessful =
@@ -695,7 +677,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                     EGL14.EGL_BLUE_SIZE, 8,
                     EGL14.EGL_ALPHA_SIZE, 8,
                     EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-                    EGL_RECORDABLE_ANDROID, 1,      // placeholder for recordable [@-3]
                     EGL14.EGL_NONE
             };
             android.opengl.EGLConfig[] configs = new android.opengl.EGLConfig[1];
@@ -723,13 +704,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             int[] surfaceAttributes = {
                     EGL14.EGL_NONE
             };
-            mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, mEncoderSurface,
+            mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, mImageSurface,
                     surfaceAttributes, 0);
             return !hasEglError("eglCreateWindowSurface") && mEGLSurface != null;
         }
 
         private boolean initRecordTexture2dProgram() {
-            return mRecodeTexture2dProgram.tryInit();
+            return mTexture2dProgram.tryInit();
         }
 
         private boolean makeCurrent() {
@@ -738,8 +719,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
 
         private void draw(int textureID, float[] texMatrix, float[] projectionMatrix) {
-            if (mRecodeTexture2dProgram != null) {
-                mRecodeTexture2dProgram.draw(textureID, texMatrix, projectionMatrix);
+            if (mTexture2dProgram != null) {
+                mTexture2dProgram.draw(textureID, texMatrix, projectionMatrix);
                 EGL14.eglSwapBuffers(mEGLDisplay, mEGLSurface);
             }
         }
@@ -748,7 +729,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             if (mEGLDisplay != EGL14.EGL_NO_DISPLAY) {
                 // Android is unusual in that it uses a reference-counted EGLDisplay.  So for
                 // every eglInitialize() we need an eglTerminate().
-                mRecodeTexture2dProgram.release();
+                mTexture2dProgram.release();
                 EGL14.eglMakeCurrent(mEGLDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
                 EGL14.eglDestroyContext(mEGLDisplay, mEGLContext);
                 if (mEGLSurface != null) {
@@ -764,23 +745,27 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             mEGLConfig = null;
         }
 
+        public void setCaptureCallback(CaptureCallback captureCallback) {
+            mCaptureCallback = captureCallback;
+        }
+
         private void release() {
             synchronized (this) {
                 releaseEGL();
                 releaseVideoEncoder();
-                if (mEGLVideoHandler != null) {
-                    mEGLVideoHandler.removeCallbacksAndMessages(null);
-                    mEGLVideoHandler.getLooper().quit();
-                    mEGLVideoHandler = null;
+                if (mEGLImageReaderHandler != null) {
+                    mEGLImageReaderHandler.removeCallbacksAndMessages(null);
+                    mEGLImageReaderHandler.getLooper().quit();
+                    mEGLImageReaderHandler = null;
                 }
             }
         }
 
         public void sendEvent(int msgType, Object... params) {
             synchronized (this) {
-                if (mEGLVideoHandler != null) {
-                    mEGLVideoHandler.removeMessages(msgType);
-                    mEGLVideoHandler.sendMessage(msgType, params);
+                if (mEGLImageReaderHandler != null) {
+                    mEGLImageReaderHandler.removeMessages(msgType);
+                    mEGLImageReaderHandler.sendMessage(msgType, params);
                 }
             }
         }
@@ -788,8 +773,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         @Override
         protected void finalize() throws Throwable {
             try {
-                if (mEGLVideoHandler != null) {
-                    mEGLVideoHandler.sendMessage(MSG_RELEASE);
+                if (mEGLImageReaderHandler != null) {
+                    mEGLImageReaderHandler.sendMessage(MSG_RELEASE);
                 }
             } finally {
                 super.finalize();
@@ -805,20 +790,20 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             return false;
         }
 
-        private static class EGLVideoHandler extends Handler {
-            private WeakReference<EGLVideoEncoder> mEGLVideoEncoder;
+        private static class EGLImageReaderHandler extends Handler {
+            private WeakReference<EGLImageReader> mEGLImageReader;
 
-            private EGLVideoHandler(EGLVideoEncoder encoder, Looper looper) {
+            private EGLImageReaderHandler(EGLImageReader reader, Looper looper) {
                 super(looper);
-                mEGLVideoEncoder = new WeakReference<>(encoder);
+                mEGLImageReader = new WeakReference<>(reader);
             }
 
             private void sendMessage(int msgType, Object... params) {
                 Message message = obtainMessage(msgType);
                 switch (msgType) {
-                    case MSG_SET_VIDEO_SIZE:
-                        message.obj = params[0];
-                        message.arg1 = (int) params[1];
+                    case MSG_SET_IMAGE_SIZE:
+                        message.arg1 = (int) params[0];
+                        message.arg2 = (int) params[1];
                         break;
                     case MSG_INIT_EGL:
                         message.obj = params[0];
@@ -827,7 +812,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         message.arg1 = (int) params[0];
                         message.obj = new float[][]{(float[]) params[1], (float[]) params[2]};
                         break;
-                    case MSG_START_RECODE:
+                    case MSG_SET_CALLBACK:
                         message.obj = params[0];
                         break;
                 }
@@ -836,13 +821,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
             @Override
             public void handleMessage(Message msg) {
-                EGLVideoEncoder encoder = mEGLVideoEncoder.get();
+                EGLImageReader encoder = mEGLImageReader.get();
                 if (encoder == null) {
                     return;
                 }
                 switch (msg.what) {
-                    case MSG_SET_VIDEO_SIZE:
-                        encoder.setVideoSize((Size) msg.obj, msg.arg1);
+                    case MSG_SET_IMAGE_SIZE:
+                        encoder.setImageSize(msg.arg1, msg.arg2);
                         break;
                     case MSG_INIT_EGL:
                         encoder.initEGL((EGLContext) msg.obj);
@@ -854,14 +839,11 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         float[][] matrixs = (float[][]) msg.obj;
                         encoder.draw(msg.arg1, matrixs[0], matrixs[1]);
                         break;
-                    case MSG_START_RECODE:
-                        encoder.startRecode((String) msg.obj);
-                        break;
-                    case MSG_STOP_RECODE:
-                        encoder.stopRecode();
-                        break;
                     case MSG_RELEASE:
                         encoder.release();
+                        break;
+                    case MSG_SET_CALLBACK:
+                        encoder.setCaptureCallback((CaptureCallback) msg.obj);
                         break;
                 }
             }
@@ -1053,7 +1035,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             if (error != GLES20.GL_NO_ERROR) {
                 String msg = op + ": glError 0x" + Integer.toHexString(error);
                 LogUtil.e(msg);
-                throw new RuntimeException(msg);
             }
         }
     }
