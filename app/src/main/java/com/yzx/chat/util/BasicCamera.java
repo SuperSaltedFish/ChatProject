@@ -14,6 +14,7 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
@@ -24,6 +25,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.ArraySet;
 import android.util.Pair;
+import android.util.Range;
 import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -219,7 +221,9 @@ public abstract class BasicCamera {
 
     public abstract void setPreviewFormat(int format);
 
-    public abstract void setDisplayOrientationIfSupport(int displayOrientation);
+    public abstract void setDisplayOrientationIfSupported(int displayOrientation);
+
+    public abstract void setPreviewFpsIfSupported(int minFPS, int maxFPS);
 
     public abstract int getSensorOrientation();
 
@@ -429,6 +433,7 @@ public abstract class BasicCamera {
                     public void run() {
                         if ((mPreviewSurfaceTexture != null || mPreviewSurfaceHolder != null) && !isPreviewing) {
                             try {
+                                mCamera.setParameters(mParameters);
                                 mCamera.startPreview();
                                 mCamera.cancelAutoFocus();
                                 mCamera.setPreviewCallbackWithBuffer(null);
@@ -571,7 +576,7 @@ public abstract class BasicCamera {
         }
 
         @Override
-        public void setDisplayOrientationIfSupport(final int displayOrientation) {
+        public void setDisplayOrientationIfSupported(final int displayOrientation) {
             synchronized (this) {
                 checkCameraOpen();
                 mCameraHandler.post(new Runnable() {
@@ -582,6 +587,44 @@ public abstract class BasicCamera {
                             mCamera.setDisplayOrientation(displayOrientation);
                         } catch (Exception e) {
                             LogUtil.d(e.toString(), e);
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void setPreviewFpsIfSupported(final int minFPS, final int maxFPS) {
+            synchronized (this) {
+                checkCameraOpen();
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int[] oldFPS = new int[2];
+                        mParameters.getPreviewFpsRange(oldFPS);
+                        if (oldFPS[Camera.Parameters.PREVIEW_FPS_MIN_INDEX] == minFPS &&
+                                oldFPS[Camera.Parameters.PREVIEW_FPS_MAX_INDEX] == maxFPS) {
+                            return;
+                        }
+
+                        List<int[]> fpsList = mParameters.getSupportedPreviewFpsRange();
+                        if (fpsList != null) {
+                            for (int[] range : fpsList) {
+                                if (range[Camera.Parameters.PREVIEW_FPS_MIN_INDEX] == minFPS &&
+                                        range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX] == maxFPS) {
+                                    try {
+                                        stopPreviewNow();
+                                        mParameters.setPreviewFpsRange(minFPS, maxFPS);
+                                        mCamera.setParameters(mParameters);
+                                    } catch (Exception e) {
+                                        mParameters.setPreviewFpsRange(
+                                                oldFPS[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
+                                                oldFPS[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+                                        LogUtil.d(e.toString(), e);
+                                    }
+                                    break;
+                                }
+                            }
                         }
                     }
                 });
@@ -604,8 +647,15 @@ public abstract class BasicCamera {
                         try {
                             if (isEnable) {
                                 if (!Camera.Parameters.FLASH_MODE_TORCH.equals(oldMode)) {
-                                    mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                                    mCamera.setParameters(mParameters);
+                                    List<String> supportedFlashModes = mParameters.getSupportedFlashModes();
+                                    if (supportedFlashModes != null) {
+                                        for (String mode : supportedFlashModes) {
+                                            if (Camera.Parameters.FLASH_MODE_TORCH.equals(mode)) {
+                                                mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                                                mCamera.setParameters(mParameters);
+                                            }
+                                        }
+                                    }
                                 }
                             } else {
                                 if (!Camera.Parameters.FLASH_MODE_OFF.equals(oldMode)) {
@@ -843,11 +893,15 @@ public abstract class BasicCamera {
         private static final int DEFAULT_CAPTURE_WIDTH = 1920;
         private static final int DEFAULT_CAPTURE_HEIGHT = 1080;
 
-        public static void setDefaultCameraMetadata(CaptureRequest.Builder builder, CameraCharacteristics characteristics) {
+        public static void setDefaultCameraMetadata(CaptureRequest.Builder builder, CameraCharacteristics characteristics, boolean isRecodeMode) {
             builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);//3A自动
-            builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);//开启连续自动对焦
             builder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);//开启自动曝光
             builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO);//开启自动白平衡
+            if (isRecodeMode) {
+                builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);//开启连续自动对焦
+            } else {
+                builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);//开启连续自动对焦
+            }
 
             int[] supportCount;
             supportCount = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION);
@@ -952,7 +1006,7 @@ public abstract class BasicCamera {
                                     onError(camera, CameraDevice.StateCallback.ERROR_CAMERA_DEVICE);
                                     return;
                                 }
-                                setDefaultCameraMetadata(mCaptureRequestBuilder, mCameraCharacteristics);
+                                setDefaultCameraMetadata(mCaptureRequestBuilder, mCameraCharacteristics, false);
                                 mCameraDevice = camera;
                                 mCameraOpenCloseLock.release();
                                 mUIHandler.post(new Runnable() {
@@ -1207,7 +1261,35 @@ public abstract class BasicCamera {
         }
 
         @Override
-        public void setDisplayOrientationIfSupport(int displayOrientation) {
+        public void setDisplayOrientationIfSupported(int displayOrientation) {
+        }
+
+        @Override
+        public void setPreviewFpsIfSupported(final int minFPS, final int maxFPS) {
+            synchronized (this) {
+                checkCameraIsClosed();
+                mCameraHandler.post(new WorkRunnable() {
+                    @Override
+                    public void onRun() {
+                        Range<Integer> oldFPS = mCaptureRequestBuilder.get(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE);
+                        if (oldFPS == null || oldFPS.getLower() == minFPS && oldFPS.getUpper() == maxFPS) {
+                            return;
+                        }
+                        Range<Integer>[] rangeList = mCameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+                        if (rangeList != null) {
+                            for (Range<Integer> range : rangeList) {
+                                if (range.getLower() == minFPS && range.getUpper() == maxFPS) {
+                                    mCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, range);
+                                    if (isPreviewing) {
+                                        updateRepeatingRequest(mCaptureRequestBuilder.build(), null);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         @Override
@@ -1224,7 +1306,10 @@ public abstract class BasicCamera {
                     @Override
                     public void onRun() {
                         if (isEnable) {
-                            mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                            Boolean isSupported = mCameraCharacteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                            if (isSupported != null && isSupported) {
+                                mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                            }
                         } else {
                             mCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
                         }
@@ -1290,21 +1375,40 @@ public abstract class BasicCamera {
                         rect.top += cropRegion.top;
                         rect.bottom += cropRegion.top;
 
-                        CaptureRequest cancelFocus = buildCaptureRequest(
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_CANCEL : CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE));
-                        updateSingleRequest(cancelFocus, null);
-
-                        CaptureRequest request = buildCaptureRequest(
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX)}),
+                        CaptureRequest idleFocus = buildCaptureRequest(
+                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, null),
                                 new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX)}),
-                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START));
-                        updateRepeatingRequest(request, null);
+                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE),
+                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, null),
+                                new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE));
+                        updateRepeatingRequest(idleFocus, new CameraCaptureSession.CaptureCallback() {
+                            private boolean isFirst = true;
+
+                            @Override
+                            public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                                super.onCaptureCompleted(session, request, result);
+                                if (isFirst) {
+                                    isFirst = false;
+                                    CaptureRequest cancelFocus = buildCaptureRequest(
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_CANCEL : CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE));
+                                    updateSingleRequest(cancelFocus, null);
+
+                                    CaptureRequest focus = buildCaptureRequest(
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX)}),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX)}),
+                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_START));
+                                    updateSingleRequest(focus, null);
+                                }
+                            }
+                        });
+
+
 //                        updateRepeatingRequest(request, new CameraCaptureSession.CaptureCallback() {
 //                            @Override
 //                            public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
@@ -1347,9 +1451,6 @@ public abstract class BasicCamera {
                 mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
-                        if (!isPreviewing) {
-                            return;
-                        }
                         int maxCropWidth = cameraActiveRegion.width();
                         int maxCropHeight = cameraActiveRegion.height();
                         int cropWidth = (int) (maxCropWidth / zoomLevel);
@@ -1360,7 +1461,9 @@ public abstract class BasicCamera {
                         cropRect.top = (maxCropHeight - cropHeight) / 2;
                         cropRect.bottom = cropRect.top + cropHeight;
                         mCaptureRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, cropRect);
-                        updateRepeatingRequest(mCaptureRequestBuilder.build(), null);
+                        if (isPreviewing) {
+                            updateRepeatingRequest(mCaptureRequestBuilder.build(), null);
+                        }
                     }
                 });
             }
@@ -1392,7 +1495,7 @@ public abstract class BasicCamera {
                                 } else {
                                     mCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
                                 }
-                                setDefaultCameraMetadata(mCaptureRequestBuilder, mCameraCharacteristics);
+                                setDefaultCameraMetadata(mCaptureRequestBuilder, mCameraCharacteristics, hint);
                                 isEnableRecordingHint = hint;
                             } catch (Exception e) {
                                 LogUtil.e(TAG, e);
@@ -1487,6 +1590,11 @@ public abstract class BasicCamera {
                         session.close();
                         latch.countDown();
                     }
+
+                    @Override
+                    public void onReady(@NonNull CameraCaptureSession session) {
+                        super.onReady(session);
+                    }
                 }, mUIHandler);
             } catch (Exception e) {
                 LogUtil.e(TAG, e);
@@ -1504,7 +1612,6 @@ public abstract class BasicCamera {
                 mCameraSession.capture(captureRequest, callback, mCameraHandler);
             } catch (Exception e) {
                 LogUtil.e(TAG, e);
-                isPreviewing = false;
             }
         }
 
@@ -1512,6 +1619,7 @@ public abstract class BasicCamera {
             try {
                 mCameraSession.stopRepeating();
                 mCameraSession.setRepeatingRequest(captureRequest, callback, mCameraHandler);
+                isPreviewing = true;
             } catch (Exception e) {
                 LogUtil.e(TAG, e);
                 isPreviewing = false;

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context=".module.TestActivity">
 
-    <com.yzx.chat.widget.view.GLCameraView
+    <com.yzx.chat.widget.view.RecodeView
         android:id="@+id/mCameraView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

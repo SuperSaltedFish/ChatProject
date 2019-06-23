@@ -1,5 +1,6 @@
 package com.yzx.chat.widget.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -21,6 +22,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Size;
 import android.view.Display;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.Surface;
 
 import com.yzx.chat.core.util.LogUtil;
@@ -53,6 +57,10 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         Matrix.setIdentityM(IDENTITY_MATRIX, 0);
     }
 
+    private GestureDetector mClickGestureDetector;
+    private ScaleGestureDetector mScaleGestureDetector;
+    protected boolean isEnableGesture;
+
     private SurfaceTexture mPreviewSurfaceTexture;
     private Texture2dProgram mPreviewTexture2dProgram;
     private int mOESTextureID;
@@ -82,6 +90,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        setGesture();
 
         mOESTextureID = -1;
         mCameraHelper = new CameraHelper();
@@ -94,6 +103,59 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
         switchCamera(BasicCamera.CAMERA_FACING_BACK);
     }
+
+    private void setGesture() {
+        isEnableGesture = true;
+        mClickGestureDetector = new GestureDetector(getContext().getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent event) {
+                mCameraHelper.sendEvent(CameraHelper.MSG_SET_FOCUS,
+                        (int) event.getX(),
+                        (int) event.getY(),
+                        mSurfaceWidth,
+                        mSurfaceHeight,
+                        mDisplayRotation);
+                return true;
+            }
+
+        });
+        mScaleGestureDetector = new ScaleGestureDetector(getContext().getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                float scaleFactor = detector.getScaleFactor();
+                if (scaleFactor == 1) {
+                    return false;
+                }
+                int maxZoom = mCameraHelper.getMaxZoom();
+                int minZoom = mCameraHelper.getMinZoom();
+                int currentZoom = mCameraHelper.getCurrentZoom();
+                int increase;
+                if (scaleFactor > 1) {
+                    increase = (int) ((scaleFactor - 1f) * (maxZoom - minZoom) + 0.5f);//四舍五入
+                } else {
+                    increase = (int) ((scaleFactor - 1f) * (maxZoom - minZoom) - 0.5f);//四舍五入
+                }
+                increase = (int) (increase * 0.5f);
+                if (increase == 0) {
+                    return false;
+                }
+                int newZoom = currentZoom + increase;
+                newZoom = Math.min(newZoom, maxZoom);
+                newZoom = Math.max(newZoom, minZoom);
+                if (newZoom == currentZoom) {
+                    return false;
+                }
+                mCameraHelper.sendEvent(CameraHelper.MSG_SET_ZOOM, newZoom);
+                return true;
+            }
+        });
+    }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -116,6 +178,15 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             width = height * ratioW / ratioH;
         }
         setMeasuredDimension(width, height);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!isEnableGesture) {
+            return false;
+        }
+        return mClickGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
     }
 
     @Override
@@ -186,7 +257,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 width,
                 height,
                 displayRotation,
-                mAspectRatioSize);
+                mAspectRatioSize,
+                mMaxFrameRate);
 
         configureTransformIfNeed(width, height, mScreenDisplay.getRotation(), mCameraHelper.isCamera2Mode());
 
@@ -230,7 +302,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             mPreviewSurfaceTexture.setOnFrameAvailableListener(null);
             mPreviewSurfaceTexture.release();
             mPreviewSurfaceTexture = null;
-            mCameraHelper.sendEvent(CameraHelper.MSG_SET_DESIRED_PARAMETER, null, -1, -1, -1, null);
+            mCameraHelper.sendEvent(CameraHelper.MSG_SET_DESIRED_PARAMETER, null, -1, -1, -1, null,0);
         }
         if (mOESTextureID > -1) {
             Texture2dProgram.deleteOESTextureObject(mOESTextureID);
@@ -255,6 +327,10 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     public void stopRecode() {
         isStartRecording = false;
         mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_STOP_RECODE);
+    }
+
+    public void setEnableGesture(boolean enableGesture) {
+        isEnableGesture = enableGesture;
     }
 
     private void configureTransformIfNeed(int width, int height, int displayRotation, boolean isCamera2) {
@@ -316,6 +392,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         public static final int MSG_OPEN_FLASH = 5;
         public static final int MSG_CLOSE_FLASH = 6;
         public static final int MSG_SET_DESIRED_PARAMETER = 7;
+        public static final int MSG_SET_FOCUS = 8;
+        public static final int MSG_SET_ZOOM = 9;
+
 
         private CameraHandler mCameraHandler;
 
@@ -332,6 +411,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         private int mDesiredWidth = 0;
         private int mDesiredHeight = 0;
         private Size mAspectRatioSize = null;
+        private int mMaxFPS = 0;
 
         public CameraHelper() {
             mCameraHandler = new CameraHandler(this);
@@ -379,6 +459,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                 mDisplayOrientation = -1;
                 mDesiredWidth = 0;
                 mDesiredHeight = 0;
+                mMaxFPS = 0;
                 mAspectRatioSize = null;
                 mPreviewSize = null;
                 mCameraHandler.removeCallbacksAndMessages(null);
@@ -426,7 +507,10 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             }
             mCamera.setRecordingHint(true);
             mCamera.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-            mCamera.setDisplayOrientationIfSupport(calculateCameraRotationAngle(mDisplayOrientation, mCamera.getSensorOrientation(), mCameraFacingType));
+            if (mMaxFPS > 0) {
+                mCamera.setPreviewFpsIfSupported(mMaxFPS, mMaxFPS);
+            }
+            mCamera.setDisplayOrientationIfSupported(calculateCameraRotationAngle(mDisplayOrientation, mCamera.getSensorOrientation(), mCameraFacingType));
             mPreviewSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             mCamera.setPreviewDisplay(mPreviewSurfaceTexture);
             if (isEnableAutoStartPreview) {
@@ -434,12 +518,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             }
         }
 
-        private void setDesiredCameraParameter(SurfaceTexture surfaceTexture, int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize) {
+        private void setDesiredCameraParameter(SurfaceTexture surfaceTexture, int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize, int maxFPS) {
             mPreviewSurfaceTexture = surfaceTexture;
             mDesiredWidth = desiredWidth;
             mDesiredHeight = desiredHeight;
             mDisplayOrientation = displayRotation;
             mAspectRatioSize = aspectRatioSize;
+            mMaxFPS = maxFPS;
             setupCamera();
         }
 
@@ -468,8 +553,65 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             }
         }
 
+        private void focus(int x, int y, int width, int height, int displayOrientation) {
+            if (mCamera == null || !mCamera.isOpen()) {
+                return;
+            }
+            int totalWidth;
+            int totalHeight;
+            int touchX;
+            int touchY;
+            int rotate = (mCamera.getSensorOrientation() - displayOrientation * 90 + 360) % 360;
+            switch (rotate) {
+                case 90:
+                    totalWidth = height;
+                    totalHeight = width;
+                    touchX = y;
+                    touchY = totalHeight - x;
+                    break;
+                case 270:
+                    totalWidth = height;
+                    totalHeight = width;
+                    touchY = x;
+                    touchX = totalWidth - y;
+                    break;
+                default:
+                    totalWidth = width;
+                    totalHeight = height;
+                    touchX = x;
+                    touchY = y;
+                    break;
+            }
+            mCamera.setFocusPoint(touchX, touchY, totalWidth, totalHeight);
+        }
+
+        private void zoom(int value) {
+            if (mCamera == null || !mCamera.isOpen()) {
+                return;
+            }
+            value = Math.min(value, mMaxZoom);
+            value = Math.max(value, mMinZoom);
+            if (value == mCurrentZoom) {
+                return;
+            }
+            mCurrentZoom = value;
+            mCamera.setZoom(mCurrentZoom);
+        }
+
         public boolean isCamera2Mode() {
             return mCamera instanceof BasicCamera.Camera2Impl;
+        }
+
+        public int getMaxZoom() {
+            return mMaxZoom;
+        }
+
+        public int getMinZoom() {
+            return mMinZoom;
+        }
+
+        public int getCurrentZoom() {
+            return mCurrentZoom;
         }
 
         public void sendEvent(int msgType, Object... params) {
@@ -540,7 +682,14 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         break;
                     case MSG_SET_DESIRED_PARAMETER:
                         Object[] params = (Object[]) msg.obj;
-                        helper.setDesiredCameraParameter((SurfaceTexture) params[0], (int) params[1], (int) params[2], (int) params[3], (Size) params[4]);
+                        helper.setDesiredCameraParameter((SurfaceTexture) params[0], (int) params[1], (int) params[2], (int) params[3], (Size) params[4], (int) params[5]);
+                        break;
+                    case MSG_SET_FOCUS:
+                        params = (Object[]) msg.obj;
+                        helper.focus((int) params[0], (int) params[1], (int) params[2], (int) params[3], (int) params[4]);
+                        break;
+                    case MSG_SET_ZOOM:
+                        helper.zoom((int) msg.obj);
                         break;
                 }
             }
@@ -553,7 +702,11 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         message.arg1 = (int) params[1];
                         break;
                     case MSG_SET_DESIRED_PARAMETER:
+                    case MSG_SET_FOCUS:
                         message.obj = params;
+                        break;
+                    case MSG_SET_ZOOM:
+                        message.obj = params[0];
                         break;
                 }
                 sendMessage(message);

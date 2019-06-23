@@ -304,8 +304,8 @@ public class CameraView extends TextureView
                         return;
                     }
                     mCamera = camera;
-                    mCamera.setDisplayOrientationIfSupport(90);//下面的代码在横屏的时候无效，不知道为什么(无论前置还是后置)
-//                    mCamera.setDisplayOrientationIfSupport(calculateCameraRotationAngle(getDisplayRotation(), mCamera.getSensorOrientation(), mCameraFacingType));
+                    mCamera.setDisplayOrientationIfSupported(90);//下面的代码在横屏的时候无效，不知道为什么(无论前置还是后置)
+//                    mCamera.setDisplayOrientationIfSupported(calculateCameraRotationAngle(getDisplayRotation(), mCamera.getSensorOrientation(), mCameraFacingType));
                     mMaxZoom = mCamera.getMaxZoomValue();
                     mMinZoom = mCamera.getMinZoomValue();
                     mCurrentZoom = mMinZoom;
@@ -327,11 +327,11 @@ public class CameraView extends TextureView
                                 break;
                         }
                         if (swappedDimensions) {
-                            mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, getHeight(), getWidth(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize,false);
+                            mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, getHeight(), getWidth(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, false);
                         } else {
-                            mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, getWidth(), getHeight(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize,false);
+                            mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceTexture.class, getWidth(), getHeight(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, false);
                         }
-                        if(mPreviewSize!=null){
+                        if (mPreviewSize != null) {
                             mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                             mCamera.setPreviewDisplay(mSurfaceTexture);
                             mCamera.setPreviewFormat(ImageFormat.YUV_420_888);
@@ -339,7 +339,7 @@ public class CameraView extends TextureView
                             mCamera.setCaptureCallback(CameraView.this);
                             configureTransform(getWidth(), getHeight());
                             startPreview();
-                        }else {
+                        } else {
                             closeCamera();
                         }
                     }
