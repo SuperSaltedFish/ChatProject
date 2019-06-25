@@ -36,6 +36,7 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.concurrent.CountDownLatch;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -302,7 +303,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             mPreviewSurfaceTexture.setOnFrameAvailableListener(null);
             mPreviewSurfaceTexture.release();
             mPreviewSurfaceTexture = null;
-            mCameraHelper.sendEvent(CameraHelper.MSG_SET_DESIRED_PARAMETER, null, -1, -1, -1, null,0);
+            mCameraHelper.sendEvent(CameraHelper.MSG_SET_DESIRED_PARAMETER, null, -1, -1, -1, null, 0);
         }
         if (mOESTextureID > -1) {
             Texture2dProgram.deleteOESTextureObject(mOESTextureID);
@@ -382,6 +383,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     protected static class CameraHelper {
 
+        private static final String TAG = CameraHelper.class.getName();
+
         private static final int MAX_PREVIEW_WIDTH = 1920;
         private static final int MAX_PREVIEW_HEIGHT = 1080;
 
@@ -394,7 +397,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         public static final int MSG_SET_DESIRED_PARAMETER = 7;
         public static final int MSG_SET_FOCUS = 8;
         public static final int MSG_SET_ZOOM = 9;
-
+        public static final int MSG_RELEASE = 10;
 
         private CameraHandler mCameraHandler;
 
@@ -406,6 +409,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         private int mCurrentZoom;
         private boolean isEnableAutoStartPreview;
 
+        private CountDownLatch mCameraCloseLatch;
+
         private SurfaceTexture mPreviewSurfaceTexture;
         private int mDisplayOrientation = -1;
         private int mDesiredWidth = 0;
@@ -414,60 +419,83 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         private int mMaxFPS = 0;
 
         public CameraHelper() {
-            mCameraHandler = new CameraHandler(this);
+            HandlerThread thread = new HandlerThread(TAG);
+            thread.start();
+            mCameraHandler = new CameraHandler(this, thread.getLooper());
         }
 
         private void openCamera(Context context, @BasicCamera.FacingType final int cameraFacing) {
-            LogUtil.e("openCamera");
-            final BasicCamera camera = BasicCamera.createCameraCompat(context, cameraFacing);
+            if (mCamera != null) {
+                throw new RuntimeException("Camera already open");
+            }
+            BasicCamera camera = BasicCamera.createCameraCompat(context, cameraFacing);
             if (camera != null) {
+                final CountDownLatch latch = new CountDownLatch(1);
                 camera.openCamera(new BasicCamera.StateCallback() {
                     @Override
-                    public void onCameraOpen(BasicCamera camera) {
-                        LogUtil.e("onCameraOpen");
+                    public void onOpenSuccessful(BasicCamera camera) {
                         mCamera = camera;
                         mCameraFacingType = cameraFacing;
                         mMaxZoom = mCamera.getMaxZoomValue();
                         mMinZoom = mCamera.getMinZoomValue();
                         mCurrentZoom = mMinZoom;
                         setupCamera();
+                        mCameraCloseLatch = new CountDownLatch(1);
+                        latch.countDown();
                     }
 
                     @Override
-                    public void onCameraClose() {
+                    public void onOpenFailure() {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onDisconnected() {
                         closeCamera();
                     }
 
                     @Override
-                    public void onCameraError(int error) {
+                    public void onClose() {
+                        mCameraCloseLatch.countDown();
+                    }
+
+                    @Override
+                    public void onError(int error) {
                         closeCamera();
                     }
                 });
+                try {
+                    latch.await();
+                } catch (InterruptedException ignored) {
+                }
             }
         }
 
 
         private void closeCamera() {
-            LogUtil.e("closeCamera");
             if (mCamera != null) {
                 mCamera.closeCamera();
                 mCamera = null;
-                mCameraFacingType = -1;
                 mMaxZoom = 0;
                 mCurrentZoom = 0;
-                mPreviewSurfaceTexture = null;
-                mDisplayOrientation = -1;
-                mDesiredWidth = 0;
-                mDesiredHeight = 0;
-                mMaxFPS = 0;
-                mAspectRatioSize = null;
                 mPreviewSize = null;
-                mCameraHandler.removeCallbacksAndMessages(null);
+                mCameraFacingType = -1;
+                try {
+                    mCameraCloseLatch.await();
+                } catch (InterruptedException ignored) {
+                }
             }
         }
 
+        private void release() {
+            closeCamera();
+            mCameraHandler.removeCallbacksAndMessages(null);
+            mCameraHandler.getLooper().quit();
+            mCameraHandler = null;
+        }
+
         private void setupCamera() {
-            LogUtil.e("setupCamera");
+            LogUtil.e("setupCamera1");
             if (mCamera == null) {
                 return;
             }
@@ -516,6 +544,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             if (isEnableAutoStartPreview) {
                 startPreviewIfNeed();
             }
+            LogUtil.e("setupCamera2");
         }
 
         private void setDesiredCameraParameter(SurfaceTexture surfaceTexture, int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize, int maxFPS) {
@@ -527,7 +556,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             mMaxFPS = maxFPS;
             setupCamera();
         }
-
 
         private void enableAutoStartPreview() {
             isEnableAutoStartPreview = true;
@@ -615,6 +643,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
 
         public void sendEvent(int msgType, Object... params) {
+            if (mCameraHandler == null) {
+                throw new RuntimeException("CameraHelper already released.");
+            }
             mCameraHandler.removeMessages(msgType);
             mCameraHandler.sendMessage(msgType, params);
         }
@@ -650,8 +681,8 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         private static class CameraHandler extends Handler {
             private WeakReference<CameraHelper> mCameraWeakReference;
 
-            private CameraHandler(CameraHelper cameraHelper) {
-                super(Looper.getMainLooper());
+            private CameraHandler(CameraHelper cameraHelper, Looper looper) {
+                super(looper);
                 mCameraWeakReference = new WeakReference<>(cameraHelper);
             }
 
@@ -690,6 +721,9 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                         break;
                     case MSG_SET_ZOOM:
                         helper.zoom((int) msg.obj);
+                        break;
+                    case MSG_RELEASE:
+                        helper.release();
                         break;
                 }
             }

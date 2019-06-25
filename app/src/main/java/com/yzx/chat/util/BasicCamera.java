@@ -246,11 +246,15 @@ public abstract class BasicCamera {
 
 
     public interface StateCallback {
-        void onCameraOpen(BasicCamera camera);
+        void onOpenSuccessful(BasicCamera camera);
 
-        void onCameraClose();
+        void onOpenFailure();
 
-        void onCameraError(int error);
+        void onDisconnected();
+
+        void onClose();
+
+        void onError(int error);
     }
 
     public interface CaptureCallback {
@@ -346,14 +350,19 @@ public abstract class BasicCamera {
                         mCamera.setErrorCallback(new Camera.ErrorCallback() {
                             @Override
                             public void onError(final int error, Camera camera) {
+                                reset();
                                 if (error == Camera.CAMERA_ERROR_EVICTED) {//相机断开连接
-                                    closeCamera();
-                                } else {
-                                    reset();
                                     mUIHandler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            callback.onCameraError(error);
+                                            callback.onDisconnected();
+                                        }
+                                    });
+                                } else {
+                                    mUIHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callback.onError(error);
                                         }
                                     });
                                 }
@@ -364,7 +373,7 @@ public abstract class BasicCamera {
                             public void run() {
                                 synchronized (CameraImpl.this) {
                                     mCameraOpenCloseLock.release();
-                                    callback.onCameraOpen(CameraImpl.this);
+                                    callback.onOpenSuccessful(CameraImpl.this);
                                 }
                             }
                         });
@@ -376,7 +385,7 @@ public abstract class BasicCamera {
                             @Override
                             public void run() {
                                 synchronized (CameraImpl.this) {
-                                    callback.onCameraError(-1);
+                                    callback.onOpenFailure();
                                 }
                             }
                         });
@@ -401,7 +410,7 @@ public abstract class BasicCamera {
                                     mUIHandler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            callback.onCameraClose();
+                                            callback.onClose();
                                         }
                                     });
                                 }
@@ -987,6 +996,7 @@ public abstract class BasicCamera {
                 mCameraOpenCloseLock.release();
                 throw new IllegalStateException("The camera is already Open");
             }
+            LogUtil.e("open");
             HandlerThread handlerThread = new HandlerThread(TAG);
             handlerThread.start();
             mCameraHandler = new Handler(handlerThread.getLooper());
@@ -995,7 +1005,8 @@ public abstract class BasicCamera {
                 public void run() {
                     try {
                         mCameraManager.openCamera(mCameraID, new CameraDevice.StateCallback() {
-                            private int mErrorCode;
+                            private boolean isOpenSuccessful;
+                            private StateCallback mStateCallback = callback;
 
                             @Override
                             public void onOpened(@NonNull CameraDevice camera) {
@@ -1008,12 +1019,13 @@ public abstract class BasicCamera {
                                 }
                                 setDefaultCameraMetadata(mCaptureRequestBuilder, mCameraCharacteristics, false);
                                 mCameraDevice = camera;
+                                isOpenSuccessful = true;
                                 mCameraOpenCloseLock.release();
                                 mUIHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         synchronized (Camera2Impl.this) {
-                                            callback.onCameraOpen(Camera2Impl.this);
+                                            mStateCallback.onOpenSuccessful(Camera2Impl.this);
                                         }
                                     }
                                 });
@@ -1025,36 +1037,85 @@ public abstract class BasicCamera {
                                 if (mCameraOpenCloseLock.drainPermits() == 0) {
                                     mCameraOpenCloseLock.release();
                                 }
-                                if (mErrorCode > 0) {
-                                    mUIHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            synchronized (Camera2Impl.this) {
-                                                callback.onCameraError(mErrorCode);
+                                if (mStateCallback != null) {
+                                    final StateCallback call = mStateCallback;
+                                    mStateCallback = null;
+                                    if (isOpenSuccessful) {
+                                        mUIHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                synchronized (Camera2Impl.this) {
+                                                    call.onClose();
+                                                }
                                             }
-                                        }
-                                    });
-                                } else {
-                                    mUIHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            synchronized (Camera2Impl.this) {
-                                                callback.onCameraClose();
+                                        });
+                                    } else {
+                                        mUIHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                synchronized (Camera2Impl.this) {
+                                                    call.onOpenFailure();
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    }
                                 }
                             }
 
                             @Override
                             public void onDisconnected(@NonNull CameraDevice camera) {
                                 camera.close();
+                                if (mStateCallback != null) {
+                                    final StateCallback call = mStateCallback;
+                                    mStateCallback = null;
+                                    if (isOpenSuccessful) {
+                                        mUIHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                synchronized (Camera2Impl.this) {
+                                                    call.onDisconnected();
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        mUIHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                synchronized (Camera2Impl.this) {
+                                                    call.onOpenFailure();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
                             }
 
                             @Override
                             public void onError(@NonNull CameraDevice camera, final int error) {
-                                mErrorCode = error;
                                 camera.close();
+                                if (mStateCallback != null) {
+                                    final StateCallback call = mStateCallback;
+                                    mStateCallback = null;
+                                    if (isOpenSuccessful) {
+                                        mUIHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                synchronized (Camera2Impl.this) {
+                                                    call.onError(error);
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        mUIHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                synchronized (Camera2Impl.this) {
+                                                    call.onOpenFailure();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
                             }
                         }, mCameraHandler);
                     } catch (Exception e) {
@@ -1064,7 +1125,7 @@ public abstract class BasicCamera {
                             @Override
                             public void run() {
                                 synchronized (Camera2Impl.this) {
-                                    callback.onCameraError(-1);
+                                    callback.onError(-1);
                                 }
                             }
                         });
@@ -1081,6 +1142,7 @@ public abstract class BasicCamera {
                     @Override
                     public void run() {
                         synchronized (Camera2Impl.this) {
+                            LogUtil.e("close");
                             mCameraDevice.close();  //不需要调用reset，因为close之后会回调reset
                             mCameraDevice = null;
                         }
@@ -1112,7 +1174,7 @@ public abstract class BasicCamera {
                             createDefaultCaptureSession();
                         }
                         if (mCameraSession != null) {
-                            starPreview(mCameraSession);
+                            updateRepeatingRequest(mCaptureRequestBuilder.build(), null);
                         }
                     }
                 });
@@ -1598,6 +1660,7 @@ public abstract class BasicCamera {
                 }, mUIHandler);
             } catch (Exception e) {
                 LogUtil.e(TAG, e);
+                latch.countDown();
             }
             try {
                 latch.await();

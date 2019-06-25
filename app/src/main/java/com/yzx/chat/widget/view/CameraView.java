@@ -298,7 +298,7 @@ public class CameraView extends TextureView
                 private int mFacingType = mCameraFacingType;
 
                 @Override
-                public void onCameraOpen(BasicCamera camera) {
+                public void onOpenSuccessful(BasicCamera camera) {
                     if (mFacingType != mCameraFacingType) {
                         camera.closeCamera();
                         return;
@@ -346,7 +346,17 @@ public class CameraView extends TextureView
                 }
 
                 @Override
-                public void onCameraClose() {
+                public void onOpenFailure() {
+                    onClose();
+                }
+
+                @Override
+                public void onDisconnected() {
+                    onClose();
+                }
+
+                @Override
+                public void onClose() {
                     closeCamera();
                     if (isDelayDestroy) {
                         destroy();
@@ -357,7 +367,7 @@ public class CameraView extends TextureView
                 }
 
                 @Override
-                public void onCameraError(int error) {
+                public void onError(int error) {
                     closeCamera();
                     if (mErrorCallback != null) {
                         mErrorCallback.onCameraError();
