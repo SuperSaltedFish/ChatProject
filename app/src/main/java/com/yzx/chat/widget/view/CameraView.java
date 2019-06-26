@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.media.Image;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.GestureDetector;
@@ -39,9 +40,8 @@ public class CameraView extends TextureView
     private SurfaceTexture mSurfaceTexture;
     private GestureDetector mClickGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
-    private Handler mCaptureHandler;
-    private CaptureCallback mCaptureCallback;
     private ErrorCallback mErrorCallback;
+    private CaptureRunnable mCaptureRunnable;
     private byte[] mCaptureBuffer;
 
     private BasicCamera mCamera;
@@ -189,9 +189,7 @@ public class CameraView extends TextureView
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         synchronized (this) {
             isDelayDestroy = true;
-            if (mCaptureHandler != null) {
-                mCaptureHandler.removeCallbacksAndMessages(null);
-            }
+            mCaptureRunnable = null;
             closeCamera();
         }
         return false;
@@ -205,8 +203,6 @@ public class CameraView extends TextureView
     private void destroy() {
         mSurfaceTexture.release();
         mSurfaceTexture = null;
-        mCaptureHandler = null;
-        mCaptureCallback = null;
         mErrorCallback = null;
         mCaptureBuffer = null;
     }
@@ -218,6 +214,65 @@ public class CameraView extends TextureView
             return false;
         }
         return mClickGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
+    }
+
+    private void configureTransform(int viewWidth, int viewHeight) {
+        if (mSurfaceTexture == null || mPreviewSize == null) {
+            return;
+        }
+        int rotation = getDisplayRotation();
+
+        float previewWidth = mPreviewSize.getWidth();
+        float previewHeight = mPreviewSize.getHeight();
+        Matrix matrix = new Matrix();
+        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+
+        float centerX = viewRect.centerX();
+        float centerY = viewRect.centerY();
+        float previewAspectRatio = mPreviewSize.getWidth() * 1.0f / mPreviewSize.getHeight();
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            float viewAspectRatio = viewWidth * 1.0f / viewHeight;
+            if (viewAspectRatio > previewAspectRatio) {
+                mActualPreviewRectF = new RectF(0, 0, viewWidth, viewWidth * (previewHeight / previewWidth));
+            } else if (viewAspectRatio < previewAspectRatio) {
+                mActualPreviewRectF = new RectF(0, 0, viewHeight * (previewWidth / previewHeight), viewHeight);
+            } else {
+                mActualPreviewRectF = viewRect;
+            }
+        } else {
+            float viewAspectRatio = viewHeight * 1.0f / viewWidth;
+            if (viewAspectRatio > previewAspectRatio) {
+                mActualPreviewRectF = new RectF(0, 0, viewHeight * (previewHeight / previewWidth), viewHeight);
+            } else if (viewAspectRatio < previewAspectRatio) {
+                mActualPreviewRectF = new RectF(0, 0, viewWidth, viewWidth * (previewWidth / previewHeight));
+            } else {
+                mActualPreviewRectF = viewRect;
+            }
+        }
+
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            RectF rotate90RectF = new RectF(0, 0, mActualPreviewRectF.height(), mActualPreviewRectF.width());
+            rotate90RectF.offset(centerX - rotate90RectF.centerX(), centerY - rotate90RectF.centerY());
+            matrix.setRectToRect(viewRect, rotate90RectF, Matrix.ScaleToFit.FILL);
+            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+        } else {
+            mActualPreviewRectF.offset(centerX - mActualPreviewRectF.centerX(), centerY - mActualPreviewRectF.centerY());
+            matrix.setRectToRect(viewRect, mActualPreviewRectF, Matrix.ScaleToFit.FILL);
+            if (Surface.ROTATION_180 == rotation) {
+                matrix.postRotate(180, centerX, centerY);
+            }
+        }
+
+        setTransform(matrix);
+    }
+
+    protected int getDisplayRotation() {
+        Context context = getContext();
+        if (context instanceof Activity) {
+            return ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();
+        } else {
+            return 0;
+        }
     }
 
 
@@ -304,8 +359,7 @@ public class CameraView extends TextureView
                         return;
                     }
                     mCamera = camera;
-                    mCamera.setDisplayOrientationIfSupported(90);//下面的代码在横屏的时候无效，不知道为什么(无论前置还是后置)
-//                    mCamera.setDisplayOrientationIfSupported(calculateCameraRotationAngle(getDisplayRotation(), mCamera.getSensorOrientation(), mCameraFacingType));
+                    mCamera.setDisplayOrientationIfSupported(calculateCameraRotationAngle(getDisplayRotation(), mCamera.getSensorOrientation(), mCameraFacingType));
                     mMaxZoom = mCamera.getMaxZoomValue();
                     mMinZoom = mCamera.getMinZoomValue();
                     mCurrentZoom = mMinZoom;
@@ -393,121 +447,77 @@ public class CameraView extends TextureView
 
     public void setCaptureCallback(CaptureCallback callback, @Nullable Handler handler) {
         synchronized (this) {
-            mCaptureCallback = callback;
-            if (mCaptureCallback == null) {
-                mCaptureHandler = null;
+            if (callback == null) {
+                mCaptureRunnable = null;
             } else {
-                mCaptureHandler = handler;
+                if (handler == null) {
+                    handler = new Handler(Looper.getMainLooper());
+                }
+                mCaptureRunnable = new CaptureRunnable(callback, handler);
             }
-            setEnableCapture(true);
         }
     }
-
-    private void setEnableCapture(boolean isEnable) {
-        synchronized (this) {
-            isCaptureNext = isEnable;
-        }
-    }
-
-    private final Runnable mCaptureCallbackRunnable = new Runnable() {
-        @Override
-        public void run() {
-            CaptureCallback callback = mCaptureCallback;//一定要先复制，这样支持多线程操作
-            Size previewSize = mPreviewSize;
-            if (callback != null && previewSize != null) {
-                callback.onCapture(mCaptureBuffer, previewSize.getWidth(), previewSize.getHeight(), mCameraOrientation);
-            }
-
-            setEnableCapture(true);//处理完一张之后才捕获下一张
-        }
-    };
 
     @Override
-    public void onCameraCapture(byte[] data, int width, int height) {
+    public void onCameraCapture(byte[] data, int width, int height, int rotate) {
         synchronized (this) {
-            if (mCamera != null && mCaptureCallback != null && mCaptureHandler != null && isCaptureNext) {
+            if (mCaptureRunnable != null && mCaptureRunnable.isAlreadyProcessed) {
                 if (mCaptureBuffer == null || mCaptureBuffer.length != data.length) {
                     mCaptureBuffer = new byte[data.length];
                 }
                 System.arraycopy(data, 0, mCaptureBuffer, 0, data.length);
-                mCaptureHandler.post(mCaptureCallbackRunnable);
-                setEnableCapture(false);
+                mCaptureRunnable.process(mCaptureBuffer, width, height, rotate);
             }
         }
     }
 
     @Override
-    public void onCamera2Capture(Image image) {
+    public void onCamera2Capture(Image image, int rotate) {
         synchronized (this) {
-            if (mCamera != null && mCaptureCallback != null && mCaptureHandler != null && isCaptureNext) {
+            if (mCaptureRunnable != null && mCaptureRunnable.isAlreadyProcessed) {
                 if (mCaptureBuffer == null) {
-                    mCaptureBuffer = new byte[mPreviewSize.getWidth() * mPreviewSize.getHeight() * ImageFormat.getBitsPerPixel(ImageFormat.NV21) / 8];
+                    mCaptureBuffer = new byte[image.getWidth() * image.getHeight() * ImageFormat.getBitsPerPixel(image.getFormat()) / 8];
                 }
                 yuvImageToNv21(image, mCaptureBuffer);
-                mCaptureHandler.post(mCaptureCallbackRunnable);
-                setEnableCapture(false);
+                mCaptureRunnable.process(mCaptureBuffer, image.getWidth(), image.getHeight(), rotate);
             }
         }
     }
 
-    private void configureTransform(int viewWidth, int viewHeight) {
-        if (mSurfaceTexture == null || mPreviewSize == null) {
-            return;
-        }
-        int rotation = getDisplayRotation();
+    private class CaptureRunnable implements Runnable {
 
-        float previewWidth = mPreviewSize.getWidth();
-        float previewHeight = mPreviewSize.getHeight();
-        Matrix matrix = new Matrix();
-        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+        CaptureCallback mCallback;
+        Handler mHandler;
 
-        float centerX = viewRect.centerX();
-        float centerY = viewRect.centerY();
-        float previewAspectRatio = mPreviewSize.getWidth() * 1.0f / mPreviewSize.getHeight();
-        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-            float viewAspectRatio = viewWidth * 1.0f / viewHeight;
-            if (viewAspectRatio > previewAspectRatio) {
-                mActualPreviewRectF = new RectF(0, 0, viewWidth, viewWidth * (previewHeight / previewWidth));
-            } else if (viewAspectRatio < previewAspectRatio) {
-                mActualPreviewRectF = new RectF(0, 0, viewHeight * (previewWidth / previewHeight), viewHeight);
-            } else {
-                mActualPreviewRectF = viewRect;
-            }
-        } else {
-            float viewAspectRatio = viewHeight * 1.0f / viewWidth;
-            if (viewAspectRatio > previewAspectRatio) {
-                mActualPreviewRectF = new RectF(0, 0, viewHeight * (previewHeight / previewWidth), viewHeight);
-            } else if (viewAspectRatio < previewAspectRatio) {
-                mActualPreviewRectF = new RectF(0, 0, viewWidth, viewWidth * (previewWidth / previewHeight));
-            } else {
-                mActualPreviewRectF = viewRect;
-            }
+        int mWidth;
+        int mHeight;
+        int mRotate;
+        byte[] mData;
+
+        boolean isAlreadyProcessed;
+
+        CaptureRunnable(CaptureCallback callback, Handler handler) {
+            mCallback = callback;
+            mHandler = handler;
+            isAlreadyProcessed = true;
         }
 
-//        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
-//            RectF rotate90RectF = new RectF(0, 0, mActualPreviewRectF.height(), mActualPreviewRectF.width());
-//            rotate90RectF.offset(centerX - rotate90RectF.centerX(), centerY - rotate90RectF.centerY());
-//            matrix.setRectToRect(viewRect, rotate90RectF, Matrix.ScaleToFit.FILL);
-//            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
-//        } else {
-//            mActualPreviewRectF.offset(centerX - mActualPreviewRectF.centerX(), centerY - mActualPreviewRectF.centerY());
-//            matrix.setRectToRect(viewRect, mActualPreviewRectF, Matrix.ScaleToFit.FILL);
-//            if (Surface.ROTATION_180 == rotation) {
-//                matrix.postRotate(180, centerX, centerY);
-//            }
-//        }
+        @Override
+        public void run() {
+            mCallback.onCapture(mData, mWidth, mHeight, mRotate);
+            isAlreadyProcessed = true;
+        }
 
-        setTransform(matrix);
-    }
-
-    protected int getDisplayRotation() {
-        Context context = getContext();
-        if (context instanceof Activity) {
-            return ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();
-        } else {
-            return 0;
+        public void process(byte[] data, int width, int height, int rotate) {
+            mData = data;
+            mWidth = width;
+            mHeight = height;
+            mRotate = rotate;
+            isAlreadyProcessed = false;
+            mHandler.post(this);
         }
     }
+
 
     public static int calculateCameraRotationAngle(int displayRotation, int cameraRotation, int cameraFacingType) {
         int degrees = 0;
@@ -570,11 +580,10 @@ public class CameraView extends TextureView
                 dest[index++] = bufferU.get();
             }
         }
-
     }
 
     public interface CaptureCallback {
-        void onCapture(byte[] yuv, int width, int height, int orientation);
+        void onCapture(byte[] yuv, int width, int height, int rotate);
     }
 
     public interface ErrorCallback {

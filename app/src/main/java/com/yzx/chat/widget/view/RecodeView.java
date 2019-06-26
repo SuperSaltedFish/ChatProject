@@ -220,6 +220,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
     public void onDestroy() {
         onPause();
         mCameraHelper.sendEvent(CameraHelper.MSG_CLOSE_CAMERA);
+        mCameraHelper.sendEvent(CameraHelper.MSG_RELEASE);
         mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE);
         mCameraHelper = null;
         mEGLVideoEncoder = null;

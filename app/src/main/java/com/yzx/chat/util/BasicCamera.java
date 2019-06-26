@@ -23,7 +23,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.util.ArraySet;
 import android.util.Pair;
 import android.util.Range;
 import android.util.Size;
@@ -37,7 +36,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 
@@ -258,9 +256,9 @@ public abstract class BasicCamera {
     }
 
     public interface CaptureCallback {
-        void onCameraCapture(byte[] data, int width, int height);
+        void onCameraCapture(byte[] data, int width, int height, int rotate);
 
-        void onCamera2Capture(Image image);
+        void onCamera2Capture(Image image, int rotate);
     }
 
     public static class CameraImpl extends BasicCamera
@@ -833,7 +831,7 @@ public abstract class BasicCamera {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
             if (mCaptureCallback != null) {
-                mCaptureCallback.onCameraCapture(data, mPreviewSize.width, mPreviewSize.height);
+                mCaptureCallback.onCameraCapture(data, mPreviewSize.width, mPreviewSize.height, -getSensorOrientation());
             }
             if (mCaptureBuffer != null) {
                 mCamera.addCallbackBuffer(mCaptureBuffer);
@@ -935,13 +933,13 @@ public abstract class BasicCamera {
         private CaptureRequest.Builder mCaptureRequestBuilder;
         private CameraCharacteristics mCameraCharacteristics;
         private StreamConfigurationMap mStreamConfMap;
+        private int mSensorOrientation;
 
         private volatile boolean isPreviewing;
         private boolean isEnableRecordingHint;
         private int mCaptureFormat;
         private Size mCaptureSize;
 
-        private Set<Surface> mOtherOutputSurfaces;
         private Surface mPreviewSurface;
         private ImageReader mCaptureImageReader;
 
@@ -958,7 +956,10 @@ public abstract class BasicCamera {
             mStreamConfMap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             mCameraOpenCloseLock = cameraLock;
             mUIHandler = new Handler(Looper.getMainLooper());
-            mOtherOutputSurfaces = new ArraySet<>();
+            Integer orientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            if (orientation != null) {
+                mSensorOrientation = orientation;
+            }
             reset();
         }
 
@@ -978,7 +979,6 @@ public abstract class BasicCamera {
                 mCaptureRequestBuilder = null;
                 mPreviewSurface = null;
                 mCaptureCallback = null;
-                mOtherOutputSurfaces.clear();
                 mCaptureFormat = DEFAULT_CAPTURE_FORMAT;
                 mCaptureSize = new Size(DEFAULT_CAPTURE_WIDTH, DEFAULT_CAPTURE_HEIGHT);
                 isPreviewing = false;
@@ -996,7 +996,6 @@ public abstract class BasicCamera {
                 mCameraOpenCloseLock.release();
                 throw new IllegalStateException("The camera is already Open");
             }
-            LogUtil.e("open");
             HandlerThread handlerThread = new HandlerThread(TAG);
             handlerThread.start();
             mCameraHandler = new Handler(handlerThread.getLooper());
@@ -1142,7 +1141,6 @@ public abstract class BasicCamera {
                     @Override
                     public void run() {
                         synchronized (Camera2Impl.this) {
-                            LogUtil.e("close");
                             mCameraDevice.close();  //不需要调用reset，因为close之后会回调reset
                             mCameraDevice = null;
                         }
@@ -1356,8 +1354,7 @@ public abstract class BasicCamera {
 
         @Override
         public int getSensorOrientation() {
-            Integer orientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-            return orientation == null ? 0 : orientation;
+            return mSensorOrientation;
         }
 
         @Override
@@ -1590,7 +1587,7 @@ public abstract class BasicCamera {
             Image image = reader.acquireNextImage();
             if (image != null) {
                 if (mCaptureCallback != null) {
-                    mCaptureCallback.onCamera2Capture(image);
+                    mCaptureCallback.onCamera2Capture(image, -getSensorOrientation());
                 }
                 image.close();
             }
@@ -1603,6 +1600,7 @@ public abstract class BasicCamera {
             if (mCaptureImageReader == null) {
                 mCaptureImageReader = ImageReader.newInstance(mCaptureSize.getWidth(), mCaptureSize.getHeight(), mCaptureFormat, 1);
                 mCaptureImageReader.setOnImageAvailableListener(Camera2Impl.this, mCameraHandler);
+                mCaptureRequestBuilder.addTarget(mCaptureImageReader.getSurface());
             }
             mCameraSession = createCaptureSessionSync(Arrays.asList(mPreviewSurface, mCaptureImageReader.getSurface()));
         }

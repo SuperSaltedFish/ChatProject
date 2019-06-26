@@ -132,7 +132,7 @@ public class RecorderButton extends AppCompatImageView {
         int cy = height / 2;
         int radius;
         if (width > height) {
-            mArcRectF.left = (width - height) / 2;
+            mArcRectF.left = (width - height) / 2f;
             mArcRectF.right = mArcRectF.left + height;
             mArcRectF.top = 0;
             mArcRectF.bottom = height;
@@ -140,7 +140,7 @@ public class RecorderButton extends AppCompatImageView {
         } else {
             mArcRectF.left = 0;
             mArcRectF.right = width;
-            mArcRectF.top = (height - width) / 2;
+            mArcRectF.top = (height - width) / 2f;
             mArcRectF.bottom = mArcRectF.top + width;
             radius = width / 2;
         }
