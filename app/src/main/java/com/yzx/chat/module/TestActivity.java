@@ -6,11 +6,12 @@ import android.view.WindowManager;
 
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
+import com.yzx.chat.widget.view.RecodeView;
 
 
 public class TestActivity extends BaseCompatActivity {
 
-
+private RecodeView mCameraView;
 
     @Override
     protected int getLayoutID() {
@@ -19,7 +20,7 @@ public class TestActivity extends BaseCompatActivity {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-
+        mCameraView = findViewById(R.id.mCameraView);
     }
 
     @Override
@@ -31,20 +32,24 @@ public class TestActivity extends BaseCompatActivity {
     protected void onStart() {
         super.onStart();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mCameraView.onResume();
     }
 
     @Override
     protected void onStop() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onStop();
+        mCameraView.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mCameraView.onDestroy();
     }
 
     public void onClick1(View v) {
+
     }
 
 }

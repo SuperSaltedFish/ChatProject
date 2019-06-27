@@ -197,14 +197,12 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     @Override
     public void onResume() {
-        LogUtil.e("onResume");
         super.onResume();
         mCameraHelper.sendEvent(CameraHelper.MSG_ENABLE_AUTO_START_PREVIEW);
     }
 
     @Override
     public void onPause() {
-        LogUtil.e("onPause");
         mCameraHelper.sendEvent(CameraHelper.MSG_STOP_PREVIEW);
         stopRecode();
         mEGLVideoEncoder.sendEvent(EGLVideoEncoder.MSG_RELEASE_EGL);
@@ -246,7 +244,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        LogUtil.e("onSurfaceChanged");
         if (mPreviewSurfaceTexture == null) {
             return;
         }
@@ -496,7 +493,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
 
         private void setupCamera() {
-            LogUtil.e("setupCamera1");
             if (mCamera == null) {
                 return;
             }
@@ -545,7 +541,6 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             if (isEnableAutoStartPreview) {
                 startPreviewIfNeed();
             }
-            LogUtil.e("setupCamera2");
         }
 
         private void setDesiredCameraParameter(SurfaceTexture surfaceTexture, int desiredWidth, int desiredHeight, int displayRotation, Size aspectRatioSize, int maxFPS) {
@@ -583,7 +578,7 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
 
         private void focus(int x, int y, int width, int height, int displayOrientation) {
-            if (mCamera == null || !mCamera.isOpen()) {
+            if (mCamera == null || !mCamera.isPreviewing()) {
                 return;
             }
             int totalWidth;
@@ -592,11 +587,23 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
             int touchY;
             int rotate = (mCamera.getSensorOrientation() - displayOrientation * 90 + 360) % 360;
             switch (rotate) {
+                case 0:
+                    totalWidth = width;
+                    totalHeight = height;
+                    touchX = x;
+                    touchY = y;
+                    break;
                 case 90:
                     totalWidth = height;
                     totalHeight = width;
                     touchX = y;
                     touchY = totalHeight - x;
+                    break;
+                case 180:
+                    totalWidth = width;
+                    totalHeight = height;
+                    touchX = totalWidth - x;
+                    touchY = totalHeight - y;
                     break;
                 case 270:
                     totalWidth = height;
@@ -605,17 +612,13 @@ public class RecodeView extends GLSurfaceView implements GLSurfaceView.Renderer 
                     touchX = totalWidth - y;
                     break;
                 default:
-                    totalWidth = width;
-                    totalHeight = height;
-                    touchX = x;
-                    touchY = y;
-                    break;
+                    return;
             }
             mCamera.setFocusPoint(touchX, touchY, totalWidth, totalHeight);
         }
 
         private void zoom(int value) {
-            if (mCamera == null || !mCamera.isOpen()) {
+            if (mCamera == null || !mCamera.isPreviewing()) {
                 return;
             }
             value = Math.min(value, mMaxZoom);

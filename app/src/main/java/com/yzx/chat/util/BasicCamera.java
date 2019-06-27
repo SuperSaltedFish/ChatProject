@@ -378,7 +378,6 @@ public abstract class BasicCamera {
                     } catch (Exception e) {
                         LogUtil.e(TAG, e);
                         reset();
-                        mCameraOpenCloseLock.release();
                         mUIHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -387,6 +386,8 @@ public abstract class BasicCamera {
                                 }
                             }
                         });
+                    } finally {
+                        mCameraOpenCloseLock.release();
                     }
                 }
             });
@@ -496,12 +497,17 @@ public abstract class BasicCamera {
                 mCameraHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        if (mPreviewSurfaceTexture == null && mPreviewSurfaceHolder == holder) {
+                            return;
+                        }
                         try {
                             stopPreviewNow();
+                            mPreviewSurfaceTexture = null;
                             mCamera.setPreviewDisplay(holder);
                             mPreviewSurfaceHolder = holder;
                             mPreviewSurfaceTexture = null;
                         } catch (Exception e) {
+                            mPreviewSurfaceHolder = null;
                             LogUtil.d(e.toString(), e);
                         }
                     }
@@ -516,12 +522,17 @@ public abstract class BasicCamera {
                 mCameraHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        if (mPreviewSurfaceHolder == null && mPreviewSurfaceTexture == texture) {
+                            return;
+                        }
                         try {
                             stopPreviewNow();
+                            mPreviewSurfaceHolder = null;
                             mCamera.setPreviewTexture(texture);
                             mPreviewSurfaceTexture = texture;
                             mPreviewSurfaceHolder = null;
                         } catch (Exception e) {
+                            mPreviewSurfaceTexture = null;
                             LogUtil.d(e.toString(), e);
                         }
                     }
@@ -940,6 +951,8 @@ public abstract class BasicCamera {
         private int mCaptureFormat;
         private Size mCaptureSize;
 
+        private SurfaceTexture mPreviewSurfaceTexture;
+        private SurfaceHolder mPreviewSurfaceHolder;
         private Surface mPreviewSurface;
         private ImageReader mCaptureImageReader;
 
@@ -977,6 +990,8 @@ public abstract class BasicCamera {
                 mCameraSession = null;
                 mCameraDevice = null;
                 mCaptureRequestBuilder = null;
+                mPreviewSurfaceTexture = null;
+                mPreviewSurfaceHolder = null;
                 mPreviewSurface = null;
                 mCaptureCallback = null;
                 mCaptureFormat = DEFAULT_CAPTURE_FORMAT;
@@ -1239,15 +1254,23 @@ public abstract class BasicCamera {
                 mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
+                        if (mPreviewSurfaceTexture == null && mPreviewSurfaceHolder == holder) {
+                            return;
+                        }
+                        mPreviewSurfaceTexture = null;
                         stopPreviewNow(true);
-                        if (holder == null) {
+                        if (mPreviewSurface != null) {
+                            mCaptureRequestBuilder.removeTarget(mPreviewSurface);
+                        }
+                        mPreviewSurfaceHolder = holder;
+                        if (mPreviewSurfaceHolder != null) {
+                            mPreviewSurface = mPreviewSurfaceHolder.getSurface();
                             if (mPreviewSurface != null) {
-                                mCaptureRequestBuilder.removeTarget(mPreviewSurface);
-                                mPreviewSurface = null;
+                                mCaptureRequestBuilder.addTarget(mPreviewSurface);
+                            } else {
+                                LogUtil.e("SurfaceHolder's surface is not created");
+                                mPreviewSurfaceHolder = null;
                             }
-                        } else {
-                            mPreviewSurface = holder.getSurface();
-                            mCaptureRequestBuilder.addTarget(mPreviewSurface);
                         }
                     }
                 });
@@ -1261,14 +1284,17 @@ public abstract class BasicCamera {
                 mCameraHandler.post(new WorkRunnable() {
                     @Override
                     public void onRun() {
+                        if (mPreviewSurfaceHolder == null && mPreviewSurfaceTexture == texture) {
+                            return;
+                        }
+                        mPreviewSurfaceHolder = null;
                         stopPreviewNow(true);
-                        if (texture == null) {
-                            if (mPreviewSurface != null) {
-                                mCaptureRequestBuilder.removeTarget(mPreviewSurface);
-                                mPreviewSurface = null;
-                            }
-                        } else {
-                            mPreviewSurface = new Surface(texture);
+                        if (mPreviewSurface != null) {
+                            mCaptureRequestBuilder.removeTarget(mPreviewSurface);
+                        }
+                        mPreviewSurfaceTexture = texture;
+                        if (mPreviewSurfaceTexture != null) {
+                            mPreviewSurface = new Surface(mPreviewSurfaceTexture);
                             mCaptureRequestBuilder.addTarget(mPreviewSurface);
                         }
                     }
@@ -1448,13 +1474,14 @@ public abstract class BasicCamera {
                                 super.onCaptureCompleted(session, request, result);
                                 if (isFirst) {
                                     isFirst = false;
-                                    CaptureRequest cancelFocus = buildCaptureRequest(
-                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
-                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF),
-                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL),
-                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
-                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_CANCEL : CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE));
-                                    updateSingleRequest(cancelFocus, null);
+                                    //一下注释代码可有可无
+//                                    CaptureRequest cancelFocus = buildCaptureRequest(
+//                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
+//                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF),
+//                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL),
+//                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, 0)}),
+//                                            new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_CANCEL : CameraMetadata.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE));
+//                                    updateSingleRequest(cancelFocus, null);
 
                                     CaptureRequest focus = buildCaptureRequest(
                                             new Pair<CaptureRequest.Key, Object>(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{new MeteringRectangle(rect, MeteringRectangle.METERING_WEIGHT_MAX)}),

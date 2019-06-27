@@ -53,7 +53,6 @@ public class CameraView extends TextureView
     protected int mMinZoom;
     protected int mCurrentZoom;
     protected boolean isEnableGesture;
-    protected boolean isCaptureNext;
     protected boolean isDelayDestroy;
 
     public CameraView(Context context) {
@@ -93,11 +92,23 @@ public class CameraView extends TextureView
                 int touchY;
                 int rotate = (mCamera.getSensorOrientation() - getDisplayRotation() * 90 + 360) % 360;
                 switch (rotate) {
+                    case 0:
+                        totalWidth = getWidth();
+                        totalHeight = getHeight();
+                        touchX = x;
+                        touchY = y;
+                        break;
                     case 90:
                         totalWidth = getHeight();
                         totalHeight = getWidth();
                         touchX = y;
                         touchY = totalHeight - x;
+                        break;
+                    case 180:
+                        totalWidth = getWidth();
+                        totalHeight = getHeight();
+                        touchX = totalWidth - x;
+                        touchY = totalHeight - y;
                         break;
                     case 270:
                         totalWidth = getHeight();
@@ -106,11 +117,7 @@ public class CameraView extends TextureView
                         touchX = totalWidth - y;
                         break;
                     default:
-                        totalWidth = getWidth();
-                        totalHeight = getHeight();
-                        touchX = x;
-                        touchY = y;
-                        break;
+                        return false;
                 }
                 mCamera.setFocusPoint(touchX, touchY, totalWidth, totalHeight);
                 return true;

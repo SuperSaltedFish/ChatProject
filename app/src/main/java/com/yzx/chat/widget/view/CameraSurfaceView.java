@@ -1,5 +1,7 @@
 package com.yzx.chat.widget.view;
 
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -9,10 +11,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Size;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.util.BasicCamera;
 
 import java.nio.ByteBuffer;
@@ -32,10 +38,19 @@ public class CameraSurfaceView
     private static final int MAX_PREVIEW_HEIGHT = 1080;
     private static final Size DEFAULT_ASPECT_RATIO = new Size(16, 9);
 
+    private GestureDetector mClickGestureDetector;
+    private ScaleGestureDetector mScaleGestureDetector;
+    protected boolean isEnableGesture;
+
+
     private Size mAspectRatioSize = DEFAULT_ASPECT_RATIO;
 
     private BasicCamera mCamera;
     private Size mPreviewSize;
+    protected int mMaxZoom;
+    protected int mMinZoom;
+    protected int mCurrentZoom;
+    private boolean isOpenSuccessful;
 
     private SurfaceHolder mSurfaceHolder;
     private int mSurfaceWidth;
@@ -58,6 +73,94 @@ public class CameraSurfaceView
         super(context, attrs, defStyleAttr);
         getHolder().addCallback(this);
         mCamera = BasicCamera.createCameraCompat(context, BasicCamera.CAMERA_FACING_BACK);
+        setGesture();
+    }
+
+    private void setGesture() {
+        isEnableGesture = true;
+        mClickGestureDetector = new GestureDetector(getContext().getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent event) {
+                if (mCamera == null || !mCamera.isPreviewing()) {
+                    return false;
+                }
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+                int totalWidth;
+                int totalHeight;
+                int touchX;
+                int touchY;
+                int rotate = (mCamera.getSensorOrientation() - getDisplayRotation() * 90 + 360) % 360;
+                LogUtil.e(getDisplayRotation() + "    " + rotate);
+                switch (rotate) {
+                    case 0:
+                        totalWidth = getWidth();
+                        totalHeight = getHeight();
+                        touchX = x;
+                        touchY = y;
+                        break;
+                    case 90:
+                        totalWidth = getHeight();
+                        totalHeight = getWidth();
+                        touchX = y;
+                        touchY = totalHeight - x;
+                        break;
+                    case 180:
+                        totalWidth = getWidth();
+                        totalHeight = getHeight();
+                        touchX = totalWidth - x;
+                        touchY = totalHeight - y;
+                        break;
+                    case 270:
+                        totalWidth = getHeight();
+                        totalHeight = getWidth();
+                        touchY = x;
+                        touchX = totalWidth - y;
+                        break;
+                    default:
+                        return false;
+                }
+                mCamera.setFocusPoint(touchX, touchY, totalWidth, totalHeight);
+                return true;
+            }
+
+        });
+        mScaleGestureDetector = new ScaleGestureDetector(getContext().getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                if (mCamera == null || !mCamera.isPreviewing()) {
+                    return false;
+                }
+                float scaleFactor = detector.getScaleFactor();
+                if (scaleFactor == 1) {
+                    return false;
+                }
+                int increase;
+                if (scaleFactor > 1) {
+                    increase = (int) ((scaleFactor - 1f) * (mMaxZoom - mMinZoom) + 0.5f);//四舍五入
+                } else {
+                    increase = (int) ((scaleFactor - 1f) * (mMaxZoom - mMinZoom) - 0.5f);//四舍五入
+                }
+                increase = (int) (increase * 0.5f);
+                if (increase == 0) {
+                    return false;
+                }
+                int newZoom = mCurrentZoom + increase;
+                newZoom = Math.min(newZoom, mMaxZoom);
+                newZoom = Math.max(newZoom, mMinZoom);
+                if (newZoom == mCurrentZoom) {
+                    return false;
+                }
+                mCurrentZoom = newZoom;
+                mCamera.setZoom(mCurrentZoom);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -84,8 +187,18 @@ public class CameraSurfaceView
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!isEnableGesture) {
+            return false;
+        }
+        return mClickGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
+    }
+
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mSurfaceHolder = holder;
+        mSurfaceHolder.setFixedSize(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT);//这里可以设置一个默认值
         openCamera();
     }
 
@@ -111,11 +224,16 @@ public class CameraSurfaceView
         mCamera.openCamera(new BasicCamera.StateCallback() {
             @Override
             public void onOpenSuccessful(BasicCamera camera) {
+                mMaxZoom = mCamera.getMaxZoomValue();
+                mMinZoom = mCamera.getMinZoomValue();
+                mCurrentZoom = mMinZoom;
+                isOpenSuccessful = true;
                 mCamera.setDisplayOrientationIfSupported(
                         calculateCameraRotationAngle(
                                 getDisplayRotation(),
                                 mCamera.getSensorOrientation(),
                                 BasicCamera.CAMERA_FACING_BACK));
+                mCamera.setCaptureCallback(CameraSurfaceView.this);
                 setupCameraPreviewSize();
             }
 
@@ -145,7 +263,7 @@ public class CameraSurfaceView
     }
 
     private void setupCameraPreviewSize() {
-        if (mCamera != null && mCamera.isOpen() && mSurfaceHolder != null && mSurfaceHeight > 0 && mSurfaceWidth > 0) {
+        if (isOpenSuccessful && mSurfaceHolder != null && mSurfaceHeight > 0 && mSurfaceWidth > 0) {
             int cameraOrientation = mCamera.getSensorOrientation();
             boolean swappedDimensions = false;
             switch (getDisplayRotation()) {
@@ -162,20 +280,19 @@ public class CameraSurfaceView
                     }
                     break;
             }
-            Size newSize;
             if (swappedDimensions) {
-                newSize = mCamera.calculateOptimalDisplaySize(SurfaceHolder.class, mSurfaceHeight, mSurfaceWidth, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, false);
+                mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceHolder.class, getHeight(), getWidth(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, false);
             } else {
-                newSize = mCamera.calculateOptimalDisplaySize(SurfaceHolder.class, mSurfaceWidth, mSurfaceHeight, MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, false);
+                mPreviewSize = mCamera.calculateOptimalDisplaySize(SurfaceHolder.class, getWidth(), getHeight(), MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, mAspectRatioSize, false);
             }
-            if (newSize != null) {
-                if (!newSize.equals(mPreviewSize)) {
-                    mPreviewSize = newSize;
-                    mCamera.setPreviewDisplay((SurfaceHolder) null);
-                    mSurfaceHolder.setFixedSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+            if (mPreviewSize != null) {
+                if (mSurfaceWidth == mPreviewSize.getWidth() && mSurfaceHeight == mPreviewSize.getHeight()) {
                     mCamera.setPreviewSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                     mCamera.setPreviewDisplay(mSurfaceHolder);
                     mCamera.starPreview();
+                } else {
+                    mSurfaceHolder.setFixedSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                    mCamera.setPreviewDisplay((SurfaceHolder) null);
                 }
             }
         }
@@ -184,6 +301,23 @@ public class CameraSurfaceView
     private void closeCamera() {
         mCamera.closeCamera();
         mPreviewSize = null;
+        isOpenSuccessful = false;
+        mMaxZoom = 0;
+        mMinZoom = 0;
+        mCurrentZoom = 0;
+    }
+
+    public boolean isPreviewing() {
+        if (mCamera != null) {
+            return mCamera.isPreviewing();
+        }
+        return false;
+    }
+
+    public void setEnableFlash(boolean isEnable) {
+        if (mCamera != null && mCamera.isOpen()) {
+            mCamera.setEnableFlash(isEnable);
+        }
     }
 
     protected int getDisplayRotation() {
