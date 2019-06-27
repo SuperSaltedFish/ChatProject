@@ -96,7 +96,6 @@ public class CameraSurfaceView
                 int touchX;
                 int touchY;
                 int rotate = (mCamera.getSensorOrientation() - getDisplayRotation() * 90 + 360) % 360;
-                LogUtil.e(getDisplayRotation() + "    " + rotate);
                 switch (rotate) {
                     case 0:
                         totalWidth = getWidth();
