@@ -1,7 +1,9 @@
 package com.yzx.chat.widget.view;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,6 +15,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.LinearInterpolator;
 
 import com.yzx.chat.R;
@@ -27,11 +30,10 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 public class RecorderButton extends AppCompatImageView {
 
-    private Context mContext;
-
     private OnRecorderTouchListener mOnRecorderTouchListener;
-    private boolean isCancel;
-    private boolean isTouchOutOfBounds;
+    private int mDuration;
+
+    private boolean isStarting;
 
     private Paint mArcPaint;
     private RectF mArcRectF;
@@ -41,6 +43,7 @@ public class RecorderButton extends AppCompatImageView {
 
     private float mCurrentProgress;
     private ValueAnimator mProgressValueAnimator;
+    private ViewPropertyAnimator mViewPropertyAnimator;
 
     public RecorderButton(Context context) {
         this(context, null);
@@ -53,71 +56,56 @@ public class RecorderButton extends AppCompatImageView {
 
     public RecorderButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
-
         this.setClipToOutline(true);
         this.setOutlineProvider(new CircleOutlineProvider());
+        setScaleX(0.85f);
+        setScaleY(0.85f);
+
+        setup();
+    }
+
+    private void setup() {
+        mArcWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getContext().getResources().getDisplayMetrics());
+        mProgressArcInsideColor = Color.WHITE;
+        TypedValue value = new TypedValue();
+        getContext().getTheme().resolveAttribute(R.attr.colorAccent, value, true);
+        mProgressArcOutsideColor = value.data;
 
         mArcPaint = new Paint();
         mArcPaint.setStyle(Paint.Style.STROKE);
         mArcPaint.setAntiAlias(true);
-
-        mArcRectF = new RectF();
+        mArcPaint.setStrokeWidth(mArcWidth);
 
         mProgressValueAnimator = ValueAnimator.ofFloat(0f, 1f);
-        mProgressValueAnimator.addUpdateListener(mValueAnimatorUpdateListener);
         mProgressValueAnimator.setInterpolator(new LinearInterpolator());
-
-        setDefault();
+        mProgressValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mCurrentProgress = (float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
     }
 
-    private void setDefault() {
-        mArcWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, mContext.getResources().getDisplayMetrics());
-        mProgressArcInsideColor = Color.WHITE;
-        TypedValue value = new TypedValue();
-        mContext.getTheme().resolveAttribute(R.attr.colorAccent, value, true);
-        mProgressArcOutsideColor = value.data;
-        mArcPaint.setStrokeWidth(mArcWidth);
-    }
-
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mOnRecorderTouchListener == null) {
-            return super.onTouchEvent(event);
-        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mOnRecorderTouchListener.onDown();
-                isCancel = false;
+                startRecorderAnimation();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!isCancel) {
-                    int x = (int) event.getX();
-                    int y = (int) event.getY();
-                    if (x < 0 || y < 0 || x > getWidth() || y > getHeight()) {
-                        if (!isTouchOutOfBounds) {
-                            isTouchOutOfBounds = true;
-                            mOnRecorderTouchListener.onOutOfBoundsChange(true);
-                        }
-                    } else {
-                        if (isTouchOutOfBounds) {
-                            isTouchOutOfBounds = false;
-                            mOnRecorderTouchListener.onOutOfBoundsChange(false);
-                        }
-                    }
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+                if (isStarting && (x < 0 || y < 0 || x > getWidth() || y > getHeight())) {
+                    stopRecorderAnimation(true);
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (!isCancel) {
-                    mOnRecorderTouchListener.onUp();
-                }
+                stopRecorderAnimation(false);
                 break;
             case MotionEvent.ACTION_CANCEL:
-                if (!isCancel) {
-                    isCancel = true;
-                    mOnRecorderTouchListener.onCancel();
-                }
+                stopRecorderAnimation(true);
                 break;
         }
         return true;
@@ -131,6 +119,9 @@ public class RecorderButton extends AppCompatImageView {
         int cx = width / 2;
         int cy = height / 2;
         int radius;
+        if (mArcRectF == null) {
+            mArcRectF = new RectF();
+        }
         if (width > height) {
             mArcRectF.left = (width - height) / 2f;
             mArcRectF.right = mArcRectF.left + height;
@@ -151,25 +142,52 @@ public class RecorderButton extends AppCompatImageView {
         canvas.drawArc(mArcRectF, 270, mCurrentProgress * 360, false, mArcPaint);
     }
 
-    public void startRecorderAnimation(int duration, Animator.AnimatorListener listener) {
-        if (mProgressValueAnimator.isStarted() || mProgressValueAnimator.isRunning()) {
-            mProgressValueAnimator.cancel();
+    private void startRecorderAnimation() {
+        if (mViewPropertyAnimator != null) {
+            mViewPropertyAnimator.setListener(null);
+            mViewPropertyAnimator.cancel();
         }
-        if (listener != null) {
-            mProgressValueAnimator.addListener(listener);
-        }
-        mProgressValueAnimator.setDuration(duration);
-        mProgressValueAnimator.start();
+        mViewPropertyAnimator = animate().scaleX(1f).scaleY(1f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                isStarting = true;
+                mProgressValueAnimator.setDuration(mDuration);
+                mProgressValueAnimator.start();
+                if (mOnRecorderTouchListener != null) {
+                    mOnRecorderTouchListener.onStart();
+                }
+            }
+        });
     }
 
-
-    public void reset() {
-        isCancel = true;
-        mCurrentProgress = 0;
+    private void stopRecorderAnimation(boolean isCancel) {
+        if (mViewPropertyAnimator != null) {
+            mViewPropertyAnimator.setListener(null);
+            mViewPropertyAnimator.cancel();
+        }
+        mViewPropertyAnimator = animate().scaleX(0.85f).scaleY(0.85f).setDuration(300);
         mProgressValueAnimator.cancel();
+        if (isStarting) {
+            if (mOnRecorderTouchListener != null) {
+                if (isCancel) {
+                    mOnRecorderTouchListener.onCancel();
+                } else {
+                    mOnRecorderTouchListener.onFinish();
+                }
+            }
+        }
+        isStarting = false;
+        mCurrentProgress = 0;
         invalidate();
     }
 
+    public void reset() {
+        stopRecorderAnimation(true);
+    }
+
+    public void setDuration(int duration) {
+        mDuration = duration;
+    }
 
     public void setArcWidth(float arcWidth) {
         mArcWidth = arcWidth;
@@ -187,20 +205,10 @@ public class RecorderButton extends AppCompatImageView {
         mOnRecorderTouchListener = listener;
     }
 
-    private final ValueAnimator.AnimatorUpdateListener mValueAnimatorUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            mCurrentProgress = (float) animation.getAnimatedValue();
-            invalidate();
-        }
-    };
-
     public interface OnRecorderTouchListener {
-        void onDown();
+        void onStart();
 
-        void onUp();
-
-        void onOutOfBoundsChange(boolean isOutOfBounds);
+        void onFinish();
 
         void onCancel();
     }

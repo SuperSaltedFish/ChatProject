@@ -6,17 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".module.common.view.VideoRecorderActivity">
 
-    <TextureView
-        android:id="@+id/mVideoTextureView"
+    <com.yzx.chat.widget.view.VideoSurfaceView
+        android:id="@+id/mSvVideoPlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.yzx.chat.widget.view.RecodeView
-        android:id="@+id/mRecodeView"
+    <com.yzx.chat.widget.view.RecordView
+        android:id="@+id/mRecordView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,8 +63,8 @@
 
     <com.yzx.chat.widget.view.RecorderButton
         android:id="@+id/mRecorderButton"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="64dp"
         android:padding="8dp"

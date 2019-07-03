@@ -35,7 +35,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- 使用OpenGL -->
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:name=".configure.AppApplication"
@@ -71,11 +73,12 @@
             android:name=".module.main.view.SplashActivity"
             android:theme="@style/SplashTheme">
             <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
+
         <activity
             android:name=".module.login.view.LoginActivity"
             android:launchMode="singleTask" />
@@ -105,7 +108,13 @@
         <activity
             android:name=".module.common.view.LocationMapActivity"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".module.common.view.VideoRecorderActivity" />
+        <activity android:name=".module.common.view.VideoRecorderActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".module.group.view.GroupListActivity" />
         <activity android:name=".module.me.view.CropImageActivity" />
         <activity android:name=".module.common.view.FileSelectorActivity" />
@@ -115,11 +124,11 @@
         <activity android:name=".module.me.view.MyTagListActivity" />
 
         <activity android:name=".module.TestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
     </application>
 

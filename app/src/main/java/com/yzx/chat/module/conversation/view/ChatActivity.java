@@ -442,7 +442,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             private boolean isOutOfBounds;
 
             @Override
-            public void onDown() {
+            public void onStart() {
                 if (mVoiceRecorder.getAmplitudeChangeHandler() == null) {
                     mVoiceRecorder.setAmplitudeChangeHandler(new Handler(mAmplitudeView.getLooper()));
                 }
@@ -454,7 +454,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
             }
 
             @Override
-            public void onUp() {
+            public void onFinish() {
                 if (isOutOfBounds) {
                     onCancel();
                 } else {
@@ -463,15 +463,15 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 }
             }
 
-            @Override
-            public void onOutOfBoundsChange(boolean isOutOfBounds) {
-                this.isOutOfBounds = isOutOfBounds;
-                if (isOutOfBounds) {
-                    mTvRecorderHint.setText(R.string.ChatActivity_UpCancelSend);
-                } else {
-                    mTvRecorderHint.setText(R.string.ChatActivity_SlideCancelSend);
-                }
-            }
+//            @Override
+//            public void onOutOfBoundsChange(boolean isOutOfBounds) {
+//                this.isOutOfBounds = isOutOfBounds;
+//                if (isOutOfBounds) {
+//                    mTvRecorderHint.setText(R.string.ChatActivity_UpCancelSend);
+//                } else {
+//                    mTvRecorderHint.setText(R.string.ChatActivity_SlideCancelSend);
+//                }
+//            }
 
             @Override
             public void onCancel() {

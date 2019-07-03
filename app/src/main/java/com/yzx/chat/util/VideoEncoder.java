@@ -58,6 +58,9 @@ public class VideoEncoder {
             int buffSize = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_CONFIG, AUDIO_FORMAT);
             mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_CONFIG, AUDIO_FORMAT, buffSize);
             mAudioBuffer = new byte[buffSize];
+            HandlerThread codecThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+            codecThread.start();
+            mEncodeHandler = new Handler(codecThread.getLooper());
         } catch (IOException | IllegalArgumentException e) {
             release();
             throw e;
@@ -136,11 +139,11 @@ public class VideoEncoder {
     public Surface configureCodec(MediaFormat videoFormat, MediaFormat audioFormat) throws RuntimeException {
         synchronized (this) {
             checkIsRelease();
+            if (isStartingEncoded) {
+                throw new RuntimeException("VideoEncoder is currently starting");
+            }
             reset();
             try {
-                HandlerThread codecThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-                codecThread.start();
-                mEncodeHandler = new Handler(codecThread.getLooper());
                 mAudioCodec.setCallback(new AudioEncodeCallback(), mEncodeHandler);
                 mVideoCodec.setCallback(new VideoSurfaceInputEncodeCallback(), mEncodeHandler);
                 mVideoCodec.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
@@ -153,21 +156,6 @@ public class VideoEncoder {
         }
     }
 
-
-    public void reset() {
-        synchronized (this) {
-            checkIsRelease();
-            mVideoCodec.reset();
-            mAudioCodec.reset();
-            mVideoCodec.setCallback(null);
-            mAudioCodec.setCallback(null);
-            if (mEncodeHandler != null) {
-                mEncodeHandler.removeCallbacksAndMessages(null);
-                mEncodeHandler.getLooper().quit();
-                mEncodeHandler = null;
-            }
-        }
-    }
 
     public boolean start(String filePath, int videoRotationDegrees) {
         synchronized (this) {
@@ -198,17 +186,25 @@ public class VideoEncoder {
         return true;
     }
 
-    public void stop() {
+    public void stopAndReset() {
         synchronized (this) {
             checkIsRelease();
-            try {
-                if (!isStartingEncoded) {
-                    return;
-                }
-                final CountDownLatch latch = new CountDownLatch(1);
-                mEncodeHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
+            if (!isStartingEncoded) {
+                return;
+            }
+            reset();
+        }
+
+    }
+
+    public void reset() {
+        synchronized (this) {
+            checkIsRelease();
+            final CountDownLatch latch = new CountDownLatch(1);
+            mEncodeHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (isStartingEncoded) {
                         mAudioRecord.stop();
                         if (mVideoTrackIndex != -1) {
                             mVideoCodec.signalEndOfInputStream();
@@ -220,16 +216,21 @@ public class VideoEncoder {
                         }
                         mMediaMuxer.release();
                         mMediaMuxer = null;
-                        isStartingEncoded = false;
-                        latch.countDown();
                     }
-                });
+                    mVideoCodec.reset();
+                    mAudioCodec.reset();
+                    mVideoCodec.setCallback(null);
+                    mAudioCodec.setCallback(null);
+                    isStartingEncoded = false;
+                    latch.countDown();
+                }
+            });
+            try {
                 latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
+            } catch (InterruptedException ignored) {
+
             }
         }
-
     }
 
     public boolean isRunning() {
@@ -252,6 +253,11 @@ public class VideoEncoder {
             if (mAudioRecord != null) {
                 mAudioRecord.release();
             }
+            if (mEncodeHandler != null) {
+                mEncodeHandler.removeCallbacksAndMessages(null);
+                mEncodeHandler.getLooper().quit();
+                mEncodeHandler = null;
+            }
         }
 
     }
@@ -271,7 +277,6 @@ public class VideoEncoder {
             throw new RuntimeException("The VideoEncoder is already release");
         }
     }
-
 
     private class VideoSurfaceInputEncodeCallback extends MediaCodec.Callback {
         private long mStartPresentationTime;

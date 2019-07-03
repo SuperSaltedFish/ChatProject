@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 26
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 2019041119
-        versionName "2.9.14 Stable"
+        versionCode 2019060614
+        versionName "2.9.18 Stable"
     }
 
     sourceSets {
@@ -21,7 +21,7 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:support-compat:28.0.0'
+    implementation 'com.android.support:support-compat:26.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
 

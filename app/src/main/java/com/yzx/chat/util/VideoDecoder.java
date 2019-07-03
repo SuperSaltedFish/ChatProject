@@ -117,6 +117,7 @@ public class VideoDecoder implements MediaController.MediaPlayerControl {
             mAudioCodec.configure(audioFormat, null, null, 0);
             mAudioCodec.setCallback(new AudioDecodeCallback());
             mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, audioSampleRate, audioChannels, AUDIO_BIT_PER_SAMPLE, audioMaxInputSize, AudioTrack.MODE_STREAM);
+
             isPauseVideo = true;
             isPauseAudio = true;
             return true;
