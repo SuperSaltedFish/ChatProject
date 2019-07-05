@@ -3,6 +3,7 @@ package com.yzx.chat.module.login.presenter;
 import com.yzx.chat.core.AppClient;
 import com.yzx.chat.core.net.ResponseHandler;
 import com.yzx.chat.module.login.contract.LoginContract;
+import com.yzx.chat.module.main.presenter.SplashPresenter;
 import com.yzx.chat.widget.listener.LifecycleMVPResultCallback;
 
 
@@ -17,6 +18,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void attachView(LoginContract.View view) {
         mLoginView = view;
+        AppClient.getInstance().getStorageHelper().putToConfigurationPreferences(SplashPresenter.KEY_NON_FIRST_START, String.valueOf(true));
     }
 
     @Override

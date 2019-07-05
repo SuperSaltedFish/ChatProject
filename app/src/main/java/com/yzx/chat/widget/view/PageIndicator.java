@@ -210,8 +210,6 @@ public class PageIndicator extends LinearLayout {
                     int width = getWidth();
                     int height = getHeight();
                     int min = Math.min(width, height);
-                    int left = (width - min) / 2;
-                    int top = (height - min) / 2;
                     outline.setRoundRect(0, 0, width, height, min / 2f);
                 }
             });

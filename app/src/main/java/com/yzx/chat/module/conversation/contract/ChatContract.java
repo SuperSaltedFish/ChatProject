@@ -62,5 +62,9 @@ public class ChatContract {
 
         String getMessageDraft();
 
+        void saveKeyBoardHeight(int height);
+
+        int getKeyBoardHeight();
+
     }
 }

@@ -38,7 +38,6 @@ import com.yzx.chat.module.conversation.contract.ChatContract;
 import com.yzx.chat.module.conversation.presenter.ChatPresenter;
 import com.yzx.chat.module.group.view.GroupProfileActivity;
 import com.yzx.chat.tool.DirectoryHelper;
-import com.yzx.chat.tool.SharePreferenceHelper;
 import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.util.EmojiUtil;
 import com.yzx.chat.util.VoicePlayer;
@@ -163,7 +162,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
         mAdapter = new ChatMessageAdapter(mMessageList);
         mVoiceRecorder = new VoiceRecorder();
         mEmojis = EmojiUtil.getCommonlyUsedEmojiUnicode();
-        mKeyBoardHeight = SharePreferenceHelper.getConfigurePreferences().getKeyBoardHeight();
+        mKeyBoardHeight = mPresenter.getKeyBoardHeight();
     }
 
     @Override
@@ -353,7 +352,7 @@ public class ChatActivity extends BaseCompatActivity<ChatContract.Presenter> imp
                 if (mKeyBoardHeight != keyBoardHeight) {
                     mKeyBoardHeight = keyBoardHeight;
                     mEmotionPanelLayout.setHeight(mKeyBoardHeight);
-                    SharePreferenceHelper.getConfigurePreferences().putKeyBoardHeight(mKeyBoardHeight);
+                    mPresenter.saveKeyBoardHeight(mKeyBoardHeight);
                 }
                 if (isShowMoreInput()) {
                     hideMoreInput();

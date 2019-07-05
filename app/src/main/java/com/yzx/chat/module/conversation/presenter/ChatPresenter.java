@@ -40,6 +40,8 @@ import io.rong.message.VoiceMessage;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
+    private static final String KEY_KEY_BOARD_HEIGHT = "KeyBoardHeight";
+
     public static volatile String sConversationID;
 
     private ChatContract.View mChatView;
@@ -65,7 +67,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     public BasicInfoProvider init(String conversationID, Conversation.ConversationType type) {
         mConversationID = conversationID;
         mConversationType = Conversation.ConversationType.PRIVATE;
-        BasicInfoProvider infoProvider=null;
+        BasicInfoProvider infoProvider = null;
         switch (type) {
             case PRIVATE:
                 ContactEntity contact = mAppClient.getContactManager().getContact(conversationID);
@@ -75,7 +77,7 @@ public class ChatPresenter implements ChatContract.Presenter {
             case GROUP:
                 GroupEntity group = mAppClient.getGroupManager().getGroup(conversationID);
                 mChatView.showChatTitle(group.getName());
-                infoProvider =group;
+                infoProvider = group;
                 break;
         }
         init();
@@ -198,6 +200,20 @@ public class ChatPresenter implements ChatContract.Presenter {
         return mMessageDraft;
     }
 
+    @Override
+    public void saveKeyBoardHeight(int height) {
+        mAppClient.getStorageHelper().putToConfigurationPreferences(KEY_KEY_BOARD_HEIGHT, String.valueOf(height));
+    }
+
+    @Override
+    public int getKeyBoardHeight() {
+        String value = mAppClient.getStorageHelper().getFromConfigurationPreferences(KEY_KEY_BOARD_HEIGHT);
+        if (TextUtils.isEmpty(value)) {
+            return 0;
+        }
+        return Integer.parseInt(value);
+    }
+
     private void sendMessage(MessageContent messageContent) {
         sendMessage(Message.obtain(mConversationID, mConversationType, messageContent));
     }
@@ -244,7 +260,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ConversationManager.OnConversationChangeListener mOnConversationChangeListener = new ConversationManager.OnConversationChangeListener() {
         @Override
         public void onConversationChange(Conversation conversation, int typeCode, int remainder) {
-            if (TextUtils.equals(mConversationID,conversation.getTargetId())) {
+            if (TextUtils.equals(mConversationID, conversation.getTargetId())) {
                 switch (typeCode) {
                     case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
                         mChatView.clearMessage();

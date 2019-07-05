@@ -2,39 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yzx.chat">
-
     <!-- 以下为不需要手动申请的权限 -->
     <!-- 允许程序振动 -->
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- 允许程序访问网络连接 -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 允许程序获取网络信息状态，如当前的网络连接是否有效 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 允许程序访问WiFi网络信息 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 允许程序控制屏幕常亮了 -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- 允许程序通知显示在状态栏 -->
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <!-- 允许程序改变wifi的状态，开启后可以扫描wifi -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-
-    <!-- 以下为需要手动申请的权限 -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 允许程序访问网络连接 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 允许程序获取网络信息状态，如当前的网络连接是否有效 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 允许程序访问WiFi网络信息 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 允许程序控制屏幕常亮了 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 允许程序通知显示在状态栏 -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" /> <!-- 允许程序改变wifi的状态，开启后可以扫描wifi -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 以下为需要手动申请的权限 -->
     <!-- 允许程序可以读取设备外部存储空间 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- 允许程序写入外部存储 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- 允许程序访问摄像头进行拍照 -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- 允许程序使用录音设备 -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- 允许程序读写手机状态和身份 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 允许程序写入外部存储 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 允许程序访问摄像头进行拍照 -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 允许程序使用录音设备 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 允许程序读写手机状态和身份 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <!-- 使用OpenGL -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 使用OpenGL -->
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -72,13 +56,12 @@
         <activity
             android:name=".module.main.view.SplashActivity"
             android:theme="@style/SplashTheme">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
         <activity
             android:name=".module.login.view.LoginActivity"
             android:launchMode="singleTask" />
@@ -89,6 +72,7 @@
             android:name=".module.conversation.view.ChatActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".module.login.view.GuideActivity"/>
         <activity android:name=".module.common.view.QrCodeScanActivity" />
         <activity android:name=".module.common.view.ImageMultiSelectorActivity" />
         <activity android:name=".module.common.view.ImageViewPagerActivity" />
@@ -108,27 +92,21 @@
         <activity
             android:name=".module.common.view.LocationMapActivity"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".module.common.view.VideoRecorderActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".module.common.view.VideoRecorderActivity" />
         <activity android:name=".module.group.view.GroupListActivity" />
         <activity android:name=".module.me.view.CropImageActivity" />
         <activity android:name=".module.common.view.FileSelectorActivity" />
         <activity android:name=".module.common.view.VideoPlayActivity" />
         <activity android:name=".module.contact.view.NotificationMessageActivity" />
-
         <activity android:name=".module.me.view.MyTagListActivity" />
-
         <activity android:name=".module.TestActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
     </application>
 

@@ -1,4 +1,4 @@
-package com.yzx.chat.util;
+package com.yzx.chat.core.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;

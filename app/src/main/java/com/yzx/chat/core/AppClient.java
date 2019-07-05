@@ -256,8 +256,8 @@ public class AppClient {
             mLoginLock.release();
             throw new RuntimeException("The user has already logged in, please do not log in again！");
         }
-        final String token = mStorageHelper.get(STORAGE_KEY_TOKEN);
-        final String userID = mStorageHelper.get(STORAGE_KEY_USER_ID);
+        final String token = mStorageHelper.getFromConfigurationPreferences(STORAGE_KEY_TOKEN);
+        final String userID = mStorageHelper.getFromConfigurationPreferences(STORAGE_KEY_USER_ID);
         if (TextUtils.isEmpty(token) || TextUtils.isEmpty(userID)) {
             mLoginLock.release();
             CallbackUtil.callFailure(ResponseHandler.ERROR_CODE_NOT_LOGGED_IN, "", callback);
@@ -296,8 +296,8 @@ public class AppClient {
         isLogged = true;
         mToken = token;
         mUserID = userInfo.getUserID();
-        mStorageHelper.put(STORAGE_KEY_TOKEN, token);
-        mStorageHelper.put(STORAGE_KEY_USER_ID, userInfo.getUserID());
+        mStorageHelper.putToConfigurationPreferences(STORAGE_KEY_TOKEN, token);
+        mStorageHelper.putToConfigurationPreferences(STORAGE_KEY_USER_ID, userInfo.getUserID());
         mUserManager.init(mDBHelper.getReadWriteHelper(), userInfo);
         mChatManager.init();
         mConversationManager.init();
@@ -313,8 +313,9 @@ public class AppClient {
         mContactManager.destroy();
         mGroupManager.destroy();
         mUserManager.destroy();
-        mStorageHelper.put(STORAGE_KEY_TOKEN, "");
-        mStorageHelper.put(STORAGE_KEY_USER_ID, "");
+        mStorageHelper.clear();
+        mStorageHelper.putToConfigurationPreferences(STORAGE_KEY_TOKEN, "");
+        mStorageHelper.putToConfigurationPreferences(STORAGE_KEY_USER_ID, "");
         if (mDBHelper != null) {
             mDBHelper.destroy();
             mDBHelper = null;
@@ -355,12 +356,12 @@ public class AppClient {
         if (TextUtils.isEmpty(mDeviceID)) {
             synchronized (this) {
                 if (TextUtils.isEmpty(mDeviceID)) {
-                    mDeviceID = mStorageHelper.get(STORAGE_KEY_DEVICE_ID);
+                    mDeviceID = mStorageHelper.getFromConfigurationPreferences(STORAGE_KEY_DEVICE_ID);
                 }
                 if (TextUtils.isEmpty(mDeviceID)) {
                     mDeviceID = String.format(Locale.getDefault(), "%s(%s).%s", Build.BRAND, Build.MODEL, UUID.randomUUID().toString());
                     mDeviceID = mDeviceID.replaceAll(" ", "_");
-                    if (!mStorageHelper.put(STORAGE_KEY_DEVICE_ID, mDeviceID)) {
+                    if (!mStorageHelper.putToConfigurationPreferences(STORAGE_KEY_DEVICE_ID, mDeviceID)) {
                         LogUtil.w("saveDeviceIDToLocal fail");
                     }
                 }
@@ -391,6 +392,10 @@ public class AppClient {
 
     public UserManager getUserManager() {
         return mUserManager;
+    }
+
+    public StorageHelper getStorageHelper() {
+        return mStorageHelper;
     }
 
     public LoginExpiredListener getLoginExpiredListener() {

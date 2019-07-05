@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.yzx.chat.R;
 import com.yzx.chat.base.BaseCompatActivity;
 import com.yzx.chat.configure.Constants;
+import com.yzx.chat.core.util.MD5Util;
 import com.yzx.chat.tool.DirectoryHelper;
 import com.yzx.chat.util.BasicCamera;
 import com.yzx.chat.widget.view.RecordView;
@@ -180,7 +181,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
 
         @Override
         public void onFinish() {
-            if (System.currentTimeMillis()-mStartTime < MIN_TRIGGER_RECORDER_TIME) {
+            if (System.currentTimeMillis() - mStartTime < MIN_TRIGGER_RECORDER_TIME) {
                 stopRecord(false);
             } else {
                 stopRecord(true);
@@ -196,8 +197,7 @@ public class VideoRecorderActivity extends BaseCompatActivity {
     };
 
     private boolean startRecord() {
-//        mCurrentVideoPath = DirectoryHelper.getVideoPath() + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
-        mCurrentVideoPath = DirectoryHelper.getVideoPath() + "/fff.mp4";
+        mCurrentVideoPath = DirectoryHelper.getVideoPath() + File.separator + MD5Util.encrypt16(String.valueOf(System.currentTimeMillis())) + ".mp4";
         if (mRecordView.startRecode(mCurrentVideoPath)) {
             setCurrentState(CURRENT_STATE_RECORDER);
             return true;
