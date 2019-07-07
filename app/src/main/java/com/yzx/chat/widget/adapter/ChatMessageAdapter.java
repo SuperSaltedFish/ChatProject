@@ -21,6 +21,7 @@ import com.yzx.chat.R;
 import com.yzx.chat.base.BaseRecyclerViewAdapter;
 import com.yzx.chat.configure.Constants;
 import com.yzx.chat.core.entity.BasicInfoProvider;
+import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.common.view.ImageOriginalActivity;
 import com.yzx.chat.tool.IMMessageHelper;
@@ -53,7 +54,6 @@ import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
-import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -159,7 +159,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_LOCATION : HOLDER_TYPE_RECEIVE_MESSAGE_LOCATION;
             case "RC:FileMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_FILE : HOLDER_TYPE_RECEIVE_MESSAGE_FILE;
-            case "RC:SightMsg":
+            case "Custom:VideoMsg":
                 return message.getMessageDirection() == Message.MessageDirection.SEND ? HOLDER_TYPE_SEND_MESSAGE_VIDEO : HOLDER_TYPE_RECEIVE_MESSAGE_VIDEO;
             case "RC:GrpNtf":
                 return HOLDER_TYPE_NOTIFICATION_MESSAGE;
@@ -741,7 +741,7 @@ public class ChatMessageAdapter extends BaseRecyclerViewAdapter<ChatMessageAdapt
         @Override
         public void parseMessageContent(Message message) {
             super.parseMessageContent(message);
-            SightMessage videoMessage = (SightMessage) message.getContent();
+            VideoMessage videoMessage = (VideoMessage) message.getContent();
             Uri thumbnailUri = videoMessage.getThumbUri();
             if (thumbnailUri == null || TextUtils.isEmpty(thumbnailUri.getPath())) {
                 return;
