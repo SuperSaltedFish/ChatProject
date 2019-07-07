@@ -14,7 +14,6 @@ import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.LoginResponseEntity;
 import com.yzx.chat.core.entity.UserEntity;
 import com.yzx.chat.core.extra.ContactNotificationMessageEx;
-import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.listener.ResultCallback;
 import com.yzx.chat.core.net.ApiHelper;
 import com.yzx.chat.core.net.ResponseHandler;
@@ -37,6 +36,7 @@ import io.rong.imlib.AnnotationNotFoundException;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
 import io.rong.message.GroupNotificationMessage;
+import io.rong.message.SightMessage;
 
 /**
  * Created by YZX on 2017年11月15日.
@@ -103,7 +103,7 @@ public class AppClient {
     private void initIM() {
         RongIMClient.init(mAppContext);
         try {
-            RongIMClient.registerMessageType(VideoMessage.class);
+            RongIMClient.registerMessageType(SightMessage.class);
             RongIMClient.registerMessageType(ContactNotificationMessageEx.class);
         } catch (AnnotationNotFoundException ignored) {
         }
@@ -219,7 +219,7 @@ public class AppClient {
                         RongIMClient.connect(result.getToken(), new RongIMClient.ConnectCallback() {
                             @Override
                             public void onTokenIncorrect() {
-                                onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, ResourcesHelper.getString(R.string.Error_Client));
+                                onFailure(ResponseHandler.ERROR_CODE_TOKEN_INCORRECT, ResourcesHelper.getString(R.string.Error_Client));
                             }
 
                             @Override
@@ -230,7 +230,11 @@ public class AppClient {
 
                             @Override
                             public void onError(RongIMClient.ErrorCode errorCode) {
-                                onFailure(ResponseHandler.ERROR_CODE_UNKNOWN, errorCode.getMessage());
+                                String error = errorCode.getMessage();
+                                if (TextUtils.isEmpty(error)) {
+                                    error = ResourcesHelper.getString(R.string.Error_Server3);
+                                }
+                                onFailure(errorCode.getValue(),error);
                             }
                         });
 

@@ -10,17 +10,16 @@ import android.text.style.ForegroundColorSpan;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.yzx.chat.R;
+import com.yzx.chat.core.AppClient;
+import com.yzx.chat.core.ContactManager;
+import com.yzx.chat.core.GroupManager;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
 import com.yzx.chat.core.entity.GroupMemberEntity;
 import com.yzx.chat.core.entity.UserEntity;
-import com.yzx.chat.core.ContactManager;
-import com.yzx.chat.core.GroupManager;
-import com.yzx.chat.core.AppClient;
-import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.net.ApiHelper;
-import com.yzx.chat.util.AndroidHelper;
 import com.yzx.chat.core.util.LogUtil;
+import com.yzx.chat.util.AndroidHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -36,6 +35,7 @@ import io.rong.message.FileMessage;
 import io.rong.message.GroupNotificationMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
+import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -74,7 +74,7 @@ public class IMMessageHelper {
             return AndroidHelper.getString(R.string.MessageSummary_LocationInfo);
         } else if (messageContent instanceof FileMessage) {
             return AndroidHelper.getString(R.string.MessageSummary_FileInfo);
-        } else if (messageContent instanceof VideoMessage) {
+        } else if (messageContent instanceof SightMessage) {
             return AndroidHelper.getString(R.string.MessageSummary_VideoInfo);
         } else if (messageContent instanceof GroupNotificationMessage) {
             return groupNotificationMessageToString((GroupNotificationMessage) messageContent);

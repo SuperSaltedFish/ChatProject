@@ -1,5 +1,6 @@
 package com.yzx.chat.module.conversation.presenter;
 
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -13,7 +14,6 @@ import com.yzx.chat.core.ConversationManager;
 import com.yzx.chat.core.entity.BasicInfoProvider;
 import com.yzx.chat.core.entity.ContactEntity;
 import com.yzx.chat.core.entity.GroupEntity;
-import com.yzx.chat.core.extra.VideoMessage;
 import com.yzx.chat.core.util.LogUtil;
 import com.yzx.chat.module.conversation.contract.ChatContract;
 import com.yzx.chat.tool.NotificationHelper;
@@ -29,6 +29,7 @@ import io.rong.imlib.model.MessageContent;
 import io.rong.message.FileMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
+import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
 import io.rong.message.VoiceMessage;
 
@@ -146,8 +147,28 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     @Override
     public void sendVideoMessage(String filePath) {
+        long s = System.currentTimeMillis();
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        String strDuration;
+        try {
+            retriever.setDataSource(filePath);
+            strDuration = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+        } catch (RuntimeException ex) {
+            LogUtil.e(ex.getMessage(), ex);
+            return;
+        } finally {
+            try {
+                retriever.release();
+            } catch (RuntimeException ignored) {
+
+            }
+        }
+        int duration = 0;
+        if (!TextUtils.isEmpty(strDuration)) {
+            duration = Integer.parseInt(strDuration);
+        }
         Uri uri = Uri.parse("file://" + filePath);
-        sendMessage(VideoMessage.obtain(uri));
+        sendMessage(SightMessage.obtain(uri, (int) Math.ceil(duration)));
     }
 
     @Override
@@ -260,7 +281,7 @@ public class ChatPresenter implements ChatContract.Presenter {
     private final ConversationManager.OnConversationChangeListener mOnConversationChangeListener = new ConversationManager.OnConversationChangeListener() {
         @Override
         public void onConversationChange(Conversation conversation, int typeCode, int remainder) {
-            if (TextUtils.equals(mConversationID, conversation.getTargetId())) {
+            if (conversation != null && TextUtils.equals(mConversationID, conversation.getTargetId())) {
                 switch (typeCode) {
                     case ConversationManager.UPDATE_TYPE_CLEAR_MESSAGE:
                         mChatView.clearMessage();

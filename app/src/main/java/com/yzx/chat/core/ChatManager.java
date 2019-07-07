@@ -25,8 +25,8 @@ import io.rong.message.FileMessage;
 import io.rong.message.ImageMessage;
 import io.rong.message.LocationMessage;
 import io.rong.message.MediaMessageContent;
+import io.rong.message.SightMessage;
 import io.rong.message.TextMessage;
-import io.rong.message.VoiceMessage;
 
 /**
  * Created by YZX on 2017年12月31日.
@@ -83,9 +83,9 @@ public class ChatManager {
 
     public void sendMessage(Message message) {
         MessageContent content = message.getContent();
-        if (content instanceof TextMessage || content instanceof VoiceMessage) {
+        if (content instanceof TextMessage) {
             mRongIMClient.sendMessage(message, null, null, (IRongCallback.ISendMessageCallback) mSendMessageCallbackWrapper);
-        } else if (content instanceof ImageMessage || content instanceof FileMessage || content instanceof VideoMessage) {
+        } else if (content instanceof ImageMessage || content instanceof FileMessage || content instanceof VideoMessage || content instanceof SightMessage) {
             mRongIMClient.sendMediaMessage(message, null, null, mSendMessageCallbackWrapper);
         } else if (content instanceof LocationMessage) {
             mRongIMClient.sendLocationMessage(message, null, null, mSendMessageCallbackWrapper);
